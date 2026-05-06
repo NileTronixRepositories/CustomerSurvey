@@ -1,4 +1,5 @@
 ﻿using BuildingBlock.Application.Abstraction.Security;
+using CustomerSurvey.Application.Shared.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
