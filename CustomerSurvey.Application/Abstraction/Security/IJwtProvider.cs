@@ -1,5 +1,5 @@
-﻿using BuildingBlock.Application.Abstraction.Security;
-using CustomerSurvey.Application.Shared.Dto;
+﻿using CustomerSurvey.Application.Shared.Dto;
+using CustomerSurvey.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
