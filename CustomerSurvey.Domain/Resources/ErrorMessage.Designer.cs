@@ -61,6 +61,249 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Authentication token is missing..
+        /// </summary>
+        public static string Auth_Token_Missing {
+            get {
+                return ResourceManager.GetString("Auth_Token_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch address must not exceed 500 characters..
+        /// </summary>
+        public static string CreateBranch_Address_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranch_Address_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch code already exists..
+        /// </summary>
+        public static string CreateBranch_Code_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateBranch_Code_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch code must not exceed 50 characters..
+        /// </summary>
+        public static string CreateBranch_Code_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranch_Code_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch code is required..
+        /// </summary>
+        public static string CreateBranch_Code_Required {
+            get {
+                return ResourceManager.GetString("CreateBranch_Code_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Super Admin profile was not found..
+        /// </summary>
+        public static string CreateBranch_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("CreateBranch_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateBranch_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranch_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch English name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateBranch_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranch_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch English name is required..
+        /// </summary>
+        public static string CreateBranch_NameEn_Required {
+            get {
+                return ResourceManager.GetString("CreateBranch_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch was not found..
+        /// </summary>
+        public static string CreateBranchAdmin_Branch_NotFound {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_Branch_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch Administrator role was not found..
+        /// </summary>
+        public static string CreateBranchAdmin_BranchAdministratorRole_NotFound {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_BranchAdministratorRole_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch is required..
+        /// </summary>
+        public static string CreateBranchAdmin_BranchId_Required {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_BranchId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Super Admin profile was not found..
+        /// </summary>
+        public static string CreateBranchAdmin_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email already exists..
+        /// </summary>
+        public static string CreateBranchAdmin_Email_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_Email_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email address is invalid..
+        /// </summary>
+        public static string CreateBranchAdmin_Email_Invalid {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_Email_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email must not exceed 200 characters..
+        /// </summary>
+        public static string CreateBranchAdmin_Email_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_Email_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email is required..
+        /// </summary>
+        public static string CreateBranchAdmin_Email_Required {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_Email_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch admin Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateBranchAdmin_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch admin English name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateBranchAdmin_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch admin English name is required..
+        /// </summary>
+        public static string CreateBranchAdmin_NameEn_Required {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password must not exceed 200 characters..
+        /// </summary>
+        public static string CreateBranchAdmin_Password_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_Password_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password must be at least 8 characters..
+        /// </summary>
+        public static string CreateBranchAdmin_Password_MinLength {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_Password_MinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password is required..
+        /// </summary>
+        public static string CreateBranchAdmin_Password_Required {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_Password_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone number must not exceed 50 characters..
+        /// </summary>
+        public static string CreateBranchAdmin_PhoneNumber_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_PhoneNumber_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username already exists..
+        /// </summary>
+        public static string CreateBranchAdmin_UserName_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_UserName_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username must not exceed 100 characters..
+        /// </summary>
+        public static string CreateBranchAdmin_UserName_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_UserName_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username is required..
+        /// </summary>
+        public static string CreateBranchAdmin_UserName_Required {
+            get {
+                return ResourceManager.GetString("CreateBranchAdmin_UserName_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User actor profile was not found..
         /// </summary>
         public static string Login_ActorProfile_NotFound {
