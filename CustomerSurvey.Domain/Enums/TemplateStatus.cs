@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace CustomerSurvey.Domain.Enums
 {
-    public enum UserType
+    public enum TemplateStatus
     {
-        SuperAdmin = 1,
-        BranchAdmin = 2,
-        BranchUser = 3,
-        DepartmentAdmin = 4,
-        Operator = 5
+        Draft = 1,
+        Active = 2,
+        Inactive = 3
     }
 }

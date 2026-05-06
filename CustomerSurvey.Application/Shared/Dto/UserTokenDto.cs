@@ -9,7 +9,8 @@ namespace CustomerSurvey.Application.Shared.Dto
     public sealed record UserTokenDto
     {
         public string Token { get; init; } = string.Empty;
-        public string RoleName { get; init; } = string.Empty;
-        public IReadOnlyCollection<string> Permissions { get; init; } = Array.Empty<string>();
+
+
+        public string UserType { get; init; } = string.Empty;
     }
 }

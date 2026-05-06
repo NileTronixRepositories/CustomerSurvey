@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace CustomerSurvey.infrastructure.Services.Token
 {
-    public class JwtProvider : IJwtProvider
+    public sealed class JwtProvider : IJwtProvider
     {
         private readonly JwtOption _options;
 
@@ -25,48 +25,65 @@ namespace CustomerSurvey.infrastructure.Services.Token
 
         public Task<UserTokenDto> Generate(
             Guid userId,
-            Guid? tenantId,
             string email,
             string phoneNumber,
-            string roleName,
-            Domain.Enums.UserType userType,
+            IReadOnlyCollection<string> roleNames,
+             CustomerSurvey.Domain.Enums.UserType userType,
             IReadOnlyCollection<string> permissions,
             CancellationToken cancellationToken = default)
         {
-            var claims = new List<Claim>();
+            cancellationToken.ThrowIfCancellationRequested();
 
-            claims.Add(new Claim(JwtClaimTypesCustom.UserId, userId.ToString()));
-            if (tenantId is not null)
-                claims.Add(new Claim(JwtClaimTypesCustom.AccountId, tenantId.Value.ToString()));
+            var normalizedRoles = roleNames
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            var normalizedPermissions = permissions
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            var claims = new List<Claim>
+            {
+                new Claim(JwtClaimTypesCustom.UserId, userId.ToString()),
+                new Claim(JwtClaimTypesCustom.UserType, ((int)userType).ToString())
+            };
 
             if (!string.IsNullOrWhiteSpace(email))
-                claims.Add(new Claim(JwtClaimTypesCustom.Email, email));
-
-            if (!string.IsNullOrWhiteSpace(phoneNumber))
-                claims.Add(new Claim(JwtClaimTypesCustom.PhoneNumber, phoneNumber));
-
-            if (!string.IsNullOrWhiteSpace(roleName))
-                claims.Add(new Claim(ClaimTypes.Role, roleName));
-
-            claims.Add(new Claim(JwtClaimTypesCustom.UserType, ((int)userType).ToString()));
-
-            if (permissions is not null)
             {
-                foreach (var p in permissions.Where(x => !string.IsNullOrWhiteSpace(x))
-                                             .Distinct(StringComparer.OrdinalIgnoreCase))
-                {
-                    claims.Add(new Claim(JwtClaimTypesCustom.Permission, p));
-                }
+                claims.Add(new Claim(JwtClaimTypesCustom.Email, email.Trim()));
             }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
-            var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            if (!string.IsNullOrWhiteSpace(phoneNumber))
+            {
+                claims.Add(new Claim(JwtClaimTypesCustom.PhoneNumber, phoneNumber.Trim()));
+            }
+
+            foreach (var roleName in normalizedRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, roleName));
+            }
+
+            foreach (var permission in normalizedPermissions)
+            {
+                claims.Add(new Claim(JwtClaimTypesCustom.Permission, permission));
+            }
+
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_options.Secret));
+
+            var signingCredentials = new SigningCredentials(
+                key,
+                SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 issuer: _options.Issuer,
                 audience: _options.Audience,
                 claims: claims,
-                notBefore: null,
+                notBefore: DateTime.UtcNow,
                 expires: DateTime.UtcNow.AddMinutes(_options.ExpiryMinutes),
                 signingCredentials: signingCredentials);
 
@@ -75,8 +92,7 @@ namespace CustomerSurvey.infrastructure.Services.Token
             return Task.FromResult(new UserTokenDto
             {
                 Token = tokenValue,
-                RoleName = roleName ?? string.Empty,
-                Permissions = permissions ?? Array.Empty<string>()
+                UserType = userType.ToString(),
             });
         }
     }

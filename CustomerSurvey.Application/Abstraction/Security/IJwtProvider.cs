@@ -10,16 +10,13 @@ namespace CustomerSurvey.Application.Abstraction.Security
 {
     public interface IJwtProvider
     {
-        Task<UserTokenDto> Generate
-            (
-            Guid userId,
-            Guid? tenantId,
-            string email,
-            string phoneNumber,
-            string roleName,
-            UserType userType,
-            IReadOnlyCollection<string> permissions,
-            CancellationToken cancellationToken = default
-            );
+        Task<UserTokenDto> Generate(
+      Guid userId,
+      string email,
+      string phoneNumber,
+      IReadOnlyCollection<string> roleNames,
+      UserType userType,
+      IReadOnlyCollection<string> permissions,
+      CancellationToken cancellationToken = default);
     }
 }
