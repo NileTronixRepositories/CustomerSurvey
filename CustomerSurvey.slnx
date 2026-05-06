@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/BuildingBlock/">
+    <Project Path="BuildingBlock.Api/BuildingBlock.Api.csproj" />
+    <Project Path="BuildingBlock.Application/BuildingBlock.Application.csproj" />
+    <Project Path="BuildingBlock.Domain/BuildingBlock.Domain.csproj" />
+    <Project Path="BuildingBlock.Infrastracture/BuildingBlock.Infrastracture.csproj" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Customer Survey/">
+    <Project Path="CustomerSurvey.Api/CustomerSurvey.Api.csproj" Id="5457a1b3-a922-4894-b20b-50b13e61e798" />
+    <Project Path="CustomerSurvey.Application/CustomerSurvey.Application.csproj" Id="df1008b4-c362-47a3-97c1-d4359dfb908c" />
+    <Project Path="CustomerSurvey.Domain/CustomerSurvey.Domain.csproj" Id="df1fbcd9-8471-4278-99a9-95e448ae4e96" />
+    <Project Path="CustomerSurvey.infrastructure/CustomerSurvey.infrastructure.csproj" Id="5f575cb5-b315-4f7d-84b4-42a90205ab87" />
+  </Folder>
+</Solution>
