@@ -130,10 +130,11 @@ namespace CustomerSurvey.infrastructure.Bootstrap
 
         private static IServiceCollection AddSeeding(this IServiceCollection services)
         {
-            //services.AddScoped<ISeeder, PermissionSeeder>();
-            //services.AddScoped<ISeeder, RoleSeeder>();
-            //services.AddScoped<ISeeder, RolePermissionSeeder>();
-            //services.AddScoped<ISeeder, SuperAdminSeeder>();
+            services.AddScoped<ISeeder, SuperAdminSeeder>();
+            services.AddScoped<ISeeder, RoleSeeder>();
+            services.AddScoped<ISeeder, PermissionSeeder>();
+            services.AddScoped<ISeeder, RolePermissionSeeder>();
+            services.AddScoped<ISeeder, SuperAdminRoleSeeder>();
 
             services.AddScoped<IEnsureSeeding, EnsureSeeding>();
 

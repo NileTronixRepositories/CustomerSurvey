@@ -59,5 +59,68 @@ namespace CustomerSurvey.Domain.Resources {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User actor profile was not found..
+        /// </summary>
+        public static string Login_ActorProfile_NotFound {
+            get {
+                return ResourceManager.GetString("Login_ActorProfile_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username or password is incorrect..
+        /// </summary>
+        public static string Login_InvalidCredentials {
+            get {
+                return ResourceManager.GetString("Login_InvalidCredentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password must not exceed 200 characters..
+        /// </summary>
+        public static string Login_Password_MaxLength {
+            get {
+                return ResourceManager.GetString("Login_Password_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password is required..
+        /// </summary>
+        public static string Login_Password_Required {
+            get {
+                return ResourceManager.GetString("Login_Password_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User has no assigned roles..
+        /// </summary>
+        public static string Login_UserHasNoRoles {
+            get {
+                return ResourceManager.GetString("Login_UserHasNoRoles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username or email must not exceed 200 characters..
+        /// </summary>
+        public static string Login_UserNameOrEmail_MaxLength {
+            get {
+                return ResourceManager.GetString("Login_UserNameOrEmail_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username or email is required..
+        /// </summary>
+        public static string Login_UserNameOrEmail_Required {
+            get {
+                return ResourceManager.GetString("Login_UserNameOrEmail_Required", resourceCulture);
+            }
+        }
     }
 }
