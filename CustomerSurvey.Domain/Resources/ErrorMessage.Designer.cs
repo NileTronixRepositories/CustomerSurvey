@@ -61,6 +61,78 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User is required..
+        /// </summary>
+        public static string AssignRolesToBranchUser_ApplicationUserId_Required {
+            get {
+                return ResourceManager.GetString("AssignRolesToBranchUser_ApplicationUserId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot update roles for a user outside your branch..
+        /// </summary>
+        public static string AssignRolesToBranchUser_BranchScope_Mismatch {
+            get {
+                return ResourceManager.GetString("AssignRolesToBranchUser_BranchScope_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user was not found..
+        /// </summary>
+        public static string AssignRolesToBranchUser_BranchUser_NotFound {
+            get {
+                return ResourceManager.GetString("AssignRolesToBranchUser_BranchUser_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Branch Admin profile was not found..
+        /// </summary>
+        public static string AssignRolesToBranchUser_CurrentBranchAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("AssignRolesToBranchUser_CurrentBranchAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the selected roles cannot be assigned to a branch user..
+        /// </summary>
+        public static string AssignRolesToBranchUser_Role_NotAllowed {
+            get {
+                return ResourceManager.GetString("AssignRolesToBranchUser_Role_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the selected roles was not found..
+        /// </summary>
+        public static string AssignRolesToBranchUser_Role_NotFound {
+            get {
+                return ResourceManager.GetString("AssignRolesToBranchUser_Role_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected role is invalid..
+        /// </summary>
+        public static string AssignRolesToBranchUser_RoleId_Invalid {
+            get {
+                return ResourceManager.GetString("AssignRolesToBranchUser_RoleId_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At least one role must be selected..
+        /// </summary>
+        public static string AssignRolesToBranchUser_RoleIds_Required {
+            get {
+                return ResourceManager.GetString("AssignRolesToBranchUser_RoleIds_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authentication token is missing..
         /// </summary>
         public static string Auth_Token_Missing {
@@ -300,6 +372,177 @@ namespace CustomerSurvey.Domain.Resources {
         public static string CreateBranchAdmin_UserName_Required {
             get {
                 return ResourceManager.GetString("CreateBranchAdmin_UserName_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Branch Admin profile was not found..
+        /// </summary>
+        public static string CreateBranchUser_CurrentBranchAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_CurrentBranchAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email already exists..
+        /// </summary>
+        public static string CreateBranchUser_Email_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_Email_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email address is invalid..
+        /// </summary>
+        public static string CreateBranchUser_Email_Invalid {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_Email_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email must not exceed 200 characters..
+        /// </summary>
+        public static string CreateBranchUser_Email_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_Email_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email is required..
+        /// </summary>
+        public static string CreateBranchUser_Email_Required {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_Email_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateBranchUser_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user English name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateBranchUser_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user English name is required..
+        /// </summary>
+        public static string CreateBranchUser_NameEn_Required {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password must not exceed 200 characters..
+        /// </summary>
+        public static string CreateBranchUser_Password_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_Password_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password must be at least 8 characters..
+        /// </summary>
+        public static string CreateBranchUser_Password_MinLength {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_Password_MinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password is required..
+        /// </summary>
+        public static string CreateBranchUser_Password_Required {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_Password_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone number must not exceed 50 characters..
+        /// </summary>
+        public static string CreateBranchUser_PhoneNumber_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_PhoneNumber_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the selected roles cannot be assigned to a branch user..
+        /// </summary>
+        public static string CreateBranchUser_Role_NotAllowed {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_Role_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the selected roles was not found..
+        /// </summary>
+        public static string CreateBranchUser_Role_NotFound {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_Role_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected role is invalid..
+        /// </summary>
+        public static string CreateBranchUser_RoleId_Invalid {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_RoleId_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At least one role must be selected..
+        /// </summary>
+        public static string CreateBranchUser_RoleIds_Required {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_RoleIds_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username already exists..
+        /// </summary>
+        public static string CreateBranchUser_UserName_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_UserName_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username must not exceed 100 characters..
+        /// </summary>
+        public static string CreateBranchUser_UserName_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_UserName_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username is required..
+        /// </summary>
+        public static string CreateBranchUser_UserName_Required {
+            get {
+                return ResourceManager.GetString("CreateBranchUser_UserName_Required", resourceCulture);
             }
         }
         
@@ -709,6 +952,42 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current Branch Admin profile was not found..
+        /// </summary>
+        public static string GetBranchUsersPagination_CurrentBranchAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetBranchUsersPagination_CurrentBranchAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number must be greater than or equal to 1..
+        /// </summary>
+        public static string GetBranchUsersPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchUsersPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must be greater than or equal to 1..
+        /// </summary>
+        public static string GetBranchUsersPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchUsersPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must not exceed 100 items..
+        /// </summary>
+        public static string GetBranchUsersPagination_PageSize_Max {
+            get {
+                return ResourceManager.GetString("GetBranchUsersPagination_PageSize_Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current Super Admin profile was not found..
         /// </summary>
         public static string GetDepartmentDetails_CurrentSuperAdmin_NotFound {
@@ -795,6 +1074,24 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetMyBranchDetails_CurrentBranchAdmin_NotFound {
             get {
                 return ResourceManager.GetString("GetMyBranchDetails_CurrentBranchAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Branch Admin profile was not found..
+        /// </summary>
+        public static string GetRolesSelection_CurrentBranchAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetRolesSelection_CurrentBranchAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some required branch user roles are not seeded in the system..
+        /// </summary>
+        public static string GetRolesSelection_RequiredRoles_NotSeeded {
+            get {
+                return ResourceManager.GetString("GetRolesSelection_RequiredRoles_NotSeeded", resourceCulture);
             }
         }
         
