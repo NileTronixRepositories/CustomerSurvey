@@ -321,6 +321,30 @@
   <data name="GetBranchesSelection_CurrentSuperAdmin_NotFound" xml:space="preserve">
     <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
   </data>
+  <data name="GetDepartmentDetails_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="GetDepartmentDetails_DepartmentId_Required" xml:space="preserve">
+    <value>القسم مطلوب.</value>
+  </data>
+  <data name="GetDepartmentDetails_Department_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القسم.</value>
+  </data>
+  <data name="GetDepartmentsPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="GetDepartmentsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetDepartmentsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetDepartmentsPagination_PageSize_Max" xml:space="preserve">
+    <value>حجم الصفحة يجب ألا يزيد عن 100 عنصر.</value>
+  </data>
+  <data name="GetDepartmentsSelection_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
   <data name="GetMyBranchDetails_Branch_NotFound" xml:space="preserve">
     <value>لم يتم العثور على الفرع المرتبط بمدير الفرع الحالي.</value>
   </data>
@@ -363,9 +387,6 @@
   <data name="UpdateBranch_Code_MaxLength" xml:space="preserve">
     <value>كود الفرع يجب ألا يزيد عن 50 حرف.</value>
   </data>
-  <data name="UpdateBranch_Code_Required" xml:space="preserve">
-    <value>كود الفرع مطلوب.</value>
-  </data>
   <data name="UpdateBranch_CurrentSuperAdmin_NotFound" xml:space="preserve">
     <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
   </data>
@@ -377,5 +398,44 @@
   </data>
   <data name="UpdateBranch_NameEn_Required" xml:space="preserve">
     <value>اسم الفرع باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="UpdateDepartment_DepartmentId_Required" xml:space="preserve">
+    <value>القسم مطلوب.</value>
+  </data>
+  <data name="UpdateDepartment_NameEn_Required" xml:space="preserve">
+    <value>اسم القسم باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="UpdateBranch_Code_Required" xml:space="preserve">
+    <value>كود الفرع مطلوب.</value>
+  </data>
+  <data name="UpdateDepartment_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم القسم باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateDepartment_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم القسم باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateDepartment_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="UpdateDepartment_Department_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القسم.</value>
+  </data>
+  <data name="UpdateDepartment_NameEn_AlreadyExists" xml:space="preserve">
+    <value>اسم القسم باللغة الإنجليزية مستخدم من قبل.</value>
+  </data>
+  <data name="UpdateDepartment_NameAr_AlreadyExists" xml:space="preserve">
+    <value>اسم القسم باللغة العربية مستخدم من قبل.</value>
+  </data>
+  <data name="DeleteDepartment_DepartmentId_Required" xml:space="preserve">
+    <value>القسم مطلوب.</value>
+  </data>
+  <data name="DeleteDepartment_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="DeleteDepartment_Department_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القسم.</value>
+  </data>
+  <data name="DeleteDepartment_Department_AlreadyInactive" xml:space="preserve">
+    <value>القسم غير مفعل بالفعل.</value>
   </data>
 </root>
