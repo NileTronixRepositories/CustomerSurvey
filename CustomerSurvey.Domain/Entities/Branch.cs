@@ -9,7 +9,6 @@ namespace CustomerSurvey.Domain.Entities
 {
     public sealed class Branch : AggregateRoot<Guid>
     {
-        private readonly List<Department> _departments = new();
         private readonly List<Template> _templates = new();
         private readonly List<QuestionGroup> _groups = new();
 
@@ -21,7 +20,6 @@ namespace CustomerSurvey.Domain.Entities
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
-        public IReadOnlyCollection<Department> Departments => _departments.AsReadOnly();
         public IReadOnlyCollection<Template> Templates => _templates.AsReadOnly();
         public IReadOnlyCollection<QuestionGroup> Groups => _groups.AsReadOnly();
 
@@ -53,12 +51,14 @@ namespace CustomerSurvey.Domain.Entities
         }
 
         public void Update(
-            string nameEn,
-            string? nameAr,
-            string? address)
+                string nameEn,
+                string? nameAr,
+                string code,
+                string? address)
         {
             NameEn = nameEn.Trim();
             NameAr = string.IsNullOrWhiteSpace(nameAr) ? null : nameAr.Trim();
+            Code = code.Trim();
             Address = string.IsNullOrWhiteSpace(address) ? null : address.Trim();
         }
 

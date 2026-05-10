@@ -1,0 +1,240 @@
+﻿using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction.Security;
+using BuildingBlock.Domain.Results;
+using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Identity;
+using CustomerSurvey.Domain.Resources;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchDetails
+{
+    internal sealed class GetBranchDetailsQueryHandler
+          : IQueryHandler<GetBranchDetailsQuery, GetBranchDetailsResponse>
+    {
+        private readonly IWriteReadRepository<Branch> _branchReadRepository;
+        private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
+        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
+        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly IWriteReadRepository<UserRole> _userRoleReadRepository;
+        private readonly IWriteReadRepository<Template> _templateReadRepository;
+        private readonly IWriteReadRepository<QuestionGroup> _questionGroupReadRepository;
+        private readonly IWriteReadRepository<Question> _questionReadRepository;
+        private readonly ICurrentUser _currentUser;
+
+        public GetBranchDetailsQueryHandler(
+            IWriteReadRepository<Branch> branchReadRepository,
+            IWriteReadRepository<SuperAdmin> superAdminReadRepository,
+            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
+            IWriteReadRepository<BranchUser> branchUserReadRepository,
+            IWriteReadRepository<UserRole> userRoleReadRepository,
+            IWriteReadRepository<Template> templateReadRepository,
+            IWriteReadRepository<QuestionGroup> questionGroupReadRepository,
+            IWriteReadRepository<Question> questionReadRepository,
+            ICurrentUser currentUser)
+        {
+            _branchReadRepository = branchReadRepository
+                ?? throw new ArgumentNullException(nameof(branchReadRepository));
+
+            _superAdminReadRepository = superAdminReadRepository
+                ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
+
+            _branchAdminReadRepository = branchAdminReadRepository
+                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
+
+            _branchUserReadRepository = branchUserReadRepository
+                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+
+            _userRoleReadRepository = userRoleReadRepository
+                ?? throw new ArgumentNullException(nameof(userRoleReadRepository));
+
+            _templateReadRepository = templateReadRepository
+                ?? throw new ArgumentNullException(nameof(templateReadRepository));
+
+            _questionGroupReadRepository = questionGroupReadRepository
+                ?? throw new ArgumentNullException(nameof(questionGroupReadRepository));
+
+            _questionReadRepository = questionReadRepository
+                ?? throw new ArgumentNullException(nameof(questionReadRepository));
+
+            _currentUser = currentUser
+                ?? throw new ArgumentNullException(nameof(currentUser));
+        }
+
+        public async Task<Result<GetBranchDetailsResponse>> Handle(
+            GetBranchDetailsQuery request,
+            CancellationToken cancellationToken)
+        {
+            if (!_currentUser.IsAuthenticated || !_currentUser.UserId.HasValue)
+            {
+                return Result<GetBranchDetailsResponse>.Fail(new Error(
+                    Code: "Branches.Details.Unauthenticated",
+                    Message: ErrorMessage.Auth_Token_Missing,
+                    Type: ErrorType.Security));
+            }
+
+            var currentApplicationUserId = _currentUser.UserId.Value;
+
+            var currentSuperAdminExists = await _superAdminReadRepository.AnyAsync(
+                x => x.ApplicationUserId == currentApplicationUserId,
+                cancellationToken);
+
+            if (!currentSuperAdminExists)
+            {
+                return Result<GetBranchDetailsResponse>.Fail(new Error(
+                    Code: "Branches.Details.CurrentSuperAdminNotFound",
+                    Message: ErrorMessage.GetBranchDetails_CurrentSuperAdmin_NotFound,
+                    Type: ErrorType.NotFound));
+            }
+
+            var branch = await _branchReadRepository.FirstOrDefaultAsync(
+                new GetBranchBasicDetailsSpec(request.BranchId),
+                cancellationToken);
+
+            if (branch is null)
+            {
+                return Result<GetBranchDetailsResponse>.Fail(new Error(
+                    Code: "Branches.Details.BranchNotFound",
+                    Message: ErrorMessage.GetBranchDetails_Branch_NotFound,
+                    Type: ErrorType.NotFound));
+            }
+
+            var branchAdmins = await _branchAdminReadRepository.ListAsync(
+                new GetBranchAdminsForBranchDetailsSpec(request.BranchId),
+                cancellationToken);
+
+            var branchUsers = await _branchUserReadRepository.ListAsync(
+                new GetBranchUsersForBranchDetailsSpec(request.BranchId),
+                cancellationToken);
+
+            var branchUserApplicationUserIds = branchUsers
+                .Select(x => x.ApplicationUserId)
+                .Distinct()
+                .ToArray();
+
+            IReadOnlyCollection<BranchUserRoleForBranchDetailsDto> branchUserRoles;
+
+            if (branchUserApplicationUserIds.Length == 0)
+            {
+                branchUserRoles = Array.Empty<BranchUserRoleForBranchDetailsDto>();
+            }
+            else
+            {
+                branchUserRoles = await _userRoleReadRepository.ListAsync(
+                    new GetBranchUserRolesForBranchDetailsSpec(branchUserApplicationUserIds),
+                    cancellationToken);
+            }
+
+            var templates = await _templateReadRepository.ListAsync(
+                new GetTemplatesForBranchDetailsSpec(request.BranchId),
+                cancellationToken);
+
+            var questionGroups = await _questionGroupReadRepository.ListAsync(
+                new GetQuestionGroupsForBranchDetailsSpec(request.BranchId),
+                cancellationToken);
+
+            var questions = await _questionReadRepository.ListAsync(
+                new GetQuestionsForBranchDetailsSpec(request.BranchId),
+                cancellationToken);
+
+            var rolesByApplicationUserId = branchUserRoles
+                .GroupBy(x => x.ApplicationUserId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => (IReadOnlyCollection<BranchDetailsUserRoleResponse>)x
+                        .Select(role => new BranchDetailsUserRoleResponse
+                        {
+                            RoleId = role.RoleId,
+                            Name = role.RoleName
+                        })
+                        .ToArray());
+
+            var questionsByGroupId = questions
+                .GroupBy(x => x.GroupId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => (IReadOnlyCollection<BranchDetailsQuestionResponse>)x
+                        .Select(question => new BranchDetailsQuestionResponse
+                        {
+                            QuestionId = question.QuestionId,
+                            TextEn = question.TextEn,
+                            TextAr = question.TextAr,
+                            Type = question.Type.ToString(),
+                            IsActive = question.IsActive
+                        })
+                        .ToArray());
+
+            var response = new GetBranchDetailsResponse
+            {
+                Id = branch.Id,
+                NameEn = branch.NameEn,
+                NameAr = branch.NameAr,
+                Code = branch.Code,
+                Address = branch.Address,
+                IsActive = branch.IsActive,
+                CreatedOnUtc = branch.CreatedOnUtc,
+
+                Summary = new BranchDetailsSummaryResponse
+                {
+                    BranchAdminsCount = branchAdmins.Count,
+                    BranchUsersCount = branchUsers.Count,
+                    TemplatesCount = templates.Count,
+                    QuestionGroupsCount = questionGroups.Count,
+                    QuestionsCount = questions.Count
+                },
+
+                BranchAdmins = branchAdmins,
+
+                BranchUsers = branchUsers
+                    .Select(branchUser => new BranchDetailsBranchUserResponse
+                    {
+                        BranchUserId = branchUser.BranchUserId,
+                        ApplicationUserId = branchUser.ApplicationUserId,
+                        NameEn = branchUser.NameEn,
+                        NameAr = branchUser.NameAr,
+                        UserName = branchUser.UserName,
+                        Email = branchUser.Email,
+                        PhoneNumber = branchUser.PhoneNumber,
+                        Roles = rolesByApplicationUserId.TryGetValue(
+                            branchUser.ApplicationUserId,
+                            out var roles)
+                                ? roles
+                                : Array.Empty<BranchDetailsUserRoleResponse>()
+                    })
+                    .ToArray(),
+
+                Templates = templates
+                    .Select(template => new BranchDetailsTemplateResponse
+                    {
+                        TemplateId = template.TemplateId,
+                        NameEn = template.NameEn,
+                        NameAr = template.NameAr,
+                        Description = template.Description,
+                        Status = template.Status.ToString(),
+                        QuestionsCount = template.QuestionsCount
+                    })
+                    .ToArray(),
+
+                QuestionGroups = questionGroups
+                    .Select(group => new BranchDetailsQuestionGroupResponse
+                    {
+                        GroupId = group.GroupId,
+                        NameEn = group.NameEn,
+                        NameAr = group.NameAr,
+                        Questions = questionsByGroupId.TryGetValue(
+                            group.GroupId,
+                            out var groupQuestions)
+                                ? groupQuestions
+                                : Array.Empty<BranchDetailsQuestionResponse>()
+                    })
+                    .ToArray()
+            };
+
+            return Result<GetBranchDetailsResponse>.Ok(response);
+        }
+    }
+}

@@ -24,20 +24,11 @@ namespace CustomerSurvey.infrastructure.Configurations
                 .IsRequired(false)
                 .HasMaxLength(200);
 
-            builder.Property(x => x.Code)
-                .IsRequired()
-                .HasMaxLength(50);
-
             builder.Property(x => x.IsActive)
                 .IsRequired();
 
             builder.Property(x => x.CreatedByApplicationUserId)
                 .IsRequired();
-
-            builder.HasIndex(x => x.BranchId);
-
-            builder.HasIndex(x => new { x.BranchId, x.Code })
-                .IsUnique();
 
             builder.HasMany(x => x.DepartmentAdmins)
                 .WithOne(x => x.Department)

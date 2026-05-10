@@ -13,41 +13,32 @@ namespace CustomerSurvey.Domain.Entities
         private readonly List<DepartmentAdmin> _departmentAdmins = new();
         private readonly List<Operator> _operators = new();
 
-        public Guid BranchId { get; private set; }
-        public Branch Branch { get; private set; } = null!;
-
         public string NameEn { get; private set; } = string.Empty;
+
         public string? NameAr { get; private set; }
-        public string Code { get; private set; } = string.Empty;
-        public bool IsActive { get; private set; }
+
+        public bool IsActive { get; private set; } = true;
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
-        public IReadOnlyCollection<DepartmentAdmin> DepartmentAdmins => _departmentAdmins.AsReadOnly();
-        public IReadOnlyCollection<Operator> Operators => _operators.AsReadOnly();
+        public IReadOnlyCollection<DepartmentAdmin> DepartmentAdmins => _departmentAdmins;
+
+        public IReadOnlyCollection<Operator> Operators => _operators;
 
         private Department()
         {
         }
 
-        private Department(Guid id)
-            : base(id)
-        {
-        }
-
         public static Department Create(
-            Guid branchId,
             string nameEn,
             string? nameAr,
-            string code,
             Guid createdByApplicationUserId)
         {
-            return new Department(Guid.NewGuid())
+            return new Department
             {
-                BranchId = branchId,
+                Id = Guid.NewGuid(),
                 NameEn = nameEn.Trim(),
                 NameAr = string.IsNullOrWhiteSpace(nameAr) ? null : nameAr.Trim(),
-                Code = code.Trim(),
                 IsActive = true,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
