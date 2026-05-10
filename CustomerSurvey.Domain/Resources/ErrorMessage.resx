@@ -321,6 +321,30 @@
   <data name="GetBranchesSelection_CurrentSuperAdmin_NotFound" xml:space="preserve">
     <value>Current Super Admin profile was not found.</value>
   </data>
+  <data name="GetDepartmentDetails_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current Super Admin profile was not found.</value>
+  </data>
+  <data name="GetDepartmentDetails_DepartmentId_Required" xml:space="preserve">
+    <value>Department is required.</value>
+  </data>
+  <data name="GetDepartmentDetails_Department_NotFound" xml:space="preserve">
+    <value>Department was not found.</value>
+  </data>
+  <data name="GetDepartmentsPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current Super Admin profile was not found.</value>
+  </data>
+  <data name="GetDepartmentsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetDepartmentsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>Page size must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetDepartmentsPagination_PageSize_Max" xml:space="preserve">
+    <value>Page size must not exceed 100 items.</value>
+  </data>
+  <data name="GetDepartmentsSelection_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current Super Admin profile was not found.</value>
+  </data>
   <data name="GetMyBranchDetails_Branch_NotFound" xml:space="preserve">
     <value>Branch linked to the current Branch Admin was not found.</value>
   </data>
@@ -363,9 +387,6 @@
   <data name="UpdateBranch_Code_MaxLength" xml:space="preserve">
     <value>Branch code must not exceed 50 characters.</value>
   </data>
-  <data name="UpdateBranch_Code_Required" xml:space="preserve">
-    <value>Branch code is required.</value>
-  </data>
   <data name="UpdateBranch_CurrentSuperAdmin_NotFound" xml:space="preserve">
     <value>Current Super Admin profile was not found.</value>
   </data>
@@ -377,5 +398,44 @@
   </data>
   <data name="UpdateBranch_NameEn_Required" xml:space="preserve">
     <value>Branch English name is required.</value>
+  </data>
+  <data name="UpdateDepartment_DepartmentId_Required" xml:space="preserve">
+    <value>Department is required.</value>
+  </data>
+  <data name="UpdateDepartment_NameEn_Required" xml:space="preserve">
+    <value>Department English name is required.</value>
+  </data>
+  <data name="UpdateBranch_Code_Required" xml:space="preserve">
+    <value>Branch code is required.</value>
+  </data>
+  <data name="UpdateDepartment_NameEn_MaxLength" xml:space="preserve">
+    <value>Department English name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateDepartment_NameAr_MaxLength" xml:space="preserve">
+    <value>Department Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateDepartment_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current Super Admin profile was not found.</value>
+  </data>
+  <data name="UpdateDepartment_Department_NotFound" xml:space="preserve">
+    <value>Department was not found.</value>
+  </data>
+  <data name="UpdateDepartment_NameEn_AlreadyExists" xml:space="preserve">
+    <value>Department English name already exists.</value>
+  </data>
+  <data name="UpdateDepartment_NameAr_AlreadyExists" xml:space="preserve">
+    <value>Department Arabic name already exists.</value>
+  </data>
+  <data name="DeleteDepartment_DepartmentId_Required" xml:space="preserve">
+    <value>Department is required.</value>
+  </data>
+  <data name="DeleteDepartment_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current Super Admin profile was not found.</value>
+  </data>
+  <data name="DeleteDepartment_Department_NotFound" xml:space="preserve">
+    <value>Department was not found.</value>
+  </data>
+  <data name="DeleteDepartment_Department_AlreadyInactive" xml:space="preserve">
+    <value>Department is already inactive.</value>
   </data>
 </root>

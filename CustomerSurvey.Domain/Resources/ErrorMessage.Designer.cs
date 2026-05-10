@@ -601,6 +601,42 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current Super Admin profile was not found..
+        /// </summary>
+        public static string DeleteDepartment_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteDepartment_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department is already inactive..
+        /// </summary>
+        public static string DeleteDepartment_Department_AlreadyInactive {
+            get {
+                return ResourceManager.GetString("DeleteDepartment_Department_AlreadyInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department was not found..
+        /// </summary>
+        public static string DeleteDepartment_Department_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteDepartment_Department_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department is required..
+        /// </summary>
+        public static string DeleteDepartment_DepartmentId_Required {
+            get {
+                return ResourceManager.GetString("DeleteDepartment_DepartmentId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Branch was not found..
         /// </summary>
         public static string GetBranchDetails_Branch_NotFound {
@@ -669,6 +705,78 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetBranchesSelection_CurrentSuperAdmin_NotFound {
             get {
                 return ResourceManager.GetString("GetBranchesSelection_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Super Admin profile was not found..
+        /// </summary>
+        public static string GetDepartmentDetails_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetDepartmentDetails_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department was not found..
+        /// </summary>
+        public static string GetDepartmentDetails_Department_NotFound {
+            get {
+                return ResourceManager.GetString("GetDepartmentDetails_Department_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department is required..
+        /// </summary>
+        public static string GetDepartmentDetails_DepartmentId_Required {
+            get {
+                return ResourceManager.GetString("GetDepartmentDetails_DepartmentId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Super Admin profile was not found..
+        /// </summary>
+        public static string GetDepartmentsPagination_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetDepartmentsPagination_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number must be greater than or equal to 1..
+        /// </summary>
+        public static string GetDepartmentsPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetDepartmentsPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must be greater than or equal to 1..
+        /// </summary>
+        public static string GetDepartmentsPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetDepartmentsPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must not exceed 100 items..
+        /// </summary>
+        public static string GetDepartmentsPagination_PageSize_Max {
+            get {
+                return ResourceManager.GetString("GetDepartmentsPagination_PageSize_Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Super Admin profile was not found..
+        /// </summary>
+        public static string GetDepartmentsSelection_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetDepartmentsSelection_CurrentSuperAdmin_NotFound", resourceCulture);
             }
         }
         
@@ -840,6 +948,78 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateBranch_NameEn_Required {
             get {
                 return ResourceManager.GetString("UpdateBranch_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Super Admin profile was not found..
+        /// </summary>
+        public static string UpdateDepartment_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateDepartment_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department was not found..
+        /// </summary>
+        public static string UpdateDepartment_Department_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateDepartment_Department_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department is required..
+        /// </summary>
+        public static string UpdateDepartment_DepartmentId_Required {
+            get {
+                return ResourceManager.GetString("UpdateDepartment_DepartmentId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department Arabic name already exists..
+        /// </summary>
+        public static string UpdateDepartment_NameAr_AlreadyExists {
+            get {
+                return ResourceManager.GetString("UpdateDepartment_NameAr_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateDepartment_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateDepartment_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department English name already exists..
+        /// </summary>
+        public static string UpdateDepartment_NameEn_AlreadyExists {
+            get {
+                return ResourceManager.GetString("UpdateDepartment_NameEn_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department English name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateDepartment_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateDepartment_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department English name is required..
+        /// </summary>
+        public static string UpdateDepartment_NameEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateDepartment_NameEn_Required", resourceCulture);
             }
         }
     }
