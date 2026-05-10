@@ -321,30 +321,6 @@
   <data name="GetBranchesSelection_CurrentSuperAdmin_NotFound" xml:space="preserve">
     <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
   </data>
-  <data name="GetDepartmentDetails_CurrentSuperAdmin_NotFound" xml:space="preserve">
-    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
-  </data>
-  <data name="GetDepartmentDetails_DepartmentId_Required" xml:space="preserve">
-    <value>القسم مطلوب.</value>
-  </data>
-  <data name="GetDepartmentDetails_Department_NotFound" xml:space="preserve">
-    <value>لم يتم العثور على القسم.</value>
-  </data>
-  <data name="GetDepartmentsPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
-    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
-  </data>
-  <data name="GetDepartmentsPagination_PageNumber_Invalid" xml:space="preserve">
-    <value>رقم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
-  </data>
-  <data name="GetDepartmentsPagination_PageSize_Invalid" xml:space="preserve">
-    <value>حجم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
-  </data>
-  <data name="GetDepartmentsPagination_PageSize_Max" xml:space="preserve">
-    <value>حجم الصفحة يجب ألا يزيد عن 100 عنصر.</value>
-  </data>
-  <data name="GetDepartmentsSelection_CurrentSuperAdmin_NotFound" xml:space="preserve">
-    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
-  </data>
   <data name="GetMyBranchDetails_Branch_NotFound" xml:space="preserve">
     <value>لم يتم العثور على الفرع المرتبط بمدير الفرع الحالي.</value>
   </data>
@@ -399,14 +375,38 @@
   <data name="UpdateBranch_NameEn_Required" xml:space="preserve">
     <value>اسم الفرع باللغة الإنجليزية مطلوب.</value>
   </data>
+  <data name="UpdateBranch_Code_Required" xml:space="preserve">
+    <value>كود الفرع مطلوب.</value>
+  </data>
+  <data name="GetDepartmentDetails_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="GetDepartmentDetails_DepartmentId_Required" xml:space="preserve">
+    <value>القسم مطلوب.</value>
+  </data>
+  <data name="GetDepartmentDetails_Department_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القسم.</value>
+  </data>
+  <data name="GetDepartmentsPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="GetDepartmentsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetDepartmentsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetDepartmentsPagination_PageSize_Max" xml:space="preserve">
+    <value>حجم الصفحة يجب ألا يزيد عن 100 عنصر.</value>
+  </data>
+  <data name="GetDepartmentsSelection_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
   <data name="UpdateDepartment_DepartmentId_Required" xml:space="preserve">
     <value>القسم مطلوب.</value>
   </data>
   <data name="UpdateDepartment_NameEn_Required" xml:space="preserve">
     <value>اسم القسم باللغة الإنجليزية مطلوب.</value>
-  </data>
-  <data name="UpdateBranch_Code_Required" xml:space="preserve">
-    <value>كود الفرع مطلوب.</value>
   </data>
   <data name="UpdateDepartment_NameEn_MaxLength" xml:space="preserve">
     <value>اسم القسم باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
@@ -437,5 +437,104 @@
   </data>
   <data name="DeleteDepartment_Department_AlreadyInactive" xml:space="preserve">
     <value>القسم غير مفعل بالفعل.</value>
+  </data>
+  <data name="GetRolesSelection_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير الفرع الحالي.</value>
+  </data>
+  <data name="GetRolesSelection_RequiredRoles_NotSeeded" xml:space="preserve">
+    <value>بعض الأدوار المطلوبة لمستخدمي الفرع غير موجودة في النظام.</value>
+  </data>
+  <data name="CreateBranchUser_NameEn_Required" xml:space="preserve">
+    <value>اسم مستخدم الفرع باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="CreateBranchUser_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم مستخدم الفرع باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateBranchUser_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم مستخدم الفرع باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateBranchUser_UserName_Required" xml:space="preserve">
+    <value>اسم المستخدم مطلوب.</value>
+  </data>
+  <data name="CreateBranchUser_UserName_MaxLength" xml:space="preserve">
+    <value>اسم المستخدم يجب ألا يزيد عن 100 حرف.</value>
+  </data>
+  <data name="CreateBranchUser_Email_Required" xml:space="preserve">
+    <value>البريد الإلكتروني مطلوب.</value>
+  </data>
+  <data name="CreateBranchUser_Email_MaxLength" xml:space="preserve">
+    <value>البريد الإلكتروني يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateBranchUser_Email_Invalid" xml:space="preserve">
+    <value>البريد الإلكتروني غير صحيح.</value>
+  </data>
+  <data name="CreateBranchUser_PhoneNumber_MaxLength" xml:space="preserve">
+    <value>رقم الهاتف يجب ألا يزيد عن 50 حرف.</value>
+  </data>
+  <data name="CreateBranchUser_Password_Required" xml:space="preserve">
+    <value>كلمة المرور مطلوبة.</value>
+  </data>
+  <data name="CreateBranchUser_Password_MinLength" xml:space="preserve">
+    <value>كلمة المرور يجب ألا تقل عن 8 أحرف.</value>
+  </data>
+  <data name="CreateBranchUser_Password_MaxLength" xml:space="preserve">
+    <value>كلمة المرور يجب ألا تزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateBranchUser_RoleIds_Required" xml:space="preserve">
+    <value>يجب اختيار دور واحد على الأقل.</value>
+  </data>
+  <data name="CreateBranchUser_RoleId_Invalid" xml:space="preserve">
+    <value>الدور المحدد غير صحيح.</value>
+  </data>
+  <data name="CreateBranchUser_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير الفرع الحالي.</value>
+  </data>
+  <data name="CreateBranchUser_UserName_AlreadyExists" xml:space="preserve">
+    <value>اسم المستخدم مستخدم من قبل.</value>
+  </data>
+  <data name="CreateBranchUser_Email_AlreadyExists" xml:space="preserve">
+    <value>البريد الإلكتروني مستخدم من قبل.</value>
+  </data>
+  <data name="CreateBranchUser_Role_NotFound" xml:space="preserve">
+    <value>أحد الأدوار المحددة غير موجود.</value>
+  </data>
+  <data name="CreateBranchUser_Role_NotAllowed" xml:space="preserve">
+    <value>لا يمكن إسناد أحد الأدوار المحددة لمستخدم الفرع.</value>
+  </data>
+  <data name="GetBranchUsersPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetBranchUsersPagination_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetBranchUsersPagination_PageSize_Max" xml:space="preserve">
+    <value>حجم الصفحة يجب ألا يزيد عن 100 عنصر.</value>
+  </data>
+  <data name="GetBranchUsersPagination_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير الفرع الحالي.</value>
+  </data>
+  <data name="AssignRolesToBranchUser_ApplicationUserId_Required" xml:space="preserve">
+    <value>المستخدم مطلوب.</value>
+  </data>
+  <data name="AssignRolesToBranchUser_RoleIds_Required" xml:space="preserve">
+    <value>يجب اختيار دور واحد على الأقل.</value>
+  </data>
+  <data name="AssignRolesToBranchUser_RoleId_Invalid" xml:space="preserve">
+    <value>الدور المحدد غير صحيح.</value>
+  </data>
+  <data name="AssignRolesToBranchUser_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير الفرع الحالي.</value>
+  </data>
+  <data name="AssignRolesToBranchUser_BranchUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مستخدم الفرع.</value>
+  </data>
+  <data name="AssignRolesToBranchUser_BranchScope_Mismatch" xml:space="preserve">
+    <value>لا يمكن تعديل أدوار مستخدم خارج الفرع الخاص بك.</value>
+  </data>
+  <data name="AssignRolesToBranchUser_Role_NotFound" xml:space="preserve">
+    <value>أحد الأدوار المحددة غير موجود.</value>
+  </data>
+  <data name="AssignRolesToBranchUser_Role_NotAllowed" xml:space="preserve">
+    <value>لا يمكن إسناد أحد الأدوار المحددة لمستخدم الفرع.</value>
   </data>
 </root>
