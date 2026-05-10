@@ -1,0 +1,56 @@
+﻿using BuildingBlock.Domain.Enums;
+using BuildingBlock.Domain.SharedDto;
+using BuildingBlock.Domain.Specification;
+using CustomerSurvey.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchesPagination
+{
+    internal sealed class GetBranchesPaginationSpec
+        : Specification<Branch, BranchPaginationItemResponse>
+    {
+        public GetBranchesPaginationSpec(SearchParameters searchParameters)
+        {
+            if (!string.IsNullOrWhiteSpace(searchParameters.SearchText))
+            {
+                var searchText = searchParameters.SearchText.Trim();
+
+                AddCriteria(x =>
+                    x.NameEn.Contains(searchText) ||
+                    (x.NameAr != null && x.NameAr.Contains(searchText)) ||
+                    x.Code.Contains(searchText) ||
+                    (x.Address != null && x.Address.Contains(searchText)));
+            }
+
+            if (searchParameters.OrderSort == OrderSort.Oldest)
+            {
+                AddOrderByDescending(x => x.CreatedOnUtc);
+            }
+            else
+            {
+                AddOrderBy(x => x.CreatedOnUtc);
+            }
+
+            EnableTotalCount();
+
+            ApplyPaging(
+                searchParameters.PageNumber,
+                searchParameters.PageSize);
+
+            Select(x => new BranchPaginationItemResponse
+            {
+                Id = x.Id,
+                NameEn = x.NameEn,
+                NameAr = x.NameAr,
+                Code = x.Code,
+                Address = x.Address,
+                IsActive = x.IsActive,
+                CreatedOnUtc = x.CreatedOnUtc
+            });
+        }
+    }
+}

@@ -198,6 +198,135 @@
   <data name="CreateBranch_NameEn_Required" xml:space="preserve">
     <value>Branch English name is required.</value>
   </data>
+  <data name="CreateDepartmentAdmin_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>Current user is not allowed to create a department admin.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current Super Admin profile was not found.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_DepartmentAdministratorRole_NotFound" xml:space="preserve">
+    <value>CreateDepartmentAdmin_DepartmentAdministratorRole_NotFound</value>
+  </data>
+  <data name="CreateDepartmentAdmin_DepartmentBranchScope_Mismatch" xml:space="preserve">
+    <value>Cannot create a department admin outside your branch scope.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_DepartmentId_Required" xml:space="preserve">
+    <value>Department is required.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Department_NotFound" xml:space="preserve">
+    <value>Department was not found.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Email_AlreadyExists" xml:space="preserve">
+    <value>Email already exists.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Email_Invalid" xml:space="preserve">
+    <value>Email address is invalid.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Email_MaxLength" xml:space="preserve">
+    <value>Email must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Email_Required" xml:space="preserve">
+    <value>Email is required.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_NameAr_MaxLength" xml:space="preserve">
+    <value>Department admin Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_NameEn_MaxLength" xml:space="preserve">
+    <value>Department admin English name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_NameEn_Required" xml:space="preserve">
+    <value>Department admin English name is required.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Password_MaxLength" xml:space="preserve">
+    <value>Password must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Password_MinLength" xml:space="preserve">
+    <value>Password must be at least 8 characters.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Password_Required" xml:space="preserve">
+    <value>Password is required.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_PhoneNumber_MaxLength" xml:space="preserve">
+    <value>Phone number must not exceed 50 characters.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_UserName_AlreadyExists" xml:space="preserve">
+    <value>Username already exists.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_UserName_MaxLength" xml:space="preserve">
+    <value>Username must not exceed 100 characters.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_UserName_Required" xml:space="preserve">
+    <value>Username is required.</value>
+  </data>
+  <data name="CreateDepartment_BranchId_Required_ForSuperAdmin" xml:space="preserve">
+    <value>Branch is required when creating a department by Super Admin.</value>
+  </data>
+  <data name="CreateDepartment_BranchScope_Mismatch" xml:space="preserve">
+    <value>Cannot create a department outside your branch scope.</value>
+  </data>
+  <data name="CreateDepartment_Branch_NotFound" xml:space="preserve">
+    <value>Branch was not found.</value>
+  </data>
+  <data name="CreateDepartment_Code_AlreadyExists_InsideBranch" xml:space="preserve">
+    <value>Department code already exists inside the same branch.</value>
+  </data>
+  <data name="CreateDepartment_Code_MaxLength" xml:space="preserve">
+    <value>Department code must not exceed 50 characters.</value>
+  </data>
+  <data name="CreateDepartment_Code_Required" xml:space="preserve">
+    <value>Department code is required.</value>
+  </data>
+  <data name="CreateDepartment_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>Current user is not allowed to create a department.</value>
+  </data>
+  <data name="CreateDepartment_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current Super Admin profile was not found.</value>
+  </data>
+  <data name="CreateDepartment_NameAr_AlreadyExists" xml:space="preserve">
+    <value>Department Arabic name already exists.</value>
+  </data>
+  <data name="CreateDepartment_NameAr_MaxLength" xml:space="preserve">
+    <value>Department Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateDepartment_NameEn_AlreadyExists" xml:space="preserve">
+    <value>Department English name already exists.</value>
+  </data>
+  <data name="CreateDepartment_NameEn_MaxLength" xml:space="preserve">
+    <value>Department English name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateDepartment_NameEn_Required" xml:space="preserve">
+    <value>Department English name is required.</value>
+  </data>
+  <data name="GetBranchDetails_BranchId_Required" xml:space="preserve">
+    <value>Branch is required.</value>
+  </data>
+  <data name="GetBranchDetails_Branch_NotFound" xml:space="preserve">
+    <value>Branch was not found.</value>
+  </data>
+  <data name="GetBranchDetails_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current Super Admin profile was not found.</value>
+  </data>
+  <data name="GetBranchesPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current Super Admin profile was not found.</value>
+  </data>
+  <data name="GetBranchesPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetBranchesPagination_PageSize_Invalid" xml:space="preserve">
+    <value>Page size must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetBranchesPagination_PageSize_Max" xml:space="preserve">
+    <value>Page size must not exceed 100 items.</value>
+  </data>
+  <data name="GetBranchesSelection_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current Super Admin profile was not found.</value>
+  </data>
+  <data name="GetMyBranchDetails_Branch_NotFound" xml:space="preserve">
+    <value>Branch linked to the current Branch Admin was not found.</value>
+  </data>
+  <data name="GetMyBranchDetails_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>Current Branch Admin profile was not found.</value>
+  </data>
   <data name="Login_ActorProfile_NotFound" xml:space="preserve">
     <value>User actor profile was not found.</value>
   </data>
@@ -218,5 +347,35 @@
   </data>
   <data name="Login_UserNameOrEmail_Required" xml:space="preserve">
     <value>Username or email is required.</value>
+  </data>
+  <data name="UpdateBranch_Address_MaxLength" xml:space="preserve">
+    <value>Branch address must not exceed 500 characters.</value>
+  </data>
+  <data name="UpdateBranch_BranchId_Required" xml:space="preserve">
+    <value>Branch is required.</value>
+  </data>
+  <data name="UpdateBranch_Branch_NotFound" xml:space="preserve">
+    <value>Branch was not found.</value>
+  </data>
+  <data name="UpdateBranch_Code_AlreadyExists" xml:space="preserve">
+    <value>Branch code already exists.</value>
+  </data>
+  <data name="UpdateBranch_Code_MaxLength" xml:space="preserve">
+    <value>Branch code must not exceed 50 characters.</value>
+  </data>
+  <data name="UpdateBranch_Code_Required" xml:space="preserve">
+    <value>Branch code is required.</value>
+  </data>
+  <data name="UpdateBranch_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current Super Admin profile was not found.</value>
+  </data>
+  <data name="UpdateBranch_NameAr_MaxLength" xml:space="preserve">
+    <value>Branch Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateBranch_NameEn_MaxLength" xml:space="preserve">
+    <value>Branch English name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateBranch_NameEn_Required" xml:space="preserve">
+    <value>Branch English name is required.</value>
   </data>
 </root>

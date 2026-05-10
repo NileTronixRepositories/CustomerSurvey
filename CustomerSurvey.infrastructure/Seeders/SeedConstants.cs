@@ -25,6 +25,7 @@ internal static class SeedConstants
         public const string TemplateEditor = "Template Editor";
         public const string ReportViewer = "Report Viewer";
         public const string QuestionEditor = "Question Editor";
+        public const string DepartmentAdministrator = "Department Administrator";
     }
 
     public static class PermissionNames
@@ -35,6 +36,7 @@ internal static class SeedConstants
 
         public const string BranchAdminsCreate = "BranchAdmins.Create";
         public const string BranchAdminsViewAll = "BranchAdmins.ViewAll";
+        public const string BranchesUpdate = "Branches.Update";
 
         public const string DepartmentsCreate = "Departments.Create";
         public const string DepartmentsViewAll = "Departments.ViewAll";
@@ -92,6 +94,9 @@ internal static class SeedConstants
 
             public static readonly Guid QuestionEditor =
                 Guid.Parse("11000000-0000-0000-0000-000000000005");
+
+            public static readonly Guid DepartmentAdministrator =
+    Guid.Parse("11000000-0000-0000-0000-000000000006");
         }
 
         public static class Permissions
@@ -194,6 +199,9 @@ internal static class SeedConstants
 
             public static readonly Guid ReportsViewBranchReports =
                 Guid.Parse("12000000-0000-0000-0000-000000000033");
+
+            public static readonly Guid BranchesUpdate =
+    Guid.Parse("12000000-0000-0000-0000-000000000034");
         }
     }
 
@@ -207,11 +215,12 @@ internal static class SeedConstants
     {
         public static readonly IReadOnlyCollection<RoleSeedItem> Roles =
         [
-            new RoleSeedItem(SeedIds.Roles.SystemAdministrator, RoleNames.SystemAdministrator),
-            new RoleSeedItem(SeedIds.Roles.BranchAdministrator, RoleNames.BranchAdministrator),
-            new RoleSeedItem(SeedIds.Roles.TemplateEditor, RoleNames.TemplateEditor),
-            new RoleSeedItem(SeedIds.Roles.ReportViewer, RoleNames.ReportViewer),
-            new RoleSeedItem(SeedIds.Roles.QuestionEditor, RoleNames.QuestionEditor)
+    new RoleSeedItem(SeedIds.Roles.SystemAdministrator, RoleNames.SystemAdministrator),
+    new RoleSeedItem(SeedIds.Roles.BranchAdministrator, RoleNames.BranchAdministrator),
+    new RoleSeedItem(SeedIds.Roles.DepartmentAdministrator, RoleNames.DepartmentAdministrator),
+    new RoleSeedItem(SeedIds.Roles.TemplateEditor, RoleNames.TemplateEditor),
+    new RoleSeedItem(SeedIds.Roles.ReportViewer, RoleNames.ReportViewer),
+    new RoleSeedItem(SeedIds.Roles.QuestionEditor, RoleNames.QuestionEditor)
         ];
 
         public static readonly IReadOnlyCollection<PermissionSeedItem> Permissions =
@@ -222,6 +231,7 @@ internal static class SeedConstants
 
             new PermissionSeedItem(SeedIds.Permissions.BranchAdminsCreate, PermissionNames.BranchAdminsCreate),
             new PermissionSeedItem(SeedIds.Permissions.BranchAdminsViewAll, PermissionNames.BranchAdminsViewAll),
+            new PermissionSeedItem(SeedIds.Permissions.BranchesUpdate, PermissionNames.BranchesUpdate),
 
             new PermissionSeedItem(SeedIds.Permissions.DepartmentsCreate, PermissionNames.DepartmentsCreate),
             new PermissionSeedItem(SeedIds.Permissions.DepartmentsViewAll, PermissionNames.DepartmentsViewAll),
@@ -270,6 +280,7 @@ internal static class SeedConstants
 
             AddSystemAdministratorPermissions(result);
             AddBranchAdministratorPermissions(result);
+            AddDepartmentAdministratorPermissions(result);
             AddTemplateEditorPermissions(result);
             AddQuestionEditorPermissions(result);
             AddReportViewerPermissions(result);
@@ -295,6 +306,7 @@ internal static class SeedConstants
 
             Guid[] permissionIds =
             [
+                        SeedIds.Permissions.BranchesViewDetails,
                 SeedIds.Permissions.DepartmentsCreate,
                 SeedIds.Permissions.DepartmentsViewAll,
                 SeedIds.Permissions.DepartmentsViewSelection,
@@ -384,6 +396,24 @@ internal static class SeedConstants
             result.Add(new RolePermissionSeedItem(
                 SeedIds.Roles.ReportViewer,
                 SeedIds.Permissions.ReportsViewBranchReports));
+        }
+
+        private static void AddDepartmentAdministratorPermissions(List<RolePermissionSeedItem> result)
+        {
+            var roleId = SeedIds.Roles.DepartmentAdministrator;
+
+            Guid[] permissionIds =
+            [
+                SeedIds.Permissions.OperatorsCreate,
+        SeedIds.Permissions.OperatorsViewAll,
+        SeedIds.Permissions.OperatorsAssignTemplates,
+        SeedIds.Permissions.TemplatesViewSelection
+            ];
+
+            foreach (var permissionId in permissionIds)
+            {
+                result.Add(new RolePermissionSeedItem(roleId, permissionId));
+            }
         }
     }
 }

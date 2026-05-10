@@ -41,11 +41,6 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.HasIndex(x => x.Code)
                 .IsUnique();
 
-            builder.HasMany(x => x.Departments)
-                .WithOne(x => x.Branch)
-                .HasForeignKey(x => x.BranchId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasMany(x => x.Templates)
                 .WithOne(x => x.Branch)
                 .HasForeignKey(x => x.BranchId)

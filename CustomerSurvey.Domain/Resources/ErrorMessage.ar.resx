@@ -198,6 +198,135 @@
   <data name="CreateBranch_NameEn_Required" xml:space="preserve">
     <value>اسم الفرع باللغة الإنجليزية مطلوب.</value>
   </data>
+  <data name="CreateDepartmentAdmin_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>المستخدم الحالي غير مسموح له بإنشاء مدير قسم.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_DepartmentAdministratorRole_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على Role مدير القسم.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_DepartmentBranchScope_Mismatch" xml:space="preserve">
+    <value>لا يمكن إنشاء مدير قسم خارج الفرع الخاص بك.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_DepartmentId_Required" xml:space="preserve">
+    <value>القسم مطلوب.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Department_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القسم.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Email_AlreadyExists" xml:space="preserve">
+    <value>البريد الإلكتروني مستخدم من قبل.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Email_Invalid" xml:space="preserve">
+    <value>البريد الإلكتروني غير صحيح.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Email_MaxLength" xml:space="preserve">
+    <value>البريد الإلكتروني يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Email_Required" xml:space="preserve">
+    <value>البريد الإلكتروني مطلوب.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم مدير القسم باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم مدير القسم باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_NameEn_Required" xml:space="preserve">
+    <value>اسم مدير القسم باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Password_MaxLength" xml:space="preserve">
+    <value>كلمة المرور يجب ألا تزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Password_MinLength" xml:space="preserve">
+    <value>كلمة المرور يجب ألا تقل عن 8 أحرف.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_Password_Required" xml:space="preserve">
+    <value>كلمة المرور مطلوبة.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_PhoneNumber_MaxLength" xml:space="preserve">
+    <value>رقم الهاتف يجب ألا يزيد عن 50 حرف.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_UserName_AlreadyExists" xml:space="preserve">
+    <value>اسم المستخدم مستخدم من قبل.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_UserName_MaxLength" xml:space="preserve">
+    <value>اسم المستخدم يجب ألا يزيد عن 100 حرف.</value>
+  </data>
+  <data name="CreateDepartmentAdmin_UserName_Required" xml:space="preserve">
+    <value>اسم المستخدم مطلوب.</value>
+  </data>
+  <data name="CreateDepartment_BranchId_Required_ForSuperAdmin" xml:space="preserve">
+    <value>الفرع مطلوب عند إنشاء قسم بواسطة الـ Super Admin.</value>
+  </data>
+  <data name="CreateDepartment_BranchScope_Mismatch" xml:space="preserve">
+    <value>لا يمكن إنشاء قسم خارج الفرع الخاص بك.</value>
+  </data>
+  <data name="CreateDepartment_Branch_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على الفرع.</value>
+  </data>
+  <data name="CreateDepartment_Code_AlreadyExists_InsideBranch" xml:space="preserve">
+    <value>كود القسم مستخدم من قبل داخل نفس الفرع.</value>
+  </data>
+  <data name="CreateDepartment_Code_MaxLength" xml:space="preserve">
+    <value>كود القسم يجب ألا يزيد عن 50 حرف.</value>
+  </data>
+  <data name="CreateDepartment_Code_Required" xml:space="preserve">
+    <value>كود القسم مطلوب.</value>
+  </data>
+  <data name="CreateDepartment_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>المستخدم الحالي غير مسموح له بإنشاء قسم.</value>
+  </data>
+  <data name="CreateDepartment_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="CreateDepartment_NameAr_AlreadyExists" xml:space="preserve">
+    <value>اسم القسم باللغة العربية مستخدم من قبل.</value>
+  </data>
+  <data name="CreateDepartment_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم القسم باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateDepartment_NameEn_AlreadyExists" xml:space="preserve">
+    <value>اسم القسم باللغة الإنجليزية مستخدم من قبل.</value>
+  </data>
+  <data name="CreateDepartment_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم القسم باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateDepartment_NameEn_Required" xml:space="preserve">
+    <value>اسم القسم باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="GetBranchDetails_BranchId_Required" xml:space="preserve">
+    <value>الفرع مطلوب.</value>
+  </data>
+  <data name="GetBranchDetails_Branch_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على الفرع.</value>
+  </data>
+  <data name="GetBranchDetails_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="GetBranchesPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="GetBranchesPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetBranchesPagination_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetBranchesPagination_PageSize_Max" xml:space="preserve">
+    <value>حجم الصفحة يجب ألا يزيد عن 100 عنصر.</value>
+  </data>
+  <data name="GetBranchesSelection_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="GetMyBranchDetails_Branch_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على الفرع المرتبط بمدير الفرع الحالي.</value>
+  </data>
+  <data name="GetMyBranchDetails_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير الفرع الحالي.</value>
+  </data>
   <data name="Login_ActorProfile_NotFound" xml:space="preserve">
     <value>لم يتم العثور على ملف المستخدم داخل النظام.</value>
   </data>
@@ -218,5 +347,35 @@
   </data>
   <data name="Login_UserNameOrEmail_Required" xml:space="preserve">
     <value>اسم المستخدم أو البريد الإلكتروني مطلوب.</value>
+  </data>
+  <data name="UpdateBranch_Address_MaxLength" xml:space="preserve">
+    <value>عنوان الفرع يجب ألا يزيد عن 500 حرف.</value>
+  </data>
+  <data name="UpdateBranch_BranchId_Required" xml:space="preserve">
+    <value>الفرع مطلوب.</value>
+  </data>
+  <data name="UpdateBranch_Branch_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على الفرع.</value>
+  </data>
+  <data name="UpdateBranch_Code_AlreadyExists" xml:space="preserve">
+    <value>كود الفرع مستخدم من قبل.</value>
+  </data>
+  <data name="UpdateBranch_Code_MaxLength" xml:space="preserve">
+    <value>كود الفرع يجب ألا يزيد عن 50 حرف.</value>
+  </data>
+  <data name="UpdateBranch_Code_Required" xml:space="preserve">
+    <value>كود الفرع مطلوب.</value>
+  </data>
+  <data name="UpdateBranch_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Super Admin الحالي.</value>
+  </data>
+  <data name="UpdateBranch_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم الفرع باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateBranch_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم الفرع باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateBranch_NameEn_Required" xml:space="preserve">
+    <value>اسم الفرع باللغة الإنجليزية مطلوب.</value>
   </data>
 </root>
