@@ -1,0 +1,165 @@
+﻿using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction.Security;
+using BuildingBlock.Domain.Results;
+using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Identity;
+using CustomerSurvey.Domain.Resources;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
+{
+    internal sealed class GetTemplateDetailsQueryHandler
+          : IQueryHandler<GetTemplateDetailsQuery, GetTemplateDetailsResponse>
+    {
+        private readonly IWriteReadRepository<Template> _templateReadRepository;
+        private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
+        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
+        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly ICurrentUser _currentUser;
+
+        public GetTemplateDetailsQueryHandler(
+            IWriteReadRepository<Template> templateReadRepository,
+            IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
+            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
+            IWriteReadRepository<BranchUser> branchUserReadRepository,
+            ICurrentUser currentUser)
+        {
+            _templateReadRepository = templateReadRepository
+                ?? throw new ArgumentNullException(nameof(templateReadRepository));
+
+            _templateQuestionReadRepository = templateQuestionReadRepository
+                ?? throw new ArgumentNullException(nameof(templateQuestionReadRepository));
+
+            _branchAdminReadRepository = branchAdminReadRepository
+                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
+
+            _branchUserReadRepository = branchUserReadRepository
+                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+
+            _currentUser = currentUser
+                ?? throw new ArgumentNullException(nameof(currentUser));
+        }
+
+        public async Task<Result<GetTemplateDetailsResponse>> Handle(
+            GetTemplateDetailsQuery request,
+            CancellationToken cancellationToken)
+        {
+            if (!_currentUser.IsAuthenticated || !_currentUser.UserId.HasValue)
+            {
+                return Result<GetTemplateDetailsResponse>.Fail(new Error(
+                    Code: "Templates.Details.Unauthenticated",
+                    Message: ErrorMessage.Auth_Token_Missing,
+                    Type: ErrorType.Security));
+            }
+
+            var currentApplicationUserId = _currentUser.UserId.Value;
+
+            var actorBranchIdResult = await ResolveCurrentActorBranchIdAsync(
+                currentApplicationUserId,
+                cancellationToken);
+
+            if (actorBranchIdResult.IsFailure)
+            {
+                return Result<GetTemplateDetailsResponse>.Fail(actorBranchIdResult.Errors);
+            }
+
+            var branchId = actorBranchIdResult.Value;
+
+            var template = await _templateReadRepository.FirstOrDefaultAsync(
+                new GetTemplateBasicDetailsSpec(
+                    templateId: request.TemplateId,
+                    branchId: branchId),
+                cancellationToken);
+
+            if (template is null)
+            {
+                return Result<GetTemplateDetailsResponse>.Fail(new Error(
+                    Code: "Templates.Details.TemplateNotFound",
+                    Message: ErrorMessage.GetTemplateDetails_Template_NotFound,
+                    Type: ErrorType.NotFound));
+            }
+
+            var templateQuestions = await _templateQuestionReadRepository.ListAsync(
+                new GetTemplateQuestionsForTemplateDetailsSpec(request.TemplateId),
+                cancellationToken);
+
+            var groupsCount = templateQuestions
+                .Select(x => x.GroupId)
+                .Distinct()
+                .Count();
+
+            var response = new GetTemplateDetailsResponse
+            {
+                TemplateId = template.TemplateId,
+                BranchId = template.BranchId,
+                BranchNameEn = template.BranchNameEn,
+                BranchNameAr = template.BranchNameAr,
+                BranchCode = template.BranchCode,
+                NameEn = template.NameEn,
+                NameAr = template.NameAr,
+                Description = template.Description,
+                Status = template.Status.ToString(),
+                IsActive = template.IsActive,
+                CreatedOnUtc = template.CreatedOnUtc,
+                ModifiedOnUtc = template.ModifiedOnUtc,
+
+                Summary = new TemplateDetailsSummaryResponse
+                {
+                    QuestionsCount = templateQuestions.Count,
+                    GroupsCount = groupsCount
+                },
+
+                Questions = templateQuestions
+                    .Select(x => new TemplateDetailsQuestionResponse
+                    {
+                        TemplateQuestionId = x.TemplateQuestionId,
+                        QuestionId = x.QuestionId,
+                        Order = x.Order,
+                        TextEn = x.TextEn,
+                        TextAr = x.TextAr,
+                        Type = x.Type.ToString(),
+                        IsActive = x.IsActive,
+                        GroupId = x.GroupId,
+                        GroupNameEn = x.GroupNameEn,
+                        GroupNameAr = x.GroupNameAr
+                    })
+                    .ToArray()
+            };
+
+            return Result<GetTemplateDetailsResponse>.Ok(response);
+        }
+
+        private async Task<Result<Guid>> ResolveCurrentActorBranchIdAsync(
+            Guid currentApplicationUserId,
+            CancellationToken cancellationToken)
+        {
+            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
+                new GetCurrentBranchAdminForTemplateDetailsSpec(currentApplicationUserId),
+                cancellationToken);
+
+            if (branchAdmin is not null)
+            {
+                return Result<Guid>.Ok(branchAdmin.BranchId);
+            }
+
+            var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
+                new GetCurrentBranchUserForTemplateDetailsSpec(currentApplicationUserId),
+                cancellationToken);
+
+            if (branchUser is not null)
+            {
+                return Result<Guid>.Ok(branchUser.BranchId);
+            }
+
+            return Result<Guid>.Fail(new Error(
+                Code: "Templates.Details.CurrentBranchActorNotFound",
+                Message: ErrorMessage.GetTemplateDetails_CurrentBranchActor_NotFound,
+                Type: ErrorType.Security));
+        }
+    }
+}

@@ -537,4 +537,163 @@
   <data name="AssignRolesToBranchUser_Role_NotAllowed" xml:space="preserve">
     <value>One of the selected roles cannot be assigned to a branch user.</value>
   </data>
+  <data name="CreateTemplate_NameEn_Required" xml:space="preserve">
+    <value>Template English name is required.</value>
+  </data>
+  <data name="CreateTemplate_NameEn_MaxLength" xml:space="preserve">
+    <value>Template English name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateTemplate_NameAr_MaxLength" xml:space="preserve">
+    <value>Template Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateTemplate_Description_MaxLength" xml:space="preserve">
+    <value>Template description must not exceed 1000 characters.</value>
+  </data>
+  <data name="CreateTemplate_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="CreateTemplate_NameEn_AlreadyExists_InsideBranch" xml:space="preserve">
+    <value>Template English name already exists inside the same branch.</value>
+  </data>
+  <data name="GetTemplatesPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetTemplatesPagination_PageSize_Invalid" xml:space="preserve">
+    <value>Page size must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetTemplatesPagination_PageSize_Max" xml:space="preserve">
+    <value>Page size must not exceed 100 items.</value>
+  </data>
+  <data name="GetTemplatesPagination_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="GetTemplateDetails_TemplateId_Required" xml:space="preserve">
+    <value>Template is required.</value>
+  </data>
+  <data name="GetTemplateDetails_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="GetTemplateDetails_Template_NotFound" xml:space="preserve">
+    <value>Template was not found.</value>
+  </data>
+  <data name="GetTemplatesSelection_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current actor allowed to view templates was not found.</value>
+  </data>
+  <data name="UpdateTemplate_TemplateId_Required" xml:space="preserve">
+    <value>Template is required.</value>
+  </data>
+  <data name="UpdateTemplate_NameEn_Required" xml:space="preserve">
+    <value>Template English name is required.</value>
+  </data>
+  <data name="UpdateTemplate_NameEn_MaxLength" xml:space="preserve">
+    <value>Template English name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateTemplate_NameAr_MaxLength" xml:space="preserve">
+    <value>Template Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateTemplate_Description_MaxLength" xml:space="preserve">
+    <value>Template description must not exceed 1000 characters.</value>
+  </data>
+  <data name="UpdateTemplate_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="UpdateTemplate_Template_NotFound" xml:space="preserve">
+    <value>Template was not found.</value>
+  </data>
+  <data name="UpdateTemplate_NameEn_AlreadyExists_InsideBranch" xml:space="preserve">
+    <value>Template English name already exists inside the same branch.</value>
+  </data>
+  <data name="DeleteTemplate_TemplateId_Required" xml:space="preserve">
+    <value>Template is required.</value>
+  </data>
+  <data name="DeleteTemplate_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="DeleteTemplate_Template_NotFound" xml:space="preserve">
+    <value>Template was not found.</value>
+  </data>
+  <data name="DeleteTemplate_Template_AlreadyInactive" xml:space="preserve">
+    <value>Template is already inactive.</value>
+  </data>
+  <data name="RestoreTemplate_TemplateId_Required" xml:space="preserve">
+    <value>Template is required.</value>
+  </data>
+  <data name="RestoreTemplate_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="RestoreTemplate_Template_NotFound" xml:space="preserve">
+    <value>Template was not found.</value>
+  </data>
+  <data name="RestoreTemplate_Template_AlreadyActive" xml:space="preserve">
+    <value>Template is already active.</value>
+  </data>
+  <data name="GetMyBranchUserRoles_CurrentBranchUser_NotFound" xml:space="preserve">
+    <value>Current branch user profile was not found.</value>
+  </data>
+  <data name="GetMyBranchUserRoles_UserHasNoRoles" xml:space="preserve">
+    <value>Branch user has no assigned roles.</value>
+  </data>
+  <data name="CreateQuestionGroup_NameEn_Required" xml:space="preserve">
+    <value>Question group English name is required.</value>
+  </data>
+  <data name="CreateQuestionGroup_NameEn_MaxLength" xml:space="preserve">
+    <value>Question group English name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateQuestionGroup_NameAr_MaxLength" xml:space="preserve">
+    <value>Question group Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateQuestionGroup_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="CreateQuestionGroup_NameEn_AlreadyExists" xml:space="preserve">
+    <value>Question group English name already exists inside the same branch.</value>
+  </data>
+  <data name="GetQuestionGroupsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetQuestionGroupsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>GetQuestionGroupsPagination_PageSize_Invalid</value>
+  </data>
+  <data name="GetQuestionGroupsPagination_PageSize_Max" xml:space="preserve">
+    <value>Page size must not exceed 100 items.</value>
+  </data>
+  <data name="GetQuestionGroupsPagination_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="UpdateQuestionGroup_GroupId_Required" xml:space="preserve">
+    <value>UpdateQuestionGroup_GroupId_Required</value>
+  </data>
+  <data name="UpdateQuestionGroup_NameEn_Required" xml:space="preserve">
+    <value>Question group English name is required.</value>
+  </data>
+  <data name="UpdateQuestionGroup_NameEn_MaxLength" xml:space="preserve">
+    <value>Question group English name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateQuestionGroup_NameAr_MaxLength" xml:space="preserve">
+    <value>Question group Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateQuestionGroup_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="UpdateQuestionGroup_QuestionGroup_NotFound" xml:space="preserve">
+    <value>Question group was not found.</value>
+  </data>
+  <data name="UpdateQuestionGroup_NameEn_AlreadyExists" xml:space="preserve">
+    <value>Question group English name already exists inside the same branch.</value>
+  </data>
+  <data name="DeleteQuestionGroup_GroupId_Required" xml:space="preserve">
+    <value>Question group is required.</value>
+  </data>
+  <data name="DeleteQuestionGroup_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="DeleteQuestionGroup_QuestionGroup_NotFound" xml:space="preserve">
+    <value>Question group was not found.</value>
+  </data>
+  <data name="DeleteQuestionGroup_QuestionGroup_AlreadyInactive" xml:space="preserve">
+    <value>Question group is already inactive.</value>
+  </data>
+  <data name="DeleteQuestionGroup_QuestionGroup_HasQuestions" xml:space="preserve">
+    <value>Cannot delete question group because it has related questions.</value>
+  </data>
 </root>

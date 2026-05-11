@@ -1,9 +1,4 @@
 ﻿using BuildingBlock.Domain.EntitiesHelper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Domain.Entities
 {
@@ -16,6 +11,8 @@ namespace CustomerSurvey.Domain.Entities
 
         public string NameEn { get; private set; } = string.Empty;
         public string? NameAr { get; private set; }
+
+        public bool IsActive { get; private set; }
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
@@ -41,6 +38,7 @@ namespace CustomerSurvey.Domain.Entities
                 BranchId = branchId,
                 NameEn = nameEn.Trim(),
                 NameAr = string.IsNullOrWhiteSpace(nameAr) ? null : nameAr.Trim(),
+                IsActive = true,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
         }
@@ -51,6 +49,16 @@ namespace CustomerSurvey.Domain.Entities
         {
             NameEn = nameEn.Trim();
             NameAr = string.IsNullOrWhiteSpace(nameAr) ? null : nameAr.Trim();
+        }
+
+        public void Activate()
+        {
+            IsActive = true;
+        }
+
+        public void Deactivate()
+        {
+            IsActive = false;
         }
     }
 }
