@@ -31,10 +31,16 @@ namespace CustomerSurvey.infrastructure.Configurations
 
             builder.HasIndex(x => new { x.BranchId, x.NameEn })
                 .IsUnique();
+            builder.HasIndex(x => new { x.BranchId, x.IsActive });
 
             builder.HasMany(x => x.Questions)
                 .WithOne(x => x.Group)
                 .HasForeignKey(x => x.GroupId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Branch)
+                .WithMany(x => x.Groups)
+                .HasForeignKey(x => x.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

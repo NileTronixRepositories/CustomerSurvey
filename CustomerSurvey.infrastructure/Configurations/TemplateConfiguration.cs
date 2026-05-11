@@ -31,6 +31,10 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.Status)
                 .IsRequired();
 
+            builder.Property(x => x.IsActive)
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
             builder.Property(x => x.CreatedByApplicationUserId)
                 .IsRequired();
 
@@ -43,6 +47,11 @@ namespace CustomerSurvey.infrastructure.Configurations
                 .WithOne(x => x.Template)
                 .HasForeignKey(x => x.TemplateId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Branch)
+               .WithMany(x => x.Templates)
+               .HasForeignKey(x => x.BranchId)
+               .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

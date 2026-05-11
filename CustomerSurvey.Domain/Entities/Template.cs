@@ -19,6 +19,7 @@ namespace CustomerSurvey.Domain.Entities
         public string? NameAr { get; private set; }
         public string? Description { get; private set; }
         public TemplateStatus Status { get; private set; }
+        public bool IsActive { get; private set; }
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
@@ -46,7 +47,8 @@ namespace CustomerSurvey.Domain.Entities
                 NameEn = nameEn.Trim(),
                 NameAr = string.IsNullOrWhiteSpace(nameAr) ? null : nameAr.Trim(),
                 Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim(),
-                Status = TemplateStatus.Draft,
+                Status = TemplateStatus.Active,
+                IsActive = true,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
         }
@@ -63,16 +65,43 @@ namespace CustomerSurvey.Domain.Entities
 
         public void Activate()
         {
+            if (!IsActive)
+            {
+                return;
+            }
+
             Status = TemplateStatus.Active;
         }
 
         public void Deactivate()
         {
+            if (!IsActive)
+            {
+                return;
+            }
+
+            IsActive = false;
             Status = TemplateStatus.Inactive;
         }
 
         public void ReturnToDraft()
         {
+            if (!IsActive)
+            {
+                return;
+            }
+
+            Status = TemplateStatus.Draft;
+        }
+
+        public void Restore()
+        {
+            if (IsActive)
+            {
+                return;
+            }
+
+            IsActive = true;
             Status = TemplateStatus.Draft;
         }
     }

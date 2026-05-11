@@ -5,6 +5,7 @@ using CustomerSurvey.Api.Contracts.BranchUsers;
 using CustomerSurvey.Application.Features.BranchUsers.Command.AssignRolesToBranchUser;
 using CustomerSurvey.Application.Features.BranchUsers.Command.CreateBranchUser;
 using CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPagination;
+using CustomerSurvey.Application.Features.BranchUsers.Query.GetMyBranchUserRoles;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,17 @@ namespace CustomerSurvey.Api.Controllers
         {
             query ??= new GetBranchUsersPaginationQuery();
             query.SearchText ??= string.Empty;
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("my-roles")]
+        public async Task<IActionResult> GetMyRoles(
+    CancellationToken cancellationToken)
+        {
+            var query = new GetMyBranchUserRolesQuery();
 
             var result = await sender.Send(query, cancellationToken);
 

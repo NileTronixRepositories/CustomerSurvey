@@ -844,6 +844,105 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string CreateQuestionGroup_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("CreateQuestionGroup_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateQuestionGroup_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateQuestionGroup_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group English name already exists inside the same branch..
+        /// </summary>
+        public static string CreateQuestionGroup_NameEn_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateQuestionGroup_NameEn_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group English name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateQuestionGroup_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateQuestionGroup_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group English name is required..
+        /// </summary>
+        public static string CreateQuestionGroup_NameEn_Required {
+            get {
+                return ResourceManager.GetString("CreateQuestionGroup_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string CreateTemplate_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template description must not exceed 1000 characters..
+        /// </summary>
+        public static string CreateTemplate_Description_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateTemplate_Description_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateTemplate_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateTemplate_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template English name already exists inside the same branch..
+        /// </summary>
+        public static string CreateTemplate_NameEn_AlreadyExists_InsideBranch {
+            get {
+                return ResourceManager.GetString("CreateTemplate_NameEn_AlreadyExists_InsideBranch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template English name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateTemplate_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateTemplate_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template English name is required..
+        /// </summary>
+        public static string CreateTemplate_NameEn_Required {
+            get {
+                return ResourceManager.GetString("CreateTemplate_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current Super Admin profile was not found..
         /// </summary>
         public static string DeleteDepartment_CurrentSuperAdmin_NotFound {
@@ -876,6 +975,87 @@ namespace CustomerSurvey.Domain.Resources {
         public static string DeleteDepartment_DepartmentId_Required {
             get {
                 return ResourceManager.GetString("DeleteDepartment_DepartmentId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string DeleteQuestionGroup_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteQuestionGroup_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group is required..
+        /// </summary>
+        public static string DeleteQuestionGroup_GroupId_Required {
+            get {
+                return ResourceManager.GetString("DeleteQuestionGroup_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group is already inactive..
+        /// </summary>
+        public static string DeleteQuestionGroup_QuestionGroup_AlreadyInactive {
+            get {
+                return ResourceManager.GetString("DeleteQuestionGroup_QuestionGroup_AlreadyInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot delete question group because it has related questions..
+        /// </summary>
+        public static string DeleteQuestionGroup_QuestionGroup_HasQuestions {
+            get {
+                return ResourceManager.GetString("DeleteQuestionGroup_QuestionGroup_HasQuestions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group was not found..
+        /// </summary>
+        public static string DeleteQuestionGroup_QuestionGroup_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteQuestionGroup_QuestionGroup_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string DeleteTemplate_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteTemplate_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template is already inactive..
+        /// </summary>
+        public static string DeleteTemplate_Template_AlreadyInactive {
+            get {
+                return ResourceManager.GetString("DeleteTemplate_Template_AlreadyInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found..
+        /// </summary>
+        public static string DeleteTemplate_Template_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteTemplate_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template is required..
+        /// </summary>
+        public static string DeleteTemplate_TemplateId_Required {
+            get {
+                return ResourceManager.GetString("DeleteTemplate_TemplateId_Required", resourceCulture);
             }
         }
         
@@ -1078,6 +1258,60 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current branch user profile was not found..
+        /// </summary>
+        public static string GetMyBranchUserRoles_CurrentBranchUser_NotFound {
+            get {
+                return ResourceManager.GetString("GetMyBranchUserRoles_CurrentBranchUser_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user has no assigned roles..
+        /// </summary>
+        public static string GetMyBranchUserRoles_UserHasNoRoles {
+            get {
+                return ResourceManager.GetString("GetMyBranchUserRoles_UserHasNoRoles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string GetQuestionGroupsPagination_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetQuestionGroupsPagination_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number must be greater than or equal to 1..
+        /// </summary>
+        public static string GetQuestionGroupsPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetQuestionGroupsPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GetQuestionGroupsPagination_PageSize_Invalid.
+        /// </summary>
+        public static string GetQuestionGroupsPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetQuestionGroupsPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must not exceed 100 items..
+        /// </summary>
+        public static string GetQuestionGroupsPagination_PageSize_Max {
+            get {
+                return ResourceManager.GetString("GetQuestionGroupsPagination_PageSize_Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current Branch Admin profile was not found..
         /// </summary>
         public static string GetRolesSelection_CurrentBranchAdmin_NotFound {
@@ -1092,6 +1326,78 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetRolesSelection_RequiredRoles_NotSeeded {
             get {
                 return ResourceManager.GetString("GetRolesSelection_RequiredRoles_NotSeeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string GetTemplateDetails_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetTemplateDetails_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found..
+        /// </summary>
+        public static string GetTemplateDetails_Template_NotFound {
+            get {
+                return ResourceManager.GetString("GetTemplateDetails_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template is required..
+        /// </summary>
+        public static string GetTemplateDetails_TemplateId_Required {
+            get {
+                return ResourceManager.GetString("GetTemplateDetails_TemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string GetTemplatesPagination_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetTemplatesPagination_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number must be greater than or equal to 1..
+        /// </summary>
+        public static string GetTemplatesPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetTemplatesPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must be greater than or equal to 1..
+        /// </summary>
+        public static string GetTemplatesPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetTemplatesPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must not exceed 100 items..
+        /// </summary>
+        public static string GetTemplatesPagination_PageSize_Max {
+            get {
+                return ResourceManager.GetString("GetTemplatesPagination_PageSize_Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current actor allowed to view templates was not found..
+        /// </summary>
+        public static string GetTemplatesSelection_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetTemplatesSelection_CurrentActor_NotFound", resourceCulture);
             }
         }
         
@@ -1155,6 +1461,42 @@ namespace CustomerSurvey.Domain.Resources {
         public static string Login_UserNameOrEmail_Required {
             get {
                 return ResourceManager.GetString("Login_UserNameOrEmail_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string RestoreTemplate_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreTemplate_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template is already active..
+        /// </summary>
+        public static string RestoreTemplate_Template_AlreadyActive {
+            get {
+                return ResourceManager.GetString("RestoreTemplate_Template_AlreadyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found..
+        /// </summary>
+        public static string RestoreTemplate_Template_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreTemplate_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template is required..
+        /// </summary>
+        public static string RestoreTemplate_TemplateId_Required {
+            get {
+                return ResourceManager.GetString("RestoreTemplate_TemplateId_Required", resourceCulture);
             }
         }
         
@@ -1317,6 +1659,141 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateDepartment_NameEn_Required {
             get {
                 return ResourceManager.GetString("UpdateDepartment_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string UpdateQuestionGroup_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateQuestionGroup_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UpdateQuestionGroup_GroupId_Required.
+        /// </summary>
+        public static string UpdateQuestionGroup_GroupId_Required {
+            get {
+                return ResourceManager.GetString("UpdateQuestionGroup_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateQuestionGroup_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateQuestionGroup_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group English name already exists inside the same branch..
+        /// </summary>
+        public static string UpdateQuestionGroup_NameEn_AlreadyExists {
+            get {
+                return ResourceManager.GetString("UpdateQuestionGroup_NameEn_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group English name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateQuestionGroup_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateQuestionGroup_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group English name is required..
+        /// </summary>
+        public static string UpdateQuestionGroup_NameEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateQuestionGroup_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group was not found..
+        /// </summary>
+        public static string UpdateQuestionGroup_QuestionGroup_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateQuestionGroup_QuestionGroup_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string UpdateTemplate_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template description must not exceed 1000 characters..
+        /// </summary>
+        public static string UpdateTemplate_Description_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_Description_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateTemplate_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template English name already exists inside the same branch..
+        /// </summary>
+        public static string UpdateTemplate_NameEn_AlreadyExists_InsideBranch {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_NameEn_AlreadyExists_InsideBranch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template English name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateTemplate_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template English name is required..
+        /// </summary>
+        public static string UpdateTemplate_NameEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found..
+        /// </summary>
+        public static string UpdateTemplate_Template_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template is required..
+        /// </summary>
+        public static string UpdateTemplate_TemplateId_Required {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_TemplateId_Required", resourceCulture);
             }
         }
     }
