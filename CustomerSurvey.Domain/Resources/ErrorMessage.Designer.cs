@@ -844,6 +844,78 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CreateQuestion_CurrentBranchActor_NotFound.
+        /// </summary>
+        public static string CreateQuestion_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("CreateQuestion_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group is required..
+        /// </summary>
+        public static string CreateQuestion_GroupId_Required {
+            get {
+                return ResourceManager.GetString("CreateQuestion_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create a question inside an inactive question group..
+        /// </summary>
+        public static string CreateQuestion_QuestionGroup_Inactive {
+            get {
+                return ResourceManager.GetString("CreateQuestion_QuestionGroup_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CreateQuestion_QuestionGroup_NotFound.
+        /// </summary>
+        public static string CreateQuestion_QuestionGroup_NotFound {
+            get {
+                return ResourceManager.GetString("CreateQuestion_QuestionGroup_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question Arabic text must not exceed 500 characters..
+        /// </summary>
+        public static string CreateQuestion_TextAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateQuestion_TextAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question English text must not exceed 500 characters..
+        /// </summary>
+        public static string CreateQuestion_TextEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateQuestion_TextEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question English text is required..
+        /// </summary>
+        public static string CreateQuestion_TextEn_Required {
+            get {
+                return ResourceManager.GetString("CreateQuestion_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question type is invalid..
+        /// </summary>
+        public static string CreateQuestion_Type_Invalid {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Type_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current branch actor profile was not found..
         /// </summary>
         public static string CreateQuestionGroup_CurrentBranchActor_NotFound {
@@ -975,6 +1047,42 @@ namespace CustomerSurvey.Domain.Resources {
         public static string DeleteDepartment_DepartmentId_Required {
             get {
                 return ResourceManager.GetString("DeleteDepartment_DepartmentId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DeleteQuestion_CurrentBranchActor_NotFound.
+        /// </summary>
+        public static string DeleteQuestion_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteQuestion_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question is already inactive..
+        /// </summary>
+        public static string DeleteQuestion_Question_AlreadyInactive {
+            get {
+                return ResourceManager.GetString("DeleteQuestion_Question_AlreadyInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question was not found..
+        /// </summary>
+        public static string DeleteQuestion_Question_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteQuestion_Question_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question is required..
+        /// </summary>
+        public static string DeleteQuestion_QuestionId_Required {
+            get {
+                return ResourceManager.GetString("DeleteQuestion_QuestionId_Required", resourceCulture);
             }
         }
         
@@ -1308,6 +1416,51 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetQuestionGroupsPagination_PageSize_Max {
             get {
                 return ResourceManager.GetString("GetQuestionGroupsPagination_PageSize_Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string GetQuestionGroupsSelection_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetQuestionGroupsSelection_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string GetQuestionsPagination_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetQuestionsPagination_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number must be greater than or equal to 1..
+        /// </summary>
+        public static string GetQuestionsPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetQuestionsPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GetQuestionsPagination_PageSize_Invalid.
+        /// </summary>
+        public static string GetQuestionsPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetQuestionsPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must not exceed 100 items..
+        /// </summary>
+        public static string GetQuestionsPagination_PageSize_Max {
+            get {
+                return ResourceManager.GetString("GetQuestionsPagination_PageSize_Max", resourceCulture);
             }
         }
         
@@ -1659,6 +1812,96 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateDepartment_NameEn_Required {
             get {
                 return ResourceManager.GetString("UpdateDepartment_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string UpdateQuestion_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group is required..
+        /// </summary>
+        public static string UpdateQuestion_GroupId_Required {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question was not found..
+        /// </summary>
+        public static string UpdateQuestion_Question_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Question_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot assign the question to an inactive question group..
+        /// </summary>
+        public static string UpdateQuestion_QuestionGroup_Inactive {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_QuestionGroup_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group was not found..
+        /// </summary>
+        public static string UpdateQuestion_QuestionGroup_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_QuestionGroup_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question is required..
+        /// </summary>
+        public static string UpdateQuestion_QuestionId_Required {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_QuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question Arabic text must not exceed 500 characters..
+        /// </summary>
+        public static string UpdateQuestion_TextAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_TextAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question English text must not exceed 500 characters..
+        /// </summary>
+        public static string UpdateQuestion_TextEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_TextEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question English text is required..
+        /// </summary>
+        public static string UpdateQuestion_TextEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question type is invalid..
+        /// </summary>
+        public static string UpdateQuestion_Type_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Type_Invalid", resourceCulture);
             }
         }
         

@@ -696,4 +696,85 @@
   <data name="DeleteQuestionGroup_QuestionGroup_HasQuestions" xml:space="preserve">
     <value>لا يمكن حذف مجموعة الأسئلة لأنها تحتوي على أسئلة مرتبطة.</value>
   </data>
+  <data name="GetQuestionGroupsSelection_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الفرع الحالي.</value>
+  </data>
+  <data name="GetQuestionsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetQuestionsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetQuestionsPagination_PageSize_Max" xml:space="preserve">
+    <value>حجم الصفحة يجب ألا يزيد عن 100 عنصر.</value>
+  </data>
+  <data name="GetQuestionsPagination_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الفرع الحالي.</value>
+  </data>
+  <data name="CreateQuestion_GroupId_Required" xml:space="preserve">
+    <value>مجموعة الأسئلة مطلوبة.</value>
+  </data>
+  <data name="CreateQuestion_TextEn_Required" xml:space="preserve">
+    <value>نص السؤال باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="CreateQuestion_TextEn_MaxLength" xml:space="preserve">
+    <value>نص السؤال باللغة الإنجليزية يجب ألا يزيد عن 500 حرف.</value>
+  </data>
+  <data name="CreateQuestion_TextAr_MaxLength" xml:space="preserve">
+    <value>نص السؤال باللغة العربية يجب ألا يزيد عن 500 حرف.</value>
+  </data>
+  <data name="CreateQuestion_Type_Invalid" xml:space="preserve">
+    <value>نوع السؤال غير صحيح.</value>
+  </data>
+  <data name="CreateQuestion_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الفرع الحالي.</value>
+  </data>
+  <data name="CreateQuestion_QuestionGroup_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مجموعة الأسئلة.</value>
+  </data>
+  <data name="CreateQuestion_QuestionGroup_Inactive" xml:space="preserve">
+    <value>لا يمكن إضافة سؤال داخل مجموعة غير مفعلة.</value>
+  </data>
+  <data name="UpdateQuestion_QuestionId_Required" xml:space="preserve">
+    <value>السؤال مطلوب.</value>
+  </data>
+  <data name="UpdateQuestion_GroupId_Required" xml:space="preserve">
+    <value>مجموعة الأسئلة مطلوبة.</value>
+  </data>
+  <data name="UpdateQuestion_TextEn_Required" xml:space="preserve">
+    <value>نص السؤال باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="UpdateQuestion_TextEn_MaxLength" xml:space="preserve">
+    <value>نص السؤال باللغة الإنجليزية يجب ألا يزيد عن 500 حرف.</value>
+  </data>
+  <data name="UpdateQuestion_TextAr_MaxLength" xml:space="preserve">
+    <value>نص السؤال باللغة العربية يجب ألا يزيد عن 500 حرف.</value>
+  </data>
+  <data name="UpdateQuestion_Type_Invalid" xml:space="preserve">
+    <value>نوع السؤال غير صحيح.</value>
+  </data>
+  <data name="UpdateQuestion_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الفرع الحالي.</value>
+  </data>
+  <data name="UpdateQuestion_Question_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على السؤال.</value>
+  </data>
+  <data name="UpdateQuestion_QuestionGroup_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مجموعة الأسئلة.</value>
+  </data>
+  <data name="UpdateQuestion_QuestionGroup_Inactive" xml:space="preserve">
+    <value>لا يمكن ربط السؤال بمجموعة غير مفعلة.</value>
+  </data>
+  <data name="DeleteQuestion_QuestionId_Required" xml:space="preserve">
+    <value>السؤال مطلوب.</value>
+  </data>
+  <data name="DeleteQuestion_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الفرع الحالي.</value>
+  </data>
+  <data name="DeleteQuestion_Question_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على السؤال.</value>
+  </data>
+  <data name="DeleteQuestion_Question_AlreadyInactive" xml:space="preserve">
+    <value>السؤال غير مفعل بالفعل.</value>
+  </data>
 </root>
