@@ -696,4 +696,85 @@
   <data name="DeleteQuestionGroup_QuestionGroup_HasQuestions" xml:space="preserve">
     <value>Cannot delete question group because it has related questions.</value>
   </data>
+  <data name="GetQuestionGroupsSelection_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="GetQuestionsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetQuestionsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>GetQuestionsPagination_PageSize_Invalid</value>
+  </data>
+  <data name="GetQuestionsPagination_PageSize_Max" xml:space="preserve">
+    <value>Page size must not exceed 100 items.</value>
+  </data>
+  <data name="GetQuestionsPagination_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="CreateQuestion_GroupId_Required" xml:space="preserve">
+    <value>Question group is required.</value>
+  </data>
+  <data name="CreateQuestion_TextEn_Required" xml:space="preserve">
+    <value>Question English text is required.</value>
+  </data>
+  <data name="CreateQuestion_TextEn_MaxLength" xml:space="preserve">
+    <value>Question English text must not exceed 500 characters.</value>
+  </data>
+  <data name="CreateQuestion_TextAr_MaxLength" xml:space="preserve">
+    <value>Question Arabic text must not exceed 500 characters.</value>
+  </data>
+  <data name="CreateQuestion_Type_Invalid" xml:space="preserve">
+    <value>Question type is invalid.</value>
+  </data>
+  <data name="CreateQuestion_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>CreateQuestion_CurrentBranchActor_NotFound</value>
+  </data>
+  <data name="CreateQuestion_QuestionGroup_NotFound" xml:space="preserve">
+    <value>CreateQuestion_QuestionGroup_NotFound</value>
+  </data>
+  <data name="CreateQuestion_QuestionGroup_Inactive" xml:space="preserve">
+    <value>Cannot create a question inside an inactive question group.</value>
+  </data>
+  <data name="UpdateQuestion_QuestionId_Required" xml:space="preserve">
+    <value>Question is required.</value>
+  </data>
+  <data name="UpdateQuestion_GroupId_Required" xml:space="preserve">
+    <value>Question group is required.</value>
+  </data>
+  <data name="UpdateQuestion_TextEn_Required" xml:space="preserve">
+    <value>Question English text is required.</value>
+  </data>
+  <data name="UpdateQuestion_TextEn_MaxLength" xml:space="preserve">
+    <value>Question English text must not exceed 500 characters.</value>
+  </data>
+  <data name="UpdateQuestion_TextAr_MaxLength" xml:space="preserve">
+    <value>Question Arabic text must not exceed 500 characters.</value>
+  </data>
+  <data name="UpdateQuestion_Type_Invalid" xml:space="preserve">
+    <value>Question type is invalid.</value>
+  </data>
+  <data name="UpdateQuestion_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="UpdateQuestion_Question_NotFound" xml:space="preserve">
+    <value>Question was not found.</value>
+  </data>
+  <data name="UpdateQuestion_QuestionGroup_NotFound" xml:space="preserve">
+    <value>Question group was not found.</value>
+  </data>
+  <data name="UpdateQuestion_QuestionGroup_Inactive" xml:space="preserve">
+    <value>Cannot assign the question to an inactive question group.</value>
+  </data>
+  <data name="DeleteQuestion_QuestionId_Required" xml:space="preserve">
+    <value>Question is required.</value>
+  </data>
+  <data name="DeleteQuestion_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>DeleteQuestion_CurrentBranchActor_NotFound</value>
+  </data>
+  <data name="DeleteQuestion_Question_NotFound" xml:space="preserve">
+    <value>Question was not found.</value>
+  </data>
+  <data name="DeleteQuestion_Question_AlreadyInactive" xml:space="preserve">
+    <value>Question is already inactive.</value>
+  </data>
 </root>

@@ -53,10 +53,12 @@ namespace CustomerSurvey.Domain.Entities
         }
 
         public void Update(
-            string textEn,
-            string? textAr,
-            QuestionType type)
+    Guid groupId,
+    string textEn,
+    string? textAr,
+    QuestionType type)
         {
+            GroupId = groupId;
             TextEn = textEn.Trim();
             TextAr = string.IsNullOrWhiteSpace(textAr) ? null : textAr.Trim();
             Type = type;

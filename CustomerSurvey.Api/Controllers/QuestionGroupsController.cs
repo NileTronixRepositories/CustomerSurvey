@@ -4,6 +4,7 @@ using CustomerSurvey.Api.Contracts.QuestionGroups;
 using CustomerSurvey.Application.Features.QuestionGroups.Command.CreateQuestionGroup;
 using CustomerSurvey.Application.Features.QuestionGroups.Command.DeleteQuestionGroup;
 using CustomerSurvey.Application.Features.QuestionGroups.Command.UpdateQuestionGroup;
+using CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupsForSelection;
 using CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupsPagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -31,6 +32,18 @@ namespace CustomerSurvey.Api.Controllers
         {
             query ??= new GetQuestionGroupsPaginationQuery();
             query.SearchText ??= string.Empty;
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("selection")]
+        [Permission("QuestionGroups.ViewAll")]
+        public async Task<IActionResult> GetSelection(
+    CancellationToken cancellationToken)
+        {
+            var query = new GetQuestionGroupsForSelectionQuery();
 
             var result = await sender.Send(query, cancellationToken);
 
