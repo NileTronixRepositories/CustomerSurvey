@@ -61,6 +61,78 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string AssignQuestionsToTemplate_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToTemplate_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question is required..
+        /// </summary>
+        public static string AssignQuestionsToTemplate_QuestionId_Required {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToTemplate_QuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The same question cannot be duplicated inside the template..
+        /// </summary>
+        public static string AssignQuestionsToTemplate_QuestionIds_Duplicated {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToTemplate_QuestionIds_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At least one question must be selected..
+        /// </summary>
+        public static string AssignQuestionsToTemplate_QuestionIds_Required {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToTemplate_QuestionIds_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some questions were not found, inactive, or do not belong to the same branch..
+        /// </summary>
+        public static string AssignQuestionsToTemplate_Questions_NotFoundOrInactive {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToTemplate_Questions_NotFoundOrInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot update questions for an inactive template..
+        /// </summary>
+        public static string AssignQuestionsToTemplate_Template_Inactive {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToTemplate_Template_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found..
+        /// </summary>
+        public static string AssignQuestionsToTemplate_Template_NotFound {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToTemplate_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template is required..
+        /// </summary>
+        public static string AssignQuestionsToTemplate_TemplateId_Required {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToTemplate_TemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User is required..
         /// </summary>
         public static string AssignRolesToBranchUser_ApplicationUserId_Required {
@@ -1506,6 +1578,33 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetTemplateDetails_TemplateId_Required {
             get {
                 return ResourceManager.GetString("GetTemplateDetails_TemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string GetTemplateQuestionsSelection_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetTemplateQuestionsSelection_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found..
+        /// </summary>
+        public static string GetTemplateQuestionsSelection_Template_NotFound {
+            get {
+                return ResourceManager.GetString("GetTemplateQuestionsSelection_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template is required..
+        /// </summary>
+        public static string GetTemplateQuestionsSelection_TemplateId_Required {
+            get {
+                return ResourceManager.GetString("GetTemplateQuestionsSelection_TemplateId_Required", resourceCulture);
             }
         }
         

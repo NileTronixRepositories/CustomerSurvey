@@ -777,4 +777,37 @@
   <data name="DeleteQuestion_Question_AlreadyInactive" xml:space="preserve">
     <value>Question is already inactive.</value>
   </data>
+  <data name="GetTemplateQuestionsSelection_TemplateId_Required" xml:space="preserve">
+    <value>Template is required.</value>
+  </data>
+  <data name="GetTemplateQuestionsSelection_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="GetTemplateQuestionsSelection_Template_NotFound" xml:space="preserve">
+    <value>Template was not found.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_TemplateId_Required" xml:space="preserve">
+    <value>Template is required.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_QuestionIds_Required" xml:space="preserve">
+    <value>At least one question must be selected.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_QuestionId_Required" xml:space="preserve">
+    <value>Question is required.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_QuestionIds_Duplicated" xml:space="preserve">
+    <value>The same question cannot be duplicated inside the template.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_Template_NotFound" xml:space="preserve">
+    <value>Template was not found.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_Template_Inactive" xml:space="preserve">
+    <value>Cannot update questions for an inactive template.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_Questions_NotFoundOrInactive" xml:space="preserve">
+    <value>Some questions were not found, inactive, or do not belong to the same branch.</value>
+  </data>
 </root>

@@ -777,4 +777,37 @@
   <data name="DeleteQuestion_Question_AlreadyInactive" xml:space="preserve">
     <value>السؤال غير مفعل بالفعل.</value>
   </data>
+  <data name="GetTemplateQuestionsSelection_TemplateId_Required" xml:space="preserve">
+    <value>القالب مطلوب.</value>
+  </data>
+  <data name="GetTemplateQuestionsSelection_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مستخدم الفرع الحالي.</value>
+  </data>
+  <data name="GetTemplateQuestionsSelection_Template_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القالب.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_TemplateId_Required" xml:space="preserve">
+    <value>القالب مطلوب.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_QuestionIds_Required" xml:space="preserve">
+    <value>يجب اختيار سؤال واحد على الأقل.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_QuestionId_Required" xml:space="preserve">
+    <value>السؤال مطلوب.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_QuestionIds_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار نفس السؤال داخل القالب.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الفرع الحالي.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_Template_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القالب.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_Template_Inactive" xml:space="preserve">
+    <value>لا يمكن تعديل أسئلة قالب غير مفعل.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_Questions_NotFoundOrInactive" xml:space="preserve">
+    <value>بعض الأسئلة غير موجودة أو غير مفعلة أو لا تنتمي لنفس الفرع.</value>
+  </data>
 </root>
