@@ -91,5 +91,17 @@ namespace CustomerSurvey.Domain.Identity
         {
             IsActive = false;
         }
+
+        public void UpdateProfile(
+    string nameEn,
+    string? nameAr,
+    string email,
+    string? phoneNumber)
+        {
+            NameEn = nameEn.Trim();
+            NameAr = string.IsNullOrWhiteSpace(nameAr) ? null : nameAr.Trim();
+            Email = email.Trim();
+            PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber.Trim();
+        }
     }
 }

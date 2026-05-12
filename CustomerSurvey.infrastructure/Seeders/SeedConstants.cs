@@ -1,4 +1,8 @@
-﻿namespace CustomerSurvey.infrastructure.Seeders;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace CustomerSurvey.infrastructure.Seeders;
 
 internal static class SeedConstants
 {
@@ -26,6 +30,7 @@ internal static class SeedConstants
         public const string ReportViewer = "Report Viewer";
         public const string QuestionEditor = "Question Editor";
         public const string DepartmentAdministrator = "Department Administrator";
+        public const string Operator = "Operator";
     }
 
     public static class PermissionNames
@@ -33,14 +38,16 @@ internal static class SeedConstants
         public const string BranchesCreate = "Branches.Create";
         public const string BranchesViewAll = "Branches.ViewAll";
         public const string BranchesViewDetails = "Branches.ViewDetails";
+        public const string BranchesUpdate = "Branches.Update";
 
         public const string BranchAdminsCreate = "BranchAdmins.Create";
         public const string BranchAdminsViewAll = "BranchAdmins.ViewAll";
-        public const string BranchesUpdate = "Branches.Update";
 
         public const string DepartmentsCreate = "Departments.Create";
         public const string DepartmentsViewAll = "Departments.ViewAll";
         public const string DepartmentsViewSelection = "Departments.ViewSelection";
+        public const string DepartmentsUpdate = "Departments.Update";
+        public const string DepartmentsDelete = "Departments.Delete";
 
         public const string DepartmentAdminsCreate = "DepartmentAdmins.Create";
         public const string DepartmentAdminsViewAll = "DepartmentAdmins.ViewAll";
@@ -73,6 +80,9 @@ internal static class SeedConstants
         public const string OperatorsViewAll = "Operators.ViewAll";
         public const string OperatorsAssignTemplates = "Operators.AssignTemplates";
 
+        public const string OperatorTemplatesViewMine = "OperatorTemplates.ViewMine";
+        public const string OperatorsUpdate = "Operators.Update";
+
         public const string ReportsViewBranchReports = "Reports.ViewBranchReports";
     }
 
@@ -96,7 +106,10 @@ internal static class SeedConstants
                 Guid.Parse("11000000-0000-0000-0000-000000000005");
 
             public static readonly Guid DepartmentAdministrator =
-    Guid.Parse("11000000-0000-0000-0000-000000000006");
+                Guid.Parse("11000000-0000-0000-0000-000000000006");
+
+            public static readonly Guid Operator =
+                Guid.Parse("11000000-0000-0000-0000-000000000007");
         }
 
         public static class Permissions
@@ -201,7 +214,19 @@ internal static class SeedConstants
                 Guid.Parse("12000000-0000-0000-0000-000000000033");
 
             public static readonly Guid BranchesUpdate =
-    Guid.Parse("12000000-0000-0000-0000-000000000034");
+                Guid.Parse("12000000-0000-0000-0000-000000000034");
+
+            public static readonly Guid OperatorTemplatesViewMine =
+                Guid.Parse("12000000-0000-0000-0000-000000000035");
+
+            public static readonly Guid OperatorsUpdate =
+    Guid.Parse("12000000-0000-0000-0000-000000000038");
+
+            public static readonly Guid DepartmentsUpdate =
+                Guid.Parse("12000000-0000-0000-0000-000000000036");
+
+            public static readonly Guid DepartmentsDelete =
+                Guid.Parse("12000000-0000-0000-0000-000000000037");
         }
     }
 
@@ -215,12 +240,13 @@ internal static class SeedConstants
     {
         public static readonly IReadOnlyCollection<RoleSeedItem> Roles =
         [
-    new RoleSeedItem(SeedIds.Roles.SystemAdministrator, RoleNames.SystemAdministrator),
-    new RoleSeedItem(SeedIds.Roles.BranchAdministrator, RoleNames.BranchAdministrator),
-    new RoleSeedItem(SeedIds.Roles.DepartmentAdministrator, RoleNames.DepartmentAdministrator),
-    new RoleSeedItem(SeedIds.Roles.TemplateEditor, RoleNames.TemplateEditor),
-    new RoleSeedItem(SeedIds.Roles.ReportViewer, RoleNames.ReportViewer),
-    new RoleSeedItem(SeedIds.Roles.QuestionEditor, RoleNames.QuestionEditor)
+            new RoleSeedItem(SeedIds.Roles.SystemAdministrator, RoleNames.SystemAdministrator),
+            new RoleSeedItem(SeedIds.Roles.BranchAdministrator, RoleNames.BranchAdministrator),
+            new RoleSeedItem(SeedIds.Roles.DepartmentAdministrator, RoleNames.DepartmentAdministrator),
+            new RoleSeedItem(SeedIds.Roles.TemplateEditor, RoleNames.TemplateEditor),
+            new RoleSeedItem(SeedIds.Roles.ReportViewer, RoleNames.ReportViewer),
+            new RoleSeedItem(SeedIds.Roles.QuestionEditor, RoleNames.QuestionEditor),
+            new RoleSeedItem(SeedIds.Roles.Operator, RoleNames.Operator)
         ];
 
         public static readonly IReadOnlyCollection<PermissionSeedItem> Permissions =
@@ -228,14 +254,16 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.BranchesCreate, PermissionNames.BranchesCreate),
             new PermissionSeedItem(SeedIds.Permissions.BranchesViewAll, PermissionNames.BranchesViewAll),
             new PermissionSeedItem(SeedIds.Permissions.BranchesViewDetails, PermissionNames.BranchesViewDetails),
+            new PermissionSeedItem(SeedIds.Permissions.BranchesUpdate, PermissionNames.BranchesUpdate),
 
             new PermissionSeedItem(SeedIds.Permissions.BranchAdminsCreate, PermissionNames.BranchAdminsCreate),
             new PermissionSeedItem(SeedIds.Permissions.BranchAdminsViewAll, PermissionNames.BranchAdminsViewAll),
-            new PermissionSeedItem(SeedIds.Permissions.BranchesUpdate, PermissionNames.BranchesUpdate),
 
             new PermissionSeedItem(SeedIds.Permissions.DepartmentsCreate, PermissionNames.DepartmentsCreate),
             new PermissionSeedItem(SeedIds.Permissions.DepartmentsViewAll, PermissionNames.DepartmentsViewAll),
             new PermissionSeedItem(SeedIds.Permissions.DepartmentsViewSelection, PermissionNames.DepartmentsViewSelection),
+            new PermissionSeedItem(SeedIds.Permissions.DepartmentsUpdate, PermissionNames.DepartmentsUpdate),
+            new PermissionSeedItem(SeedIds.Permissions.DepartmentsDelete, PermissionNames.DepartmentsDelete),
 
             new PermissionSeedItem(SeedIds.Permissions.DepartmentAdminsCreate, PermissionNames.DepartmentAdminsCreate),
             new PermissionSeedItem(SeedIds.Permissions.DepartmentAdminsViewAll, PermissionNames.DepartmentAdminsViewAll),
@@ -268,6 +296,9 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.OperatorsViewAll, PermissionNames.OperatorsViewAll),
             new PermissionSeedItem(SeedIds.Permissions.OperatorsAssignTemplates, PermissionNames.OperatorsAssignTemplates),
 
+            new PermissionSeedItem(SeedIds.Permissions.OperatorTemplatesViewMine, PermissionNames.OperatorTemplatesViewMine),
+            new PermissionSeedItem(SeedIds.Permissions.OperatorsUpdate, PermissionNames.OperatorsUpdate),
+
             new PermissionSeedItem(SeedIds.Permissions.ReportsViewBranchReports, PermissionNames.ReportsViewBranchReports)
         ];
 
@@ -284,6 +315,7 @@ internal static class SeedConstants
             AddTemplateEditorPermissions(result);
             AddQuestionEditorPermissions(result);
             AddReportViewerPermissions(result);
+            AddOperatorPermissions(result);
 
             return result
                 .Distinct()
@@ -306,13 +338,7 @@ internal static class SeedConstants
 
             Guid[] permissionIds =
             [
-                        SeedIds.Permissions.BranchesViewDetails,
-                SeedIds.Permissions.DepartmentsCreate,
-                SeedIds.Permissions.DepartmentsViewAll,
-                SeedIds.Permissions.DepartmentsViewSelection,
-
-                SeedIds.Permissions.DepartmentAdminsCreate,
-                SeedIds.Permissions.DepartmentAdminsViewAll,
+                SeedIds.Permissions.BranchesViewDetails,
 
                 SeedIds.Permissions.BranchUsersCreate,
                 SeedIds.Permissions.BranchUsersViewAll,
@@ -339,6 +365,26 @@ internal static class SeedConstants
                 SeedIds.Permissions.QuestionsViewAll,
 
                 SeedIds.Permissions.ReportsViewBranchReports
+            ];
+
+            foreach (var permissionId in permissionIds)
+            {
+                result.Add(new RolePermissionSeedItem(roleId, permissionId));
+            }
+        }
+
+        private static void AddDepartmentAdministratorPermissions(List<RolePermissionSeedItem> result)
+        {
+            var roleId = SeedIds.Roles.DepartmentAdministrator;
+
+            Guid[] permissionIds =
+            [
+                SeedIds.Permissions.OperatorsCreate,
+                SeedIds.Permissions.OperatorsViewAll,
+                SeedIds.Permissions.OperatorsAssignTemplates,
+                        SeedIds.Permissions.OperatorsUpdate,
+
+                SeedIds.Permissions.TemplatesViewSelection
             ];
 
             foreach (var permissionId in permissionIds)
@@ -398,22 +444,11 @@ internal static class SeedConstants
                 SeedIds.Permissions.ReportsViewBranchReports));
         }
 
-        private static void AddDepartmentAdministratorPermissions(List<RolePermissionSeedItem> result)
+        private static void AddOperatorPermissions(List<RolePermissionSeedItem> result)
         {
-            var roleId = SeedIds.Roles.DepartmentAdministrator;
-
-            Guid[] permissionIds =
-            [
-                SeedIds.Permissions.OperatorsCreate,
-        SeedIds.Permissions.OperatorsViewAll,
-        SeedIds.Permissions.OperatorsAssignTemplates,
-        SeedIds.Permissions.TemplatesViewSelection
-            ];
-
-            foreach (var permissionId in permissionIds)
-            {
-                result.Add(new RolePermissionSeedItem(roleId, permissionId));
-            }
+            result.Add(new RolePermissionSeedItem(
+                SeedIds.Roles.Operator,
+                SeedIds.Permissions.OperatorTemplatesViewMine));
         }
     }
 }

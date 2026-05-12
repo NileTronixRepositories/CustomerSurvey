@@ -810,4 +810,178 @@
   <data name="AssignQuestionsToTemplate_Questions_NotFoundOrInactive" xml:space="preserve">
     <value>بعض الأسئلة غير موجودة أو غير مفعلة أو لا تنتمي لنفس الفرع.</value>
   </data>
+  <data name="CreateOperator_DepartmentId_Invalid" xml:space="preserve">
+    <value>القسم غير صحيح.</value>
+  </data>
+  <data name="CreateOperator_DepartmentId_Required_ForSuperAdmin" xml:space="preserve">
+    <value>القسم مطلوب عند إنشاء مشغل بواسطة الـ Super Admin.</value>
+  </data>
+  <data name="CreateOperator_NameEn_Required" xml:space="preserve">
+    <value>اسم المشغل باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="CreateOperator_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم المشغل باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateOperator_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم المشغل باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateOperator_UserName_Required" xml:space="preserve">
+    <value>اسم المستخدم مطلوب.</value>
+  </data>
+  <data name="CreateOperator_UserName_MaxLength" xml:space="preserve">
+    <value>اسم المستخدم يجب ألا يزيد عن 100 حرف.</value>
+  </data>
+  <data name="CreateOperator_Email_Required" xml:space="preserve">
+    <value>البريد الإلكتروني مطلوب.</value>
+  </data>
+  <data name="CreateOperator_Email_MaxLength" xml:space="preserve">
+    <value>البريد الإلكتروني يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateOperator_Email_Invalid" xml:space="preserve">
+    <value>البريد الإلكتروني غير صحيح.</value>
+  </data>
+  <data name="CreateOperator_PhoneNumber_MaxLength" xml:space="preserve">
+    <value>رقم الهاتف يجب ألا يزيد عن 50 حرف.</value>
+  </data>
+  <data name="CreateOperator_Password_Required" xml:space="preserve">
+    <value>كلمة المرور مطلوبة.</value>
+  </data>
+  <data name="CreateOperator_Password_MinLength" xml:space="preserve">
+    <value>كلمة المرور يجب ألا تقل عن 8 أحرف.</value>
+  </data>
+  <data name="CreateOperator_Password_MaxLength" xml:space="preserve">
+    <value>كلمة المرور يجب ألا تزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateOperator_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>المستخدم الحالي غير مسموح له بإنشاء مشغل.</value>
+  </data>
+  <data name="CreateOperator_Actor_Ambiguous" xml:space="preserve">
+    <value>نوع المستخدم الحالي غير واضح داخل النظام.</value>
+  </data>
+  <data name="CreateOperator_Department_NotFoundOrInactive" xml:space="preserve">
+    <value>لم يتم العثور على القسم أو أنه غير مفعل.</value>
+  </data>
+  <data name="CreateOperator_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>لا يمكن إنشاء مشغل خارج القسم الخاص بمدير القسم الحالي.</value>
+  </data>
+  <data name="CreateOperator_UserName_AlreadyExists" xml:space="preserve">
+    <value>اسم المستخدم مستخدم من قبل.</value>
+  </data>
+  <data name="CreateOperator_Email_AlreadyExists" xml:space="preserve">
+    <value>البريد الإلكتروني مستخدم من قبل.</value>
+  </data>
+  <data name="CreateOperator_OperatorRole_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على Role المشغل.</value>
+  </data>
+  <data name="GetOperatorsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetOperatorsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetOperatorsPagination_PageSize_Max" xml:space="preserve">
+    <value>حجم الصفحة يجب ألا يزيد عن 100 عنصر.</value>
+  </data>
+  <data name="GetOperatorsPagination_DepartmentId_Invalid" xml:space="preserve">
+    <value>القسم غير صحيح.</value>
+  </data>
+  <data name="GetOperatorsPagination_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>المستخدم الحالي غير مسموح له بعرض المشغلين.</value>
+  </data>
+  <data name="GetOperatorsPagination_Actor_Ambiguous" xml:space="preserve">
+    <value>نوع المستخدم الحالي غير واضح داخل النظام.</value>
+  </data>
+  <data name="GetOperatorsPagination_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>لا يمكن عرض مشغلين خارج القسم الخاص بمدير القسم الحالي.</value>
+  </data>
+  <data name="UpdateOperator_OperatorId_Required" xml:space="preserve">
+    <value>المشغل مطلوب.</value>
+  </data>
+  <data name="UpdateOperator_NameEn_Required" xml:space="preserve">
+    <value>اسم المشغل باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="UpdateOperator_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم المشغل باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateOperator_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم المشغل باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateOperator_Email_Required" xml:space="preserve">
+    <value>البريد الإلكتروني مطلوب.</value>
+  </data>
+  <data name="UpdateOperator_Email_MaxLength" xml:space="preserve">
+    <value>البريد الإلكتروني يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateOperator_Email_Invalid" xml:space="preserve">
+    <value>البريد الإلكتروني غير صحيح.</value>
+  </data>
+  <data name="UpdateOperator_PhoneNumber_MaxLength" xml:space="preserve">
+    <value>رقم الهاتف يجب ألا يزيد عن 50 حرف.</value>
+  </data>
+  <data name="UpdateOperator_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>المستخدم الحالي غير مسموح له بتعديل بيانات المشغل.</value>
+  </data>
+  <data name="UpdateOperator_Actor_Ambiguous" xml:space="preserve">
+    <value>نوع المستخدم الحالي غير واضح داخل النظام.</value>
+  </data>
+  <data name="UpdateOperator_Operator_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المشغل.</value>
+  </data>
+  <data name="UpdateOperator_ApplicationUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب المستخدم الخاص بالمشغل.</value>
+  </data>
+  <data name="UpdateOperator_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>لا يمكن تعديل مشغل خارج القسم الخاص بمدير القسم الحالي.</value>
+  </data>
+  <data name="UpdateOperator_Email_AlreadyExists" xml:space="preserve">
+    <value>البريد الإلكتروني مستخدم من قبل.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_OperatorId_Required" xml:space="preserve">
+    <value>المشغل مطلوب.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_SearchText_MaxLength" xml:space="preserve">
+    <value>نص البحث يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>المستخدم الحالي غير مسموح له بعرض قوالب المشغل.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_Actor_Ambiguous" xml:space="preserve">
+    <value>نوع المستخدم الحالي غير واضح داخل النظام.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_Operator_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المشغل.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>لا يمكن عرض قوالب مشغل خارج القسم الخاص بمدير القسم الحالي.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_OperatorId_Required" xml:space="preserve">
+    <value>المشغل مطلوب.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_TemplateIds_Required" xml:space="preserve">
+    <value>قائمة القوالب مطلوبة.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_TemplateId_Invalid" xml:space="preserve">
+    <value>أحد القوالب غير صحيح.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_TemplateIds_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار نفس القالب أكثر من مرة.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>المستخدم الحالي غير مسموح له بتخصيص قوالب للمشغل.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_Actor_Ambiguous" xml:space="preserve">
+    <value>نوع المستخدم الحالي غير واضح داخل النظام.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_Operator_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المشغل.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>لا يمكن تخصيص قوالب لمشغل خارج القسم الخاص بمدير القسم الحالي.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_Template_NotFoundOrInactive" xml:space="preserve">
+    <value>أحد القوالب غير موجود أو غير مفعل.</value>
+  </data>
+  <data name="GetMyOperatorTemplates_CurrentOperator_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب المشغل الحالي.</value>
+  </data>
 </root>

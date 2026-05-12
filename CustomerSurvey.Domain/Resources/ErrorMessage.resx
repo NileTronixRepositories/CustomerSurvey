@@ -810,4 +810,178 @@
   <data name="AssignQuestionsToTemplate_Questions_NotFoundOrInactive" xml:space="preserve">
     <value>Some questions were not found, inactive, or do not belong to the same branch.</value>
   </data>
+  <data name="CreateOperator_DepartmentId_Invalid" xml:space="preserve">
+    <value>Department is invalid.</value>
+  </data>
+  <data name="CreateOperator_DepartmentId_Required_ForSuperAdmin" xml:space="preserve">
+    <value>Department is required when creating an operator by Super Admin.</value>
+  </data>
+  <data name="CreateOperator_NameEn_Required" xml:space="preserve">
+    <value>Operator English name is required.</value>
+  </data>
+  <data name="CreateOperator_NameEn_MaxLength" xml:space="preserve">
+    <value>Operator English name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateOperator_NameAr_MaxLength" xml:space="preserve">
+    <value>Operator Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateOperator_UserName_Required" xml:space="preserve">
+    <value>Username is required.</value>
+  </data>
+  <data name="CreateOperator_UserName_MaxLength" xml:space="preserve">
+    <value>Username must not exceed 100 characters.</value>
+  </data>
+  <data name="CreateOperator_Email_Required" xml:space="preserve">
+    <value>Email is required.</value>
+  </data>
+  <data name="CreateOperator_Email_MaxLength" xml:space="preserve">
+    <value>Email must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateOperator_Email_Invalid" xml:space="preserve">
+    <value>Email address is invalid.</value>
+  </data>
+  <data name="CreateOperator_PhoneNumber_MaxLength" xml:space="preserve">
+    <value>Phone number must not exceed 50 characters.</value>
+  </data>
+  <data name="CreateOperator_Password_Required" xml:space="preserve">
+    <value>Password is required.</value>
+  </data>
+  <data name="CreateOperator_Password_MinLength" xml:space="preserve">
+    <value>Password must be at least 8 characters.</value>
+  </data>
+  <data name="CreateOperator_Password_MaxLength" xml:space="preserve">
+    <value>Password must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateOperator_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>Current user is not allowed to create an operator.</value>
+  </data>
+  <data name="CreateOperator_Actor_Ambiguous" xml:space="preserve">
+    <value>Current actor is ambiguous in the system.</value>
+  </data>
+  <data name="CreateOperator_Department_NotFoundOrInactive" xml:space="preserve">
+    <value>Department was not found or is inactive.</value>
+  </data>
+  <data name="CreateOperator_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>Cannot create an operator outside the current department admin scope.</value>
+  </data>
+  <data name="CreateOperator_UserName_AlreadyExists" xml:space="preserve">
+    <value>Username already exists.</value>
+  </data>
+  <data name="CreateOperator_Email_AlreadyExists" xml:space="preserve">
+    <value>Email already exists.</value>
+  </data>
+  <data name="CreateOperator_OperatorRole_NotFound" xml:space="preserve">
+    <value>Operator role was not found.</value>
+  </data>
+  <data name="GetOperatorsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetOperatorsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>Page size must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetOperatorsPagination_PageSize_Max" xml:space="preserve">
+    <value>Page size must not exceed 100 items.</value>
+  </data>
+  <data name="GetOperatorsPagination_DepartmentId_Invalid" xml:space="preserve">
+    <value>Department is invalid.</value>
+  </data>
+  <data name="GetOperatorsPagination_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>Current user is not allowed to view operators.</value>
+  </data>
+  <data name="GetOperatorsPagination_Actor_Ambiguous" xml:space="preserve">
+    <value>Current actor is ambiguous in the system.</value>
+  </data>
+  <data name="GetOperatorsPagination_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>Cannot view operators outside the current department admin scope.</value>
+  </data>
+  <data name="UpdateOperator_OperatorId_Required" xml:space="preserve">
+    <value>Operator is required.</value>
+  </data>
+  <data name="UpdateOperator_NameEn_Required" xml:space="preserve">
+    <value>Operator English name is required.</value>
+  </data>
+  <data name="UpdateOperator_NameEn_MaxLength" xml:space="preserve">
+    <value>Operator English name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateOperator_NameAr_MaxLength" xml:space="preserve">
+    <value>Operator Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateOperator_Email_Required" xml:space="preserve">
+    <value>Email is required.</value>
+  </data>
+  <data name="UpdateOperator_Email_MaxLength" xml:space="preserve">
+    <value>Email must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateOperator_Email_Invalid" xml:space="preserve">
+    <value>UpdateOperator_Email_Invalid</value>
+  </data>
+  <data name="UpdateOperator_PhoneNumber_MaxLength" xml:space="preserve">
+    <value>Phone number must not exceed 50 characters.</value>
+  </data>
+  <data name="UpdateOperator_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>Current user is not allowed to update operator data.</value>
+  </data>
+  <data name="UpdateOperator_Actor_Ambiguous" xml:space="preserve">
+    <value>Current actor is ambiguous in the system.</value>
+  </data>
+  <data name="UpdateOperator_Operator_NotFound" xml:space="preserve">
+    <value>Operator was not found.</value>
+  </data>
+  <data name="UpdateOperator_ApplicationUser_NotFound" xml:space="preserve">
+    <value>Operator application user was not found.</value>
+  </data>
+  <data name="UpdateOperator_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>Cannot update an operator outside the current department admin scope.</value>
+  </data>
+  <data name="UpdateOperator_Email_AlreadyExists" xml:space="preserve">
+    <value>Email already exists.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_OperatorId_Required" xml:space="preserve">
+    <value>Operator is required.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_SearchText_MaxLength" xml:space="preserve">
+    <value>Search text must not exceed 200 characters.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>Current user is not allowed to view operator templates selection.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_Actor_Ambiguous" xml:space="preserve">
+    <value>Current actor is ambiguous in the system.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_Operator_NotFound" xml:space="preserve">
+    <value>Operator was not found.</value>
+  </data>
+  <data name="GetOperatorTemplatesSelection_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>Cannot view templates selection for an operator outside the current department admin scope.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_OperatorId_Required" xml:space="preserve">
+    <value>Operator is required.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_TemplateIds_Required" xml:space="preserve">
+    <value>Template ids are required.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_TemplateId_Invalid" xml:space="preserve">
+    <value>One of the templates is invalid.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_TemplateIds_Duplicated" xml:space="preserve">
+    <value>The same template cannot be duplicated.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_CurrentActor_NotAllowed" xml:space="preserve">
+    <value>Current user is not allowed to assign templates to operator.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_Actor_Ambiguous" xml:space="preserve">
+    <value>Current actor is ambiguous in the system.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_Operator_NotFound" xml:space="preserve">
+    <value>Operator was not found.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>Cannot assign templates to an operator outside the current department admin scope.</value>
+  </data>
+  <data name="AssignTemplatesToOperator_Template_NotFoundOrInactive" xml:space="preserve">
+    <value>One of the templates was not found or is inactive.</value>
+  </data>
+  <data name="GetMyOperatorTemplates_CurrentOperator_NotFound" xml:space="preserve">
+    <value>Current operator profile was not found.</value>
+  </data>
 </root>
