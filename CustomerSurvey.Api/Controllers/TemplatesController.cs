@@ -1,11 +1,13 @@
 ﻿using BuildingBlock.Api;
 using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Api.Contracts.Templates;
+using CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsToTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.CreateTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.DeleteTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.RestoreTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate;
 using CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails;
+using CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestionsSelection;
 using CustomerSurvey.Application.Features.Templates.Query.GetTemplatesForSelection;
 using CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagination;
 using MediatR;
@@ -64,6 +66,40 @@ namespace CustomerSurvey.Api.Controllers
             };
 
             var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("{templateId:guid}/questions-selection")]
+        [Permission("Templates.AssignQuestions")]
+        public async Task<IActionResult> GetQuestionsSelection(
+    Guid templateId,
+    CancellationToken cancellationToken)
+        {
+            var query = new GetTemplateQuestionsSelectionQuery
+            {
+                TemplateId = templateId
+            };
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("{templateId:guid}/questions")]
+        [Permission("Templates.AssignQuestions")]
+        public async Task<IActionResult> AssignQuestions(
+    Guid templateId,
+    [FromBody] AssignQuestionsToTemplateRequest request,
+    CancellationToken cancellationToken)
+        {
+            var command = new AssignQuestionsToTemplateCommand
+            {
+                TemplateId = templateId,
+                QuestionIds = request.QuestionIds
+            };
+
+            var result = await sender.Send(command, cancellationToken);
 
             return result.ToIActionResult();
         }
