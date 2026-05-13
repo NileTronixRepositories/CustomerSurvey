@@ -2,22 +2,20 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Features.Questions.Shared;
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
 {
     internal sealed class CreateQuestionCommandHandler
-          : ICommandHandler<CreateQuestionCommand, CreateQuestionResponse>
+        : ICommandHandler<CreateQuestionCommand, CreateQuestionResponse>
     {
         private readonly IWriteReadRepository<QuestionGroup> _questionGroupReadRepository;
         private readonly IWriteRepository<Question> _questionWriteRepository;
+        private readonly IWriteRepository<QuestionOption> _questionOptionWriteRepository;
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly ICurrentUser _currentUser;
@@ -26,6 +24,7 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
         public CreateQuestionCommandHandler(
             IWriteReadRepository<QuestionGroup> questionGroupReadRepository,
             IWriteRepository<Question> questionWriteRepository,
+            IWriteRepository<QuestionOption> questionOptionWriteRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             ICurrentUser currentUser,
@@ -36,6 +35,9 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
 
             _questionWriteRepository = questionWriteRepository
                 ?? throw new ArgumentNullException(nameof(questionWriteRepository));
+
+            _questionOptionWriteRepository = questionOptionWriteRepository
+                ?? throw new ArgumentNullException(nameof(questionOptionWriteRepository));
 
             _branchAdminReadRepository = branchAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
@@ -110,6 +112,38 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
 
             await _questionWriteRepository.AddAsync(question, cancellationToken);
 
+            var optionResponses = Array.Empty<QuestionOptionResponse>();
+
+            if (request.Type == QuestionType.SingleChoice)
+            {
+                var options = request.Options
+                    .OrderBy(x => x.Order)
+                    .Select(option => QuestionOption.Create(
+                        questionId: question.Id,
+                        textEn: option.TextEn,
+                        textAr: option.TextAr,
+                        order: option.Order,
+                        createdByApplicationUserId: currentApplicationUserId))
+                    .ToArray();
+
+                foreach (var option in options)
+                {
+                    await _questionOptionWriteRepository.AddAsync(option, cancellationToken);
+                }
+
+                optionResponses = options
+                    .Select(option => new QuestionOptionResponse
+                    {
+                        OptionId = option.Id,
+                        QuestionId = option.QuestionId,
+                        TextEn = option.TextEn,
+                        TextAr = option.TextAr,
+                        Order = option.Order,
+                        IsActive = option.IsActive
+                    })
+                    .ToArray();
+            }
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             var response = new CreateQuestionResponse
@@ -120,7 +154,9 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
                 TextEn = question.TextEn,
                 TextAr = question.TextAr,
                 Type = question.Type,
-                IsActive = question.IsActive
+                TypeName = question.Type.ToString(),
+                IsActive = question.IsActive,
+                Options = optionResponses
             };
 
             return Result<CreateQuestionResponse>.Ok(response);

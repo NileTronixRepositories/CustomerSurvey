@@ -3,6 +3,8 @@ using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Features.Questions.Shared;
+using CustomerSurvey.Application.Features.Questions.Shared.Specs;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
@@ -19,6 +21,7 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
     {
         private readonly IWriteReadRepository<Question> _questionReadRepository;
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
+        private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly ICurrentUser _currentUser;
 
@@ -26,6 +29,7 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
             IWriteReadRepository<Question> questionReadRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
+            IWriteReadRepository<QuestionOption> questionOptionReadRepository,
             ICurrentUser currentUser)
         {
             _questionReadRepository = questionReadRepository
@@ -39,6 +43,9 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
+
+            _questionOptionReadRepository = questionOptionReadRepository
+                ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
         }
 
         public async Task<Result<Pagination<QuestionPaginationItemResponse>>> Handle(
@@ -77,11 +84,48 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
                 spec,
                 cancellationToken);
 
+            var questionIds = items
+                .Select(x => x.QuestionId)
+                .Distinct()
+                .ToArray();
+
+            IReadOnlyCollection<QuestionOptionResponse> options;
+
+            if (questionIds.Length == 0)
+            {
+                options = Array.Empty<QuestionOptionResponse>();
+            }
+            else
+            {
+                options = await _questionOptionReadRepository.ListAsync(
+                    new GetQuestionOptionsByQuestionIdsSpec(questionIds),
+                    cancellationToken);
+            }
+
+            var optionsByQuestionId = options
+                .GroupBy(x => x.QuestionId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => (IReadOnlyCollection<QuestionOptionResponse>)x
+                        .OrderBy(option => option.Order)
+                        .ToArray());
+
+            var itemsWithOptions = items
+                .Select(question => question with
+                {
+                    Options = optionsByQuestionId.TryGetValue(
+                        question.QuestionId,
+                        out var questionOptions)
+                            ? questionOptions
+                            : Array.Empty<QuestionOptionResponse>()
+                })
+                .ToArray();
+
             var response = new Pagination<QuestionPaginationItemResponse>(
                 currentPage: request.PageNumber,
                 pageSize: request.PageSize,
                 totalItems: totalCount,
-                data: items);
+                data: itemsWithOptions);
 
             return Result<Pagination<QuestionPaginationItemResponse>>.Ok(response);
         }

@@ -2,13 +2,11 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Features.Questions.Shared;
+using CustomerSurvey.Application.Features.Questions.Shared.Specs;
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTemplates
 {
@@ -20,12 +18,14 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         private readonly IWriteReadRepository<DomainOperator> _operatorReadRepository;
         private readonly IWriteReadRepository<OperatorTemplate> _operatorTemplateReadRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
+        private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
         private readonly ICurrentUser _currentUser;
 
         public GetMyOperatorTemplatesQueryHandler(
             IWriteReadRepository<DomainOperator> operatorReadRepository,
             IWriteReadRepository<OperatorTemplate> operatorTemplateReadRepository,
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
+            IWriteReadRepository<QuestionOption> questionOptionReadRepository,
             ICurrentUser currentUser)
         {
             _operatorReadRepository = operatorReadRepository
@@ -36,6 +36,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
             _templateQuestionReadRepository = templateQuestionReadRepository
                 ?? throw new ArgumentNullException(nameof(templateQuestionReadRepository));
+
+            _questionOptionReadRepository = questionOptionReadRepository
+                ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -89,34 +92,78 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                     cancellationToken);
             }
 
+            var questionIds = templateQuestions
+                .Select(x => x.QuestionId)
+                .Distinct()
+                .ToArray();
+
+            IReadOnlyCollection<QuestionOptionResponse> questionOptions;
+
+            if (questionIds.Length == 0)
+            {
+                questionOptions = Array.Empty<QuestionOptionResponse>();
+            }
+            else
+            {
+                questionOptions = await _questionOptionReadRepository.ListAsync(
+                    new GetQuestionOptionsByQuestionIdsSpec(questionIds),
+                    cancellationToken);
+            }
+
+            var optionsByQuestionId = questionOptions
+                .GroupBy(x => x.QuestionId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => (IReadOnlyCollection<MyOperatorQuestionOptionResponse>)x
+                        .OrderBy(option => option.Order)
+                        .Select(option => new MyOperatorQuestionOptionResponse
+                        {
+                            OptionId = option.OptionId,
+                            TextEn = option.TextEn,
+                            TextAr = option.TextAr,
+                            Order = option.Order
+                        })
+                        .ToArray());
+
             var questionsByTemplateId = templateQuestions
                 .GroupBy(x => x.TemplateId)
                 .ToDictionary(
                     x => x.Key,
                     x => (IReadOnlyCollection<MyOperatorTemplateQuestionResponse>)x
                         .OrderBy(q => q.Order)
-                        .Select(q => new MyOperatorTemplateQuestionResponse
+                        .Select(q =>
                         {
-                            TemplateQuestionId = q.TemplateQuestionId,
-                            QuestionId = q.QuestionId,
-                            Order = q.Order,
-                            TextEn = q.TextEn,
-                            TextAr = q.TextAr,
-                            Type = q.Type,
-                            GroupId = q.GroupId,
-                            GroupNameEn = q.GroupNameEn,
-                            GroupNameAr = q.GroupNameAr
+                            IReadOnlyCollection<MyOperatorQuestionOptionResponse> options =
+                                q.Type == QuestionType.SingleChoice.ToString()
+                                && optionsByQuestionId.TryGetValue(q.QuestionId, out var questionOptionsList)
+                                    ? questionOptionsList
+                                    : Array.Empty<MyOperatorQuestionOptionResponse>();
+
+                            return new MyOperatorTemplateQuestionResponse
+                            {
+                                TemplateQuestionId = q.TemplateQuestionId,
+                                QuestionId = q.QuestionId,
+                                Order = q.Order,
+                                TextEn = q.TextEn,
+                                TextAr = q.TextAr,
+                                Type = q.Type,
+                                GroupId = q.GroupId,
+                                GroupNameEn = q.GroupNameEn,
+                                GroupNameAr = q.GroupNameAr,
+                                Options = options
+                            };
                         })
                         .ToArray());
 
             var templateItems = templates
                 .Select(template =>
                 {
-                    var questions = questionsByTemplateId.TryGetValue(
-                        template.TemplateId,
-                        out var templateQuestionsList)
-                            ? templateQuestionsList
-                            : Array.Empty<MyOperatorTemplateQuestionResponse>();
+                    IReadOnlyCollection<MyOperatorTemplateQuestionResponse> questions =
+                        questionsByTemplateId.TryGetValue(
+                            template.TemplateId,
+                            out var templateQuestionsList)
+                                ? templateQuestionsList
+                                : Array.Empty<MyOperatorTemplateQuestionResponse>();
 
                     return new MyOperatorTemplateItemResponse
                     {

@@ -984,4 +984,55 @@
   <data name="GetMyOperatorTemplates_CurrentOperator_NotFound" xml:space="preserve">
     <value>لم يتم العثور على حساب المشغل الحالي.</value>
   </data>
+  <data name="CreateQuestion_Options_InvalidForType" xml:space="preserve">
+    <value>الاختيارات مسموحة فقط مع نوع السؤال اختيار واحد.</value>
+  </data>
+  <data name="CreateQuestion_Options_MinCount" xml:space="preserve">
+    <value>سؤال الاختيار الواحد يجب أن يحتوي على اختيارين على الأقل.</value>
+  </data>
+  <data name="CreateQuestion_Option_TextEn_Required" xml:space="preserve">
+    <value>نص الاختيار باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="CreateQuestion_Option_TextEn_MaxLength" xml:space="preserve">
+    <value>نص الاختيار باللغة الإنجليزية يجب ألا يزيد عن 300 حرف.</value>
+  </data>
+  <data name="CreateQuestion_Option_TextAr_MaxLength" xml:space="preserve">
+    <value>نص الاختيار باللغة العربية يجب ألا يزيد عن 300 حرف.</value>
+  </data>
+  <data name="CreateQuestion_Option_Order_Invalid" xml:space="preserve">
+    <value>ترتيب الاختيار يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="CreateQuestion_Options_TextEn_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار نص الاختيار داخل نفس السؤال.</value>
+  </data>
+  <data name="CreateQuestion_Options_Order_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار ترتيب الاختيار داخل نفس السؤال.</value>
+  </data>
+  <data name="UpdateQuestion_Options_InvalidForType" xml:space="preserve">
+    <value>الاختيارات مسموحة فقط مع نوع السؤال اختيار واحد.</value>
+  </data>
+  <data name="UpdateQuestion_Options_MinCount" xml:space="preserve">
+    <value>سؤال الاختيار الواحد يجب أن يحتوي على اختيارين على الأقل.</value>
+  </data>
+  <data name="UpdateQuestion_Option_TextEn_Required" xml:space="preserve">
+    <value>نص الاختيار باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="UpdateQuestion_Option_TextEn_MaxLength" xml:space="preserve">
+    <value>نص الاختيار باللغة الإنجليزية يجب ألا يزيد عن 300 حرف.</value>
+  </data>
+  <data name="UpdateQuestion_Option_TextAr_MaxLength" xml:space="preserve">
+    <value>نص الاختيار باللغة العربية يجب ألا يزيد عن 300 حرف.</value>
+  </data>
+  <data name="UpdateQuestion_Option_Order_Invalid" xml:space="preserve">
+    <value>ترتيب الاختيار يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="UpdateQuestion_Options_TextEn_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار نص الاختيار داخل نفس السؤال.</value>
+  </data>
+  <data name="UpdateQuestion_Options_Order_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار ترتيب الاختيار داخل نفس السؤال.</value>
+  </data>
+  <data name="UpdateQuestion_Type_CannotChangeAfterTemplateAssignment" xml:space="preserve">
+    <value>لا يمكن تغيير نوع السؤال بعد ربطه بقالب.</value>
+  </data>
 </root>

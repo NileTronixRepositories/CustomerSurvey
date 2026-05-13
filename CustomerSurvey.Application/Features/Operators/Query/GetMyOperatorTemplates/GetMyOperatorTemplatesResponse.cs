@@ -61,5 +61,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public string GroupNameEn { get; init; } = string.Empty;
 
         public string? GroupNameAr { get; init; }
+
+        public IReadOnlyCollection<MyOperatorQuestionOptionResponse> Options { get; init; }
+            = Array.Empty<MyOperatorQuestionOptionResponse>();
     }
 }

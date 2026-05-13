@@ -1204,6 +1204,78 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Option order must be greater than zero..
+        /// </summary>
+        public static string CreateQuestion_Option_Order_Invalid {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Option_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option Arabic text must not exceed 300 characters..
+        /// </summary>
+        public static string CreateQuestion_Option_TextAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Option_TextAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text must not exceed 300 characters..
+        /// </summary>
+        public static string CreateQuestion_Option_TextEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Option_TextEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text is required..
+        /// </summary>
+        public static string CreateQuestion_Option_TextEn_Required {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Option_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options are allowed only for SingleChoice questions..
+        /// </summary>
+        public static string CreateQuestion_Options_InvalidForType {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Options_InvalidForType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SingleChoice question must have at least two options..
+        /// </summary>
+        public static string CreateQuestion_Options_MinCount {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Options_MinCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option order cannot be duplicated inside the same question..
+        /// </summary>
+        public static string CreateQuestion_Options_Order_Duplicated {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Options_Order_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text cannot be duplicated inside the same question..
+        /// </summary>
+        public static string CreateQuestion_Options_TextEn_Duplicated {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Options_TextEn_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create a question inside an inactive question group..
         /// </summary>
         public static string CreateQuestion_QuestionGroup_Inactive {
@@ -2455,6 +2527,78 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Option order must be greater than zero..
+        /// </summary>
+        public static string UpdateQuestion_Option_Order_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Option_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option Arabic text must not exceed 300 characters..
+        /// </summary>
+        public static string UpdateQuestion_Option_TextAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Option_TextAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text must not exceed 300 characters..
+        /// </summary>
+        public static string UpdateQuestion_Option_TextEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Option_TextEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UpdateQuestion_Option_TextEn_Required.
+        /// </summary>
+        public static string UpdateQuestion_Option_TextEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Option_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options are allowed only for SingleChoice questions..
+        /// </summary>
+        public static string UpdateQuestion_Options_InvalidForType {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Options_InvalidForType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SingleChoice question must have at least two options..
+        /// </summary>
+        public static string UpdateQuestion_Options_MinCount {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Options_MinCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UpdateQuestion_Options_Order_Duplicated.
+        /// </summary>
+        public static string UpdateQuestion_Options_Order_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Options_Order_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text cannot be duplicated inside the same question..
+        /// </summary>
+        public static string UpdateQuestion_Options_TextEn_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Options_TextEn_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Question was not found..
         /// </summary>
         public static string UpdateQuestion_Question_NotFound {
@@ -2514,6 +2658,15 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateQuestion_TextEn_Required {
             get {
                 return ResourceManager.GetString("UpdateQuestion_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question type cannot be changed after being assigned to a template..
+        /// </summary>
+        public static string UpdateQuestion_Type_CannotChangeAfterTemplateAssignment {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Type_CannotChangeAfterTemplateAssignment", resourceCulture);
             }
         }
         

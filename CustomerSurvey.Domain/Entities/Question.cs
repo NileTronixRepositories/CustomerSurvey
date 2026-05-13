@@ -10,6 +10,8 @@ namespace CustomerSurvey.Domain.Entities
 {
     public sealed class Question : AggregateRoot<Guid>
     {
+        private readonly List<QuestionOption> _options = new();
+
         public Guid BranchId { get; private set; }
         public Branch Branch { get; private set; } = null!;
 
@@ -22,6 +24,7 @@ namespace CustomerSurvey.Domain.Entities
         public bool IsActive { get; private set; }
 
         public Guid CreatedByApplicationUserId { get; private set; }
+        public IReadOnlyCollection<QuestionOption> Options => _options.AsReadOnly();
 
         private Question()
         {

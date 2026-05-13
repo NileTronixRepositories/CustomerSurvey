@@ -984,4 +984,55 @@
   <data name="GetMyOperatorTemplates_CurrentOperator_NotFound" xml:space="preserve">
     <value>Current operator profile was not found.</value>
   </data>
+  <data name="CreateQuestion_Options_InvalidForType" xml:space="preserve">
+    <value>Options are allowed only for SingleChoice questions.</value>
+  </data>
+  <data name="CreateQuestion_Options_MinCount" xml:space="preserve">
+    <value>SingleChoice question must have at least two options.</value>
+  </data>
+  <data name="CreateQuestion_Option_TextEn_Required" xml:space="preserve">
+    <value>Option English text is required.</value>
+  </data>
+  <data name="CreateQuestion_Option_TextEn_MaxLength" xml:space="preserve">
+    <value>Option English text must not exceed 300 characters.</value>
+  </data>
+  <data name="CreateQuestion_Option_TextAr_MaxLength" xml:space="preserve">
+    <value>Option Arabic text must not exceed 300 characters.</value>
+  </data>
+  <data name="CreateQuestion_Option_Order_Invalid" xml:space="preserve">
+    <value>Option order must be greater than zero.</value>
+  </data>
+  <data name="CreateQuestion_Options_TextEn_Duplicated" xml:space="preserve">
+    <value>Option English text cannot be duplicated inside the same question.</value>
+  </data>
+  <data name="CreateQuestion_Options_Order_Duplicated" xml:space="preserve">
+    <value>Option order cannot be duplicated inside the same question.</value>
+  </data>
+  <data name="UpdateQuestion_Options_InvalidForType" xml:space="preserve">
+    <value>Options are allowed only for SingleChoice questions.</value>
+  </data>
+  <data name="UpdateQuestion_Options_MinCount" xml:space="preserve">
+    <value>SingleChoice question must have at least two options.</value>
+  </data>
+  <data name="UpdateQuestion_Option_TextEn_Required" xml:space="preserve">
+    <value>UpdateQuestion_Option_TextEn_Required</value>
+  </data>
+  <data name="UpdateQuestion_Option_TextEn_MaxLength" xml:space="preserve">
+    <value>Option English text must not exceed 300 characters.</value>
+  </data>
+  <data name="UpdateQuestion_Option_TextAr_MaxLength" xml:space="preserve">
+    <value>Option Arabic text must not exceed 300 characters.</value>
+  </data>
+  <data name="UpdateQuestion_Option_Order_Invalid" xml:space="preserve">
+    <value>Option order must be greater than zero.</value>
+  </data>
+  <data name="UpdateQuestion_Options_TextEn_Duplicated" xml:space="preserve">
+    <value>Option English text cannot be duplicated inside the same question.</value>
+  </data>
+  <data name="UpdateQuestion_Options_Order_Duplicated" xml:space="preserve">
+    <value>UpdateQuestion_Options_Order_Duplicated</value>
+  </data>
+  <data name="UpdateQuestion_Type_CannotChangeAfterTemplateAssignment" xml:space="preserve">
+    <value>Question type cannot be changed after being assigned to a template.</value>
+  </data>
 </root>
