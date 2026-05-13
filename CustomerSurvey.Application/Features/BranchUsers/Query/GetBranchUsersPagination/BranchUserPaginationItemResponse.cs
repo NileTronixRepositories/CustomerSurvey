@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPagination
+﻿namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPagination
 {
     public sealed record BranchUserPaginationItemResponse
     {
@@ -23,6 +17,8 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
         public string Email { get; init; } = string.Empty;
 
         public string? PhoneNumber { get; init; }
+
+        public bool IsActive { get; init; }
 
         public DateTime CreatedOnUtc { get; init; }
 

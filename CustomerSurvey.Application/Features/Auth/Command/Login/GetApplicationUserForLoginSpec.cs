@@ -15,8 +15,8 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
             var value = userNameOrEmail.Trim();
 
             AddCriteria(x =>
-                x.UserName == value ||
-                x.Email == value);
+                x.IsActive &&
+                (x.UserName == value || x.Email == value));
         }
     }
 }

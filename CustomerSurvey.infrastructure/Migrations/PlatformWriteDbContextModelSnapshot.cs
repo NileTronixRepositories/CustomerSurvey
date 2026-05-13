@@ -256,6 +256,91 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.ToTable("QuestionOption");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.SurveyAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("QuestionType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SelectedQuestionOptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("SmileValue")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StarRatingValue")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SurveyResponseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TextAnswer")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("VoiceFileName")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("SelectedQuestionOptionId");
+
+                    b.HasIndex("SurveyResponseId", "QuestionId")
+                        .IsUnique();
+
+                    b.ToTable("SurveyAnswer");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.SurveyResponse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("OperatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("SubmittedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OperatorId");
+
+                    b.HasIndex("SubmittedOnUtc");
+
+                    b.HasIndex("TemplateId");
+
+                    b.ToTable("SurveyResponse");
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Template", b =>
                 {
                     b.Property<Guid>("Id")
@@ -739,6 +824,51 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.SurveyAnswer", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.QuestionOption", "SelectedQuestionOption")
+                        .WithMany()
+                        .HasForeignKey("SelectedQuestionOptionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.SurveyResponse", "SurveyResponse")
+                        .WithMany("Answers")
+                        .HasForeignKey("SurveyResponseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("SelectedQuestionOption");
+
+                    b.Navigation("SurveyResponse");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.SurveyResponse", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Identity.Operator", "Operator")
+                        .WithMany()
+                        .HasForeignKey("OperatorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.Template", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Operator");
+
+                    b.Navigation("Template");
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Template", b =>
                 {
                     b.HasOne("CustomerSurvey.Domain.Entities.Branch", "Branch")
@@ -916,6 +1046,11 @@ namespace CustomerSurvey.infrastructure.Migrations
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.QuestionGroup", b =>
                 {
                     b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.SurveyResponse", b =>
+                {
+                    b.Navigation("Answers");
                 });
 
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Template", b =>

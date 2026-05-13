@@ -55,6 +55,9 @@ internal static class SeedConstants
         public const string BranchUsersCreate = "BranchUsers.Create";
         public const string BranchUsersViewAll = "BranchUsers.ViewAll";
         public const string BranchUsersAssignRoles = "BranchUsers.AssignRoles";
+        public const string BranchUsersUpdate = "BranchUsers.Update";
+        public const string BranchUsersDelete = "BranchUsers.Delete";
+        public const string BranchUsersResetPassword = "BranchUsers.ResetPassword";
 
         public const string RolesViewSelection = "Roles.ViewSelection";
 
@@ -79,9 +82,10 @@ internal static class SeedConstants
         public const string OperatorsCreate = "Operators.Create";
         public const string OperatorsViewAll = "Operators.ViewAll";
         public const string OperatorsAssignTemplates = "Operators.AssignTemplates";
+        public const string OperatorsUpdate = "Operators.Update";
 
         public const string OperatorTemplatesViewMine = "OperatorTemplates.ViewMine";
-        public const string OperatorsUpdate = "Operators.Update";
+        public const string OperatorTemplatesSubmitResponse = "OperatorTemplates.SubmitResponse";
 
         public const string ReportsViewBranchReports = "Reports.ViewBranchReports";
     }
@@ -219,14 +223,26 @@ internal static class SeedConstants
             public static readonly Guid OperatorTemplatesViewMine =
                 Guid.Parse("12000000-0000-0000-0000-000000000035");
 
-            public static readonly Guid OperatorsUpdate =
-    Guid.Parse("12000000-0000-0000-0000-000000000038");
-
             public static readonly Guid DepartmentsUpdate =
                 Guid.Parse("12000000-0000-0000-0000-000000000036");
 
             public static readonly Guid DepartmentsDelete =
                 Guid.Parse("12000000-0000-0000-0000-000000000037");
+
+            public static readonly Guid OperatorsUpdate =
+                Guid.Parse("12000000-0000-0000-0000-000000000038");
+
+            public static readonly Guid OperatorTemplatesSubmitResponse =
+                Guid.Parse("12000000-0000-0000-0000-000000000039");
+
+            public static readonly Guid BranchUsersUpdate =
+                Guid.Parse("12000000-0000-0000-0000-000000000040");
+
+            public static readonly Guid BranchUsersDelete =
+                Guid.Parse("12000000-0000-0000-0000-000000000041");
+
+            public static readonly Guid BranchUsersResetPassword =
+                Guid.Parse("12000000-0000-0000-0000-000000000042");
         }
     }
 
@@ -271,6 +287,9 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.BranchUsersCreate, PermissionNames.BranchUsersCreate),
             new PermissionSeedItem(SeedIds.Permissions.BranchUsersViewAll, PermissionNames.BranchUsersViewAll),
             new PermissionSeedItem(SeedIds.Permissions.BranchUsersAssignRoles, PermissionNames.BranchUsersAssignRoles),
+            new PermissionSeedItem(SeedIds.Permissions.BranchUsersUpdate, PermissionNames.BranchUsersUpdate),
+            new PermissionSeedItem(SeedIds.Permissions.BranchUsersDelete, PermissionNames.BranchUsersDelete),
+            new PermissionSeedItem(SeedIds.Permissions.BranchUsersResetPassword, PermissionNames.BranchUsersResetPassword),
 
             new PermissionSeedItem(SeedIds.Permissions.RolesViewSelection, PermissionNames.RolesViewSelection),
 
@@ -295,9 +314,10 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.OperatorsCreate, PermissionNames.OperatorsCreate),
             new PermissionSeedItem(SeedIds.Permissions.OperatorsViewAll, PermissionNames.OperatorsViewAll),
             new PermissionSeedItem(SeedIds.Permissions.OperatorsAssignTemplates, PermissionNames.OperatorsAssignTemplates),
+            new PermissionSeedItem(SeedIds.Permissions.OperatorsUpdate, PermissionNames.OperatorsUpdate),
 
             new PermissionSeedItem(SeedIds.Permissions.OperatorTemplatesViewMine, PermissionNames.OperatorTemplatesViewMine),
-            new PermissionSeedItem(SeedIds.Permissions.OperatorsUpdate, PermissionNames.OperatorsUpdate),
+            new PermissionSeedItem(SeedIds.Permissions.OperatorTemplatesSubmitResponse, PermissionNames.OperatorTemplatesSubmitResponse),
 
             new PermissionSeedItem(SeedIds.Permissions.ReportsViewBranchReports, PermissionNames.ReportsViewBranchReports)
         ];
@@ -343,6 +363,9 @@ internal static class SeedConstants
                 SeedIds.Permissions.BranchUsersCreate,
                 SeedIds.Permissions.BranchUsersViewAll,
                 SeedIds.Permissions.BranchUsersAssignRoles,
+                SeedIds.Permissions.BranchUsersUpdate,
+                SeedIds.Permissions.BranchUsersDelete,
+                SeedIds.Permissions.BranchUsersResetPassword,
 
                 SeedIds.Permissions.RolesViewSelection,
 
@@ -382,8 +405,7 @@ internal static class SeedConstants
                 SeedIds.Permissions.OperatorsCreate,
                 SeedIds.Permissions.OperatorsViewAll,
                 SeedIds.Permissions.OperatorsAssignTemplates,
-                        SeedIds.Permissions.OperatorsUpdate,
-
+                SeedIds.Permissions.OperatorsUpdate,
                 SeedIds.Permissions.TemplatesViewSelection
             ];
 
@@ -446,9 +468,18 @@ internal static class SeedConstants
 
         private static void AddOperatorPermissions(List<RolePermissionSeedItem> result)
         {
-            result.Add(new RolePermissionSeedItem(
-                SeedIds.Roles.Operator,
-                SeedIds.Permissions.OperatorTemplatesViewMine));
+            var roleId = SeedIds.Roles.Operator;
+
+            Guid[] permissionIds =
+            [
+                SeedIds.Permissions.OperatorTemplatesViewMine,
+                SeedIds.Permissions.OperatorTemplatesSubmitResponse
+            ];
+
+            foreach (var permissionId in permissionIds)
+            {
+                result.Add(new RolePermissionSeedItem(roleId, permissionId));
+            }
         }
     }
 }

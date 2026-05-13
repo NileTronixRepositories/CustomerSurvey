@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTemplates
+﻿namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTemplates
 {
     public sealed record GetMyOperatorTemplatesResponse
     {
@@ -38,6 +32,10 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public int QuestionsCount { get; init; }
 
+        public bool HasAnswered { get; init; }
+
+        public MyOperatorTemplateLatestResponse? LatestResponse { get; init; }
+
         public IReadOnlyCollection<MyOperatorTemplateQuestionResponse> Questions { get; init; }
             = Array.Empty<MyOperatorTemplateQuestionResponse>();
     }
@@ -64,5 +62,40 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public IReadOnlyCollection<MyOperatorQuestionOptionResponse> Options { get; init; }
             = Array.Empty<MyOperatorQuestionOptionResponse>();
+    }
+
+    public sealed record MyOperatorTemplateLatestResponse
+    {
+        public Guid SurveyResponseId { get; init; }
+
+        public DateTime SubmittedOnUtc { get; init; }
+
+        public int AnswersCount { get; init; }
+
+        public IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse> Answers { get; init; }
+            = Array.Empty<MyOperatorTemplateLatestAnswerResponse>();
+    }
+
+    public sealed record MyOperatorTemplateLatestAnswerResponse
+    {
+        public Guid QuestionId { get; init; }
+
+        public string QuestionType { get; init; } = string.Empty;
+
+        public Guid? SelectedQuestionOptionId { get; init; }
+
+        public string? SelectedOptionTextEn { get; init; }
+
+        public string? SelectedOptionTextAr { get; init; }
+
+        public int? StarRatingValue { get; init; }
+
+        public int? SmileValue { get; init; }
+
+        public string? TextAnswer { get; init; }
+
+        public string? VoiceFileName { get; init; }
+
+        public string? VoiceFileUrl { get; init; }
     }
 }

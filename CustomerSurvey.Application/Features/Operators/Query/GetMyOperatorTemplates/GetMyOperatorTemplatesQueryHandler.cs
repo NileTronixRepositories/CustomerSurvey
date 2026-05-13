@@ -4,6 +4,7 @@ using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Features.Questions.Shared;
 using CustomerSurvey.Application.Features.Questions.Shared.Specs;
+using CustomerSurvey.Domain.Common;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Resources;
@@ -19,6 +20,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         private readonly IWriteReadRepository<OperatorTemplate> _operatorTemplateReadRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
         private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
+        private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
+        private readonly IWriteReadRepository<SurveyAnswer> _surveyAnswerReadRepository;
         private readonly ICurrentUser _currentUser;
 
         public GetMyOperatorTemplatesQueryHandler(
@@ -26,6 +29,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
             IWriteReadRepository<OperatorTemplate> operatorTemplateReadRepository,
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
             IWriteReadRepository<QuestionOption> questionOptionReadRepository,
+            IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
+            IWriteReadRepository<SurveyAnswer> surveyAnswerReadRepository,
             ICurrentUser currentUser)
         {
             _operatorReadRepository = operatorReadRepository
@@ -39,6 +44,12 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
             _questionOptionReadRepository = questionOptionReadRepository
                 ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
+
+            _surveyResponseReadRepository = surveyResponseReadRepository
+                ?? throw new ArgumentNullException(nameof(surveyResponseReadRepository));
+
+            _surveyAnswerReadRepository = surveyAnswerReadRepository
+                ?? throw new ArgumentNullException(nameof(surveyAnswerReadRepository));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -110,6 +121,21 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                     cancellationToken);
             }
 
+            var latestResponsesByTemplateId = await GetLatestResponsesByTemplateIdAsync(
+                currentOperator.OperatorId,
+                templateIds,
+                cancellationToken);
+
+            var latestResponseIds = latestResponsesByTemplateId
+                .Values
+                .Select(x => x.SurveyResponseId)
+                .Distinct()
+                .ToArray();
+
+            var latestAnswersBySurveyResponseId = await GetLatestAnswersBySurveyResponseIdAsync(
+                latestResponseIds,
+                cancellationToken);
+
             var optionsByQuestionId = questionOptions
                 .GroupBy(x => x.QuestionId)
                 .ToDictionary(
@@ -135,7 +161,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                         {
                             IReadOnlyCollection<MyOperatorQuestionOptionResponse> options =
                                 q.Type == QuestionType.SingleChoice.ToString()
-                                && optionsByQuestionId.TryGetValue(q.QuestionId, out var questionOptionsList)
+                                && optionsByQuestionId.TryGetValue(
+                                    q.QuestionId,
+                                    out var questionOptionsList)
                                     ? questionOptionsList
                                     : Array.Empty<MyOperatorQuestionOptionResponse>();
 
@@ -165,6 +193,11 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                                 ? templateQuestionsList
                                 : Array.Empty<MyOperatorTemplateQuestionResponse>();
 
+                    var latestResponse = BuildLatestResponse(
+                        template.TemplateId,
+                        latestResponsesByTemplateId,
+                        latestAnswersBySurveyResponseId);
+
                     return new MyOperatorTemplateItemResponse
                     {
                         TemplateId = template.TemplateId,
@@ -176,6 +209,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                         BranchNameAr = template.BranchNameAr,
                         BranchCode = template.BranchCode,
                         QuestionsCount = questions.Count,
+                        HasAnswered = latestResponse is not null,
+                        LatestResponse = latestResponse,
                         Questions = questions
                     };
                 })
@@ -190,6 +225,103 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
             };
 
             return Result<GetMyOperatorTemplatesResponse>.Ok(response);
+        }
+
+        private async Task<IReadOnlyDictionary<Guid, LatestSurveyResponseForMyOperatorTemplateDto>>
+            GetLatestResponsesByTemplateIdAsync(
+                Guid operatorId,
+                IReadOnlyCollection<Guid> templateIds,
+                CancellationToken cancellationToken)
+        {
+            if (templateIds.Count == 0)
+            {
+                return new Dictionary<Guid, LatestSurveyResponseForMyOperatorTemplateDto>();
+            }
+
+            var surveyResponses = await _surveyResponseReadRepository.ListAsync(
+                new GetLatestSurveyResponsesForMyOperatorTemplatesSpec(
+                    operatorId,
+                    templateIds),
+                cancellationToken);
+
+            return surveyResponses
+                .GroupBy(x => x.TemplateId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => x
+                        .OrderByDescending(response => response.SubmittedOnUtc)
+                        .First());
+        }
+
+        private async Task<IReadOnlyDictionary<Guid, IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse>>>
+            GetLatestAnswersBySurveyResponseIdAsync(
+                IReadOnlyCollection<Guid> latestResponseIds,
+                CancellationToken cancellationToken)
+        {
+            if (latestResponseIds.Count == 0)
+            {
+                return new Dictionary<Guid, IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse>>();
+            }
+
+            var answers = await _surveyAnswerReadRepository.ListAsync(
+                new GetLatestSurveyAnswersForMyOperatorTemplatesSpec(latestResponseIds),
+                cancellationToken);
+
+            return answers
+                .GroupBy(x => x.SurveyResponseId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => (IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse>)x
+                        .Select(answer => new MyOperatorTemplateLatestAnswerResponse
+                        {
+                            QuestionId = answer.QuestionId,
+                            QuestionType = answer.QuestionType.ToString(),
+                            SelectedQuestionOptionId = answer.SelectedQuestionOptionId,
+                            SelectedOptionTextEn = answer.SelectedOptionTextEn,
+                            SelectedOptionTextAr = answer.SelectedOptionTextAr,
+                            StarRatingValue = answer.StarRatingValue,
+                            SmileValue = answer.SmileValue,
+                            TextAnswer = answer.TextAnswer,
+                            VoiceFileName = answer.VoiceFileName,
+                            VoiceFileUrl = BuildVoiceFileUrl(answer.VoiceFileName)
+                        })
+                        .ToArray());
+        }
+
+        private static MyOperatorTemplateLatestResponse? BuildLatestResponse(
+            Guid templateId,
+            IReadOnlyDictionary<Guid, LatestSurveyResponseForMyOperatorTemplateDto> latestResponsesByTemplateId,
+            IReadOnlyDictionary<Guid, IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse>> answersBySurveyResponseId)
+        {
+            if (!latestResponsesByTemplateId.TryGetValue(templateId, out var latestResponse))
+            {
+                return null;
+            }
+
+            IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse> answers =
+                answersBySurveyResponseId.TryGetValue(
+                    latestResponse.SurveyResponseId,
+                    out var latestAnswers)
+                        ? latestAnswers
+                        : Array.Empty<MyOperatorTemplateLatestAnswerResponse>();
+
+            return new MyOperatorTemplateLatestResponse
+            {
+                SurveyResponseId = latestResponse.SurveyResponseId,
+                SubmittedOnUtc = latestResponse.SubmittedOnUtc,
+                AnswersCount = answers.Count,
+                Answers = answers
+            };
+        }
+
+        private static string? BuildVoiceFileUrl(string? voiceFileName)
+        {
+            if (string.IsNullOrWhiteSpace(voiceFileName))
+            {
+                return null;
+            }
+
+            return $"Media/{FileNames.SurveyVoiceAnswers}/{voiceFileName}";
         }
     }
 }

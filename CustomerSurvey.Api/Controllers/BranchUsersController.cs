@@ -1,9 +1,15 @@
-﻿using BuildingBlock.Api;
+﻿// CustomerSurvey.Api/Controllers/BranchUsersController.cs
+
+using BuildingBlock.Api;
 using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Api.Contracts.Branches;
 using CustomerSurvey.Api.Contracts.BranchUsers;
 using CustomerSurvey.Application.Features.BranchUsers.Command.AssignRolesToBranchUser;
 using CustomerSurvey.Application.Features.BranchUsers.Command.CreateBranchUser;
+using CustomerSurvey.Application.Features.BranchUsers.Command.DeleteBranchUser;
+using CustomerSurvey.Application.Features.BranchUsers.Command.ResetBranchUserPassword;
+using CustomerSurvey.Application.Features.BranchUsers.Command.RestoreBranchUser;
+using CustomerSurvey.Application.Features.BranchUsers.Command.UpdateBranchUser;
 using CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPagination;
 using CustomerSurvey.Application.Features.BranchUsers.Query.GetMyBranchUserRoles;
 using MediatR;
@@ -24,6 +30,17 @@ namespace CustomerSurvey.Api.Controllers
             this.sender = sender;
         }
 
+        [HttpGet("my-roles")]
+        public async Task<IActionResult> GetMyRoles(
+            CancellationToken cancellationToken)
+        {
+            var query = new GetMyBranchUserRolesQuery();
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
         [HttpGet]
         [Permission("BranchUsers.ViewAll")]
         public async Task<IActionResult> GetPaginated(
@@ -32,17 +49,6 @@ namespace CustomerSurvey.Api.Controllers
         {
             query ??= new GetBranchUsersPaginationQuery();
             query.SearchText ??= string.Empty;
-
-            var result = await sender.Send(query, cancellationToken);
-
-            return result.ToIActionResult();
-        }
-
-        [HttpGet("my-roles")]
-        public async Task<IActionResult> GetMyRoles(
-    CancellationToken cancellationToken)
-        {
-            var query = new GetMyBranchUserRolesQuery();
 
             var result = await sender.Send(query, cancellationToken);
 
@@ -71,6 +77,61 @@ namespace CustomerSurvey.Api.Controllers
             return result.ToIActionResult();
         }
 
+        [HttpPut("{userId:guid}")]
+        [Permission("BranchUsers.Update")]
+        public async Task<IActionResult> Update(
+            Guid userId,
+            [FromBody] UpdateBranchUserRequest request,
+            CancellationToken cancellationToken)
+        {
+            var command = new UpdateBranchUserCommand
+            {
+                ApplicationUserId = userId,
+                NameEn = request.NameEn,
+                NameAr = request.NameAr,
+                Email = request.Email,
+                PhoneNumber = request.PhoneNumber
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpDelete("{userId:guid}")]
+        [Permission("BranchUsers.Delete")]
+        public async Task<IActionResult> Delete(
+            Guid userId,
+            CancellationToken cancellationToken)
+        {
+            var command = new DeleteBranchUserCommand
+            {
+                ApplicationUserId = userId
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("{userId:guid}/reset-password")]
+        [Permission("BranchUsers.ResetPassword")]
+        public async Task<IActionResult> ResetPassword(
+            Guid userId,
+            [FromBody] ResetBranchUserPasswordRequest request,
+            CancellationToken cancellationToken)
+        {
+            var command = new ResetBranchUserPasswordCommand
+            {
+                ApplicationUserId = userId,
+                NewPassword = request.NewPassword
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
         [HttpPut("{userId:guid}/roles")]
         [Permission("BranchUsers.AssignRoles")]
         public async Task<IActionResult> AssignRoles(
@@ -82,6 +143,22 @@ namespace CustomerSurvey.Api.Controllers
             {
                 ApplicationUserId = userId,
                 RoleIds = request.RoleIds
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("{userId:guid}/restore")]
+        [Permission("BranchUsers.Update")]
+        public async Task<IActionResult> Restore(
+    Guid userId,
+    CancellationToken cancellationToken)
+        {
+            var command = new RestoreBranchUserCommand
+            {
+                ApplicationUserId = userId
             };
 
             var result = await sender.Send(command, cancellationToken);

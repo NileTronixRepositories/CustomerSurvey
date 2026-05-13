@@ -3,6 +3,7 @@ using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Api.Contracts.QuestionGroups;
 using CustomerSurvey.Application.Features.QuestionGroups.Command.CreateQuestionGroup;
 using CustomerSurvey.Application.Features.QuestionGroups.Command.DeleteQuestionGroup;
+using CustomerSurvey.Application.Features.QuestionGroups.Command.RestoreQuestionGroup;
 using CustomerSurvey.Application.Features.QuestionGroups.Command.UpdateQuestionGroup;
 using CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupsForSelection;
 using CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupsPagination;
@@ -93,6 +94,22 @@ namespace CustomerSurvey.Api.Controllers
             CancellationToken cancellationToken)
         {
             var command = new DeleteQuestionGroupCommand
+            {
+                GroupId = groupId
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("{groupId:guid}/restore")]
+        [Permission("QuestionGroups.Update")]
+        public async Task<IActionResult> Restore(
+    Guid groupId,
+    CancellationToken cancellationToken)
+        {
+            var command = new RestoreQuestionGroupCommand
             {
                 GroupId = groupId
             };

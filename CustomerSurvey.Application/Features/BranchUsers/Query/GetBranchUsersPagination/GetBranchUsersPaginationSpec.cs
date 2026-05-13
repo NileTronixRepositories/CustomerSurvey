@@ -27,6 +27,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
         public string Email { get; init; } = string.Empty;
 
         public string? PhoneNumber { get; init; }
+        public bool IsActive { get; init; }
 
         public DateTime CreatedOnUtc { get; init; }
     }
@@ -71,6 +72,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
             {
                 BranchUserId = x.Id,
                 ApplicationUserId = x.ApplicationUserId,
+                IsActive = x.ApplicationUser.IsActive,
                 BranchId = x.BranchId,
                 NameEn = x.ApplicationUser.NameEn,
                 NameAr = x.ApplicationUser.NameAr,

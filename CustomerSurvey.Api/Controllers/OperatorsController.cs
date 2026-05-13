@@ -7,6 +7,7 @@ using CustomerSurvey.Application.Features.Operators.Command.UpdateOperator;
 using CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTemplates;
 using CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagination;
 using CustomerSurvey.Application.Features.Operators.Query.GetOperatorTemplatesSelection;
+using CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOperatorTemplateResponse;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -128,6 +129,34 @@ namespace CustomerSurvey.Api.Controllers
             var query = new GetMyOperatorTemplatesQuery();
 
             var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPost("my-templates/{templateId:guid}/responses")]
+        [Permission("OperatorTemplates.SubmitResponse")]
+        public async Task<IActionResult> SubmitTemplateResponse(
+    Guid templateId,
+    [FromForm] SubmitOperatorTemplateResponseRequest request,
+    CancellationToken cancellationToken)
+        {
+            var command = new SubmitOperatorTemplateResponseCommand
+            {
+                TemplateId = templateId,
+                Answers = request.Answers
+                    .Select(x => new SubmitOperatorTemplateAnswerCommandItem
+                    {
+                        QuestionId = x.QuestionId,
+                        SelectedQuestionOptionId = x.SelectedQuestionOptionId,
+                        StarRatingValue = x.StarRatingValue,
+                        SmileValue = x.SmileValue,
+                        TextAnswer = x.TextAnswer,
+                        VoiceFile = x.VoiceFile
+                    })
+                    .ToArray()
+            };
+
+            var result = await sender.Send(command, cancellationToken);
 
             return result.ToIActionResult();
         }
