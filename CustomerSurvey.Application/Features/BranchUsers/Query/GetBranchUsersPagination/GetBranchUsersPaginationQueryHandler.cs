@@ -116,6 +116,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
                     CreatedOnUtc = user.CreatedOnUtc,
+                    IsActive = user.IsActive,
                     Roles = rolesByApplicationUserId.TryGetValue(
                         user.ApplicationUserId,
                         out var roles)

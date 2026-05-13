@@ -1035,4 +1035,235 @@
   <data name="UpdateQuestion_Type_CannotChangeAfterTemplateAssignment" xml:space="preserve">
     <value>Question type cannot be changed after being assigned to a template.</value>
   </data>
+  <data name="SubmitOperatorTemplateResponse_TemplateId_Required" xml:space="preserve">
+    <value>Template is required.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Answers_Required" xml:space="preserve">
+    <value>Answers are required.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_QuestionId_Required" xml:space="preserve">
+    <value>Question is required.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_TextAnswer_MaxLength" xml:space="preserve">
+    <value>SubmitOperatorTemplateResponse_TextAnswer_MaxLength</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CurrentOperator_NotFound" xml:space="preserve">
+    <value>Current operator profile was not found.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Template_NotAssigned" xml:space="preserve">
+    <value>This template is not assigned to the current operator.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Template_Inactive" xml:space="preserve">
+    <value>This template is inactive.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Template_HasNoQuestions" xml:space="preserve">
+    <value>This template has no active questions.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_DuplicateQuestionAnswers" xml:space="preserve">
+    <value>SubmitOperatorTemplateResponse_DuplicateQuestionAnswers</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Question_NotInTemplate" xml:space="preserve">
+    <value>One of the submitted questions does not belong to this template.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_AllQuestions_Required" xml:space="preserve">
+    <value>All template questions must be answered.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_QuestionType_Unsupported" xml:space="preserve">
+    <value>Question type is not supported.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_SingleChoice_InvalidShape" xml:space="preserve">
+    <value>Single choice answer must contain only selected option.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_SingleChoice_OptionRequired" xml:space="preserve">
+    <value>Selected option is required.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_SingleChoice_OptionInvalid" xml:space="preserve">
+    <value>Selected option is invalid for this question.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Voice_InvalidShape" xml:space="preserve">
+    <value>Voice answer must contain only a voice file.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Voice_FileRequired" xml:space="preserve">
+    <value>Voice file is required.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Voice_FileTooLarge" xml:space="preserve">
+    <value>Voice file size must not exceed 10 MB.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Voice_FileExtensionInvalid" xml:space="preserve">
+    <value>Voice file extension is not supported.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_StarRating_InvalidShape" xml:space="preserve">
+    <value>Star rating answer must contain only rating value.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_StarRating_ValueInvalid" xml:space="preserve">
+    <value>Star rating value must be between 1 and 5.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Complain_InvalidShape" xml:space="preserve">
+    <value>Complaint answer must contain only text.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Complain_TextRequired" xml:space="preserve">
+    <value>Complaint text is required.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Smiles_InvalidShape" xml:space="preserve">
+    <value>Smiles answer must contain only smile value.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Smiles_ValueInvalid" xml:space="preserve">
+    <value>Smiles value must be between 1 and 5.</value>
+  </data>
+  <data name="UpdateBranchUser_ApplicationUserId_Required" xml:space="preserve">
+    <value>User is required.</value>
+  </data>
+  <data name="UpdateBranchUser_NameEn_Required" xml:space="preserve">
+    <value>Branch user English name is required.</value>
+  </data>
+  <data name="UpdateBranchUser_NameEn_MaxLength" xml:space="preserve">
+    <value>Branch user English name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateBranchUser_NameAr_MaxLength" xml:space="preserve">
+    <value>Branch user Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateBranchUser_UserName_Required" xml:space="preserve">
+    <value>Username is required.</value>
+  </data>
+  <data name="UpdateBranchUser_UserName_MaxLength" xml:space="preserve">
+    <value>Username must not exceed 100 characters.</value>
+  </data>
+  <data name="UpdateBranchUser_Email_Required" xml:space="preserve">
+    <value>Email is required.</value>
+  </data>
+  <data name="UpdateBranchUser_Email_MaxLength" xml:space="preserve">
+    <value>Email must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateBranchUser_Email_Invalid" xml:space="preserve">
+    <value>Email address is invalid.</value>
+  </data>
+  <data name="UpdateBranchUser_PhoneNumber_MaxLength" xml:space="preserve">
+    <value>Phone number must not exceed 50 characters.</value>
+  </data>
+  <data name="UpdateBranchUser_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>Current Branch Admin profile was not found.</value>
+  </data>
+  <data name="UpdateBranchUser_BranchUser_NotFound" xml:space="preserve">
+    <value>Branch user was not found.</value>
+  </data>
+  <data name="UpdateBranchUser_BranchScope_Mismatch" xml:space="preserve">
+    <value>You cannot update a user outside your branch.</value>
+  </data>
+  <data name="UpdateBranchUser_ApplicationUser_NotFound" xml:space="preserve">
+    <value>Application user was not found.</value>
+  </data>
+  <data name="UpdateBranchUser_User_Inactive" xml:space="preserve">
+    <value>Cannot update an inactive user.</value>
+  </data>
+  <data name="UpdateBranchUser_UserName_AlreadyExists" xml:space="preserve">
+    <value>Username already exists.</value>
+  </data>
+  <data name="UpdateBranchUser_Email_AlreadyExists" xml:space="preserve">
+    <value>Email already exists.</value>
+  </data>
+  <data name="DeleteBranchUser_ApplicationUserId_Required" xml:space="preserve">
+    <value>Current Branch Admin profile was not found.</value>
+  </data>
+  <data name="DeleteBranchUser_BranchUser_NotFound" xml:space="preserve">
+    <value>Branch user was not found.</value>
+  </data>
+  <data name="DeleteBranchUser_BranchScope_Mismatch" xml:space="preserve">
+    <value>You cannot delete a user outside your branch.</value>
+  </data>
+  <data name="DeleteBranchUser_ApplicationUser_NotFound" xml:space="preserve">
+    <value>Application user was not found.</value>
+  </data>
+  <data name="DeleteBranchUser_Already_Inactive" xml:space="preserve">
+    <value>User is already inactive.</value>
+  </data>
+  <data name="ResetBranchUserPassword_ApplicationUserId_Required" xml:space="preserve">
+    <value>User is required.</value>
+  </data>
+  <data name="ResetBranchUserPassword_NewPassword_Required" xml:space="preserve">
+    <value>New password is required.</value>
+  </data>
+  <data name="ResetBranchUserPassword_NewPassword_MinLength" xml:space="preserve">
+    <value>New password must be at least 8 characters.</value>
+  </data>
+  <data name="ResetBranchUserPassword_NewPassword_MaxLength" xml:space="preserve">
+    <value>New password must not exceed 200 characters.</value>
+  </data>
+  <data name="ResetBranchUserPassword_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>Current Branch Admin profile was not found.</value>
+  </data>
+  <data name="ResetBranchUserPassword_BranchUser_NotFound" xml:space="preserve">
+    <value>Branch user was not found.</value>
+  </data>
+  <data name="ResetBranchUserPassword_BranchScope_Mismatch" xml:space="preserve">
+    <value>You cannot reset password for a user outside your branch.</value>
+  </data>
+  <data name="ResetBranchUserPassword_ApplicationUser_NotFound" xml:space="preserve">
+    <value>Application user was not found.</value>
+  </data>
+  <data name="ResetBranchUserPassword_User_Inactive" xml:space="preserve">
+    <value>Cannot reset password for an inactive user.</value>
+  </data>
+  <data name="DeleteBranchUser_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>Branch user was not found.</value>
+  </data>
+  <data name="RestoreBranchUser_ApplicationUserId_Required" xml:space="preserve">
+    <value>User is required.</value>
+  </data>
+  <data name="RestoreBranchUser_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>Current Branch Admin profile was not found.</value>
+  </data>
+  <data name="RestoreBranchUser_BranchUser_NotFound" xml:space="preserve">
+    <value>Branch user was not found.</value>
+  </data>
+  <data name="RestoreBranchUser_BranchScope_Mismatch" xml:space="preserve">
+    <value>You cannot restore a user outside your branch.</value>
+  </data>
+  <data name="RestoreBranchUser_ApplicationUser_NotFound" xml:space="preserve">
+    <value>Application user was not found.</value>
+  </data>
+  <data name="RestoreBranchUser_Already_Active" xml:space="preserve">
+    <value>User is already active.</value>
+  </data>
+  <data name="RestoreQuestionGroup_GroupId_Required" xml:space="preserve">
+    <value>Question group is required.</value>
+  </data>
+  <data name="RestoreQuestionGroup_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="RestoreQuestionGroup_QuestionGroup_NotFound" xml:space="preserve">
+    <value>Question group was not found.</value>
+  </data>
+  <data name="RestoreQuestionGroup_QuestionGroup_AlreadyActive" xml:space="preserve">
+    <value>Question group is already active.</value>
+  </data>
+  <data name="RestoreQuestion_QuestionId_Required" xml:space="preserve">
+    <value>Question is required.</value>
+  </data>
+  <data name="RestoreQuestion_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="RestoreQuestion_Question_NotFound" xml:space="preserve">
+    <value>Question was not found.</value>
+  </data>
+  <data name="RestoreQuestion_Question_AlreadyActive" xml:space="preserve">
+    <value>Question is already active.</value>
+  </data>
+  <data name="RestoreQuestion_QuestionGroup_NotFound" xml:space="preserve">
+    <value>Question group was not found.</value>
+  </data>
+  <data name="RestoreQuestion_QuestionGroup_Inactive" xml:space="preserve">
+    <value>Cannot restore question because its question group is inactive.</value>
+  </data>
+  <data name="GetBranchSatisfactionReport_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="GetBranchSatisfactionReport_Template_NotFound" xml:space="preserve">
+    <value>Template was not found inside current branch.</value>
+  </data>
+  <data name="GetBranchSatisfactionReport_DateRange_Invalid" xml:space="preserve">
+    <value>Report date range is invalid.</value>
+  </data>
+  <data name="GetBranchSatisfactionReport_DateRange_MaxExceeded" xml:space="preserve">
+    <value>Report date range cannot exceed 12 months.</value>
+  </data>
 </root>

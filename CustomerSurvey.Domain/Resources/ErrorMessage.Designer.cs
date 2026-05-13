@@ -1429,6 +1429,60 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User is already inactive..
+        /// </summary>
+        public static string DeleteBranchUser_Already_Inactive {
+            get {
+                return ResourceManager.GetString("DeleteBranchUser_Already_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application user was not found..
+        /// </summary>
+        public static string DeleteBranchUser_ApplicationUser_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteBranchUser_ApplicationUser_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Branch Admin profile was not found..
+        /// </summary>
+        public static string DeleteBranchUser_ApplicationUserId_Required {
+            get {
+                return ResourceManager.GetString("DeleteBranchUser_ApplicationUserId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot delete a user outside your branch..
+        /// </summary>
+        public static string DeleteBranchUser_BranchScope_Mismatch {
+            get {
+                return ResourceManager.GetString("DeleteBranchUser_BranchScope_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user was not found..
+        /// </summary>
+        public static string DeleteBranchUser_BranchUser_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteBranchUser_BranchUser_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user was not found..
+        /// </summary>
+        public static string DeleteBranchUser_CurrentBranchAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteBranchUser_CurrentBranchAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current Super Admin profile was not found..
         /// </summary>
         public static string DeleteDepartment_CurrentSuperAdmin_NotFound {
@@ -1650,6 +1704,42 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetBranchesSelection_CurrentSuperAdmin_NotFound {
             get {
                 return ResourceManager.GetString("GetBranchesSelection_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string GetBranchSatisfactionReport_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetBranchSatisfactionReport_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report date range is invalid..
+        /// </summary>
+        public static string GetBranchSatisfactionReport_DateRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchSatisfactionReport_DateRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report date range cannot exceed 12 months..
+        /// </summary>
+        public static string GetBranchSatisfactionReport_DateRange_MaxExceeded {
+            get {
+                return ResourceManager.GetString("GetBranchSatisfactionReport_DateRange_MaxExceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found inside current branch..
+        /// </summary>
+        public static string GetBranchSatisfactionReport_Template_NotFound {
+            get {
+                return ResourceManager.GetString("GetBranchSatisfactionReport_Template_NotFound", resourceCulture);
             }
         }
         
@@ -2185,6 +2275,231 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Application user was not found..
+        /// </summary>
+        public static string ResetBranchUserPassword_ApplicationUser_NotFound {
+            get {
+                return ResourceManager.GetString("ResetBranchUserPassword_ApplicationUser_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User is required..
+        /// </summary>
+        public static string ResetBranchUserPassword_ApplicationUserId_Required {
+            get {
+                return ResourceManager.GetString("ResetBranchUserPassword_ApplicationUserId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot reset password for a user outside your branch..
+        /// </summary>
+        public static string ResetBranchUserPassword_BranchScope_Mismatch {
+            get {
+                return ResourceManager.GetString("ResetBranchUserPassword_BranchScope_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user was not found..
+        /// </summary>
+        public static string ResetBranchUserPassword_BranchUser_NotFound {
+            get {
+                return ResourceManager.GetString("ResetBranchUserPassword_BranchUser_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Branch Admin profile was not found..
+        /// </summary>
+        public static string ResetBranchUserPassword_CurrentBranchAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("ResetBranchUserPassword_CurrentBranchAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New password must not exceed 200 characters..
+        /// </summary>
+        public static string ResetBranchUserPassword_NewPassword_MaxLength {
+            get {
+                return ResourceManager.GetString("ResetBranchUserPassword_NewPassword_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New password must be at least 8 characters..
+        /// </summary>
+        public static string ResetBranchUserPassword_NewPassword_MinLength {
+            get {
+                return ResourceManager.GetString("ResetBranchUserPassword_NewPassword_MinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New password is required..
+        /// </summary>
+        public static string ResetBranchUserPassword_NewPassword_Required {
+            get {
+                return ResourceManager.GetString("ResetBranchUserPassword_NewPassword_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot reset password for an inactive user..
+        /// </summary>
+        public static string ResetBranchUserPassword_User_Inactive {
+            get {
+                return ResourceManager.GetString("ResetBranchUserPassword_User_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User is already active..
+        /// </summary>
+        public static string RestoreBranchUser_Already_Active {
+            get {
+                return ResourceManager.GetString("RestoreBranchUser_Already_Active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application user was not found..
+        /// </summary>
+        public static string RestoreBranchUser_ApplicationUser_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreBranchUser_ApplicationUser_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User is required..
+        /// </summary>
+        public static string RestoreBranchUser_ApplicationUserId_Required {
+            get {
+                return ResourceManager.GetString("RestoreBranchUser_ApplicationUserId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot restore a user outside your branch..
+        /// </summary>
+        public static string RestoreBranchUser_BranchScope_Mismatch {
+            get {
+                return ResourceManager.GetString("RestoreBranchUser_BranchScope_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user was not found..
+        /// </summary>
+        public static string RestoreBranchUser_BranchUser_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreBranchUser_BranchUser_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Branch Admin profile was not found..
+        /// </summary>
+        public static string RestoreBranchUser_CurrentBranchAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreBranchUser_CurrentBranchAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string RestoreQuestion_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreQuestion_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question is already active..
+        /// </summary>
+        public static string RestoreQuestion_Question_AlreadyActive {
+            get {
+                return ResourceManager.GetString("RestoreQuestion_Question_AlreadyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question was not found..
+        /// </summary>
+        public static string RestoreQuestion_Question_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreQuestion_Question_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot restore question because its question group is inactive..
+        /// </summary>
+        public static string RestoreQuestion_QuestionGroup_Inactive {
+            get {
+                return ResourceManager.GetString("RestoreQuestion_QuestionGroup_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group was not found..
+        /// </summary>
+        public static string RestoreQuestion_QuestionGroup_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreQuestion_QuestionGroup_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question is required..
+        /// </summary>
+        public static string RestoreQuestion_QuestionId_Required {
+            get {
+                return ResourceManager.GetString("RestoreQuestion_QuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string RestoreQuestionGroup_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreQuestionGroup_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group is required..
+        /// </summary>
+        public static string RestoreQuestionGroup_GroupId_Required {
+            get {
+                return ResourceManager.GetString("RestoreQuestionGroup_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group is already active..
+        /// </summary>
+        public static string RestoreQuestionGroup_QuestionGroup_AlreadyActive {
+            get {
+                return ResourceManager.GetString("RestoreQuestionGroup_QuestionGroup_AlreadyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group was not found..
+        /// </summary>
+        public static string RestoreQuestionGroup_QuestionGroup_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreQuestionGroup_QuestionGroup_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current branch actor profile was not found..
         /// </summary>
         public static string RestoreTemplate_CurrentBranchActor_NotFound {
@@ -2217,6 +2532,231 @@ namespace CustomerSurvey.Domain.Resources {
         public static string RestoreTemplate_TemplateId_Required {
             get {
                 return ResourceManager.GetString("RestoreTemplate_TemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All template questions must be answered..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_AllQuestions_Required {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_AllQuestions_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Answers are required..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Answers_Required {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Answers_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Complaint answer must contain only text..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Complain_InvalidShape {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Complain_InvalidShape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Complaint text is required..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Complain_TextRequired {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Complain_TextRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current operator profile was not found..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_CurrentOperator_NotFound {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_CurrentOperator_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SubmitOperatorTemplateResponse_DuplicateQuestionAnswers.
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_DuplicateQuestionAnswers {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_DuplicateQuestionAnswers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the submitted questions does not belong to this template..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Question_NotInTemplate {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Question_NotInTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question is required..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_QuestionId_Required {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_QuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question type is not supported..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_QuestionType_Unsupported {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_QuestionType_Unsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Single choice answer must contain only selected option..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_SingleChoice_InvalidShape {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_SingleChoice_InvalidShape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected option is invalid for this question..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_SingleChoice_OptionInvalid {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_SingleChoice_OptionInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected option is required..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_SingleChoice_OptionRequired {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_SingleChoice_OptionRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Smiles answer must contain only smile value..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Smiles_InvalidShape {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Smiles_InvalidShape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Smiles value must be between 1 and 5..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Smiles_ValueInvalid {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Smiles_ValueInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star rating answer must contain only rating value..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_StarRating_InvalidShape {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_StarRating_InvalidShape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star rating value must be between 1 and 5..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_StarRating_ValueInvalid {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_StarRating_ValueInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This template has no active questions..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Template_HasNoQuestions {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Template_HasNoQuestions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This template is inactive..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Template_Inactive {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Template_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This template is not assigned to the current operator..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Template_NotAssigned {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Template_NotAssigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template is required..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_TemplateId_Required {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_TemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SubmitOperatorTemplateResponse_TextAnswer_MaxLength.
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_TextAnswer_MaxLength {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_TextAnswer_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Voice file extension is not supported..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Voice_FileExtensionInvalid {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Voice_FileExtensionInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Voice file is required..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Voice_FileRequired {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Voice_FileRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Voice file size must not exceed 10 MB..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Voice_FileTooLarge {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Voice_FileTooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Voice answer must contain only a voice file..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Voice_InvalidShape {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Voice_InvalidShape", resourceCulture);
             }
         }
         
@@ -2307,6 +2847,159 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateBranch_NameEn_Required {
             get {
                 return ResourceManager.GetString("UpdateBranch_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application user was not found..
+        /// </summary>
+        public static string UpdateBranchUser_ApplicationUser_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_ApplicationUser_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User is required..
+        /// </summary>
+        public static string UpdateBranchUser_ApplicationUserId_Required {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_ApplicationUserId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot update a user outside your branch..
+        /// </summary>
+        public static string UpdateBranchUser_BranchScope_Mismatch {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_BranchScope_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user was not found..
+        /// </summary>
+        public static string UpdateBranchUser_BranchUser_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_BranchUser_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Branch Admin profile was not found..
+        /// </summary>
+        public static string UpdateBranchUser_CurrentBranchAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_CurrentBranchAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email already exists..
+        /// </summary>
+        public static string UpdateBranchUser_Email_AlreadyExists {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_Email_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email address is invalid..
+        /// </summary>
+        public static string UpdateBranchUser_Email_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_Email_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateBranchUser_Email_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_Email_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email is required..
+        /// </summary>
+        public static string UpdateBranchUser_Email_Required {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_Email_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateBranchUser_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user English name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateBranchUser_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch user English name is required..
+        /// </summary>
+        public static string UpdateBranchUser_NameEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone number must not exceed 50 characters..
+        /// </summary>
+        public static string UpdateBranchUser_PhoneNumber_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_PhoneNumber_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot update an inactive user..
+        /// </summary>
+        public static string UpdateBranchUser_User_Inactive {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_User_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username already exists..
+        /// </summary>
+        public static string UpdateBranchUser_UserName_AlreadyExists {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_UserName_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username must not exceed 100 characters..
+        /// </summary>
+        public static string UpdateBranchUser_UserName_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_UserName_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username is required..
+        /// </summary>
+        public static string UpdateBranchUser_UserName_Required {
+            get {
+                return ResourceManager.GetString("UpdateBranchUser_UserName_Required", resourceCulture);
             }
         }
         

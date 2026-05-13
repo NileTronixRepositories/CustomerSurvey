@@ -1035,4 +1035,235 @@
   <data name="UpdateQuestion_Type_CannotChangeAfterTemplateAssignment" xml:space="preserve">
     <value>لا يمكن تغيير نوع السؤال بعد ربطه بقالب.</value>
   </data>
+  <data name="SubmitOperatorTemplateResponse_TemplateId_Required" xml:space="preserve">
+    <value>القالب مطلوب.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Answers_Required" xml:space="preserve">
+    <value>يجب إرسال الإجابات.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_QuestionId_Required" xml:space="preserve">
+    <value>السؤال مطلوب.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_TextAnswer_MaxLength" xml:space="preserve">
+    <value>الإجابة النصية يجب ألا تزيد عن 4000 حرف.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CurrentOperator_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الـ Operator الحالي.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Template_NotAssigned" xml:space="preserve">
+    <value>هذا القالب غير مخصص للـ Operator الحالي.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Template_Inactive" xml:space="preserve">
+    <value>هذا القالب غير فعال.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Template_HasNoQuestions" xml:space="preserve">
+    <value>هذا القالب لا يحتوي على أسئلة فعالة.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_DuplicateQuestionAnswers" xml:space="preserve">
+    <value>لا يمكن إرسال أكثر من إجابة لنفس السؤال.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Question_NotInTemplate" xml:space="preserve">
+    <value>أحد الأسئلة المرسلة غير موجود داخل هذا القالب.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_AllQuestions_Required" xml:space="preserve">
+    <value>يجب الإجابة على كل أسئلة القالب.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_QuestionType_Unsupported" xml:space="preserve">
+    <value>نوع السؤال غير مدعوم.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_SingleChoice_InvalidShape" xml:space="preserve">
+    <value>إجابة الاختيار الواحد يجب أن تحتوي على اختيار فقط.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_SingleChoice_OptionRequired" xml:space="preserve">
+    <value>يجب اختيار إجابة من الاختيارات المتاحة.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_SingleChoice_OptionInvalid" xml:space="preserve">
+    <value>الاختيار المحدد غير صحيح لهذا السؤال.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Voice_InvalidShape" xml:space="preserve">
+    <value>إجابة الصوت يجب أن تحتوي على ملف صوت فقط.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Voice_FileRequired" xml:space="preserve">
+    <value>ملف الصوت مطلوب.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Voice_FileTooLarge" xml:space="preserve">
+    <value>حجم ملف الصوت يجب ألا يزيد عن 10 ميجابايت.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Voice_FileExtensionInvalid" xml:space="preserve">
+    <value>امتداد ملف الصوت غير مدعوم.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_StarRating_InvalidShape" xml:space="preserve">
+    <value>إجابة التقييم بالنجوم يجب أن تحتوي على قيمة التقييم فقط.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_StarRating_ValueInvalid" xml:space="preserve">
+    <value>قيمة التقييم بالنجوم يجب أن تكون من 1 إلى 5.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Complain_InvalidShape" xml:space="preserve">
+    <value>إجابة الشكوى يجب أن تحتوي على نص فقط.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Complain_TextRequired" xml:space="preserve">
+    <value>نص الشكوى مطلوب.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Smiles_InvalidShape" xml:space="preserve">
+    <value>إجابة الوجوه يجب أن تحتوي على قيمة التقييم فقط.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Smiles_ValueInvalid" xml:space="preserve">
+    <value>قيمة تقييم الوجوه يجب أن تكون من 1 إلى 5.</value>
+  </data>
+  <data name="UpdateBranchUser_ApplicationUserId_Required" xml:space="preserve">
+    <value>المستخدم مطلوب.</value>
+  </data>
+  <data name="UpdateBranchUser_NameEn_Required" xml:space="preserve">
+    <value>اسم مستخدم الفرع باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="UpdateBranchUser_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم مستخدم الفرع باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateBranchUser_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم مستخدم الفرع باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateBranchUser_UserName_Required" xml:space="preserve">
+    <value>اسم المستخدم مطلوب.</value>
+  </data>
+  <data name="UpdateBranchUser_UserName_MaxLength" xml:space="preserve">
+    <value>اسم المستخدم يجب ألا يزيد عن 100 حرف.</value>
+  </data>
+  <data name="UpdateBranchUser_Email_Required" xml:space="preserve">
+    <value>البريد الإلكتروني مطلوب.</value>
+  </data>
+  <data name="UpdateBranchUser_Email_MaxLength" xml:space="preserve">
+    <value>البريد الإلكتروني يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateBranchUser_Email_Invalid" xml:space="preserve">
+    <value>البريد الإلكتروني غير صحيح.</value>
+  </data>
+  <data name="UpdateBranchUser_PhoneNumber_MaxLength" xml:space="preserve">
+    <value>رقم الهاتف يجب ألا يزيد عن 50 حرف.</value>
+  </data>
+  <data name="UpdateBranchUser_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير الفرع الحالي.</value>
+  </data>
+  <data name="UpdateBranchUser_BranchUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مستخدم الفرع.</value>
+  </data>
+  <data name="UpdateBranchUser_BranchScope_Mismatch" xml:space="preserve">
+    <value>لا يمكنك تعديل مستخدم خارج الفرع الخاص بك.</value>
+  </data>
+  <data name="UpdateBranchUser_ApplicationUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب المستخدم.</value>
+  </data>
+  <data name="UpdateBranchUser_User_Inactive" xml:space="preserve">
+    <value>لا يمكن تعديل مستخدم غير مفعل.</value>
+  </data>
+  <data name="UpdateBranchUser_UserName_AlreadyExists" xml:space="preserve">
+    <value>اسم المستخدم مستخدم من قبل.</value>
+  </data>
+  <data name="UpdateBranchUser_Email_AlreadyExists" xml:space="preserve">
+    <value>البريد الإلكتروني مستخدم من قبل.</value>
+  </data>
+  <data name="DeleteBranchUser_ApplicationUserId_Required" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير الفرع الحالي.</value>
+  </data>
+  <data name="DeleteBranchUser_BranchUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مستخدم الفرع.</value>
+  </data>
+  <data name="DeleteBranchUser_BranchScope_Mismatch" xml:space="preserve">
+    <value>لا يمكنك حذف مستخدم خارج الفرع الخاص بك.</value>
+  </data>
+  <data name="DeleteBranchUser_ApplicationUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب المستخدم.</value>
+  </data>
+  <data name="DeleteBranchUser_Already_Inactive" xml:space="preserve">
+    <value>المستخدم غير مفعل بالفعل.</value>
+  </data>
+  <data name="ResetBranchUserPassword_ApplicationUserId_Required" xml:space="preserve">
+    <value>المستخدم مطلوب.</value>
+  </data>
+  <data name="ResetBranchUserPassword_NewPassword_Required" xml:space="preserve">
+    <value>كلمة المرور الجديدة مطلوبة.</value>
+  </data>
+  <data name="ResetBranchUserPassword_NewPassword_MinLength" xml:space="preserve">
+    <value>كلمة المرور الجديدة يجب ألا تقل عن 8 أحرف.</value>
+  </data>
+  <data name="ResetBranchUserPassword_NewPassword_MaxLength" xml:space="preserve">
+    <value>كلمة المرور الجديدة يجب ألا تزيد عن 200 حرف.</value>
+  </data>
+  <data name="ResetBranchUserPassword_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير الفرع الحالي.</value>
+  </data>
+  <data name="ResetBranchUserPassword_BranchUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مستخدم الفرع.</value>
+  </data>
+  <data name="ResetBranchUserPassword_BranchScope_Mismatch" xml:space="preserve">
+    <value>لا يمكنك تغيير كلمة مرور مستخدم خارج الفرع الخاص بك.</value>
+  </data>
+  <data name="ResetBranchUserPassword_ApplicationUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب المستخدم.</value>
+  </data>
+  <data name="ResetBranchUserPassword_User_Inactive" xml:space="preserve">
+    <value>لا يمكن تغيير كلمة مرور مستخدم غير مفعل.</value>
+  </data>
+  <data name="DeleteBranchUser_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مستخدم الفرع.</value>
+  </data>
+  <data name="RestoreBranchUser_ApplicationUserId_Required" xml:space="preserve">
+    <value>المستخدم مطلوب.</value>
+  </data>
+  <data name="RestoreBranchUser_CurrentBranchAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير الفرع الحالي.</value>
+  </data>
+  <data name="RestoreBranchUser_BranchUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مستخدم الفرع.</value>
+  </data>
+  <data name="RestoreBranchUser_BranchScope_Mismatch" xml:space="preserve">
+    <value>لا يمكنك استرجاع مستخدم خارج الفرع الخاص بك.</value>
+  </data>
+  <data name="RestoreBranchUser_ApplicationUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب المستخدم.</value>
+  </data>
+  <data name="RestoreBranchUser_Already_Active" xml:space="preserve">
+    <value>المستخدم مفعل بالفعل.</value>
+  </data>
+  <data name="RestoreQuestionGroup_GroupId_Required" xml:space="preserve">
+    <value>مجموعة الأسئلة مطلوبة.</value>
+  </data>
+  <data name="RestoreQuestionGroup_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مستخدم الفرع الحالي.</value>
+  </data>
+  <data name="RestoreQuestionGroup_QuestionGroup_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مجموعة الأسئلة.</value>
+  </data>
+  <data name="RestoreQuestionGroup_QuestionGroup_AlreadyActive" xml:space="preserve">
+    <value>مجموعة الأسئلة مفعلة بالفعل.</value>
+  </data>
+  <data name="RestoreQuestion_QuestionId_Required" xml:space="preserve">
+    <value>السؤال مطلوب.</value>
+  </data>
+  <data name="RestoreQuestion_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مستخدم الفرع الحالي.</value>
+  </data>
+  <data name="RestoreQuestion_Question_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على السؤال.</value>
+  </data>
+  <data name="RestoreQuestion_Question_AlreadyActive" xml:space="preserve">
+    <value>السؤال مفعل بالفعل.</value>
+  </data>
+  <data name="RestoreQuestion_QuestionGroup_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مجموعة السؤال.</value>
+  </data>
+  <data name="RestoreQuestion_QuestionGroup_Inactive" xml:space="preserve">
+    <value>لا يمكن استرجاع السؤال لأن مجموعة السؤال غير مفعلة.</value>
+  </data>
+  <data name="GetBranchSatisfactionReport_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الفرع الحالي للمستخدم.</value>
+  </data>
+  <data name="GetBranchSatisfactionReport_Template_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القالب داخل الفرع الحالي.</value>
+  </data>
+  <data name="GetBranchSatisfactionReport_DateRange_Invalid" xml:space="preserve">
+    <value>فترة التقرير غير صحيحة.</value>
+  </data>
+  <data name="GetBranchSatisfactionReport_DateRange_MaxExceeded" xml:space="preserve">
+    <value>لا يمكن أن تزيد فترة التقرير عن 12 شهرًا.</value>
+  </data>
 </root>

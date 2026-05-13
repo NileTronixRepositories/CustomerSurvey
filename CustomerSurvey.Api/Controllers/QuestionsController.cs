@@ -3,6 +3,7 @@ using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Api.Contracts.Questions;
 using CustomerSurvey.Application.Features.Questions.Command.CreateQuestion;
 using CustomerSurvey.Application.Features.Questions.Command.DeleteQuestion;
+using CustomerSurvey.Application.Features.Questions.Command.RestoreQuestion;
 using CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion;
 using CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagination;
 using CustomerSurvey.Application.Features.Questions.Shared;
@@ -101,6 +102,22 @@ namespace CustomerSurvey.Api.Controllers
             CancellationToken cancellationToken)
         {
             var command = new DeleteQuestionCommand
+            {
+                QuestionId = questionId
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("{questionId:guid}/restore")]
+        [Permission("Questions.Update")]
+        public async Task<IActionResult> Restore(
+    Guid questionId,
+    CancellationToken cancellationToken)
+        {
+            var command = new RestoreQuestionCommand
             {
                 QuestionId = questionId
             };
