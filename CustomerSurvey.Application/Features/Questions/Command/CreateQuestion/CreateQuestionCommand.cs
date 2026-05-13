@@ -1,4 +1,5 @@
 ﻿using BuildingBlock.Application.Abstraction;
+using CustomerSurvey.Application.Features.Questions.Shared;
 using CustomerSurvey.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -18,5 +19,7 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
         public string? TextAr { get; init; }
 
         public QuestionType Type { get; init; }
+        public IReadOnlyCollection<QuestionOptionCommandItem> Options { get; init; }
+         = Array.Empty<QuestionOptionCommandItem>();
     }
 }

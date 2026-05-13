@@ -1,4 +1,5 @@
-﻿using CustomerSurvey.Domain.Enums;
+﻿using CustomerSurvey.Application.Features.Questions.Shared;
+using CustomerSurvey.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,5 +31,8 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
         public bool IsActive { get; init; }
 
         public DateTime CreatedOnUtc { get; init; }
+
+        public IReadOnlyCollection<QuestionOptionResponse> Options { get; init; }
+            = Array.Empty<QuestionOptionResponse>();
     }
 }

@@ -5,6 +5,7 @@ using CustomerSurvey.Application.Features.Questions.Command.CreateQuestion;
 using CustomerSurvey.Application.Features.Questions.Command.DeleteQuestion;
 using CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion;
 using CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagination;
+using CustomerSurvey.Application.Features.Questions.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -40,15 +41,23 @@ namespace CustomerSurvey.Api.Controllers
         [HttpPost]
         [Permission("Questions.Create")]
         public async Task<IActionResult> Create(
-            [FromBody] CreateQuestionRequest request,
-            CancellationToken cancellationToken)
+     [FromBody] CreateQuestionRequest request,
+     CancellationToken cancellationToken)
         {
             var command = new CreateQuestionCommand
             {
                 GroupId = request.GroupId,
                 TextEn = request.TextEn,
                 TextAr = request.TextAr,
-                Type = request.Type
+                Type = request.Type,
+                Options = request.Options?
+                    .Select(x => new QuestionOptionCommandItem
+                    {
+                        TextEn = x.TextEn,
+                        TextAr = x.TextAr,
+                        Order = x.Order
+                    })
+                    .ToArray() ?? Array.Empty<QuestionOptionCommandItem>()
             };
 
             var result = await sender.Send(command, cancellationToken);
@@ -59,9 +68,9 @@ namespace CustomerSurvey.Api.Controllers
         [HttpPut("{questionId:guid}")]
         [Permission("Questions.Update")]
         public async Task<IActionResult> Update(
-            Guid questionId,
-            [FromBody] UpdateQuestionRequest request,
-            CancellationToken cancellationToken)
+    Guid questionId,
+    [FromBody] UpdateQuestionRequest request,
+    CancellationToken cancellationToken)
         {
             var command = new UpdateQuestionCommand
             {
@@ -69,7 +78,15 @@ namespace CustomerSurvey.Api.Controllers
                 GroupId = request.GroupId,
                 TextEn = request.TextEn,
                 TextAr = request.TextAr,
-                Type = request.Type
+                Type = request.Type,
+                Options = request.Options?
+                    .Select(x => new QuestionOptionCommandItem
+                    {
+                        TextEn = x.TextEn,
+                        TextAr = x.TextAr,
+                        Order = x.Order
+                    })
+                    .ToArray() ?? Array.Empty<QuestionOptionCommandItem>()
             };
 
             var result = await sender.Send(command, cancellationToken);

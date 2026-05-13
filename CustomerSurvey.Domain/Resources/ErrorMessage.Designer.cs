@@ -205,6 +205,87 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current actor is ambiguous in the system..
+        /// </summary>
+        public static string AssignTemplatesToOperator_Actor_Ambiguous {
+            get {
+                return ResourceManager.GetString("AssignTemplatesToOperator_Actor_Ambiguous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to assign templates to operator..
+        /// </summary>
+        public static string AssignTemplatesToOperator_CurrentActor_NotAllowed {
+            get {
+                return ResourceManager.GetString("AssignTemplatesToOperator_CurrentActor_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot assign templates to an operator outside the current department admin scope..
+        /// </summary>
+        public static string AssignTemplatesToOperator_DepartmentScope_Mismatch {
+            get {
+                return ResourceManager.GetString("AssignTemplatesToOperator_DepartmentScope_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator was not found..
+        /// </summary>
+        public static string AssignTemplatesToOperator_Operator_NotFound {
+            get {
+                return ResourceManager.GetString("AssignTemplatesToOperator_Operator_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator is required..
+        /// </summary>
+        public static string AssignTemplatesToOperator_OperatorId_Required {
+            get {
+                return ResourceManager.GetString("AssignTemplatesToOperator_OperatorId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the templates was not found or is inactive..
+        /// </summary>
+        public static string AssignTemplatesToOperator_Template_NotFoundOrInactive {
+            get {
+                return ResourceManager.GetString("AssignTemplatesToOperator_Template_NotFoundOrInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the templates is invalid..
+        /// </summary>
+        public static string AssignTemplatesToOperator_TemplateId_Invalid {
+            get {
+                return ResourceManager.GetString("AssignTemplatesToOperator_TemplateId_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The same template cannot be duplicated..
+        /// </summary>
+        public static string AssignTemplatesToOperator_TemplateIds_Duplicated {
+            get {
+                return ResourceManager.GetString("AssignTemplatesToOperator_TemplateIds_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template ids are required..
+        /// </summary>
+        public static string AssignTemplatesToOperator_TemplateIds_Required {
+            get {
+                return ResourceManager.GetString("AssignTemplatesToOperator_TemplateIds_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authentication token is missing..
         /// </summary>
         public static string Auth_Token_Missing {
@@ -916,6 +997,195 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current actor is ambiguous in the system..
+        /// </summary>
+        public static string CreateOperator_Actor_Ambiguous {
+            get {
+                return ResourceManager.GetString("CreateOperator_Actor_Ambiguous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to create an operator..
+        /// </summary>
+        public static string CreateOperator_CurrentActor_NotAllowed {
+            get {
+                return ResourceManager.GetString("CreateOperator_CurrentActor_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department was not found or is inactive..
+        /// </summary>
+        public static string CreateOperator_Department_NotFoundOrInactive {
+            get {
+                return ResourceManager.GetString("CreateOperator_Department_NotFoundOrInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department is invalid..
+        /// </summary>
+        public static string CreateOperator_DepartmentId_Invalid {
+            get {
+                return ResourceManager.GetString("CreateOperator_DepartmentId_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department is required when creating an operator by Super Admin..
+        /// </summary>
+        public static string CreateOperator_DepartmentId_Required_ForSuperAdmin {
+            get {
+                return ResourceManager.GetString("CreateOperator_DepartmentId_Required_ForSuperAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create an operator outside the current department admin scope..
+        /// </summary>
+        public static string CreateOperator_DepartmentScope_Mismatch {
+            get {
+                return ResourceManager.GetString("CreateOperator_DepartmentScope_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email already exists..
+        /// </summary>
+        public static string CreateOperator_Email_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateOperator_Email_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email address is invalid..
+        /// </summary>
+        public static string CreateOperator_Email_Invalid {
+            get {
+                return ResourceManager.GetString("CreateOperator_Email_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email must not exceed 200 characters..
+        /// </summary>
+        public static string CreateOperator_Email_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateOperator_Email_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email is required..
+        /// </summary>
+        public static string CreateOperator_Email_Required {
+            get {
+                return ResourceManager.GetString("CreateOperator_Email_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateOperator_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateOperator_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator English name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateOperator_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateOperator_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator English name is required..
+        /// </summary>
+        public static string CreateOperator_NameEn_Required {
+            get {
+                return ResourceManager.GetString("CreateOperator_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator role was not found..
+        /// </summary>
+        public static string CreateOperator_OperatorRole_NotFound {
+            get {
+                return ResourceManager.GetString("CreateOperator_OperatorRole_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password must not exceed 200 characters..
+        /// </summary>
+        public static string CreateOperator_Password_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateOperator_Password_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password must be at least 8 characters..
+        /// </summary>
+        public static string CreateOperator_Password_MinLength {
+            get {
+                return ResourceManager.GetString("CreateOperator_Password_MinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password is required..
+        /// </summary>
+        public static string CreateOperator_Password_Required {
+            get {
+                return ResourceManager.GetString("CreateOperator_Password_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone number must not exceed 50 characters..
+        /// </summary>
+        public static string CreateOperator_PhoneNumber_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateOperator_PhoneNumber_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username already exists..
+        /// </summary>
+        public static string CreateOperator_UserName_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateOperator_UserName_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username must not exceed 100 characters..
+        /// </summary>
+        public static string CreateOperator_UserName_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateOperator_UserName_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username is required..
+        /// </summary>
+        public static string CreateOperator_UserName_Required {
+            get {
+                return ResourceManager.GetString("CreateOperator_UserName_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CreateQuestion_CurrentBranchActor_NotFound.
         /// </summary>
         public static string CreateQuestion_CurrentBranchActor_NotFound {
@@ -930,6 +1200,78 @@ namespace CustomerSurvey.Domain.Resources {
         public static string CreateQuestion_GroupId_Required {
             get {
                 return ResourceManager.GetString("CreateQuestion_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option order must be greater than zero..
+        /// </summary>
+        public static string CreateQuestion_Option_Order_Invalid {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Option_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option Arabic text must not exceed 300 characters..
+        /// </summary>
+        public static string CreateQuestion_Option_TextAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Option_TextAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text must not exceed 300 characters..
+        /// </summary>
+        public static string CreateQuestion_Option_TextEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Option_TextEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text is required..
+        /// </summary>
+        public static string CreateQuestion_Option_TextEn_Required {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Option_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options are allowed only for SingleChoice questions..
+        /// </summary>
+        public static string CreateQuestion_Options_InvalidForType {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Options_InvalidForType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SingleChoice question must have at least two options..
+        /// </summary>
+        public static string CreateQuestion_Options_MinCount {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Options_MinCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option order cannot be duplicated inside the same question..
+        /// </summary>
+        public static string CreateQuestion_Options_Order_Duplicated {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Options_Order_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text cannot be duplicated inside the same question..
+        /// </summary>
+        public static string CreateQuestion_Options_TextEn_Duplicated {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Options_TextEn_Duplicated", resourceCulture);
             }
         }
         
@@ -1456,6 +1798,132 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current operator profile was not found..
+        /// </summary>
+        public static string GetMyOperatorTemplates_CurrentOperator_NotFound {
+            get {
+                return ResourceManager.GetString("GetMyOperatorTemplates_CurrentOperator_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current actor is ambiguous in the system..
+        /// </summary>
+        public static string GetOperatorsPagination_Actor_Ambiguous {
+            get {
+                return ResourceManager.GetString("GetOperatorsPagination_Actor_Ambiguous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to view operators..
+        /// </summary>
+        public static string GetOperatorsPagination_CurrentActor_NotAllowed {
+            get {
+                return ResourceManager.GetString("GetOperatorsPagination_CurrentActor_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department is invalid..
+        /// </summary>
+        public static string GetOperatorsPagination_DepartmentId_Invalid {
+            get {
+                return ResourceManager.GetString("GetOperatorsPagination_DepartmentId_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot view operators outside the current department admin scope..
+        /// </summary>
+        public static string GetOperatorsPagination_DepartmentScope_Mismatch {
+            get {
+                return ResourceManager.GetString("GetOperatorsPagination_DepartmentScope_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number must be greater than or equal to 1..
+        /// </summary>
+        public static string GetOperatorsPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetOperatorsPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must be greater than or equal to 1..
+        /// </summary>
+        public static string GetOperatorsPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetOperatorsPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must not exceed 100 items..
+        /// </summary>
+        public static string GetOperatorsPagination_PageSize_Max {
+            get {
+                return ResourceManager.GetString("GetOperatorsPagination_PageSize_Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current actor is ambiguous in the system..
+        /// </summary>
+        public static string GetOperatorTemplatesSelection_Actor_Ambiguous {
+            get {
+                return ResourceManager.GetString("GetOperatorTemplatesSelection_Actor_Ambiguous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to view operator templates selection..
+        /// </summary>
+        public static string GetOperatorTemplatesSelection_CurrentActor_NotAllowed {
+            get {
+                return ResourceManager.GetString("GetOperatorTemplatesSelection_CurrentActor_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot view templates selection for an operator outside the current department admin scope..
+        /// </summary>
+        public static string GetOperatorTemplatesSelection_DepartmentScope_Mismatch {
+            get {
+                return ResourceManager.GetString("GetOperatorTemplatesSelection_DepartmentScope_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator was not found..
+        /// </summary>
+        public static string GetOperatorTemplatesSelection_Operator_NotFound {
+            get {
+                return ResourceManager.GetString("GetOperatorTemplatesSelection_Operator_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator is required..
+        /// </summary>
+        public static string GetOperatorTemplatesSelection_OperatorId_Required {
+            get {
+                return ResourceManager.GetString("GetOperatorTemplatesSelection_OperatorId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search text must not exceed 200 characters..
+        /// </summary>
+        public static string GetOperatorTemplatesSelection_SearchText_MaxLength {
+            get {
+                return ResourceManager.GetString("GetOperatorTemplatesSelection_SearchText_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current branch actor profile was not found..
         /// </summary>
         public static string GetQuestionGroupsPagination_CurrentBranchActor_NotFound {
@@ -1915,6 +2383,132 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current actor is ambiguous in the system..
+        /// </summary>
+        public static string UpdateOperator_Actor_Ambiguous {
+            get {
+                return ResourceManager.GetString("UpdateOperator_Actor_Ambiguous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator application user was not found..
+        /// </summary>
+        public static string UpdateOperator_ApplicationUser_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateOperator_ApplicationUser_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to update operator data..
+        /// </summary>
+        public static string UpdateOperator_CurrentActor_NotAllowed {
+            get {
+                return ResourceManager.GetString("UpdateOperator_CurrentActor_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot update an operator outside the current department admin scope..
+        /// </summary>
+        public static string UpdateOperator_DepartmentScope_Mismatch {
+            get {
+                return ResourceManager.GetString("UpdateOperator_DepartmentScope_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email already exists..
+        /// </summary>
+        public static string UpdateOperator_Email_AlreadyExists {
+            get {
+                return ResourceManager.GetString("UpdateOperator_Email_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UpdateOperator_Email_Invalid.
+        /// </summary>
+        public static string UpdateOperator_Email_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateOperator_Email_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateOperator_Email_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateOperator_Email_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email is required..
+        /// </summary>
+        public static string UpdateOperator_Email_Required {
+            get {
+                return ResourceManager.GetString("UpdateOperator_Email_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateOperator_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateOperator_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator English name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateOperator_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateOperator_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator English name is required..
+        /// </summary>
+        public static string UpdateOperator_NameEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateOperator_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator was not found..
+        /// </summary>
+        public static string UpdateOperator_Operator_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateOperator_Operator_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator is required..
+        /// </summary>
+        public static string UpdateOperator_OperatorId_Required {
+            get {
+                return ResourceManager.GetString("UpdateOperator_OperatorId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone number must not exceed 50 characters..
+        /// </summary>
+        public static string UpdateOperator_PhoneNumber_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateOperator_PhoneNumber_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current branch actor profile was not found..
         /// </summary>
         public static string UpdateQuestion_CurrentBranchActor_NotFound {
@@ -1929,6 +2523,78 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateQuestion_GroupId_Required {
             get {
                 return ResourceManager.GetString("UpdateQuestion_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option order must be greater than zero..
+        /// </summary>
+        public static string UpdateQuestion_Option_Order_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Option_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option Arabic text must not exceed 300 characters..
+        /// </summary>
+        public static string UpdateQuestion_Option_TextAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Option_TextAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text must not exceed 300 characters..
+        /// </summary>
+        public static string UpdateQuestion_Option_TextEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Option_TextEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UpdateQuestion_Option_TextEn_Required.
+        /// </summary>
+        public static string UpdateQuestion_Option_TextEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Option_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options are allowed only for SingleChoice questions..
+        /// </summary>
+        public static string UpdateQuestion_Options_InvalidForType {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Options_InvalidForType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SingleChoice question must have at least two options..
+        /// </summary>
+        public static string UpdateQuestion_Options_MinCount {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Options_MinCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UpdateQuestion_Options_Order_Duplicated.
+        /// </summary>
+        public static string UpdateQuestion_Options_Order_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Options_Order_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text cannot be duplicated inside the same question..
+        /// </summary>
+        public static string UpdateQuestion_Options_TextEn_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Options_TextEn_Duplicated", resourceCulture);
             }
         }
         
@@ -1992,6 +2658,15 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateQuestion_TextEn_Required {
             get {
                 return ResourceManager.GetString("UpdateQuestion_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question type cannot be changed after being assigned to a template..
+        /// </summary>
+        public static string UpdateQuestion_Type_CannotChangeAfterTemplateAssignment {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Type_CannotChangeAfterTemplateAssignment", resourceCulture);
             }
         }
         

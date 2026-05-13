@@ -2,14 +2,12 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Features.Questions.Shared;
+using CustomerSurvey.Application.Features.Questions.Shared.Specs;
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
 {
@@ -19,6 +17,9 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
         private readonly IWriteReadRepository<Question> _questionReadRepository;
         private readonly IWriteRepository<Question> _questionWriteRepository;
         private readonly IWriteReadRepository<QuestionGroup> _questionGroupReadRepository;
+        private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
+        private readonly IWriteRepository<QuestionOption> _questionOptionWriteRepository;
+        private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly ICurrentUser _currentUser;
@@ -28,6 +29,9 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
             IWriteReadRepository<Question> questionReadRepository,
             IWriteRepository<Question> questionWriteRepository,
             IWriteReadRepository<QuestionGroup> questionGroupReadRepository,
+            IWriteReadRepository<QuestionOption> questionOptionReadRepository,
+            IWriteRepository<QuestionOption> questionOptionWriteRepository,
+            IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             ICurrentUser currentUser,
@@ -41,6 +45,15 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
 
             _questionGroupReadRepository = questionGroupReadRepository
                 ?? throw new ArgumentNullException(nameof(questionGroupReadRepository));
+
+            _questionOptionReadRepository = questionOptionReadRepository
+                ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
+
+            _questionOptionWriteRepository = questionOptionWriteRepository
+                ?? throw new ArgumentNullException(nameof(questionOptionWriteRepository));
+
+            _templateQuestionReadRepository = templateQuestionReadRepository
+                ?? throw new ArgumentNullException(nameof(templateQuestionReadRepository));
 
             _branchAdminReadRepository = branchAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
@@ -119,6 +132,18 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
                     Type: ErrorType.Validation));
             }
 
+            var isAssignedToTemplate = await _templateQuestionReadRepository.AnyAsync(
+                x => x.QuestionId == question.Id,
+                cancellationToken);
+
+            if (isAssignedToTemplate && question.Type != request.Type)
+            {
+                return Result<UpdateQuestionResponse>.Fail(new Error(
+                    Code: "Questions.Update.TypeCannotChangeAfterTemplateAssignment",
+                    Message: ErrorMessage.UpdateQuestion_Type_CannotChangeAfterTemplateAssignment,
+                    Type: ErrorType.Validation));
+            }
+
             question.Update(
                 groupId: group.Id,
                 textEn: request.TextEn,
@@ -126,6 +151,47 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
                 type: request.Type);
 
             _questionWriteRepository.Update(question);
+
+            var currentOptions = await _questionOptionReadRepository.ListAsync(
+                new GetQuestionOptionsForUpdateQuestionSpec(question.Id),
+                cancellationToken);
+
+            foreach (var option in currentOptions)
+            {
+                _questionOptionWriteRepository.Delete(option);
+            }
+
+            var optionResponses = Array.Empty<QuestionOptionResponse>();
+
+            if (request.Type == QuestionType.SingleChoice)
+            {
+                var newOptions = request.Options
+                    .OrderBy(x => x.Order)
+                    .Select(option => QuestionOption.Create(
+                        questionId: question.Id,
+                        textEn: option.TextEn,
+                        textAr: option.TextAr,
+                        order: option.Order,
+                        createdByApplicationUserId: currentApplicationUserId))
+                    .ToArray();
+
+                foreach (var option in newOptions)
+                {
+                    await _questionOptionWriteRepository.AddAsync(option, cancellationToken);
+                }
+
+                optionResponses = newOptions
+                    .Select(option => new QuestionOptionResponse
+                    {
+                        OptionId = option.Id,
+                        QuestionId = option.QuestionId,
+                        TextEn = option.TextEn,
+                        TextAr = option.TextAr,
+                        Order = option.Order,
+                        IsActive = option.IsActive
+                    })
+                    .ToArray();
+            }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -137,7 +203,9 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
                 TextEn = question.TextEn,
                 TextAr = question.TextAr,
                 Type = question.Type,
-                IsActive = question.IsActive
+                TypeName = question.Type.ToString(),
+                IsActive = question.IsActive,
+                Options = optionResponses
             };
 
             return Result<UpdateQuestionResponse>.Ok(response);

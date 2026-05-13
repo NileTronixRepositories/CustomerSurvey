@@ -218,6 +218,44 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.ToTable("QuestionGroup");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.QuestionOption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TextAr")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TextEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("QuestionOption");
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Template", b =>
                 {
                     b.Property<Guid>("Id")
@@ -690,6 +728,17 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Navigation("Branch");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.QuestionOption", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Entities.Question", "Question")
+                        .WithMany("Options")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Template", b =>
                 {
                     b.HasOne("CustomerSurvey.Domain.Entities.Branch", "Branch")
@@ -857,6 +906,11 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Navigation("DepartmentAdmins");
 
                     b.Navigation("Operators");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.Question", b =>
+                {
+                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.QuestionGroup", b =>

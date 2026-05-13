@@ -8,10 +8,10 @@ namespace CustomerSurvey.Domain.Enums
 {
     public enum QuestionType
     {
-        Text = 1,
-        Rating = 2,
-        YesNo = 3,
-        SingleChoice = 4,
-        MultipleChoice = 5
+        SingleChoice = 1,
+        Voice = 2,
+        StarRating = 3,
+        Complain = 4,
+        Smiles = 5
     }
 }

@@ -11,5 +11,8 @@ namespace CustomerSurvey.Api.Contracts.Questions
         public string? TextAr { get; init; }
 
         public QuestionType Type { get; init; }
+
+        public IReadOnlyCollection<QuestionOptionRequest>? Options { get; init; }
+    = Array.Empty<QuestionOptionRequest>();
     }
 }
