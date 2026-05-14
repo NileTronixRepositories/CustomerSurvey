@@ -4,6 +4,7 @@ using CustomerSurvey.Api.Contracts.Templates;
 using CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsToTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.CreateTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.DeleteTemplate;
+using CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQuestionConditions;
 using CustomerSurvey.Application.Features.Templates.Command.RestoreTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate;
 using CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails;
@@ -167,6 +168,34 @@ namespace CustomerSurvey.Api.Controllers
             var command = new DeleteTemplateCommand
             {
                 TemplateId = templateId
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("{templateId:guid}/question-conditions")]
+        [Permission("Templates.ManageQuestionConditions")]
+        public async Task<IActionResult> ManageQuestionConditions(
+    Guid templateId,
+    [FromBody] ManageTemplateQuestionConditionsRequest request,
+    CancellationToken cancellationToken)
+        {
+            var command = new ManageTemplateQuestionConditionsCommand
+            {
+                TemplateId = templateId,
+                Conditions = request.Conditions
+                    .Select(x => new TemplateQuestionConditionCommandItem
+                    {
+                        ParentTemplateQuestionId = x.ParentTemplateQuestionId,
+                        ChildTemplateQuestionId = x.ChildTemplateQuestionId,
+                        TriggerType = x.TriggerType,
+                        SelectedQuestionOptionId = x.SelectedQuestionOptionId,
+                        TriggerValue = x.TriggerValue,
+                        Order = x.Order
+                    })
+                    .ToArray()
             };
 
             var result = await sender.Send(command, cancellationToken);

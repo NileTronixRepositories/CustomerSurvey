@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CustomerSurvey.Application.Features.Templates.Shared;
 
 namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestionsSelection
 {
@@ -22,6 +18,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
 
         public IReadOnlyCollection<TemplateQuestionsSelectionGroupResponse> Groups { get; init; }
             = Array.Empty<TemplateQuestionsSelectionGroupResponse>();
+
+        public IReadOnlyCollection<TemplateQuestionConditionResponse> QuestionConditions { get; init; }
+            = Array.Empty<TemplateQuestionConditionResponse>();
     }
 
     public sealed record TemplateQuestionsSelectionGroupResponse
@@ -40,6 +39,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
     {
         public Guid QuestionId { get; init; }
 
+        public Guid? TemplateQuestionId { get; init; }
+
         public string TextEn { get; init; } = string.Empty;
 
         public string? TextAr { get; init; }
@@ -49,5 +50,19 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
         public bool IsSelected { get; init; }
 
         public int? Order { get; init; }
+
+        public IReadOnlyCollection<TemplateQuestionSelectionOptionResponse> Options { get; init; }
+            = Array.Empty<TemplateQuestionSelectionOptionResponse>();
+    }
+
+    public sealed record TemplateQuestionSelectionOptionResponse
+    {
+        public Guid OptionId { get; init; }
+
+        public string TextEn { get; init; } = string.Empty;
+
+        public string? TextAr { get; init; }
+
+        public int Order { get; init; }
     }
 }

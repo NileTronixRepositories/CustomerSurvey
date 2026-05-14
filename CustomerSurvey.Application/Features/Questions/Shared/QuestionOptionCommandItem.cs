@@ -8,6 +8,8 @@ namespace CustomerSurvey.Application.Features.Questions.Shared
 {
     public sealed record QuestionOptionCommandItem
     {
+        public Guid? OptionId { get; init; }
+
         public string TextEn { get; init; } = string.Empty;
 
         public string? TextAr { get; init; }

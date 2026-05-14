@@ -4,6 +4,7 @@ using CustomerSurvey.infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CustomerSurvey.infrastructure.Migrations
 {
     [DbContext(typeof(PlatformWriteDbContext))]
-    partial class PlatformWriteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260514101028_ManageTemplete")]
+    partial class ManageTemplete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -469,8 +472,6 @@ namespace CustomerSurvey.infrastructure.Migrations
 
                     b.HasIndex("ChildTemplateQuestionId");
 
-                    b.HasIndex("ParentTemplateQuestionId");
-
                     b.HasIndex("SelectedQuestionOptionId");
 
                     b.HasIndex("TemplateId");
@@ -479,15 +480,9 @@ namespace CustomerSurvey.infrastructure.Migrations
 
                     b.HasIndex("TemplateId", "ParentTemplateQuestionId");
 
-                    b.HasIndex("TemplateId", "ParentTemplateQuestionId", "ChildTemplateQuestionId", "TriggerType", "SelectedQuestionOptionId")
+                    b.HasIndex("ParentTemplateQuestionId", "ChildTemplateQuestionId", "TriggerType", "SelectedQuestionOptionId", "TriggerValue")
                         .IsUnique()
-                        .HasDatabaseName("UX_TQC_SingleChoice")
-                        .HasFilter("[TriggerType] = 1 AND [SelectedQuestionOptionId] IS NOT NULL AND [TriggerValue] IS NULL AND [IsActive] = 1");
-
-                    b.HasIndex("TemplateId", "ParentTemplateQuestionId", "ChildTemplateQuestionId", "TriggerType", "TriggerValue")
-                        .IsUnique()
-                        .HasDatabaseName("UX_TQC_ValueTrigger")
-                        .HasFilter("[TriggerType] IN (2, 3) AND [SelectedQuestionOptionId] IS NULL AND [TriggerValue] IS NOT NULL AND [IsActive] = 1");
+                        .HasFilter("[SelectedQuestionOptionId] IS NOT NULL AND [TriggerValue] IS NOT NULL");
 
                     b.ToTable("TemplateQuestionCondition");
                 });

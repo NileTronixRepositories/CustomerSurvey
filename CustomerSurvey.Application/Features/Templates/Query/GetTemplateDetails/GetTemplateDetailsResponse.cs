@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CustomerSurvey.Application.Features.Templates.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,6 +37,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
         public IReadOnlyCollection<TemplateDetailsQuestionResponse> Questions { get; init; }
             = Array.Empty<TemplateDetailsQuestionResponse>();
+
+        public IReadOnlyCollection<TemplateQuestionConditionResponse> QuestionConditions { get; init; }
+    = Array.Empty<TemplateQuestionConditionResponse>();
     }
 
     public sealed record TemplateDetailsSummaryResponse

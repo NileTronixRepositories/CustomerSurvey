@@ -1,4 +1,5 @@
 ﻿using BuildingBlock.Domain.Specification;
+using CustomerSurvey.Application.Features.Templates.Shared;
 using CustomerSurvey.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
         public Guid QuestionId { get; init; }
 
         public int Order { get; init; }
+        public Guid TemplateQuestionId { get; init; }
     }
 
     internal sealed class GetTemplateQuestionsForTemplateQuestionsSelectionSpec
@@ -25,7 +27,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
             Select(x => new TemplateQuestionForTemplateQuestionsSelectionDto
             {
                 QuestionId = x.QuestionId,
-                Order = x.Order
+                Order = x.Order,
+                TemplateQuestionId = x.Id,
             });
         }
     }

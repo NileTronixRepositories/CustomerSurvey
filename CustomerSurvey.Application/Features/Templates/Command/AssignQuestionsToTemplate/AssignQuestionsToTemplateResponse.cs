@@ -20,6 +20,8 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
 
     public sealed record AssignedTemplateQuestionResponse
     {
+        public Guid TemplateQuestionId { get; init; }
+
         public Guid QuestionId { get; init; }
 
         public int Order { get; init; }

@@ -88,6 +88,9 @@ internal static class SeedConstants
         public const string OperatorTemplatesSubmitResponse = "OperatorTemplates.SubmitResponse";
 
         public const string ReportsViewBranchReports = "Reports.ViewBranchReports";
+
+        public const string TemplatesManageQuestionConditions =
+    "Templates.ManageQuestionConditions";
     }
 
     public static class SeedIds
@@ -243,6 +246,9 @@ internal static class SeedConstants
 
             public static readonly Guid BranchUsersResetPassword =
                 Guid.Parse("12000000-0000-0000-0000-000000000042");
+
+            public static readonly Guid TemplatesManageQuestionConditions =
+    Guid.Parse("12000000-0000-0000-0000-000000000043");
         }
     }
 
@@ -319,7 +325,10 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.OperatorTemplatesViewMine, PermissionNames.OperatorTemplatesViewMine),
             new PermissionSeedItem(SeedIds.Permissions.OperatorTemplatesSubmitResponse, PermissionNames.OperatorTemplatesSubmitResponse),
 
-            new PermissionSeedItem(SeedIds.Permissions.ReportsViewBranchReports, PermissionNames.ReportsViewBranchReports)
+            new PermissionSeedItem(SeedIds.Permissions.ReportsViewBranchReports, PermissionNames.ReportsViewBranchReports) ,
+            new PermissionSeedItem(
+    SeedIds.Permissions.TemplatesManageQuestionConditions,
+    PermissionNames.TemplatesManageQuestionConditions),
         ];
 
         public static readonly IReadOnlyCollection<RolePermissionSeedItem> RolePermissions =
@@ -387,7 +396,8 @@ internal static class SeedConstants
                 SeedIds.Permissions.QuestionsDelete,
                 SeedIds.Permissions.QuestionsViewAll,
 
-                SeedIds.Permissions.ReportsViewBranchReports
+                SeedIds.Permissions.ReportsViewBranchReports ,
+                SeedIds.Permissions.TemplatesManageQuestionConditions,
             ];
 
             foreach (var permissionId in permissionIds)
@@ -427,7 +437,8 @@ internal static class SeedConstants
                 SeedIds.Permissions.TemplatesViewAll,
                 SeedIds.Permissions.TemplatesViewDetails,
                 SeedIds.Permissions.TemplatesViewSelection,
-                SeedIds.Permissions.TemplatesAssignQuestions
+                SeedIds.Permissions.TemplatesAssignQuestions ,
+                SeedIds.Permissions.TemplatesManageQuestionConditions,
             ];
 
             foreach (var permissionId in permissionIds)

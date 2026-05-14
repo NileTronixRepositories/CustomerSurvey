@@ -20,6 +20,7 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
         private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
         private readonly IWriteRepository<QuestionOption> _questionOptionWriteRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
+        private readonly IWriteReadRepository<TemplateQuestionCondition> _templateQuestionConditionReadRepository;
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly ICurrentUser _currentUser;
@@ -32,6 +33,7 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
             IWriteReadRepository<QuestionOption> questionOptionReadRepository,
             IWriteRepository<QuestionOption> questionOptionWriteRepository,
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
+            IWriteReadRepository<TemplateQuestionCondition> templateQuestionConditionReadRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             ICurrentUser currentUser,
@@ -54,6 +56,9 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
 
             _templateQuestionReadRepository = templateQuestionReadRepository
                 ?? throw new ArgumentNullException(nameof(templateQuestionReadRepository));
+
+            _templateQuestionConditionReadRepository = templateQuestionConditionReadRepository
+                ?? throw new ArgumentNullException(nameof(templateQuestionConditionReadRepository));
 
             _branchAdminReadRepository = branchAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
@@ -144,6 +149,39 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
                     Type: ErrorType.Validation));
             }
 
+            var currentOptions = await _questionOptionReadRepository.ListAsync(
+                new GetQuestionOptionsForUpdateQuestionSpec(question.Id),
+                cancellationToken);
+
+            var currentOptionsById = currentOptions.ToDictionary(x => x.Id);
+
+            var requestedExistingOptionIds = request.Options
+                .Where(x => x.OptionId.HasValue)
+                .Select(x => x.OptionId!.Value)
+                .ToArray();
+
+            var hasDuplicatedOptionIds = requestedExistingOptionIds.Length !=
+                                         requestedExistingOptionIds.Distinct().Count();
+
+            if (hasDuplicatedOptionIds)
+            {
+                return Result<UpdateQuestionResponse>.Fail(new Error(
+                    Code: "Questions.Update.OptionIdDuplicated",
+                    Message: ErrorMessage.UpdateQuestion_OptionId_Duplicated,
+                    Type: ErrorType.Validation));
+            }
+
+            var hasInvalidOptionId = requestedExistingOptionIds
+                .Any(optionId => !currentOptionsById.ContainsKey(optionId));
+
+            if (hasInvalidOptionId)
+            {
+                return Result<UpdateQuestionResponse>.Fail(new Error(
+                    Code: "Questions.Update.OptionNotBelongToQuestion",
+                    Message: ErrorMessage.UpdateQuestion_Option_NotBelongToQuestion,
+                    Type: ErrorType.Validation));
+            }
+
             question.Update(
                 groupId: group.Id,
                 textEn: request.TextEn,
@@ -152,35 +190,98 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
 
             _questionWriteRepository.Update(question);
 
-            var currentOptions = await _questionOptionReadRepository.ListAsync(
-                new GetQuestionOptionsForUpdateQuestionSpec(question.Id),
-                cancellationToken);
+            QuestionOptionResponse[] optionResponses;
 
-            foreach (var option in currentOptions)
+            if (request.Type != QuestionType.SingleChoice)
             {
-                _questionOptionWriteRepository.Delete(option);
-            }
-
-            var optionResponses = Array.Empty<QuestionOptionResponse>();
-
-            if (request.Type == QuestionType.SingleChoice)
-            {
-                var newOptions = request.Options
-                    .OrderBy(x => x.Order)
-                    .Select(option => QuestionOption.Create(
-                        questionId: question.Id,
-                        textEn: option.TextEn,
-                        textAr: option.TextAr,
-                        order: option.Order,
-                        createdByApplicationUserId: currentApplicationUserId))
+                var currentOptionIds = currentOptions
+                    .Select(x => x.Id)
                     .ToArray();
 
-                foreach (var option in newOptions)
+                var hasConditionUsingCurrentOptions = await HasAnyOptionUsedInConditionsAsync(
+                    currentOptionIds,
+                    cancellationToken);
+
+                if (hasConditionUsingCurrentOptions)
                 {
-                    await _questionOptionWriteRepository.AddAsync(option, cancellationToken);
+                    return Result<UpdateQuestionResponse>.Fail(new Error(
+                        Code: "Questions.Update.OptionUsedInCondition",
+                        Message: ErrorMessage.UpdateQuestion_Option_UsedInCondition,
+                        Type: ErrorType.Validation));
                 }
 
-                optionResponses = newOptions
+                foreach (var option in currentOptions)
+                {
+                    _questionOptionWriteRepository.Delete(option);
+                }
+
+                optionResponses = Array.Empty<QuestionOptionResponse>();
+            }
+            else
+            {
+                var requestedExistingOptionIdSet = requestedExistingOptionIds.ToHashSet();
+
+                var removedOptions = currentOptions
+                    .Where(option => !requestedExistingOptionIdSet.Contains(option.Id))
+                    .ToArray();
+
+                var removedOptionIds = removedOptions
+                    .Select(x => x.Id)
+                    .ToArray();
+
+                var hasConditionUsingRemovedOptions = await HasAnyOptionUsedInConditionsAsync(
+                    removedOptionIds,
+                    cancellationToken);
+
+                if (hasConditionUsingRemovedOptions)
+                {
+                    return Result<UpdateQuestionResponse>.Fail(new Error(
+                        Code: "Questions.Update.OptionUsedInCondition",
+                        Message: ErrorMessage.UpdateQuestion_Option_UsedInCondition,
+                        Type: ErrorType.Validation));
+                }
+
+                foreach (var removedOption in removedOptions)
+                {
+                    _questionOptionWriteRepository.Delete(removedOption);
+                }
+
+                var finalOptions = new List<QuestionOption>();
+
+                foreach (var optionRequest in request.Options.OrderBy(x => x.Order))
+                {
+                    if (optionRequest.OptionId.HasValue)
+                    {
+                        var existingOption = currentOptionsById[optionRequest.OptionId.Value];
+
+                        existingOption.Update(
+                            textEn: optionRequest.TextEn,
+                            textAr: optionRequest.TextAr,
+                            order: optionRequest.Order);
+
+                        _questionOptionWriteRepository.Update(existingOption);
+
+                        finalOptions.Add(existingOption);
+                    }
+                    else
+                    {
+                        var newOption = QuestionOption.Create(
+                            questionId: question.Id,
+                            textEn: optionRequest.TextEn,
+                            textAr: optionRequest.TextAr,
+                            order: optionRequest.Order,
+                            createdByApplicationUserId: currentApplicationUserId);
+
+                        await _questionOptionWriteRepository.AddAsync(
+                            newOption,
+                            cancellationToken);
+
+                        finalOptions.Add(newOption);
+                    }
+                }
+
+                optionResponses = finalOptions
+                    .OrderBy(x => x.Order)
                     .Select(option => new QuestionOptionResponse
                     {
                         OptionId = option.Id,
@@ -209,6 +310,21 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
             };
 
             return Result<UpdateQuestionResponse>.Ok(response);
+        }
+
+        private async Task<bool> HasAnyOptionUsedInConditionsAsync(
+            IReadOnlyCollection<Guid> optionIds,
+            CancellationToken cancellationToken)
+        {
+            if (optionIds.Count == 0)
+            {
+                return false;
+            }
+
+            return await _templateQuestionConditionReadRepository.AnyAsync(
+                x => x.SelectedQuestionOptionId.HasValue &&
+                     optionIds.Contains(x.SelectedQuestionOptionId.Value),
+                cancellationToken);
         }
 
         private async Task<Guid?> ResolveActorBranchIdAsync(

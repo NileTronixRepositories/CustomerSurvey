@@ -2,14 +2,13 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Features.Questions.Shared;
+using CustomerSurvey.Application.Features.Questions.Shared.Specs;
+using CustomerSurvey.Application.Features.Templates.Shared;
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestionsSelection
 {
@@ -21,7 +20,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
         private readonly IWriteReadRepository<Template> _templateReadRepository;
         private readonly IWriteReadRepository<QuestionGroup> _questionGroupReadRepository;
         private readonly IWriteReadRepository<Question> _questionReadRepository;
+        private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
+        private readonly IWriteReadRepository<TemplateQuestionCondition> _conditionReadRepository;
         private readonly ICurrentUser _currentUser;
 
         public GetTemplateQuestionsSelectionQueryHandler(
@@ -30,6 +31,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
             IWriteReadRepository<Template> templateReadRepository,
             IWriteReadRepository<QuestionGroup> questionGroupReadRepository,
             IWriteReadRepository<Question> questionReadRepository,
+            IWriteReadRepository<QuestionOption> questionOptionReadRepository,
+            IWriteReadRepository<TemplateQuestionCondition> conditionReadRepository,
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
             ICurrentUser currentUser)
         {
@@ -47,6 +50,12 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
 
             _questionReadRepository = questionReadRepository
                 ?? throw new ArgumentNullException(nameof(questionReadRepository));
+
+            _questionOptionReadRepository = questionOptionReadRepository
+                ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
+
+            _conditionReadRepository = conditionReadRepository
+                ?? throw new ArgumentNullException(nameof(conditionReadRepository));
 
             _templateQuestionReadRepository = templateQuestionReadRepository
                 ?? throw new ArgumentNullException(nameof(templateQuestionReadRepository));
@@ -107,14 +116,56 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                 new GetTemplateQuestionsForTemplateQuestionsSelectionSpec(template.TemplateId),
                 cancellationToken);
 
-            var selectedQuestionsById = templateQuestions
+            var questionConditions = await _conditionReadRepository.ListAsync(
+                new GetTemplateQuestionConditionsByTemplateIdsSpec(
+                    new[] { template.TemplateId }),
+                cancellationToken);
+
+            var validQuestionConditions = FilterValidConditions(
+                templateQuestions,
+                questionConditions);
+
+            var singleChoiceQuestionIds = questions
+     .Where(x => x.Type == QuestionType.SingleChoice)
+     .Select(x => x.QuestionId)
+     .Distinct()
+     .ToArray();
+
+            IReadOnlyCollection<QuestionOptionResponse> questionOptions;
+
+            if (singleChoiceQuestionIds.Length == 0)
+            {
+                questionOptions = Array.Empty<QuestionOptionResponse>();
+            }
+            else
+            {
+                questionOptions = await _questionOptionReadRepository.ListAsync(
+                    new GetQuestionOptionsByQuestionIdsSpec(singleChoiceQuestionIds),
+                    cancellationToken);
+            }
+
+            var optionsByQuestionId = questionOptions
                 .GroupBy(x => x.QuestionId)
                 .ToDictionary(
                     x => x.Key,
-                    x => (int?)x
+                    x => (IReadOnlyCollection<TemplateQuestionSelectionOptionResponse>)x
+                        .OrderBy(option => option.Order)
+                        .Select(option => new TemplateQuestionSelectionOptionResponse
+                        {
+                            OptionId = option.OptionId,
+                            TextEn = option.TextEn,
+                            TextAr = option.TextAr,
+                            Order = option.Order
+                        })
+                        .ToArray());
+
+            var selectedQuestionsByQuestionId = templateQuestions
+                .GroupBy(x => x.QuestionId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => x
                         .OrderBy(item => item.Order)
-                        .First()
-                        .Order);
+                        .First());
 
             var questionsByGroupId = questions
                 .GroupBy(x => x.GroupId)
@@ -123,20 +174,38 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                     x => x
                         .Select(question =>
                         {
-                            var isSelected = selectedQuestionsById.TryGetValue(
+                            var isSelected = selectedQuestionsByQuestionId.TryGetValue(
                                 question.QuestionId,
-                                out var order);
+                                out var selectedTemplateQuestion);
 
                             return new TemplateQuestionsSelectionQuestionResponse
                             {
                                 QuestionId = question.QuestionId,
+
+                                TemplateQuestionId = isSelected
+                                    ? selectedTemplateQuestion!.TemplateQuestionId
+                                    : null,
+
                                 TextEn = question.TextEn,
                                 TextAr = question.TextAr,
                                 Type = question.Type.ToString(),
                                 IsSelected = isSelected,
-                                Order = order
+
+                                Order = isSelected
+                                    ? selectedTemplateQuestion!.Order
+                                    : null,
+
+                                Options = question.Type == QuestionType.SingleChoice
+                                          && optionsByQuestionId.TryGetValue(
+                                              question.QuestionId,
+                                              out var options)
+                                    ? options
+                                    : Array.Empty<TemplateQuestionSelectionOptionResponse>()
                             };
                         })
+                        .OrderByDescending(question => question.IsSelected)
+                        .ThenBy(question => question.Order ?? int.MaxValue)
+                        .ThenBy(question => question.TextEn)
                         .ToArray());
 
             var response = new GetTemplateQuestionsSelectionResponse
@@ -147,6 +216,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                 TemplateNameAr = template.NameAr,
                 Status = template.Status.ToString(),
                 IsActive = template.IsActive,
+
                 Groups = groups
                     .Select(group => new TemplateQuestionsSelectionGroupResponse
                     {
@@ -159,6 +229,13 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                                 ? groupQuestions
                                 : Array.Empty<TemplateQuestionsSelectionQuestionResponse>()
                     })
+                    .ToArray(),
+
+                QuestionConditions = validQuestionConditions
+                    .OrderBy(condition => condition.Order)
+                    .ThenBy(condition => condition.ParentTemplateQuestionId)
+                    .ThenBy(condition => condition.ChildTemplateQuestionId)
+                    .Select(condition => condition.ToResponse())
                     .ToArray()
             };
 
@@ -183,6 +260,29 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                 cancellationToken);
 
             return branchUser;
+        }
+
+        private static TemplateQuestionConditionForReadDto[] FilterValidConditions(
+     IReadOnlyCollection<TemplateQuestionForTemplateQuestionsSelectionDto> templateQuestions,
+     IReadOnlyCollection<TemplateQuestionConditionForReadDto> conditions)
+        {
+            if (templateQuestions.Count == 0 || conditions.Count == 0)
+            {
+                return Array.Empty<TemplateQuestionConditionForReadDto>();
+            }
+
+            var selectedTemplateQuestionIds = templateQuestions
+                .Select(question => question.TemplateQuestionId)
+                .ToHashSet();
+
+            return conditions
+                .Where(condition =>
+                    selectedTemplateQuestionIds.Contains(condition.ParentTemplateQuestionId) &&
+                    selectedTemplateQuestionIds.Contains(condition.ChildTemplateQuestionId))
+                .OrderBy(condition => condition.Order)
+                .ThenBy(condition => condition.ParentTemplateQuestionId)
+                .ThenBy(condition => condition.ChildTemplateQuestionId)
+                .ToArray();
         }
     }
 }

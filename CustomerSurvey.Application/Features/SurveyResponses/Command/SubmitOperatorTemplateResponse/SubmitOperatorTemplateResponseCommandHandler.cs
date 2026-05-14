@@ -6,18 +6,13 @@ using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Domain.Common;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
-using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DomainOperator = CustomerSurvey.Domain.Identity.Operator;
 
 namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOperatorTemplateResponse
 {
     internal sealed class SubmitOperatorTemplateResponseCommandHandler
-          : ICommandHandler<SubmitOperatorTemplateResponseCommand, SubmitOperatorTemplateResponseResponse>
+        : ICommandHandler<SubmitOperatorTemplateResponseCommand, SubmitOperatorTemplateResponseResponse>
     {
         private const long MaxVoiceFileSizeInBytes = 10 * 1024 * 1024;
 
@@ -30,23 +25,25 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             ".ogg"
         ];
 
-        private readonly IWriteReadRepository<Operator> _operatorReadRepository;
+        private readonly IWriteReadRepository<DomainOperator> _operatorReadRepository;
         private readonly IWriteReadRepository<OperatorTemplate> _operatorTemplateReadRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
         private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
+        private readonly IWriteReadRepository<TemplateQuestionCondition> _conditionReadRepository;
         private readonly IWriteRepository<SurveyResponse> _surveyResponseWriteRepository;
-        private readonly ICurrentUser _currentUser;
         private readonly IMediaService _mediaService;
+        private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
         public SubmitOperatorTemplateResponseCommandHandler(
-            IWriteReadRepository<Operator> operatorReadRepository,
+            IWriteReadRepository<DomainOperator> operatorReadRepository,
             IWriteReadRepository<OperatorTemplate> operatorTemplateReadRepository,
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
             IWriteReadRepository<QuestionOption> questionOptionReadRepository,
+            IWriteReadRepository<TemplateQuestionCondition> conditionReadRepository,
             IWriteRepository<SurveyResponse> surveyResponseWriteRepository,
-            ICurrentUser currentUser,
             IMediaService mediaService,
+            ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
             _operatorReadRepository = operatorReadRepository
@@ -61,14 +58,17 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             _questionOptionReadRepository = questionOptionReadRepository
                 ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
 
+            _conditionReadRepository = conditionReadRepository
+                ?? throw new ArgumentNullException(nameof(conditionReadRepository));
+
             _surveyResponseWriteRepository = surveyResponseWriteRepository
                 ?? throw new ArgumentNullException(nameof(surveyResponseWriteRepository));
 
-            _currentUser = currentUser
-                ?? throw new ArgumentNullException(nameof(currentUser));
-
             _mediaService = mediaService
                 ?? throw new ArgumentNullException(nameof(mediaService));
+
+            _currentUser = currentUser
+                ?? throw new ArgumentNullException(nameof(currentUser));
 
             _unitOfWork = unitOfWork
                 ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -102,18 +102,17 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
 
             var assignedTemplate = await _operatorTemplateReadRepository.FirstOrDefaultAsync(
                 new GetAssignedTemplateForSubmitResponseSpec(
-                    currentOperator.OperatorId,
-                    request.TemplateId),
+                    operatorId: currentOperator.OperatorId,
+                    templateId: request.TemplateId),
                 cancellationToken);
 
             if (assignedTemplate is null)
             {
                 return Result<SubmitOperatorTemplateResponseResponse>.Fail(new Error(
-                    Code: "SurveyResponses.Submit.TemplateNotAssignedToOperator",
+                    Code: "SurveyResponses.Submit.TemplateNotAssigned",
                     Message: ErrorMessage.SubmitOperatorTemplateResponse_Template_NotAssigned,
                     Type: ErrorType.Security));
             }
-
             if (!assignedTemplate.TemplateIsActive)
             {
                 return Result<SubmitOperatorTemplateResponseResponse>.Fail(new Error(
@@ -156,7 +155,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 .Select(x => x.QuestionId)
                 .ToHashSet();
 
-            var hasUnknownQuestion = submittedQuestionIds.Any(x => !templateQuestionIds.Contains(x));
+            var hasUnknownQuestion = submittedQuestionIds
+                .Any(x => !templateQuestionIds.Contains(x));
 
             if (hasUnknownQuestion)
             {
@@ -166,13 +166,38 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     Type: ErrorType.Validation));
             }
 
-            var allTemplateQuestionsAnswered = templateQuestionIds.All(x => submittedQuestionIds.Contains(x));
+            var conditions = await _conditionReadRepository.ListAsync(
+     new GetTemplateQuestionConditionsForSubmitResponseSpec(request.TemplateId),
+     cancellationToken);
 
-            if (!allTemplateQuestionsAnswered)
+            var validConditions = FilterValidConditions(
+                templateQuestions,
+                conditions);
+
+            var visibleQuestionIds = CalculateVisibleQuestionIds(
+                templateQuestions,
+                validConditions,
+                submittedAnswers);
+
+            var hasHiddenQuestionAnswer = submittedQuestionIds
+                .Any(questionId => !visibleQuestionIds.Contains(questionId));
+
+            if (hasHiddenQuestionAnswer)
             {
                 return Result<SubmitOperatorTemplateResponseResponse>.Fail(new Error(
-                    Code: "SurveyResponses.Submit.AllQuestionsRequired",
-                    Message: ErrorMessage.SubmitOperatorTemplateResponse_AllQuestions_Required,
+                    Code: "SurveyResponses.Submit.HiddenQuestionAnswerNotAllowed",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_HiddenQuestionAnswer_NotAllowed,
+                    Type: ErrorType.Validation));
+            }
+
+            var allVisibleQuestionsAnswered = visibleQuestionIds
+                .All(questionId => submittedQuestionIds.Contains(questionId));
+
+            if (!allVisibleQuestionsAnswered)
+            {
+                return Result<SubmitOperatorTemplateResponseResponse>.Fail(new Error(
+                    Code: "SurveyResponses.Submit.VisibleQuestionsRequired",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_VisibleQuestions_Required,
                     Type: ErrorType.Validation));
             }
 
@@ -256,6 +281,157 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             return Result<SubmitOperatorTemplateResponseResponse>.Ok(response);
         }
 
+        private static TemplateQuestionConditionForSubmitResponseDto[] FilterValidConditions(
+    IReadOnlyCollection<TemplateQuestionForSubmitResponseDto> templateQuestions,
+    IReadOnlyCollection<TemplateQuestionConditionForSubmitResponseDto> conditions)
+        {
+            if (templateQuestions.Count == 0 || conditions.Count == 0)
+            {
+                return Array.Empty<TemplateQuestionConditionForSubmitResponseDto>();
+            }
+
+            var existingTemplateQuestionIds = templateQuestions
+                .Select(question => question.TemplateQuestionId)
+                .ToHashSet();
+
+            return conditions
+                .Where(condition =>
+                    existingTemplateQuestionIds.Contains(condition.ParentTemplateQuestionId) &&
+                    existingTemplateQuestionIds.Contains(condition.ChildTemplateQuestionId))
+                .OrderBy(condition => condition.Order)
+                .ThenBy(condition => condition.ParentTemplateQuestionId)
+                .ThenBy(condition => condition.ChildTemplateQuestionId)
+                .ToArray();
+        }
+
+        private static HashSet<Guid> CalculateVisibleQuestionIds(
+      IReadOnlyCollection<TemplateQuestionForSubmitResponseDto> templateQuestions,
+      IReadOnlyCollection<TemplateQuestionConditionForSubmitResponseDto> conditions,
+      IReadOnlyCollection<SubmitOperatorTemplateAnswerCommandItem> submittedAnswers)
+        {
+            var validConditions = FilterValidConditions(
+                templateQuestions,
+                conditions);
+
+            var questionIdByTemplateQuestionId = templateQuestions
+                .ToDictionary(
+                    x => x.TemplateQuestionId,
+                    x => x.QuestionId);
+
+            var templateQuestionIdByQuestionId = templateQuestions
+                .ToDictionary(
+                    x => x.QuestionId,
+                    x => x.TemplateQuestionId);
+
+            var allTemplateQuestionIds = templateQuestions
+                .Select(x => x.TemplateQuestionId)
+                .ToHashSet();
+
+            var childTemplateQuestionIds = validConditions
+                .Select(x => x.ChildTemplateQuestionId)
+                .ToHashSet();
+
+            var rootTemplateQuestionIds = templateQuestions
+                .Where(x => !childTemplateQuestionIds.Contains(x.TemplateQuestionId))
+                .OrderBy(x => x.Order)
+                .Select(x => x.TemplateQuestionId)
+                .ToArray();
+
+            if (rootTemplateQuestionIds.Length == 0)
+            {
+                rootTemplateQuestionIds = templateQuestions
+                    .OrderBy(x => x.Order)
+                    .Select(x => x.TemplateQuestionId)
+                    .ToArray();
+            }
+
+            var submittedAnswersByTemplateQuestionId = submittedAnswers
+                .Where(answer => templateQuestionIdByQuestionId.ContainsKey(answer.QuestionId))
+                .GroupBy(answer => templateQuestionIdByQuestionId[answer.QuestionId])
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.First());
+
+            var conditionsByParentTemplateQuestionId = validConditions
+                .GroupBy(condition => condition.ParentTemplateQuestionId)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group
+                        .OrderBy(condition => condition.Order)
+                        .ThenBy(condition => condition.ChildTemplateQuestionId)
+                        .ToArray());
+
+            var visibleTemplateQuestionIds = new HashSet<Guid>(rootTemplateQuestionIds);
+            var queue = new Queue<Guid>(rootTemplateQuestionIds);
+
+            while (queue.Count > 0)
+            {
+                var parentTemplateQuestionId = queue.Dequeue();
+
+                if (!submittedAnswersByTemplateQuestionId.TryGetValue(
+                        parentTemplateQuestionId,
+                        out var parentAnswer))
+                {
+                    continue;
+                }
+
+                if (!conditionsByParentTemplateQuestionId.TryGetValue(
+                        parentTemplateQuestionId,
+                        out var childConditions))
+                {
+                    continue;
+                }
+
+                foreach (var condition in childConditions)
+                {
+                    if (!allTemplateQuestionIds.Contains(condition.ChildTemplateQuestionId))
+                    {
+                        continue;
+                    }
+
+                    if (!ConditionMatchesAnswer(condition, parentAnswer))
+                    {
+                        continue;
+                    }
+
+                    if (visibleTemplateQuestionIds.Add(condition.ChildTemplateQuestionId))
+                    {
+                        queue.Enqueue(condition.ChildTemplateQuestionId);
+                    }
+                }
+            }
+
+            return visibleTemplateQuestionIds
+                .Where(questionIdByTemplateQuestionId.ContainsKey)
+                .Select(templateQuestionId => questionIdByTemplateQuestionId[templateQuestionId])
+                .ToHashSet();
+        }
+
+        private static bool ConditionMatchesAnswer(
+            TemplateQuestionConditionForSubmitResponseDto condition,
+            SubmitOperatorTemplateAnswerCommandItem answer)
+        {
+            return condition.TriggerType switch
+            {
+                QuestionConditionTriggerType.SingleChoiceOption =>
+                    answer.SelectedQuestionOptionId.HasValue &&
+                    condition.SelectedQuestionOptionId.HasValue &&
+                    answer.SelectedQuestionOptionId.Value == condition.SelectedQuestionOptionId.Value,
+
+                QuestionConditionTriggerType.StarRatingValue =>
+                    answer.StarRatingValue.HasValue &&
+                    condition.TriggerValue.HasValue &&
+                    answer.StarRatingValue.Value == condition.TriggerValue.Value,
+
+                QuestionConditionTriggerType.SmileValue =>
+                    answer.SmileValue.HasValue &&
+                    condition.TriggerValue.HasValue &&
+                    answer.SmileValue.Value == condition.TriggerValue.Value,
+
+                _ => false
+            };
+        }
+
         private async Task<SurveyAnswer> CreateSurveyAnswerAsync(
             Guid surveyResponseId,
             SubmitOperatorTemplateAnswerCommandItem answer,
@@ -321,11 +497,18 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         {
             return questionType switch
             {
-                QuestionType.SingleChoice => ValidateSingleChoice(answer, optionsByQuestionId),
+                QuestionType.SingleChoice => ValidateSingleChoice(
+                    answer,
+                    optionsByQuestionId),
+
                 QuestionType.Voice => ValidateVoice(answer),
+
                 QuestionType.StarRating => ValidateStarRating(answer),
+
                 QuestionType.Complain => ValidateComplain(answer),
+
                 QuestionType.Smiles => ValidateSmiles(answer),
+
                 _ => new Error(
                     Code: "SurveyResponses.Submit.QuestionTypeUnsupported",
                     Message: ErrorMessage.SubmitOperatorTemplateResponse_QuestionType_Unsupported,
@@ -345,16 +528,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     Type: ErrorType.Validation);
             }
 
-            if (!answer.SelectedQuestionOptionId.HasValue)
-            {
-                return new Error(
-                    Code: "SurveyResponses.Submit.SingleChoiceOptionRequired",
-                    Message: ErrorMessage.SubmitOperatorTemplateResponse_SingleChoice_OptionRequired,
-                    Type: ErrorType.Validation);
-            }
-
             if (!optionsByQuestionId.TryGetValue(answer.QuestionId, out var validOptionIds) ||
-                !validOptionIds.Contains(answer.SelectedQuestionOptionId.Value))
+                !validOptionIds.Contains(answer.SelectedQuestionOptionId!.Value))
             {
                 return new Error(
                     Code: "SurveyResponses.Submit.SingleChoiceOptionInvalid",
@@ -365,7 +540,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             return null;
         }
 
-        private static Error? ValidateVoice(SubmitOperatorTemplateAnswerCommandItem answer)
+        private static Error? ValidateVoice(
+            SubmitOperatorTemplateAnswerCommandItem answer)
         {
             if (!OnlyVoiceFieldsProvided(answer))
             {
@@ -408,18 +584,11 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             return null;
         }
 
-        private static Error? ValidateStarRating(SubmitOperatorTemplateAnswerCommandItem answer)
+        private static Error? ValidateStarRating(
+            SubmitOperatorTemplateAnswerCommandItem answer)
         {
-            if (!OnlyStarRatingFieldsProvided(answer))
-            {
-                return new Error(
-                    Code: "SurveyResponses.Submit.StarRatingInvalidShape",
-                    Message: ErrorMessage.SubmitOperatorTemplateResponse_StarRating_InvalidShape,
-                    Type: ErrorType.Validation);
-            }
-
-            if (!answer.StarRatingValue.HasValue ||
-                answer.StarRatingValue.Value < 1 ||
+            if (!OnlyStarRatingFieldsProvided(answer) ||
+                answer.StarRatingValue!.Value < 1 ||
                 answer.StarRatingValue.Value > 5)
             {
                 return new Error(
@@ -431,7 +600,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             return null;
         }
 
-        private static Error? ValidateComplain(SubmitOperatorTemplateAnswerCommandItem answer)
+        private static Error? ValidateComplain(
+            SubmitOperatorTemplateAnswerCommandItem answer)
         {
             if (!OnlyComplainFieldsProvided(answer))
             {
@@ -441,29 +611,14 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     Type: ErrorType.Validation);
             }
 
-            if (string.IsNullOrWhiteSpace(answer.TextAnswer))
-            {
-                return new Error(
-                    Code: "SurveyResponses.Submit.ComplainTextRequired",
-                    Message: ErrorMessage.SubmitOperatorTemplateResponse_Complain_TextRequired,
-                    Type: ErrorType.Validation);
-            }
-
             return null;
         }
 
-        private static Error? ValidateSmiles(SubmitOperatorTemplateAnswerCommandItem answer)
+        private static Error? ValidateSmiles(
+            SubmitOperatorTemplateAnswerCommandItem answer)
         {
-            if (!OnlySmilesFieldsProvided(answer))
-            {
-                return new Error(
-                    Code: "SurveyResponses.Submit.SmilesInvalidShape",
-                    Message: ErrorMessage.SubmitOperatorTemplateResponse_Smiles_InvalidShape,
-                    Type: ErrorType.Validation);
-            }
-
-            if (!answer.SmileValue.HasValue ||
-                answer.SmileValue.Value < 1 ||
+            if (!OnlySmilesFieldsProvided(answer) ||
+                answer.SmileValue!.Value < 1 ||
                 answer.SmileValue.Value > 5)
             {
                 return new Error(
@@ -479,8 +634,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             SubmitOperatorTemplateAnswerCommandItem answer)
         {
             return answer.SelectedQuestionOptionId.HasValue &&
-                   answer.StarRatingValue is null &&
-                   answer.SmileValue is null &&
+                   !answer.StarRatingValue.HasValue &&
+                   !answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is null;
         }
@@ -488,9 +643,9 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         private static bool OnlyVoiceFieldsProvided(
             SubmitOperatorTemplateAnswerCommandItem answer)
         {
-            return answer.SelectedQuestionOptionId is null &&
-                   answer.StarRatingValue is null &&
-                   answer.SmileValue is null &&
+            return !answer.SelectedQuestionOptionId.HasValue &&
+                   !answer.StarRatingValue.HasValue &&
+                   !answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is not null;
         }
@@ -498,9 +653,9 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         private static bool OnlyStarRatingFieldsProvided(
             SubmitOperatorTemplateAnswerCommandItem answer)
         {
-            return answer.SelectedQuestionOptionId is null &&
+            return !answer.SelectedQuestionOptionId.HasValue &&
                    answer.StarRatingValue.HasValue &&
-                   answer.SmileValue is null &&
+                   !answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is null;
         }
@@ -508,9 +663,9 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         private static bool OnlyComplainFieldsProvided(
             SubmitOperatorTemplateAnswerCommandItem answer)
         {
-            return answer.SelectedQuestionOptionId is null &&
-                   answer.StarRatingValue is null &&
-                   answer.SmileValue is null &&
+            return !answer.SelectedQuestionOptionId.HasValue &&
+                   !answer.StarRatingValue.HasValue &&
+                   !answer.SmileValue.HasValue &&
                    !string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is null;
         }
@@ -518,8 +673,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         private static bool OnlySmilesFieldsProvided(
             SubmitOperatorTemplateAnswerCommandItem answer)
         {
-            return answer.SelectedQuestionOptionId is null &&
-                   answer.StarRatingValue is null &&
+            return !answer.SelectedQuestionOptionId.HasValue &&
+                   !answer.StarRatingValue.HasValue &&
                    answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is null;

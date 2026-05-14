@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Features.Templates.Shared;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
@@ -20,6 +21,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly IWriteReadRepository<TemplateQuestionCondition> _conditionReadRepository;
         private readonly ICurrentUser _currentUser;
 
         public GetTemplateDetailsQueryHandler(
@@ -27,6 +29,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
+            IWriteReadRepository<TemplateQuestionCondition> conditionReadRepository,
             ICurrentUser currentUser)
         {
             _templateReadRepository = templateReadRepository
@@ -43,6 +46,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
+
+            _conditionReadRepository = conditionReadRepository
+                ?? throw new ArgumentNullException(nameof(conditionReadRepository));
         }
 
         public async Task<Result<GetTemplateDetailsResponse>> Handle(
@@ -93,6 +99,11 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 .Distinct()
                 .Count();
 
+            var questionConditions = await _conditionReadRepository.ListAsync(
+    new GetTemplateQuestionConditionsByTemplateIdsSpec(
+        new[] { request.TemplateId }),
+    cancellationToken);
+
             var response = new GetTemplateDetailsResponse
             {
                 TemplateId = template.TemplateId,
@@ -107,6 +118,10 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 IsActive = template.IsActive,
                 CreatedOnUtc = template.CreatedOnUtc,
                 ModifiedOnUtc = template.ModifiedOnUtc,
+                QuestionConditions = questionConditions
+    .OrderBy(x => x.Order)
+    .Select(x => x.ToResponse())
+    .ToArray(),
 
                 Summary = new TemplateDetailsSummaryResponse
                 {

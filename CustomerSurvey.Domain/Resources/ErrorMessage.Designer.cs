@@ -2275,6 +2275,213 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Child question cannot be used because it is inactive..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_ChildQuestion_Inactive {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_ChildQuestion_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Child question cannot be used because its question group is inactive..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_ChildQuestionGroup_Inactive {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_ChildQuestionGroup_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Child template question is required..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_ChildTemplateQuestionId_Required {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_ChildTemplateQuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cyclic question conditions are not allowed..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_CycleDetected {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_CycleDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate template question conditions are not allowed..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_Duplicated {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Condition order must be greater than zero..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_Order_Invalid {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent question and child question cannot be the same..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_ParentCannotEqualChild {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_ParentCannotEqualChild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent question cannot be used because it is inactive..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_ParentQuestion_Inactive {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_ParentQuestion_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent question cannot be used because its question group is inactive..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_ParentQuestionGroup_Inactive {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_ParentQuestionGroup_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent template question is required..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_ParentTemplateQuestionId_Required {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_ParentTemplateQuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conditions are allowed only for SingleChoice, StarRating, and Smiles questions..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_ParentType_NotAllowed {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_ParentType_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected option is invalid..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_SelectedOption_Invalid {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_SelectedOption_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected option does not belong to the parent question..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_SelectedOption_NotBelongToParent {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_SelectedOption_NotBelongToParent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SingleChoice condition must contain selected option only..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_SingleChoiceShape_Invalid {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_SingleChoiceShape_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Smiles condition must contain value between 1 and 5 only..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_SmilesShape_Invalid {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_SmilesShape_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star rating condition must contain value between 1 and 5 only..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_StarRatingShape_Invalid {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_StarRatingShape_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot manage question conditions for an inactive template..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_Template_Inactive {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_Template_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_Template_NotFound {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template is required..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_TemplateId_Required {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_TemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some template questions were not found inside this template..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_TemplateQuestion_NotFound {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_TemplateQuestion_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Condition trigger type is invalid..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_TriggerType_Invalid {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_TriggerType_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trigger type does not match parent question type..
+        /// </summary>
+        public static string ManageTemplateQuestionConditions_TriggerType_Mismatch {
+            get {
+                return ResourceManager.GetString("ManageTemplateQuestionConditions_TriggerType_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Application user was not found..
         /// </summary>
         public static string ResetBranchUserPassword_ApplicationUser_NotFound {
@@ -2590,6 +2797,15 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot submit an answer for a question that is not visible based on current answers..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_HiddenQuestionAnswer_NotAllowed {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_HiddenQuestionAnswer_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to One of the submitted questions does not belong to this template..
         /// </summary>
         public static string SubmitOperatorTemplateResponse_Question_NotInTemplate {
@@ -2721,6 +2937,15 @@ namespace CustomerSurvey.Domain.Resources {
         public static string SubmitOperatorTemplateResponse_TextAnswer_MaxLength {
             get {
                 return ResourceManager.GetString("SubmitOperatorTemplateResponse_TextAnswer_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Answers are required for all visible questions..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_VisibleQuestions_Required {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_VisibleQuestions_Required", resourceCulture);
             }
         }
         
@@ -3220,6 +3445,15 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to One of the provided options does not belong to this question..
+        /// </summary>
+        public static string UpdateQuestion_Option_NotBelongToQuestion {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Option_NotBelongToQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Option order must be greater than zero..
         /// </summary>
         public static string UpdateQuestion_Option_Order_Invalid {
@@ -3252,6 +3486,24 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateQuestion_Option_TextEn_Required {
             get {
                 return ResourceManager.GetString("UpdateQuestion_Option_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot delete an option used by template question conditions..
+        /// </summary>
+        public static string UpdateQuestion_Option_UsedInCondition {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Option_UsedInCondition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The same question option cannot be sent more than once in the request..
+        /// </summary>
+        public static string UpdateQuestion_OptionId_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_OptionId_Duplicated", resourceCulture);
             }
         }
         

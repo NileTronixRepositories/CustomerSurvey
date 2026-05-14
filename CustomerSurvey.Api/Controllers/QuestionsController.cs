@@ -81,13 +81,14 @@ namespace CustomerSurvey.Api.Controllers
                 TextAr = request.TextAr,
                 Type = request.Type,
                 Options = request.Options?
-                    .Select(x => new QuestionOptionCommandItem
-                    {
-                        TextEn = x.TextEn,
-                        TextAr = x.TextAr,
-                        Order = x.Order
-                    })
-                    .ToArray() ?? Array.Empty<QuestionOptionCommandItem>()
+    .Select(x => new QuestionOptionCommandItem
+    {
+        OptionId = x.OptionId,
+        TextEn = x.TextEn,
+        TextAr = x.TextAr,
+        Order = x.Order
+    })
+    .ToArray() ?? Array.Empty<QuestionOptionCommandItem>()
             };
 
             var result = await sender.Send(command, cancellationToken);

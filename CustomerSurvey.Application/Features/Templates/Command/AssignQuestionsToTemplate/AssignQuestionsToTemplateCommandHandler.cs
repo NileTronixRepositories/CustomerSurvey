@@ -6,16 +6,11 @@ using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsToTemplate
 {
     internal sealed class AssignQuestionsToTemplateCommandHandler
-         : ICommandHandler<AssignQuestionsToTemplateCommand, AssignQuestionsToTemplateResponse>
+        : ICommandHandler<AssignQuestionsToTemplateCommand, AssignQuestionsToTemplateResponse>
     {
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
@@ -23,6 +18,8 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
         private readonly IWriteReadRepository<Question> _questionReadRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
         private readonly IWriteRepository<TemplateQuestion> _templateQuestionWriteRepository;
+        private readonly IWriteReadRepository<TemplateQuestionCondition> _conditionReadRepository;
+        private readonly IWriteRepository<TemplateQuestionCondition> _conditionWriteRepository;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -33,6 +30,8 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
             IWriteReadRepository<Question> questionReadRepository,
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
             IWriteRepository<TemplateQuestion> templateQuestionWriteRepository,
+            IWriteReadRepository<TemplateQuestionCondition> conditionReadRepository,
+            IWriteRepository<TemplateQuestionCondition> conditionWriteRepository,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -53,6 +52,12 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
 
             _templateQuestionWriteRepository = templateQuestionWriteRepository
                 ?? throw new ArgumentNullException(nameof(templateQuestionWriteRepository));
+
+            _conditionReadRepository = conditionReadRepository
+                ?? throw new ArgumentNullException(nameof(conditionReadRepository));
+
+            _conditionWriteRepository = conditionWriteRepository
+                ?? throw new ArgumentNullException(nameof(conditionWriteRepository));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -111,9 +116,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
                     Type: ErrorType.Validation));
             }
 
-            var requestedQuestionIds = request.QuestionIds
-                .Distinct()
-                .ToArray();
+            var requestedQuestionIds = request.QuestionIds.ToArray();
 
             var questions = await _questionReadRepository.ListAsync(
                 new GetQuestionsForAssignQuestionsToTemplateSpec(
@@ -145,32 +148,48 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
                 .GroupBy(x => x.QuestionId)
                 .ToDictionary(x => x.Key, x => x.First());
 
-            foreach (var existingTemplateQuestion in existingTemplateQuestions)
+            var removedTemplateQuestions = existingTemplateQuestions
+                .Where(x => !requestedOrderByQuestionId.ContainsKey(x.QuestionId))
+                .ToArray();
+
+            await DeleteConditionsForRemovedTemplateQuestionsAsync(
+     removedTemplateQuestions,
+     cancellationToken);
+
+            foreach (var removedTemplateQuestion in removedTemplateQuestions)
             {
-                if (!requestedOrderByQuestionId.ContainsKey(existingTemplateQuestion.QuestionId))
-                {
-                    _templateQuestionWriteRepository.Delete(existingTemplateQuestion);
-                }
+                _templateQuestionWriteRepository.Delete(removedTemplateQuestion);
             }
+
+            var assignedTemplateQuestionsByQuestionId = new Dictionary<Guid, TemplateQuestion>();
 
             foreach (var item in requestedOrderByQuestionId)
             {
-                if (existingByQuestionId.TryGetValue(item.Key, out var existingTemplateQuestion))
+                var questionId = item.Key;
+                var order = item.Value;
+
+                if (existingByQuestionId.TryGetValue(questionId, out var existingTemplateQuestion))
                 {
-                    existingTemplateQuestion.ChangeOrder(item.Value);
+                    existingTemplateQuestion.ChangeOrder(order);
+
                     _templateQuestionWriteRepository.Update(existingTemplateQuestion);
+
+                    assignedTemplateQuestionsByQuestionId[questionId] = existingTemplateQuestion;
+
                     continue;
                 }
 
                 var templateQuestion = TemplateQuestion.Create(
-      templateId: template.TemplateId,
-      questionId: item.Key,
-      order: item.Value,
-      createdByApplicationUserId: currentApplicationUserId);
+                    templateId: template.TemplateId,
+                    questionId: questionId,
+                    order: order,
+                    createdByApplicationUserId: currentApplicationUserId);
 
                 await _templateQuestionWriteRepository.AddAsync(
                     templateQuestion,
                     cancellationToken);
+
+                assignedTemplateQuestionsByQuestionId[questionId] = templateQuestion;
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -179,18 +198,45 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
             {
                 TemplateId = template.TemplateId,
                 BranchId = template.BranchId,
-                QuestionsCount = requestedQuestionIds.Length,
-                Questions = requestedOrderByQuestionId
-                    .OrderBy(x => x.Value)
-                    .Select(x => new AssignedTemplateQuestionResponse
+                QuestionsCount = assignedTemplateQuestionsByQuestionId.Count,
+                Questions = assignedTemplateQuestionsByQuestionId
+                    .Values
+                    .OrderBy(templateQuestion => templateQuestion.Order)
+                    .Select(templateQuestion => new AssignedTemplateQuestionResponse
                     {
-                        QuestionId = x.Key,
-                        Order = x.Value
+                        TemplateQuestionId = templateQuestion.Id,
+                        QuestionId = templateQuestion.QuestionId,
+                        Order = templateQuestion.Order
                     })
                     .ToArray()
             };
 
             return Result<AssignQuestionsToTemplateResponse>.Ok(response);
+        }
+
+        private async Task DeleteConditionsForRemovedTemplateQuestionsAsync(
+            IReadOnlyCollection<TemplateQuestion> removedTemplateQuestions,
+            CancellationToken cancellationToken)
+        {
+            if (removedTemplateQuestions.Count == 0)
+            {
+                return;
+            }
+
+            var removedTemplateQuestionIds = removedTemplateQuestions
+                .Select(x => x.Id)
+                .Distinct()
+                .ToArray();
+
+            var relatedConditions = await _conditionReadRepository.ListAsync(
+                new GetTemplateQuestionConditionsByTemplateQuestionIdsSpec(
+                    removedTemplateQuestionIds),
+                cancellationToken);
+
+            foreach (var condition in relatedConditions)
+            {
+                _conditionWriteRepository.Delete(condition);
+            }
         }
 
         private async Task<CurrentBranchActorForAssignQuestionsToTemplateDto?> ResolveCurrentBranchActorAsync(

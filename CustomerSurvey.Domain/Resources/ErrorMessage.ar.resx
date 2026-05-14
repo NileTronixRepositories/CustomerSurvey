@@ -1266,4 +1266,88 @@
   <data name="GetBranchSatisfactionReport_DateRange_MaxExceeded" xml:space="preserve">
     <value>لا يمكن أن تزيد فترة التقرير عن 12 شهرًا.</value>
   </data>
+  <data name="ManageTemplateQuestionConditions_TemplateId_Required" xml:space="preserve">
+    <value>القالب مطلوب.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_ParentTemplateQuestionId_Required" xml:space="preserve">
+    <value>السؤال الأساسي مطلوب.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_ChildTemplateQuestionId_Required" xml:space="preserve">
+    <value>السؤال التابع مطلوب.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_TriggerType_Invalid" xml:space="preserve">
+    <value>نوع شرط الظهور غير صحيح.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_Order_Invalid" xml:space="preserve">
+    <value>ترتيب السؤال التابع يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار نفس شرط الظهور داخل القالب.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب الفرع الحالي.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_Template_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القالب.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_Template_Inactive" xml:space="preserve">
+    <value>لا يمكن تعديل شروط أسئلة قالب غير مفعل.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_TemplateQuestion_NotFound" xml:space="preserve">
+    <value>بعض الأسئلة غير موجودة داخل هذا القالب.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_ParentCannotEqualChild" xml:space="preserve">
+    <value>لا يمكن أن يكون السؤال التابع هو نفس السؤال الأساسي.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_ParentType_NotAllowed" xml:space="preserve">
+    <value>شروط الظهور مسموحة فقط لأسئلة الاختيار الواحد والنجوم والابتسامات.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_TriggerType_Mismatch" xml:space="preserve">
+    <value>نوع الشرط لا يتوافق مع نوع السؤال الأساسي.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_SingleChoiceShape_Invalid" xml:space="preserve">
+    <value>شرط الاختيار الواحد يجب أن يحتوي على اختيار فقط.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_SelectedOption_Invalid" xml:space="preserve">
+    <value>الاختيار المحدد غير صحيح.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_SelectedOption_NotBelongToParent" xml:space="preserve">
+    <value>الاختيار المحدد لا ينتمي للسؤال الأساسي.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_StarRatingShape_Invalid" xml:space="preserve">
+    <value>شرط النجوم يجب أن يحتوي على قيمة من 1 إلى 5 فقط.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_SmilesShape_Invalid" xml:space="preserve">
+    <value>شرط الابتسامات يجب أن يحتوي على قيمة من 1 إلى 5 فقط.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_CycleDetected" xml:space="preserve">
+    <value>لا يمكن إنشاء دورة بين الأسئلة التابعة.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_VisibleQuestions_Required" xml:space="preserve">
+    <value>يجب إرسال إجابات لكل الأسئلة الظاهرة فقط.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_HiddenQuestionAnswer_NotAllowed" xml:space="preserve">
+    <value>لا يمكن إرسال إجابة لسؤال غير ظاهر بناءً على الإجابات الحالية.</value>
+  </data>
+  <data name="UpdateQuestion_Option_UsedInCondition" xml:space="preserve">
+    <value>لا يمكن حذف اختيار مستخدم في شروط الأسئلة داخل القوالب.</value>
+  </data>
+  <data name="UpdateQuestion_Option_NotBelongToQuestion" xml:space="preserve">
+    <value>أحد الاختيارات المرسلة لا يتبع هذا السؤال.</value>
+  </data>
+  <data name="UpdateQuestion_OptionId_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار نفس اختيار السؤال أكثر من مرة في الطلب.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_ParentQuestion_Inactive" xml:space="preserve">
+    <value>لا يمكن استخدام السؤال الأب لأنه غير نشط.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_ParentQuestionGroup_Inactive" xml:space="preserve">
+    <value>لا يمكن استخدام السؤال الأب لأن مجموعة الأسئلة الخاصة به غير نشطة.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_ChildQuestion_Inactive" xml:space="preserve">
+    <value>لا يمكن استخدام السؤال التابع لأنه غير نشط.</value>
+  </data>
+  <data name="ManageTemplateQuestionConditions_ChildQuestionGroup_Inactive" xml:space="preserve">
+    <value>لا يمكن استخدام السؤال التابع لأن مجموعة الأسئلة الخاصة به غير نشطة.</value>
+  </data>
 </root>

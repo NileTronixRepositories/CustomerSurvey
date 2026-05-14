@@ -69,6 +69,24 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
                 .Must(HaveUniqueOrder)
                 .WithMessage(ErrorMessage.UpdateQuestion_Options_Order_Duplicated)
                 .When(x => x.Type == QuestionType.SingleChoice);
+
+            RuleFor(x => x.Options)
+    .Must(options =>
+    {
+        if (options is null)
+        {
+            return true;
+        }
+
+        var optionIds = options
+            .Where(x => x.OptionId.HasValue)
+            .Select(x => x.OptionId!.Value)
+            .ToArray();
+
+        return optionIds.Length == optionIds.Distinct().Count();
+    })
+    .WithMessage(ErrorMessage.UpdateQuestion_OptionId_Duplicated)
+    .When(x => x.Type == QuestionType.SingleChoice);
         }
 
         private static bool IsValidOptionsShape(
