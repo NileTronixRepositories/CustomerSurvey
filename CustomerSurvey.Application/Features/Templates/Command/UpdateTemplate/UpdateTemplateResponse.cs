@@ -18,6 +18,10 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
 
         public string? Description { get; init; }
 
+        public DateTime ActiveFrom { get; init; }
+
+        public DateTime? ExpireTo { get; init; }
+
         public string Status { get; init; } = string.Empty;
 
         public bool IsActive { get; init; }

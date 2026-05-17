@@ -1,10 +1,5 @@
 ﻿using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Operators.Command.AssignTemplatesToOperator
 {
@@ -17,11 +12,14 @@ namespace CustomerSurvey.Application.Features.Operators.Command.AssignTemplatesT
         : Specification<Template, ActiveTemplateForAssignTemplatesToOperatorDto>
     {
         public GetActiveTemplatesForAssignTemplatesToOperatorSpec(
-            IReadOnlyCollection<Guid> templateIds)
+            IReadOnlyCollection<Guid> templateIds,
+            DateTime utcNow)
         {
             AddCriteria(x =>
                 templateIds.Contains(x.Id) &&
-                x.IsActive);
+                x.IsActive &&
+                x.ActiveFrom <= utcNow &&
+                (!x.ExpireTo.HasValue || x.ExpireTo.Value > utcNow));
 
             Select(x => new ActiveTemplateForAssignTemplatesToOperatorDto
             {

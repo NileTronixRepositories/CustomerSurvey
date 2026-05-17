@@ -32,7 +32,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 Status = x.Status,
                 IsActive = x.IsActive,
                 CreatedOnUtc = x.CreatedOnUtc,
-                ModifiedOnUtc = x.ModifiedOnUtc
+                ModifiedOnUtc = x.ModifiedOnUtc,
+                ActiveFrom = x.ActiveFrom,
+                ExpireTo = x.ExpireTo,
             });
         }
     }

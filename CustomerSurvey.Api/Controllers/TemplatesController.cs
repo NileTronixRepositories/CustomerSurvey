@@ -115,11 +115,12 @@ namespace CustomerSurvey.Api.Controllers
             {
                 NameEn = request.NameEn,
                 NameAr = request.NameAr,
-                Description = request.Description
+                Description = request.Description,
+                ActiveFrom = request.ActiveFrom,
+                ExpireTo = request.ExpireTo
             };
 
             var result = await sender.Send(command, cancellationToken);
-
             return result.ToIActionResult();
         }
 
@@ -135,11 +136,12 @@ namespace CustomerSurvey.Api.Controllers
                 TemplateId = templateId,
                 NameEn = request.NameEn,
                 NameAr = request.NameAr,
-                Description = request.Description
+                Description = request.Description,
+                ActiveFrom = request.ActiveFrom,
+                ExpireTo = request.ExpireTo
             };
 
             var result = await sender.Send(command, cancellationToken);
-
             return result.ToIActionResult();
         }
 

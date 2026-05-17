@@ -32,6 +32,14 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
                 .MaximumLength(1000)
                 .WithMessage(ErrorMessage.UpdateTemplate_Description_MaxLength)
                 .When(x => !string.IsNullOrWhiteSpace(x.Description));
+
+            RuleFor(x => x.ActiveFrom)
+    .NotEmpty()
+    .WithMessage(ErrorMessage.UpdateTemplate_ActiveFrom_Required);
+
+            RuleFor(x => x)
+                .Must(x => !x.ExpireTo.HasValue || x.ExpireTo.Value > x.ActiveFrom)
+                .WithMessage(ErrorMessage.UpdateTemplate_ExpireTo_MustBeAfterActiveFrom);
         }
     }
 }

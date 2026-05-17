@@ -90,12 +90,13 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
                     Message: ErrorMessage.CreateTemplate_NameEn_AlreadyExists_InsideBranch,
                     Type: ErrorType.Validation));
             }
-
             var template = Template.Create(
                 branchId: branchId,
                 nameEn: normalizedNameEn,
                 nameAr: request.NameAr,
                 description: request.Description,
+                activeFrom: request.ActiveFrom,
+                expireTo: request.ExpireTo,
                 createdByApplicationUserId: currentApplicationUserId);
 
             await _templateWriteRepository.AddAsync(template, cancellationToken);
@@ -109,6 +110,8 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
                 NameEn = template.NameEn,
                 NameAr = template.NameAr,
                 Description = template.Description,
+                ActiveFrom = template.ActiveFrom,
+                ExpireTo = template.ExpireTo,
                 Status = template.Status.ToString(),
                 IsActive = template.IsActive
             };

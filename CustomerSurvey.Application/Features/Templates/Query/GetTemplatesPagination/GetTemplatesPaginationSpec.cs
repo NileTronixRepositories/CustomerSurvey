@@ -57,7 +57,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
                 Status = x.Status,
                 IsActive = x.IsActive,
                 QuestionsCount = x.TemplateQuestions.Count,
-                CreatedOnUtc = x.CreatedOnUtc
+                CreatedOnUtc = x.CreatedOnUtc,
+                ActiveFrom = x.ActiveFrom,
+                ExpireTo = x.ExpireTo,
             });
         }
     }

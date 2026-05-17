@@ -1356,4 +1356,22 @@
   <data name="UpdateQuestion_Option_Value_Invalid" xml:space="preserve">
     <value>Option value must be between 1 and 5.</value>
   </data>
+  <data name="CreateTemplate_ActiveFrom_Required" xml:space="preserve">
+    <value>Template active from date is required.</value>
+  </data>
+  <data name="CreateTemplate_ExpireTo_MustBeAfterActiveFrom" xml:space="preserve">
+    <value>Template expire date must be after active from date.</value>
+  </data>
+  <data name="UpdateTemplate_ActiveFrom_Required" xml:space="preserve">
+    <value>UpdateTemplate_ActiveFrom_Required</value>
+  </data>
+  <data name="UpdateTemplate_ExpireTo_MustBeAfterActiveFrom" xml:space="preserve">
+    <value>Template expire date must be after active from date.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Template_NotStartedYet" xml:space="preserve">
+    <value>This template has not started yet.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Template_Expired" xml:space="preserve">
+    <value>This template has expired.</value>
+  </data>
 </root>

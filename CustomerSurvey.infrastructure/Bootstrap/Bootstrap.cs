@@ -1,17 +1,21 @@
 ﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Persistence;
 using BuildingBlock.Application.Abstraction.Security;
+using BuildingBlock.Infrastracture.Bootstrap;
+using BuildingBlock.Infrastracture.Interceptors;
 using BuildingBlock.Infrastracture.Options;
 using BuildingBlock.Infrastracture.Service;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Abstraction.Seeding;
 using CustomerSurvey.infrastructure.Authorization;
+using CustomerSurvey.infrastructure.BackgroundJobs.Templates;
 using CustomerSurvey.infrastructure.Options;
 using CustomerSurvey.infrastructure.Persistence;
 using CustomerSurvey.infrastructure.Repositories;
-using BuildingBlock.Infrastracture.Bootstrap;
-using BuildingBlock.Infrastracture.Interceptors;
+using CustomerSurvey.infrastructure.Seeders;
+using CustomerSurvey.infrastructure.Services.Security;
+using CustomerSurvey.infrastructure.Services.Token;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +24,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using CustomerSurvey.infrastructure.Seeders;
-using CustomerSurvey.infrastructure.Services.Security;
-using CustomerSurvey.infrastructure.Services.Token;
 using System.Text;
 
 namespace CustomerSurvey.infrastructure.Bootstrap
@@ -85,6 +86,7 @@ namespace CustomerSurvey.infrastructure.Bootstrap
             // Seeding + DB init (HostedServices - correct place)
             services.AddSeeding();
             services.AddHostedService<DbInitAndSeedingHostedService>();
+            services.AddHostedService<ExpireTemplatesBackgroundService>();
 
             return services;
         }

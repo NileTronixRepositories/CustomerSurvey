@@ -1,10 +1,5 @@
 ﻿using BuildingBlock.Domain.EntitiesHelper;
 using CustomerSurvey.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Domain.Entities
 {
@@ -18,19 +13,19 @@ namespace CustomerSurvey.Domain.Entities
         public string NameEn { get; private set; } = string.Empty;
         public string? NameAr { get; private set; }
         public string? Description { get; private set; }
+
+        public DateTime ActiveFrom { get; private set; }
+        public DateTime? ExpireTo { get; private set; }
+
         public TemplateStatus Status { get; private set; }
         public bool IsActive { get; private set; }
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
-        public IReadOnlyCollection<TemplateQuestion> TemplateQuestions => _templateQuestions.AsReadOnly();
+        public IReadOnlyCollection<TemplateQuestion> TemplateQuestions =>
+            _templateQuestions.AsReadOnly();
 
         private Template()
-        {
-        }
-
-        private Template(Guid id)
-            : base(id)
         {
         }
 
@@ -39,15 +34,20 @@ namespace CustomerSurvey.Domain.Entities
             string nameEn,
             string? nameAr,
             string? description,
+            DateTime activeFrom,
+            DateTime? expireTo,
             Guid createdByApplicationUserId)
         {
-            return new Template(Guid.NewGuid())
+            return new Template
             {
+                Id = Guid.NewGuid(),
                 BranchId = branchId,
                 NameEn = nameEn.Trim(),
                 NameAr = string.IsNullOrWhiteSpace(nameAr) ? null : nameAr.Trim(),
                 Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim(),
-                Status = TemplateStatus.Active,
+                ActiveFrom = activeFrom,
+                ExpireTo = expireTo,
+                Status = TemplateStatus.Draft,
                 IsActive = true,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
@@ -56,11 +56,22 @@ namespace CustomerSurvey.Domain.Entities
         public void Update(
             string nameEn,
             string? nameAr,
-            string? description)
+            string? description,
+            DateTime activeFrom,
+            DateTime? expireTo)
         {
             NameEn = nameEn.Trim();
             NameAr = string.IsNullOrWhiteSpace(nameAr) ? null : nameAr.Trim();
             Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
+            ActiveFrom = activeFrom;
+            ExpireTo = expireTo;
+        }
+
+        public bool IsCurrentlyAvailable(DateTime utcNow)
+        {
+            return IsActive &&
+                   ActiveFrom <= utcNow &&
+                   (!ExpireTo.HasValue || ExpireTo.Value > utcNow);
         }
 
         public void Activate()

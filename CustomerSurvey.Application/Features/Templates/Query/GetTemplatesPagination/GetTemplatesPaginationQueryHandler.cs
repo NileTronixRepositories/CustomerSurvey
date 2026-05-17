@@ -89,7 +89,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
                     Status = x.Status.ToString(),
                     IsActive = x.IsActive,
                     QuestionsCount = x.QuestionsCount,
-                    CreatedOnUtc = x.CreatedOnUtc
+                    CreatedOnUtc = x.CreatedOnUtc,
+                    ActiveFrom = x.ActiveFrom,
+                    ExpireTo = x.ExpireTo
                 })
                 .ToArray();
 

@@ -40,6 +40,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorTemplat
         public string BranchCode { get; init; } = string.Empty;
 
         public int QuestionsCount { get; init; }
+        public DateTime ActiveFrom { get; init; }
+
+        public DateTime? ExpireTo { get; init; }
 
         public IReadOnlyCollection<OperatorTemplateSelectionQuestionResponse> Questions { get; init; }
             = Array.Empty<OperatorTemplateSelectionQuestionResponse>();

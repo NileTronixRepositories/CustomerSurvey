@@ -25,5 +25,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
         public int QuestionsCount { get; init; }
 
         public DateTime CreatedOnUtc { get; init; }
+        public DateTime ActiveFrom { get; init; }
+
+        public DateTime? ExpireTo { get; init; }
     }
 }

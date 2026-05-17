@@ -35,6 +35,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public int QuestionsCount { get; init; }
 
         public bool HasAnswered { get; init; }
+        public DateTime ActiveFrom { get; init; }
+
+        public DateTime? ExpireTo { get; init; }
 
         public MyOperatorTemplateLatestResponse? LatestResponse { get; init; }
 

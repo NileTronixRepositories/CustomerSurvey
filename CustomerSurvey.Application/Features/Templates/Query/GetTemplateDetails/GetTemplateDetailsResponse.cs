@@ -32,6 +32,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
         public DateTime CreatedOnUtc { get; init; }
 
         public DateTime? ModifiedOnUtc { get; init; }
+        public DateTime ActiveFrom { get; init; }
+
+        public DateTime? ExpireTo { get; init; }
 
         public TemplateDetailsSummaryResponse Summary { get; init; } = new();
 
