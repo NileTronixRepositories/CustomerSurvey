@@ -70,5 +70,19 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
         public string GroupNameEn { get; init; } = string.Empty;
 
         public string? GroupNameAr { get; init; }
+        public IReadOnlyCollection<TemplateDetailsQuestionOptionResponse> Options { get; init; }
+     = Array.Empty<TemplateDetailsQuestionOptionResponse>();
+    }
+    public sealed record TemplateDetailsQuestionOptionResponse
+    {
+        public Guid OptionId { get; init; }
+
+        public string TextEn { get; init; } = string.Empty;
+
+        public string? TextAr { get; init; }
+
+        public int Order { get; init; }
+
+        public int Value { get; init; }
     }
 }

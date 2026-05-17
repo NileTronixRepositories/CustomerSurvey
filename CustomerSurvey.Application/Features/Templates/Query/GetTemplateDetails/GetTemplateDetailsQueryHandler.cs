@@ -22,6 +22,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<TemplateQuestionCondition> _conditionReadRepository;
+        private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
         private readonly ICurrentUser _currentUser;
 
         public GetTemplateDetailsQueryHandler(
@@ -30,6 +31,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<TemplateQuestionCondition> conditionReadRepository,
+            IWriteReadRepository<QuestionOption> questionOptionReadRepository,
             ICurrentUser currentUser)
         {
             _templateReadRepository = templateReadRepository
@@ -49,6 +51,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
             _conditionReadRepository = conditionReadRepository
                 ?? throw new ArgumentNullException(nameof(conditionReadRepository));
+            _questionOptionReadRepository = questionOptionReadRepository
+    ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
         }
 
         public async Task<Result<GetTemplateDetailsResponse>> Handle(
@@ -103,6 +107,40 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
     new GetTemplateQuestionConditionsByTemplateIdsSpec(
         new[] { request.TemplateId }),
     cancellationToken);
+            var singleChoiceQuestionIds = templateQuestions
+    .Where(x => x.Type == CustomerSurvey.Domain.Enums.QuestionType.SingleChoice)
+    .Select(x => x.QuestionId)
+    .Distinct()
+    .ToArray();
+
+            IReadOnlyCollection<CustomerSurvey.Application.Features.Questions.Shared.QuestionOptionResponse> questionOptions;
+
+            if (singleChoiceQuestionIds.Length == 0)
+            {
+                questionOptions = Array.Empty<CustomerSurvey.Application.Features.Questions.Shared.QuestionOptionResponse>();
+            }
+            else
+            {
+                questionOptions = await _questionOptionReadRepository.ListAsync(
+                    new CustomerSurvey.Application.Features.Questions.Shared.Specs.GetQuestionOptionsByQuestionIdsSpec(singleChoiceQuestionIds),
+                    cancellationToken);
+            }
+
+            var optionsByQuestionId = questionOptions
+                .GroupBy(x => x.QuestionId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => (IReadOnlyCollection<TemplateDetailsQuestionOptionResponse>)x
+                        .OrderBy(option => option.Order)
+                        .Select(option => new TemplateDetailsQuestionOptionResponse
+                        {
+                            OptionId = option.OptionId,
+                            TextEn = option.TextEn,
+                            TextAr = option.TextAr,
+                            Order = option.Order,
+                            Value = option.Value
+                        })
+                        .ToArray());
 
             var response = new GetTemplateDetailsResponse
             {
@@ -141,7 +179,11 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                         IsActive = x.IsActive,
                         GroupId = x.GroupId,
                         GroupNameEn = x.GroupNameEn,
-                        GroupNameAr = x.GroupNameAr
+                        GroupNameAr = x.GroupNameAr,
+                        Options = x.Type == CustomerSurvey.Domain.Enums.QuestionType.SingleChoice
+          && optionsByQuestionId.TryGetValue(x.QuestionId, out var options)
+    ? options
+    : Array.Empty<TemplateDetailsQuestionOptionResponse>()
                     })
                     .ToArray()
             };

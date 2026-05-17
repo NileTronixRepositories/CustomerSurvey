@@ -1240,6 +1240,15 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Option value must be between 1 and 5..
+        /// </summary>
+        public static string CreateQuestion_Option_Value_Invalid {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Option_Value_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Options are allowed only for SingleChoice questions..
         /// </summary>
         public static string CreateQuestion_Options_InvalidForType {
@@ -3495,6 +3504,15 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateQuestion_Option_UsedInCondition {
             get {
                 return ResourceManager.GetString("UpdateQuestion_Option_UsedInCondition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option value must be between 1 and 5..
+        /// </summary>
+        public static string UpdateQuestion_Option_Value_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateQuestion_Option_Value_Invalid", resourceCulture);
             }
         }
         

@@ -42,23 +42,28 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
                 .When(x => x.Type == QuestionType.SingleChoice);
 
             RuleForEach(x => x.Options)
-                .ChildRules(option =>
-                {
-                    option.RuleFor(x => x.TextEn)
-                        .NotEmpty()
-                        .WithMessage(ErrorMessage.UpdateQuestion_Option_TextEn_Required)
-                        .MaximumLength(300)
-                        .WithMessage(ErrorMessage.UpdateQuestion_Option_TextEn_MaxLength);
+      .ChildRules(option =>
+      {
+          option.RuleFor(x => x.TextEn)
+              .NotEmpty()
+              .WithMessage(ErrorMessage.UpdateQuestion_Option_TextEn_Required)
+              .MaximumLength(300)
+              .WithMessage(ErrorMessage.UpdateQuestion_Option_TextEn_MaxLength);
 
-                    option.RuleFor(x => x.TextAr)
-                        .MaximumLength(300)
-                        .WithMessage(ErrorMessage.UpdateQuestion_Option_TextAr_MaxLength)
-                        .When(x => !string.IsNullOrWhiteSpace(x.TextAr));
+          option.RuleFor(x => x.TextAr)
+              .MaximumLength(300)
+              .WithMessage(ErrorMessage.UpdateQuestion_Option_TextAr_MaxLength)
+              .When(x => !string.IsNullOrWhiteSpace(x.TextAr));
 
-                    option.RuleFor(x => x.Order)
-                        .GreaterThan(0)
-                        .WithMessage(ErrorMessage.UpdateQuestion_Option_Order_Invalid);
-                });
+          option.RuleFor(x => x.Order)
+              .GreaterThan(0)
+              .WithMessage(ErrorMessage.UpdateQuestion_Option_Order_Invalid);
+
+          option.RuleFor(x => x.Value)
+              .InclusiveBetween(1, 5)
+              .WithMessage(ErrorMessage.UpdateQuestion_Option_Value_Invalid);
+      })
+      .When(x => x.Type == QuestionType.SingleChoice);
 
             RuleFor(x => x.Options)
                 .Must(HaveUniqueTextEn)

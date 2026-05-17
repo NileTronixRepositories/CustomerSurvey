@@ -11,5 +11,6 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         public Guid OptionId { get; init; }
 
         public Guid QuestionId { get; init; }
+        public int Value { get; init; }
     }
 }

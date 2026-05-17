@@ -19,6 +19,13 @@ namespace CustomerSurvey.Domain.Entities
 
         public DateTime SubmittedOnUtc { get; private set; }
 
+        // New scoring snapshot.
+        public int ActualScore { get; private set; }
+
+        public int MaxScore { get; private set; }
+
+        public decimal ScorePercentage { get; private set; }
+
         public Guid CreatedByApplicationUserId { get; private set; }
 
         public IReadOnlyCollection<SurveyAnswer> Answers => _answers.AsReadOnly();
@@ -30,7 +37,10 @@ namespace CustomerSurvey.Domain.Entities
         public static SurveyResponse Create(
             Guid operatorId,
             Guid templateId,
-            Guid createdByApplicationUserId)
+            Guid createdByApplicationUserId,
+            int actualScore,
+            int maxScore,
+            decimal scorePercentage)
         {
             return new SurveyResponse
             {
@@ -38,6 +48,9 @@ namespace CustomerSurvey.Domain.Entities
                 OperatorId = operatorId,
                 TemplateId = templateId,
                 SubmittedOnUtc = DateTime.UtcNow,
+                ActualScore = actualScore,
+                MaxScore = maxScore,
+                ScorePercentage = scorePercentage,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
         }

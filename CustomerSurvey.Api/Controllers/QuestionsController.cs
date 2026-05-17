@@ -52,13 +52,14 @@ namespace CustomerSurvey.Api.Controllers
                 TextAr = request.TextAr,
                 Type = request.Type,
                 Options = request.Options?
-                    .Select(x => new QuestionOptionCommandItem
-                    {
-                        TextEn = x.TextEn,
-                        TextAr = x.TextAr,
-                        Order = x.Order
-                    })
-                    .ToArray() ?? Array.Empty<QuestionOptionCommandItem>()
+    .Select(x => new QuestionOptionCommandItem
+    {
+        TextEn = x.TextEn,
+        TextAr = x.TextAr,
+        Order = x.Order,
+        Value = x.Value
+    })
+    .ToArray() ?? Array.Empty<QuestionOptionCommandItem>()
             };
 
             var result = await sender.Send(command, cancellationToken);
@@ -86,7 +87,8 @@ namespace CustomerSurvey.Api.Controllers
         OptionId = x.OptionId,
         TextEn = x.TextEn,
         TextAr = x.TextAr,
-        Order = x.Order
+        Order = x.Order,
+        Value = x.Value
     })
     .ToArray() ?? Array.Empty<QuestionOptionCommandItem>()
             };

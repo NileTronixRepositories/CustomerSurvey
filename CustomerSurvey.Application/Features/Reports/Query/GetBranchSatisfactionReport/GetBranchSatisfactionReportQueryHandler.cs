@@ -6,16 +6,11 @@ using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactionReport
 {
     internal sealed class GetBranchSatisfactionReportQueryHandler
-       : IQueryHandler<GetBranchSatisfactionReportQuery, GetBranchSatisfactionReportResponse>
+        : IQueryHandler<GetBranchSatisfactionReportQuery, GetBranchSatisfactionReportResponse>
     {
         private const int MaxAllowedMonths = 12;
 
@@ -26,6 +21,7 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<Template> _templateReadRepository;
+        private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
         private readonly IWriteReadRepository<SurveyAnswer> _surveyAnswerReadRepository;
         private readonly ICurrentUser _currentUser;
 
@@ -33,6 +29,7 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<Template> templateReadRepository,
+            IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
             IWriteReadRepository<SurveyAnswer> surveyAnswerReadRepository,
             ICurrentUser currentUser)
         {
@@ -44,6 +41,9 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 
             _templateReadRepository = templateReadRepository
                 ?? throw new ArgumentNullException(nameof(templateReadRepository));
+
+            _surveyResponseReadRepository = surveyResponseReadRepository
+                ?? throw new ArgumentNullException(nameof(surveyResponseReadRepository));
 
             _surveyAnswerReadRepository = surveyAnswerReadRepository
                 ?? throw new ArgumentNullException(nameof(surveyAnswerReadRepository));
@@ -109,6 +109,14 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
             var fromUtc = period.From.ToDateTime(TimeOnly.MinValue);
             var toExclusiveUtc = period.To.AddDays(1).ToDateTime(TimeOnly.MinValue);
 
+            var responses = await _surveyResponseReadRepository.ListAsync(
+                new GetSatisfactionSurveyResponsesForBranchReportSpec(
+                    branchId: currentActor.BranchId,
+                    fromUtc: fromUtc,
+                    toExclusiveUtc: toExclusiveUtc,
+                    templateId: request.TemplateId),
+                cancellationToken);
+
             var answers = await _surveyAnswerReadRepository.ListAsync(
                 new GetSatisfactionAnswersForBranchReportSpec(
                     branchId: currentActor.BranchId,
@@ -117,7 +125,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                     templateId: request.TemplateId),
                 cancellationToken);
 
-            var response = BuildResponse(period, answers);
+            var response = BuildResponse(
+                period: period,
+                responses: responses,
+                answers: answers);
 
             return Result<GetBranchSatisfactionReportResponse>.Ok(response);
         }
@@ -218,96 +229,61 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 
         private static GetBranchSatisfactionReportResponse BuildResponse(
             ResolvedSatisfactionPeriod period,
+            IReadOnlyCollection<SatisfactionSurveyResponseFlatDto> responses,
             IReadOnlyCollection<SatisfactionAnswerFlatDto> answers)
         {
-            var scoredAnswers = answers
-                .Select(answer => new
-                {
-                    Answer = answer,
-                    Value = GetScoredValue(answer)
-                })
-                .Where(x => x.Value.HasValue)
-                .Select(x => new
-                {
-                    x.Answer,
-                    Value = x.Value!.Value,
-                    Score = ToScore(x.Value!.Value)
-                })
+            var scoredResponses = responses
+                .Where(x => x.MaxScore > 0)
                 .ToArray();
 
-            var totalResponses = answers
-                .Select(x => x.SurveyResponseId)
-                .Distinct()
-                .Count();
+            var totalResponses = responses.Count;
+            var scoredResponsesCount = scoredResponses.Length;
+            var unscoredResponses = Math.Max(0, totalResponses - scoredResponsesCount);
 
-            var responseScores = scoredAnswers
-                .GroupBy(x => x.Answer.SurveyResponseId)
-                .Select(x => new
-                {
-                    SurveyResponseId = x.Key,
-                    Score = x.Average(answer => answer.Score)
-                })
-                .ToArray();
-
-            var scoredResponses = responseScores.Length;
-            var unscoredResponses = Math.Max(0, totalResponses - scoredResponses);
-
-            var satisfiedResponses = responseScores.Count(x => x.Score >= 80m);
-            var neutralResponses = responseScores.Count(x => x.Score >= 60m && x.Score < 80m);
-            var unsatisfiedResponses = responseScores.Count(x => x.Score < 60m);
-
-            var overallScore = scoredAnswers.Length == 0
+            var overallScore = scoredResponses.Length == 0
                 ? 0m
-                : Round(scoredAnswers.Average(x => x.Score));
+                : Round(scoredResponses.Average(x => x.ScorePercentage));
+
+            var satisfiedResponses = scoredResponses.Count(x => x.ScorePercentage >= 80m);
+            var neutralResponses = scoredResponses.Count(x => x.ScorePercentage >= 60m && x.ScorePercentage < 80m);
+            var unsatisfiedResponses = scoredResponses.Count(x => x.ScorePercentage < 60m);
 
             var complaintsCount = answers.Count(x => x.QuestionType == QuestionType.Complain);
             var voiceAnswersCount = answers.Count(x => x.QuestionType == QuestionType.Voice);
 
-            var distribution = BuildDistribution(scoredAnswers.Select(x => x.Value).ToArray());
+            var distributionValues = scoredResponses
+                .Select(x => ToDistributionValue(x.ScorePercentage))
+                .ToArray();
 
-            var byTemplate = scoredAnswers
+            var distribution = BuildDistribution(distributionValues);
+
+            var byTemplate = scoredResponses
                 .GroupBy(x => new
                 {
-                    x.Answer.TemplateId,
-                    x.Answer.TemplateNameEn,
-                    x.Answer.TemplateNameAr
+                    x.TemplateId,
+                    x.TemplateNameEn,
+                    x.TemplateNameAr
                 })
-                .Select(x =>
+                .Select(x => new SatisfactionByTemplateItemResponse
                 {
-                    var responsesCount = x
-                        .Select(answer => answer.Answer.SurveyResponseId)
-                        .Distinct()
-                        .Count();
-
-                    return new SatisfactionByTemplateItemResponse
-                    {
-                        TemplateId = x.Key.TemplateId,
-                        TemplateNameEn = x.Key.TemplateNameEn,
-                        TemplateNameAr = x.Key.TemplateNameAr,
-                        Score = Round(x.Average(answer => answer.Score)),
-                        ResponsesCount = responsesCount,
-                        ScoredAnswersCount = x.Count()
-                    };
+                    TemplateId = x.Key.TemplateId,
+                    TemplateNameEn = x.Key.TemplateNameEn,
+                    TemplateNameAr = x.Key.TemplateNameAr,
+                    Score = Round(x.Average(response => response.ScorePercentage)),
+                    ResponsesCount = x.Count(),
+                    ScoredAnswersCount = x.Sum(response => response.MaxScore / 5)
                 })
                 .OrderByDescending(x => x.Score)
                 .ThenBy(x => x.TemplateNameEn)
                 .ToArray();
 
-            var trend = scoredAnswers
-                .GroupBy(x => DateOnly.FromDateTime(x.Answer.SubmittedOnUtc))
-                .Select(x =>
+            var trend = scoredResponses
+                .GroupBy(x => DateOnly.FromDateTime(x.SubmittedOnUtc))
+                .Select(x => new SatisfactionTrendItemResponse
                 {
-                    var responsesCount = x
-                        .Select(answer => answer.Answer.SurveyResponseId)
-                        .Distinct()
-                        .Count();
-
-                    return new SatisfactionTrendItemResponse
-                    {
-                        Date = x.Key,
-                        Score = Round(x.Average(answer => answer.Score)),
-                        ResponsesCount = responsesCount
-                    };
+                    Date = x.Key,
+                    Score = Round(x.Average(response => response.ScorePercentage)),
+                    ResponsesCount = x.Count()
                 })
                 .OrderBy(x => x.Date)
                 .ToArray();
@@ -330,9 +306,9 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                 {
                     Score = overallScore,
                     TotalResponses = totalResponses,
-                    ScoredResponses = scoredResponses,
+                    ScoredResponses = scoredResponsesCount,
                     UnscoredResponses = unscoredResponses,
-                    TotalScoredAnswers = scoredAnswers.Length,
+                    TotalScoredAnswers = scoredResponses.Sum(x => x.MaxScore / 5),
                     SatisfiedResponses = satisfiedResponses,
                     NeutralResponses = neutralResponses,
                     UnsatisfiedResponses = unsatisfiedResponses,
@@ -377,19 +353,29 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                 .ToArray();
         }
 
-        private static int? GetScoredValue(SatisfactionAnswerFlatDto answer)
+        private static int ToDistributionValue(decimal scorePercentage)
         {
-            return answer.QuestionType switch
+            if (scorePercentage <= 20m)
             {
-                QuestionType.StarRating => answer.StarRatingValue,
-                QuestionType.Smiles => answer.SmileValue,
-                _ => null
-            };
-        }
+                return 1;
+            }
 
-        private static decimal ToScore(int value)
-        {
-            return value / 5m * 100m;
+            if (scorePercentage <= 40m)
+            {
+                return 2;
+            }
+
+            if (scorePercentage <= 60m)
+            {
+                return 3;
+            }
+
+            if (scorePercentage <= 80m)
+            {
+                return 4;
+            }
+
+            return 5;
         }
 
         private static decimal Round(decimal value)

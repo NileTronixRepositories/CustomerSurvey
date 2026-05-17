@@ -117,14 +117,15 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
             if (request.Type == QuestionType.SingleChoice)
             {
                 var options = request.Options
-                    .OrderBy(x => x.Order)
-                    .Select(option => QuestionOption.Create(
-                        questionId: question.Id,
-                        textEn: option.TextEn,
-                        textAr: option.TextAr,
-                        order: option.Order,
-                        createdByApplicationUserId: currentApplicationUserId))
-                    .ToArray();
+     .OrderBy(x => x.Order)
+     .Select(option => QuestionOption.Create(
+         questionId: question.Id,
+         textEn: option.TextEn,
+         textAr: option.TextAr,
+         order: option.Order,
+         value: option.Value,
+         createdByApplicationUserId: currentApplicationUserId))
+     .ToArray();
 
                 foreach (var option in options)
                 {
@@ -132,16 +133,17 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
                 }
 
                 optionResponses = options
-                    .Select(option => new QuestionOptionResponse
-                    {
-                        OptionId = option.Id,
-                        QuestionId = option.QuestionId,
-                        TextEn = option.TextEn,
-                        TextAr = option.TextAr,
-                        Order = option.Order,
-                        IsActive = option.IsActive
-                    })
-                    .ToArray();
+     .Select(option => new QuestionOptionResponse
+     {
+         OptionId = option.Id,
+         QuestionId = option.QuestionId,
+         TextEn = option.TextEn,
+         TextAr = option.TextAr,
+         Order = option.Order,
+         Value = option.Value,
+         IsActive = option.IsActive
+     })
+     .ToArray();
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

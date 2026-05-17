@@ -16,6 +16,12 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
 
         public int AnswersCount { get; init; }
 
+        public int ActualScore { get; init; }
+
+        public int MaxScore { get; init; }
+
+        public decimal ScorePercentage { get; init; }
+
         public DateTime SubmittedOnUtc { get; init; }
     }
 }

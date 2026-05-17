@@ -64,5 +64,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
         public string? TextAr { get; init; }
 
         public int Order { get; init; }
+
+        public int Value { get; init; }
     }
 }

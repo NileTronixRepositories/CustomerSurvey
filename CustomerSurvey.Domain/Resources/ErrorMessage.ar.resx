@@ -1350,4 +1350,10 @@
   <data name="ManageTemplateQuestionConditions_ChildQuestionGroup_Inactive" xml:space="preserve">
     <value>لا يمكن استخدام السؤال التابع لأن مجموعة الأسئلة الخاصة به غير نشطة.</value>
   </data>
+  <data name="CreateQuestion_Option_Value_Invalid" xml:space="preserve">
+    <value>قيمة الاختيار يجب أن تكون من 1 إلى 5.</value>
+  </data>
+  <data name="UpdateQuestion_Option_Value_Invalid" xml:space="preserve">
+    <value>قيمة الاختيار يجب أن تكون من 1 إلى 5.</value>
+  </data>
 </root>
