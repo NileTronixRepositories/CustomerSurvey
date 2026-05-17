@@ -256,13 +256,14 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                     x => x.Key,
                     x => (IReadOnlyCollection<MyOperatorQuestionOptionResponse>)x
                         .OrderBy(option => option.Order)
-                        .Select(option => new MyOperatorQuestionOptionResponse
-                        {
-                            OptionId = option.OptionId,
-                            TextEn = option.TextEn,
-                            TextAr = option.TextAr,
-                            Order = option.Order
-                        })
+                      .Select(option => new MyOperatorQuestionOptionResponse
+                      {
+                          OptionId = option.OptionId,
+                          TextEn = option.TextEn,
+                          TextAr = option.TextAr,
+                          Order = option.Order,
+                          Value = option.Value
+                      })
                         .ToArray());
         }
 
@@ -460,6 +461,12 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 SurveyResponseId = latestResponse.SurveyResponseId,
                 SubmittedOnUtc = latestResponse.SubmittedOnUtc,
                 AnswersCount = visibleAnswers.Length,
+                Score = new MyOperatorTemplateLatestScoreResponse
+                {
+                    ActualScore = latestResponse.ActualScore,
+                    MaxScore = latestResponse.MaxScore,
+                    Percentage = latestResponse.ScorePercentage
+                },
                 Answers = visibleAnswers
             };
         }

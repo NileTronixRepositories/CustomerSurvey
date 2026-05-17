@@ -78,6 +78,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public string? TextAr { get; init; }
 
         public int Order { get; init; }
+        public int Value { get; init; }
     }
 
     public sealed record MyOperatorTemplateLatestResponse
@@ -87,9 +88,19 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public DateTime SubmittedOnUtc { get; init; }
 
         public int AnswersCount { get; init; }
+        public MyOperatorTemplateLatestScoreResponse Score { get; init; } = new();
 
         public IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse> Answers { get; init; }
             = Array.Empty<MyOperatorTemplateLatestAnswerResponse>();
+    }
+
+    public sealed record MyOperatorTemplateLatestScoreResponse
+    {
+        public int ActualScore { get; init; }
+
+        public int MaxScore { get; init; }
+
+        public decimal Percentage { get; init; }
     }
 
     public sealed record MyOperatorTemplateLatestAnswerResponse

@@ -19,6 +19,10 @@ namespace CustomerSurvey.Domain.Entities
 
         public int Order { get; private set; }
 
+        // New: used for SingleChoice scoring only.
+        // Allowed business range: 1 to 5.
+        public int Value { get; private set; }
+
         public bool IsActive { get; private set; } = true;
 
         public Guid CreatedByApplicationUserId { get; private set; }
@@ -28,11 +32,12 @@ namespace CustomerSurvey.Domain.Entities
         }
 
         public static QuestionOption Create(
-            Guid questionId,
-            string textEn,
-            string? textAr,
-            int order,
-            Guid createdByApplicationUserId)
+           Guid questionId,
+           string textEn,
+           string? textAr,
+           int order,
+           int value,
+           Guid createdByApplicationUserId)
         {
             return new QuestionOption
             {
@@ -41,6 +46,7 @@ namespace CustomerSurvey.Domain.Entities
                 TextEn = textEn.Trim(),
                 TextAr = string.IsNullOrWhiteSpace(textAr) ? null : textAr.Trim(),
                 Order = order,
+                Value = value,
                 IsActive = true,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
@@ -49,11 +55,13 @@ namespace CustomerSurvey.Domain.Entities
         public void Update(
             string textEn,
             string? textAr,
-            int order)
+            int order,
+            int value)
         {
             TextEn = textEn.Trim();
             TextAr = string.IsNullOrWhiteSpace(textAr) ? null : textAr.Trim();
             Order = order;
+            Value = value;
         }
 
         public void Deactivate()

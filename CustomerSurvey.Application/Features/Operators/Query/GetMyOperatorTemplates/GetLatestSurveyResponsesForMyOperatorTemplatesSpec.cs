@@ -25,7 +25,10 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
             {
                 SurveyResponseId = x.Id,
                 TemplateId = x.TemplateId,
-                SubmittedOnUtc = x.SubmittedOnUtc
+                SubmittedOnUtc = x.SubmittedOnUtc,
+                ActualScore = x.ActualScore,
+                MaxScore = x.MaxScore,
+                ScorePercentage = x.ScorePercentage
             });
         }
     }

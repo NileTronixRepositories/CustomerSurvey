@@ -28,7 +28,19 @@ namespace CustomerSurvey.infrastructure.Configurations
 
             builder.Property(x => x.CreatedByApplicationUserId)
                 .IsRequired();
+            builder.Property(x => x.ActualScore)
+    .IsRequired();
 
+            builder.Property(x => x.MaxScore)
+                .IsRequired();
+
+            builder.Property(x => x.ScorePercentage)
+                .IsRequired()
+                .HasPrecision(5, 2);
+
+            builder.HasIndex(x => new { x.TemplateId, x.SubmittedOnUtc });
+
+            builder.HasIndex(x => new { x.OperatorId, x.TemplateId, x.SubmittedOnUtc });
             builder.HasIndex(x => x.OperatorId);
 
             builder.HasIndex(x => x.TemplateId);

@@ -31,6 +31,7 @@ namespace CustomerSurvey.Application.Features.Questions.Shared.Specs
                 TextEn = x.TextEn,
                 TextAr = x.TextAr,
                 Order = x.Order,
+                Value = x.Value,
                 IsActive = x.IsActive
             });
         }

@@ -150,13 +150,14 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                     x => x.Key,
                     x => (IReadOnlyCollection<TemplateQuestionSelectionOptionResponse>)x
                         .OrderBy(option => option.Order)
-                        .Select(option => new TemplateQuestionSelectionOptionResponse
-                        {
-                            OptionId = option.OptionId,
-                            TextEn = option.TextEn,
-                            TextAr = option.TextAr,
-                            Order = option.Order
-                        })
+                       .Select(option => new TemplateQuestionSelectionOptionResponse
+                       {
+                           OptionId = option.OptionId,
+                           TextEn = option.TextEn,
+                           TextAr = option.TextAr,
+                           Order = option.Order,
+                           Value = option.Value
+                       })
                         .ToArray());
 
             var selectedQuestionsByQuestionId = templateQuestions

@@ -20,7 +20,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             Select(x => new QuestionOptionForSubmitResponseDto
             {
                 OptionId = x.Id,
-                QuestionId = x.QuestionId
+                QuestionId = x.QuestionId,
+                Value = x.Value
             });
         }
     }

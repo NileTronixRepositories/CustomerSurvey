@@ -215,6 +215,10 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 .ToDictionary(
                     x => x.Key,
                     x => x.Select(option => option.OptionId).ToHashSet());
+            var optionValueByOptionId = options
+    .ToDictionary(
+        x => x.OptionId,
+        x => x.Value);
 
             var questionsById = templateQuestions
                 .ToDictionary(x => x.QuestionId, x => x);
@@ -233,11 +237,23 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     return Result<SubmitOperatorTemplateResponseResponse>.Fail(validationError);
                 }
             }
+            var rootQuestionIds = CalculateRootQuestionIds(
+    templateQuestions,
+    validConditions);
+
+            var score = CalculateScore(
+                submittedAnswers,
+                questionsById,
+                rootQuestionIds,
+                optionValueByOptionId);
 
             var surveyResponse = SurveyResponse.Create(
-                operatorId: currentOperator.OperatorId,
-                templateId: request.TemplateId,
-                createdByApplicationUserId: currentApplicationUserId);
+      operatorId: currentOperator.OperatorId,
+      templateId: request.TemplateId,
+      createdByApplicationUserId: currentApplicationUserId,
+      actualScore: score.ActualScore,
+      maxScore: score.MaxScore,
+      scorePercentage: score.Percentage);
 
             var savedVoiceFileNames = new List<string>();
 
@@ -268,13 +284,15 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 RemoveSavedVoiceFiles(savedVoiceFileNames);
                 throw;
             }
-
             var response = new SubmitOperatorTemplateResponseResponse
             {
                 SurveyResponseId = surveyResponse.Id,
                 OperatorId = surveyResponse.OperatorId,
                 TemplateId = surveyResponse.TemplateId,
                 AnswersCount = surveyResponse.Answers.Count,
+                ActualScore = surveyResponse.ActualScore,
+                MaxScore = surveyResponse.MaxScore,
+                ScorePercentage = surveyResponse.ScorePercentage,
                 SubmittedOnUtc = surveyResponse.SubmittedOnUtc
             };
 
@@ -691,5 +709,108 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
 
             _mediaService.RemoveRange(filePaths);
         }
+
+        private static HashSet<Guid> CalculateRootQuestionIds(
+    IReadOnlyCollection<TemplateQuestionForSubmitResponseDto> templateQuestions,
+    IReadOnlyCollection<TemplateQuestionConditionForSubmitResponseDto> conditions)
+        {
+            var validConditions = FilterValidConditions(
+                templateQuestions,
+                conditions);
+
+            var childTemplateQuestionIds = validConditions
+                .Select(x => x.ChildTemplateQuestionId)
+                .ToHashSet();
+
+            var rootQuestionIds = templateQuestions
+                .Where(x => !childTemplateQuestionIds.Contains(x.TemplateQuestionId))
+                .OrderBy(x => x.Order)
+                .Select(x => x.QuestionId)
+                .ToHashSet();
+
+            if (rootQuestionIds.Count > 0)
+            {
+                return rootQuestionIds;
+            }
+
+            // Safety fallback if bad data caused every question to be child.
+            return templateQuestions
+                .OrderBy(x => x.Order)
+                .Select(x => x.QuestionId)
+                .ToHashSet();
+        }
+
+        private static SubmitTemplateScoreResult CalculateScore(
+            IReadOnlyCollection<SubmitOperatorTemplateAnswerCommandItem> submittedAnswers,
+            IReadOnlyDictionary<Guid, TemplateQuestionForSubmitResponseDto> questionsById,
+            IReadOnlySet<Guid> rootQuestionIds,
+            IReadOnlyDictionary<Guid, int> optionValueByOptionId)
+        {
+            var actualScore = 0;
+            var maxScore = 0;
+
+            foreach (var answer in submittedAnswers)
+            {
+                if (!rootQuestionIds.Contains(answer.QuestionId))
+                {
+                    continue;
+                }
+
+                if (!questionsById.TryGetValue(answer.QuestionId, out var question))
+                {
+                    continue;
+                }
+
+                switch (question.Type)
+                {
+                    case QuestionType.SingleChoice:
+                        if (answer.SelectedQuestionOptionId.HasValue &&
+                            optionValueByOptionId.TryGetValue(answer.SelectedQuestionOptionId.Value, out var optionValue))
+                        {
+                            actualScore += optionValue;
+                            maxScore += 5;
+                        }
+
+                        break;
+
+                    case QuestionType.StarRating:
+                        if (answer.StarRatingValue.HasValue)
+                        {
+                            actualScore += answer.StarRatingValue.Value;
+                            maxScore += 5;
+                        }
+
+                        break;
+
+                    case QuestionType.Smiles:
+                        if (answer.SmileValue.HasValue)
+                        {
+                            actualScore += answer.SmileValue.Value;
+                            maxScore += 5;
+                        }
+
+                        break;
+
+                    case QuestionType.Voice:
+                    case QuestionType.Complain:
+                    default:
+                        break;
+                }
+            }
+
+            var percentage = maxScore == 0
+                ? 0m
+                : Math.Round((decimal)actualScore / maxScore * 100m, 2, MidpointRounding.AwayFromZero);
+
+            return new SubmitTemplateScoreResult(
+                ActualScore: actualScore,
+                MaxScore: maxScore,
+                Percentage: percentage);
+        }
+
+        private sealed record SubmitTemplateScoreResult(
+            int ActualScore,
+            int MaxScore,
+            decimal Percentage);
     }
 }

@@ -15,5 +15,6 @@ namespace CustomerSurvey.Application.Features.Questions.Shared
         public string? TextAr { get; init; }
 
         public int Order { get; init; }
+        public int Value { get; init; }
     }
 }

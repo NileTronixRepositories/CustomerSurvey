@@ -255,9 +255,10 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
                         var existingOption = currentOptionsById[optionRequest.OptionId.Value];
 
                         existingOption.Update(
-                            textEn: optionRequest.TextEn,
-                            textAr: optionRequest.TextAr,
-                            order: optionRequest.Order);
+     textEn: optionRequest.TextEn,
+     textAr: optionRequest.TextAr,
+     order: optionRequest.Order,
+     value: optionRequest.Value);
 
                         _questionOptionWriteRepository.Update(existingOption);
 
@@ -266,11 +267,12 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
                     else
                     {
                         var newOption = QuestionOption.Create(
-                            questionId: question.Id,
-                            textEn: optionRequest.TextEn,
-                            textAr: optionRequest.TextAr,
-                            order: optionRequest.Order,
-                            createdByApplicationUserId: currentApplicationUserId);
+     questionId: question.Id,
+     textEn: optionRequest.TextEn,
+     textAr: optionRequest.TextAr,
+     order: optionRequest.Order,
+     value: optionRequest.Value,
+     createdByApplicationUserId: currentApplicationUserId);
 
                         await _questionOptionWriteRepository.AddAsync(
                             newOption,
@@ -281,17 +283,18 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
                 }
 
                 optionResponses = finalOptions
-                    .OrderBy(x => x.Order)
-                    .Select(option => new QuestionOptionResponse
-                    {
-                        OptionId = option.Id,
-                        QuestionId = option.QuestionId,
-                        TextEn = option.TextEn,
-                        TextAr = option.TextAr,
-                        Order = option.Order,
-                        IsActive = option.IsActive
-                    })
-                    .ToArray();
+     .OrderBy(x => x.Order)
+     .Select(option => new QuestionOptionResponse
+     {
+         OptionId = option.Id,
+         QuestionId = option.QuestionId,
+         TextEn = option.TextEn,
+         TextAr = option.TextAr,
+         Order = option.Order,
+         Value = option.Value,
+         IsActive = option.IsActive
+     })
+     .ToArray();
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

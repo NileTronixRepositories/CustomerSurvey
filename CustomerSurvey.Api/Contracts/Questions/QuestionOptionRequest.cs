@@ -11,5 +11,8 @@
         public string? TextAr { get; init; }
 
         public int Order { get; init; }
+
+        // New: required for SingleChoice options.
+        public int Value { get; init; }
     }
 }
