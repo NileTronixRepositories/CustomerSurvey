@@ -130,9 +130,11 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
             }
 
             template.Update(
-                nameEn: normalizedNameEn,
-                nameAr: request.NameAr,
-                description: request.Description);
+     nameEn: normalizedNameEn,
+     nameAr: request.NameAr,
+     description: request.Description,
+     activeFrom: request.ActiveFrom,
+     expireTo: request.ExpireTo);
 
             _templateWriteRepository.Update(template);
 
@@ -145,6 +147,8 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
                 NameEn = template.NameEn,
                 NameAr = template.NameAr,
                 Description = template.Description,
+                ActiveFrom = template.ActiveFrom,
+                ExpireTo = template.ExpireTo,
                 Status = template.Status.ToString(),
                 IsActive = template.IsActive
             };

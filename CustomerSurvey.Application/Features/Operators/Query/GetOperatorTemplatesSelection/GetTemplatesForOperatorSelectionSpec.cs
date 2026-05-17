@@ -25,6 +25,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorTemplat
         public string? BranchNameAr { get; init; }
 
         public string BranchCode { get; init; } = string.Empty;
+        public DateTime ActiveFrom { get; init; }
+
+        public DateTime? ExpireTo { get; init; }
     }
 
     internal sealed class GetTemplatesForOperatorSelectionSpec
@@ -58,7 +61,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorTemplat
                 BranchId = x.BranchId,
                 BranchNameEn = x.Branch.NameEn,
                 BranchNameAr = x.Branch.NameAr,
-                BranchCode = x.Branch.Code
+                BranchCode = x.Branch.Code,
+                ExpireTo = x.ExpireTo,
+                ActiveFrom = x.ActiveFrom
             });
         }
     }

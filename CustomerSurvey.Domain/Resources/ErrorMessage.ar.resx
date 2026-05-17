@@ -1356,4 +1356,22 @@
   <data name="UpdateQuestion_Option_Value_Invalid" xml:space="preserve">
     <value>قيمة الاختيار يجب أن تكون من 1 إلى 5.</value>
   </data>
+  <data name="CreateTemplate_ActiveFrom_Required" xml:space="preserve">
+    <value>تاريخ بداية صلاحية القالب مطلوب.</value>
+  </data>
+  <data name="CreateTemplate_ExpireTo_MustBeAfterActiveFrom" xml:space="preserve">
+    <value>تاريخ انتهاء القالب يجب أن يكون بعد تاريخ البداية.</value>
+  </data>
+  <data name="UpdateTemplate_ActiveFrom_Required" xml:space="preserve">
+    <value>تاريخ بداية صلاحية القالب مطلوب.</value>
+  </data>
+  <data name="UpdateTemplate_ExpireTo_MustBeAfterActiveFrom" xml:space="preserve">
+    <value>تاريخ انتهاء القالب يجب أن يكون بعد تاريخ البداية.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Template_NotStartedYet" xml:space="preserve">
+    <value>هذا القالب لم يبدأ وقت استخدامه بعد.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_Template_Expired" xml:space="preserve">
+    <value>انتهت صلاحية هذا القالب.</value>
+  </data>
 </root>

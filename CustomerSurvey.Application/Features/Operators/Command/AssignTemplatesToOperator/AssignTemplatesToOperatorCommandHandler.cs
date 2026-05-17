@@ -116,7 +116,7 @@ namespace CustomerSurvey.Application.Features.Operators.Command.AssignTemplatesT
             if (requestedTemplateIds.Length > 0)
             {
                 var activeTemplates = await _templateReadRepository.ListAsync(
-                    new GetActiveTemplatesForAssignTemplatesToOperatorSpec(requestedTemplateIds),
+                    new GetActiveTemplatesForAssignTemplatesToOperatorSpec(requestedTemplateIds, DateTime.UtcNow),
                     cancellationToken);
 
                 var activeTemplateIds = activeTemplates

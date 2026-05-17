@@ -11,5 +11,9 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         public Guid TemplateId { get; init; }
 
         public bool TemplateIsActive { get; init; }
+
+        public DateTime ActiveFrom { get; init; }
+
+        public DateTime? ExpireTo { get; init; }
     }
 }

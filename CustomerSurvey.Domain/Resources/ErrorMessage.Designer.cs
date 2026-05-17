@@ -1384,6 +1384,15 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Template active from date is required..
+        /// </summary>
+        public static string CreateTemplate_ActiveFrom_Required {
+            get {
+                return ResourceManager.GetString("CreateTemplate_ActiveFrom_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current branch actor profile was not found..
         /// </summary>
         public static string CreateTemplate_CurrentBranchActor_NotFound {
@@ -1398,6 +1407,15 @@ namespace CustomerSurvey.Domain.Resources {
         public static string CreateTemplate_Description_MaxLength {
             get {
                 return ResourceManager.GetString("CreateTemplate_Description_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template expire date must be after active from date..
+        /// </summary>
+        public static string CreateTemplate_ExpireTo_MustBeAfterActiveFrom {
+            get {
+                return ResourceManager.GetString("CreateTemplate_ExpireTo_MustBeAfterActiveFrom", resourceCulture);
             }
         }
         
@@ -2905,6 +2923,15 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This template has expired..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Template_Expired {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Template_Expired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This template has no active questions..
         /// </summary>
         public static string SubmitOperatorTemplateResponse_Template_HasNoQuestions {
@@ -2928,6 +2955,15 @@ namespace CustomerSurvey.Domain.Resources {
         public static string SubmitOperatorTemplateResponse_Template_NotAssigned {
             get {
                 return ResourceManager.GetString("SubmitOperatorTemplateResponse_Template_NotAssigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This template has not started yet..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_Template_NotStartedYet {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_Template_NotStartedYet", resourceCulture);
             }
         }
         
@@ -3706,6 +3742,15 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to UpdateTemplate_ActiveFrom_Required.
+        /// </summary>
+        public static string UpdateTemplate_ActiveFrom_Required {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_ActiveFrom_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current branch actor profile was not found..
         /// </summary>
         public static string UpdateTemplate_CurrentBranchActor_NotFound {
@@ -3720,6 +3765,15 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateTemplate_Description_MaxLength {
             get {
                 return ResourceManager.GetString("UpdateTemplate_Description_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template expire date must be after active from date..
+        /// </summary>
+        public static string UpdateTemplate_ExpireTo_MustBeAfterActiveFrom {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_ExpireTo_MustBeAfterActiveFrom", resourceCulture);
             }
         }
         

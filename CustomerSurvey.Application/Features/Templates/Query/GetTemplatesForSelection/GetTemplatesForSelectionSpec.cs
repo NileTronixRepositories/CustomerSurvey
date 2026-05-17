@@ -30,7 +30,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesForSel
                 BranchId = x.BranchId,
                 BranchNameEn = x.Branch.NameEn,
                 BranchNameAr = x.Branch.NameAr,
-                BranchCode = x.Branch.Code
+                BranchCode = x.Branch.Code,
+                ActiveFrom = x.ActiveFrom,
+                ExpireTo = x.ExpireTo
             });
         }
     }

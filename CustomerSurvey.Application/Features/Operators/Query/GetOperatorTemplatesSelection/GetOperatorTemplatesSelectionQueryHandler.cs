@@ -172,6 +172,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorTemplat
                         BranchNameEn = template.BranchNameEn,
                         BranchNameAr = template.BranchNameAr,
                         BranchCode = template.BranchCode,
+                        ActiveFrom = template.ActiveFrom,
+                        ExpireTo = template.ExpireTo,
                         QuestionsCount = questions.Count,
                         Questions = questions
                     };

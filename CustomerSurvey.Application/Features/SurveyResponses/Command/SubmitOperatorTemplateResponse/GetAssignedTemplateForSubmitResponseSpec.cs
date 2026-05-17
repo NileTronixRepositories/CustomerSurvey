@@ -22,7 +22,9 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             Select(x => new AssignedTemplateForSubmitResponseDto
             {
                 TemplateId = x.TemplateId,
-                TemplateIsActive = x.Template.IsActive
+                TemplateIsActive = x.Template.IsActive,
+                ActiveFrom = x.Template.ActiveFrom,
+                ExpireTo = x.Template.ExpireTo
             });
         }
     }

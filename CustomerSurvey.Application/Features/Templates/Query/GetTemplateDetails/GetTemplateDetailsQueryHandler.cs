@@ -156,6 +156,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 IsActive = template.IsActive,
                 CreatedOnUtc = template.CreatedOnUtc,
                 ModifiedOnUtc = template.ModifiedOnUtc,
+                ExpireTo = template.ExpireTo,
+                ActiveFrom = template.ActiveFrom,
                 QuestionConditions = questionConditions
     .OrderBy(x => x.Order)
     .Select(x => x.ToResponse())

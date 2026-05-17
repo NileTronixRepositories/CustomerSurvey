@@ -113,11 +113,31 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     Message: ErrorMessage.SubmitOperatorTemplateResponse_Template_NotAssigned,
                     Type: ErrorType.Security));
             }
+
             if (!assignedTemplate.TemplateIsActive)
             {
                 return Result<SubmitOperatorTemplateResponseResponse>.Fail(new Error(
                     Code: "SurveyResponses.Submit.TemplateInactive",
                     Message: ErrorMessage.SubmitOperatorTemplateResponse_Template_Inactive,
+                    Type: ErrorType.Validation));
+            }
+
+            var utcNow = DateTime.UtcNow;
+
+            if (assignedTemplate.ActiveFrom > utcNow)
+            {
+                return Result<SubmitOperatorTemplateResponseResponse>.Fail(new Error(
+                    Code: "SurveyResponses.Submit.TemplateNotStartedYet",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_Template_NotStartedYet,
+                    Type: ErrorType.Validation));
+            }
+
+            if (assignedTemplate.ExpireTo.HasValue &&
+                assignedTemplate.ExpireTo.Value <= utcNow)
+            {
+                return Result<SubmitOperatorTemplateResponseResponse>.Fail(new Error(
+                    Code: "SurveyResponses.Submit.TemplateExpired",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_Template_Expired,
                     Type: ErrorType.Validation));
             }
 
@@ -167,8 +187,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             }
 
             var conditions = await _conditionReadRepository.ListAsync(
-     new GetTemplateQuestionConditionsForSubmitResponseSpec(request.TemplateId),
-     cancellationToken);
+                new GetTemplateQuestionConditionsForSubmitResponseSpec(request.TemplateId),
+                cancellationToken);
 
             var validConditions = FilterValidConditions(
                 templateQuestions,
@@ -215,10 +235,11 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 .ToDictionary(
                     x => x.Key,
                     x => x.Select(option => option.OptionId).ToHashSet());
+
             var optionValueByOptionId = options
-    .ToDictionary(
-        x => x.OptionId,
-        x => x.Value);
+                .ToDictionary(
+                    x => x.OptionId,
+                    x => x.Value);
 
             var questionsById = templateQuestions
                 .ToDictionary(x => x.QuestionId, x => x);
@@ -237,9 +258,10 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     return Result<SubmitOperatorTemplateResponseResponse>.Fail(validationError);
                 }
             }
+
             var rootQuestionIds = CalculateRootQuestionIds(
-    templateQuestions,
-    validConditions);
+                templateQuestions,
+                validConditions);
 
             var score = CalculateScore(
                 submittedAnswers,
@@ -248,12 +270,12 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 optionValueByOptionId);
 
             var surveyResponse = SurveyResponse.Create(
-      operatorId: currentOperator.OperatorId,
-      templateId: request.TemplateId,
-      createdByApplicationUserId: currentApplicationUserId,
-      actualScore: score.ActualScore,
-      maxScore: score.MaxScore,
-      scorePercentage: score.Percentage);
+                operatorId: currentOperator.OperatorId,
+                templateId: request.TemplateId,
+                createdByApplicationUserId: currentApplicationUserId,
+                actualScore: score.ActualScore,
+                maxScore: score.MaxScore,
+                scorePercentage: score.Percentage);
 
             var savedVoiceFileNames = new List<string>();
 
@@ -284,6 +306,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 RemoveSavedVoiceFiles(savedVoiceFileNames);
                 throw;
             }
+
             var response = new SubmitOperatorTemplateResponseResponse
             {
                 SurveyResponseId = surveyResponse.Id,
@@ -300,8 +323,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         }
 
         private static TemplateQuestionConditionForSubmitResponseDto[] FilterValidConditions(
-    IReadOnlyCollection<TemplateQuestionForSubmitResponseDto> templateQuestions,
-    IReadOnlyCollection<TemplateQuestionConditionForSubmitResponseDto> conditions)
+            IReadOnlyCollection<TemplateQuestionForSubmitResponseDto> templateQuestions,
+            IReadOnlyCollection<TemplateQuestionConditionForSubmitResponseDto> conditions)
         {
             if (templateQuestions.Count == 0 || conditions.Count == 0)
             {
@@ -323,9 +346,9 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         }
 
         private static HashSet<Guid> CalculateVisibleQuestionIds(
-      IReadOnlyCollection<TemplateQuestionForSubmitResponseDto> templateQuestions,
-      IReadOnlyCollection<TemplateQuestionConditionForSubmitResponseDto> conditions,
-      IReadOnlyCollection<SubmitOperatorTemplateAnswerCommandItem> submittedAnswers)
+            IReadOnlyCollection<TemplateQuestionForSubmitResponseDto> templateQuestions,
+            IReadOnlyCollection<TemplateQuestionConditionForSubmitResponseDto> conditions,
+            IReadOnlyCollection<SubmitOperatorTemplateAnswerCommandItem> submittedAnswers)
         {
             var validConditions = FilterValidConditions(
                 templateQuestions,
@@ -711,8 +734,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         }
 
         private static HashSet<Guid> CalculateRootQuestionIds(
-    IReadOnlyCollection<TemplateQuestionForSubmitResponseDto> templateQuestions,
-    IReadOnlyCollection<TemplateQuestionConditionForSubmitResponseDto> conditions)
+            IReadOnlyCollection<TemplateQuestionForSubmitResponseDto> templateQuestions,
+            IReadOnlyCollection<TemplateQuestionConditionForSubmitResponseDto> conditions)
         {
             var validConditions = FilterValidConditions(
                 templateQuestions,
@@ -733,7 +756,6 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 return rootQuestionIds;
             }
 
-            // Safety fallback if bad data caused every question to be child.
             return templateQuestions
                 .OrderBy(x => x.Order)
                 .Select(x => x.QuestionId)
@@ -800,7 +822,10 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
 
             var percentage = maxScore == 0
                 ? 0m
-                : Math.Round((decimal)actualScore / maxScore * 100m, 2, MidpointRounding.AwayFromZero);
+                : Math.Round(
+                    (decimal)actualScore / maxScore * 100m,
+                    2,
+                    MidpointRounding.AwayFromZero);
 
             return new SubmitTemplateScoreResult(
                 ActualScore: actualScore,

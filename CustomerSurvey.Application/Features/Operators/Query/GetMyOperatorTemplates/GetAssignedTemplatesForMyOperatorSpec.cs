@@ -25,16 +25,21 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public string? BranchNameAr { get; init; }
 
         public string BranchCode { get; init; } = string.Empty;
+        public DateTime ActiveFrom { get; init; }
+
+        public DateTime? ExpireTo { get; init; }
     }
 
     internal sealed class GetAssignedTemplatesForMyOperatorSpec
         : Specification<OperatorTemplate, AssignedTemplateForMyOperatorDto>
     {
-        public GetAssignedTemplatesForMyOperatorSpec(Guid operatorId)
+        public GetAssignedTemplatesForMyOperatorSpec(Guid operatorId, DateTime utcNow)
         {
             AddCriteria(x =>
-                x.OperatorId == operatorId &&
-                x.Template.IsActive);
+      x.OperatorId == operatorId &&
+      x.Template.IsActive &&
+      x.Template.ActiveFrom <= utcNow &&
+      (!x.Template.ExpireTo.HasValue || x.Template.ExpireTo.Value > utcNow));
 
             AddOrderBy(x => x.Template.NameEn);
 
@@ -47,7 +52,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 BranchId = x.Template.BranchId,
                 BranchNameEn = x.Template.Branch.NameEn,
                 BranchNameAr = x.Template.Branch.NameAr,
-                BranchCode = x.Template.Branch.Code
+                BranchCode = x.Template.Branch.Code,
+                ActiveFrom = x.Template.ActiveFrom,
+                ExpireTo = x.Template.ExpireTo,
             });
         }
     }

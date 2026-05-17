@@ -87,8 +87,12 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                     Type: ErrorType.NotFound));
             }
 
+            var utcNow = DateTime.UtcNow;
+
             var templates = await _operatorTemplateReadRepository.ListAsync(
-                new GetAssignedTemplatesForMyOperatorSpec(currentOperator.OperatorId),
+                new GetAssignedTemplatesForMyOperatorSpec(
+                    currentOperator.OperatorId,
+                    utcNow),
                 cancellationToken);
 
             var templateIds = templates
@@ -184,6 +188,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                         NameAr = template.NameAr,
                         Description = template.Description,
 
+                        ActiveFrom = template.ActiveFrom,
+                        ExpireTo = template.ExpireTo,
+
                         BranchId = template.BranchId,
                         BranchNameEn = template.BranchNameEn,
                         BranchNameAr = template.BranchNameAr,
@@ -232,10 +239,10 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 CancellationToken cancellationToken)
         {
             var singleChoiceQuestionIds = templateQuestions
-    .Where(x => x.Type == QuestionType.SingleChoice.ToString())
-    .Select(x => x.QuestionId)
-    .Distinct()
-    .ToArray();
+                .Where(x => x.Type == QuestionType.SingleChoice.ToString())
+                .Select(x => x.QuestionId)
+                .Distinct()
+                .ToArray();
 
             IReadOnlyCollection<QuestionOptionResponse> questionOptions;
 
@@ -256,14 +263,14 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                     x => x.Key,
                     x => (IReadOnlyCollection<MyOperatorQuestionOptionResponse>)x
                         .OrderBy(option => option.Order)
-                      .Select(option => new MyOperatorQuestionOptionResponse
-                      {
-                          OptionId = option.OptionId,
-                          TextEn = option.TextEn,
-                          TextAr = option.TextAr,
-                          Order = option.Order,
-                          Value = option.Value
-                      })
+                        .Select(option => new MyOperatorQuestionOptionResponse
+                        {
+                            OptionId = option.OptionId,
+                            TextEn = option.TextEn,
+                            TextAr = option.TextAr,
+                            Order = option.Order,
+                            Value = option.Value
+                        })
                         .ToArray());
         }
 
@@ -285,8 +292,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                                 && optionsByQuestionId.TryGetValue(
                                     question.QuestionId,
                                     out var questionOptionsList)
-                                    ? questionOptionsList
-                                    : Array.Empty<MyOperatorQuestionOptionResponse>();
+                                        ? questionOptionsList
+                                        : Array.Empty<MyOperatorQuestionOptionResponse>();
 
                             return new MyOperatorTemplateQuestionResponse
                             {
@@ -417,11 +424,11 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         }
 
         private static MyOperatorTemplateLatestResponse? BuildLatestResponse(
-    Guid templateId,
-    IReadOnlyDictionary<Guid, LatestSurveyResponseForMyOperatorTemplateDto> latestResponsesByTemplateId,
-    IReadOnlyDictionary<Guid, IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse>> answersBySurveyResponseId,
-    IReadOnlyCollection<MyOperatorTemplateQuestionResponse> questions,
-    IReadOnlyCollection<TemplateQuestionConditionResponse> conditions)
+            Guid templateId,
+            IReadOnlyDictionary<Guid, LatestSurveyResponseForMyOperatorTemplateDto> latestResponsesByTemplateId,
+            IReadOnlyDictionary<Guid, IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse>> answersBySurveyResponseId,
+            IReadOnlyCollection<MyOperatorTemplateQuestionResponse> questions,
+            IReadOnlyCollection<TemplateQuestionConditionResponse> conditions)
         {
             if (!latestResponsesByTemplateId.TryGetValue(templateId, out var latestResponse))
             {
@@ -472,9 +479,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         }
 
         private static Guid[] CalculateVisibleTemplateQuestionIdsInRenderOrder(
-    IReadOnlyCollection<MyOperatorTemplateQuestionResponse> questions,
-    IReadOnlyCollection<TemplateQuestionConditionResponse> conditions,
-    IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse> answers)
+            IReadOnlyCollection<MyOperatorTemplateQuestionResponse> questions,
+            IReadOnlyCollection<TemplateQuestionConditionResponse> conditions,
+            IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse> answers)
         {
             var validConditions = FilterValidConditions(
                 questions,
@@ -536,12 +543,12 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         }
 
         private static void AddVisibleQuestionAndTriggeredChildren(
-    Guid templateQuestionId,
-    IReadOnlyDictionary<Guid, MyOperatorTemplateQuestionResponse> questionsByTemplateQuestionId,
-    IReadOnlyDictionary<Guid, MyOperatorTemplateLatestAnswerResponse> answersByTemplateQuestionId,
-    IReadOnlyDictionary<Guid, TemplateQuestionConditionResponse[]> conditionsByParentTemplateQuestionId,
-    List<Guid> orderedVisibleTemplateQuestionIds,
-    HashSet<Guid> visitedTemplateQuestionIds)
+            Guid templateQuestionId,
+            IReadOnlyDictionary<Guid, MyOperatorTemplateQuestionResponse> questionsByTemplateQuestionId,
+            IReadOnlyDictionary<Guid, MyOperatorTemplateLatestAnswerResponse> answersByTemplateQuestionId,
+            IReadOnlyDictionary<Guid, TemplateQuestionConditionResponse[]> conditionsByParentTemplateQuestionId,
+            List<Guid> orderedVisibleTemplateQuestionIds,
+            HashSet<Guid> visitedTemplateQuestionIds)
         {
             if (!questionsByTemplateQuestionId.ContainsKey(templateQuestionId))
             {
