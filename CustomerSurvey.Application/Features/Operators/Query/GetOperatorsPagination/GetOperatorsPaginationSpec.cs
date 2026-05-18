@@ -1,18 +1,13 @@
 ﻿using BuildingBlock.Domain.Enums;
 using BuildingBlock.Domain.SharedDto;
 using BuildingBlock.Domain.Specification;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagination
 {
     using DomainOperator = CustomerSurvey.Domain.Identity.Operator;
 
     internal sealed class GetOperatorsPaginationSpec
-        : Specification<DomainOperator, OperatorPaginationItemResponse>
+        : Specification<DomainOperator, OperatorPaginationItemDto>
     {
         public GetOperatorsPaginationSpec(
             SearchParameters searchParameters,
@@ -52,7 +47,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagina
                 searchParameters.PageNumber,
                 searchParameters.PageSize);
 
-            Select(x => new OperatorPaginationItemResponse
+            Select(x => new OperatorPaginationItemDto
             {
                 OperatorId = x.Id,
                 ApplicationUserId = x.ApplicationUserId,
@@ -64,6 +59,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagina
                 UserName = x.ApplicationUser.UserName,
                 Email = x.ApplicationUser.Email ?? string.Empty,
                 PhoneNumber = x.ApplicationUser.PhoneNumber,
+                CreatedByApplicationUserId = x.CreatedByApplicationUserId,
                 CreatedOnUtc = x.CreatedOnUtc
             });
         }

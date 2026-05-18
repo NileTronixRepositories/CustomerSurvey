@@ -2,11 +2,6 @@
 using BuildingBlock.Domain.SharedDto;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagination
 {
@@ -15,7 +10,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
     {
         public GetTemplatesPaginationSpec(
             Guid branchId,
-            SearchParameters searchParameters, bool? isActive = null)
+            SearchParameters searchParameters,
+            bool? isActive = null)
         {
             AddCriteria(x => x.BranchId == branchId);
 
@@ -28,10 +24,12 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
                     (x.NameAr != null && x.NameAr.Contains(searchText)) ||
                     (x.Description != null && x.Description.Contains(searchText)));
             }
+
             if (isActive is not null)
             {
                 AddCriteria(x => x.IsActive == isActive.Value);
             }
+
             if (searchParameters.OrderSort == OrderSort.Oldest)
             {
                 AddOrderByDescending(x => x.CreatedOnUtc);
@@ -57,9 +55,10 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
                 Status = x.Status,
                 IsActive = x.IsActive,
                 QuestionsCount = x.TemplateQuestions.Count,
+                CreatedByApplicationUserId = x.CreatedByApplicationUserId,
                 CreatedOnUtc = x.CreatedOnUtc,
                 ActiveFrom = x.ActiveFrom,
-                ExpireTo = x.ExpireTo,
+                ExpireTo = x.ExpireTo
             });
         }
     }

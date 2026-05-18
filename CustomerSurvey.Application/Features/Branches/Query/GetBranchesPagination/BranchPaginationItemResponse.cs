@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchesPagination
+﻿namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchesPagination
 {
     public sealed record BranchPaginationItemResponse
     {
@@ -20,6 +14,15 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchesPaginati
 
         public bool IsActive { get; init; }
 
+        public BranchPaginationCreatedByResponse? CreatedBy { get; init; }
+
         public DateTime CreatedOnUtc { get; init; }
+    }
+
+    public sealed record BranchPaginationCreatedByResponse
+    {
+        public string NameEn { get; init; } = string.Empty;
+
+        public string? NameAr { get; init; }
     }
 }

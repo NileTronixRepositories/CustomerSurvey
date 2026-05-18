@@ -8,11 +8,6 @@ using CustomerSurvey.Application.Features.Questions.Shared.Specs;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagination
 {
@@ -23,6 +18,7 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly IWriteReadRepository<ApplicationUser> _applicationUserReadRepository;
         private readonly ICurrentUser _currentUser;
 
         public GetQuestionsPaginationQueryHandler(
@@ -30,6 +26,7 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<QuestionOption> questionOptionReadRepository,
+            IWriteReadRepository<ApplicationUser> applicationUserReadRepository,
             ICurrentUser currentUser)
         {
             _questionReadRepository = questionReadRepository
@@ -41,11 +38,14 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
             _branchUserReadRepository = branchUserReadRepository
                 ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
 
-            _currentUser = currentUser
-                ?? throw new ArgumentNullException(nameof(currentUser));
-
             _questionOptionReadRepository = questionOptionReadRepository
                 ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
+
+            _applicationUserReadRepository = applicationUserReadRepository
+                ?? throw new ArgumentNullException(nameof(applicationUserReadRepository));
+
+            _currentUser = currentUser
+                ?? throw new ArgumentNullException(nameof(currentUser));
         }
 
         public async Task<Result<Pagination<QuestionPaginationItemResponse>>> Handle(
@@ -110,14 +110,61 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
                         .OrderBy(option => option.Order)
                         .ToArray());
 
-            var itemsWithOptions = items
-                .Select(question => question with
+            var creatorApplicationUserIds = items
+                .Select(x => x.CreatedByApplicationUserId)
+                .Distinct()
+                .ToArray();
+
+            IReadOnlyCollection<QuestionPaginationCreatorDto> creators;
+
+            if (creatorApplicationUserIds.Length == 0)
+            {
+                creators = Array.Empty<QuestionPaginationCreatorDto>();
+            }
+            else
+            {
+                creators = await _applicationUserReadRepository.ListAsync(
+                    new GetQuestionCreatorsForQuestionsPaginationSpec(creatorApplicationUserIds),
+                    cancellationToken);
+            }
+
+            var creatorsByApplicationUserId = creators.ToDictionary(
+                x => x.ApplicationUserId,
+                x => x);
+
+            var responseItems = items
+                .Select(question =>
                 {
-                    Options = optionsByQuestionId.TryGetValue(
+                    optionsByQuestionId.TryGetValue(
                         question.QuestionId,
-                        out var questionOptions)
-                            ? questionOptions
-                            : Array.Empty<QuestionOptionResponse>()
+                        out var questionOptions);
+
+                    creatorsByApplicationUserId.TryGetValue(
+                        question.CreatedByApplicationUserId,
+                        out var creator);
+
+                    return new QuestionPaginationItemResponse
+                    {
+                        QuestionId = question.QuestionId,
+                        BranchId = question.BranchId,
+                        GroupId = question.GroupId,
+                        GroupNameEn = question.GroupNameEn,
+                        GroupNameAr = question.GroupNameAr,
+                        TextEn = question.TextEn,
+                        TextAr = question.TextAr,
+                        Type = question.Type,
+                        TypeName = question.TypeName,
+                        IsActive = question.IsActive,
+                        CreatedBy = creator is null
+                            ? null
+                            : new QuestionPaginationCreatedByResponse
+                            {
+                                NameEn = creator.NameEn,
+                                NameAr = creator.NameAr
+                            },
+                        CreatedOnUtc = question.CreatedOnUtc,
+                        Options = questionOptions ?? Array.Empty<QuestionOptionResponse>()
+                    };
                 })
                 .ToArray();
 
@@ -125,7 +172,7 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
                 currentPage: request.PageNumber,
                 pageSize: request.PageSize,
                 totalItems: totalCount,
-                data: itemsWithOptions);
+                data: responseItems);
 
             return Result<Pagination<QuestionPaginationItemResponse>>.Ok(response);
         }

@@ -5,28 +5,25 @@ using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagination
 {
     using DomainOperator = CustomerSurvey.Domain.Identity.Operator;
 
     internal sealed class GetOperatorsPaginationQueryHandler
-         : IQueryHandler<GetOperatorsPaginationQuery, Pagination<OperatorPaginationItemResponse>>
+        : IQueryHandler<GetOperatorsPaginationQuery, Pagination<OperatorPaginationItemResponse>>
     {
         private readonly IWriteReadRepository<DomainOperator> _operatorReadRepository;
         private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
         private readonly IWriteReadRepository<DepartmentAdmin> _departmentAdminReadRepository;
+        private readonly IWriteReadRepository<ApplicationUser> _applicationUserReadRepository;
         private readonly ICurrentUser _currentUser;
 
         public GetOperatorsPaginationQueryHandler(
             IWriteReadRepository<DomainOperator> operatorReadRepository,
             IWriteReadRepository<SuperAdmin> superAdminReadRepository,
             IWriteReadRepository<DepartmentAdmin> departmentAdminReadRepository,
+            IWriteReadRepository<ApplicationUser> applicationUserReadRepository,
             ICurrentUser currentUser)
         {
             _operatorReadRepository = operatorReadRepository
@@ -37,6 +34,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagina
 
             _departmentAdminReadRepository = departmentAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(departmentAdminReadRepository));
+
+            _applicationUserReadRepository = applicationUserReadRepository
+                ?? throw new ArgumentNullException(nameof(applicationUserReadRepository));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -76,11 +76,64 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagina
                 spec,
                 cancellationToken);
 
+            var creatorApplicationUserIds = items
+                .Select(x => x.CreatedByApplicationUserId)
+                .Distinct()
+                .ToArray();
+
+            IReadOnlyCollection<OperatorPaginationCreatorDto> creators;
+
+            if (creatorApplicationUserIds.Length == 0)
+            {
+                creators = Array.Empty<OperatorPaginationCreatorDto>();
+            }
+            else
+            {
+                creators = await _applicationUserReadRepository.ListAsync(
+                    new GetOperatorCreatorsForOperatorsPaginationSpec(creatorApplicationUserIds),
+                    cancellationToken);
+            }
+
+            var creatorsByApplicationUserId = creators.ToDictionary(
+                x => x.ApplicationUserId,
+                x => x);
+
+            var responseItems = items
+                .Select(x =>
+                {
+                    creatorsByApplicationUserId.TryGetValue(
+                        x.CreatedByApplicationUserId,
+                        out var creator);
+
+                    return new OperatorPaginationItemResponse
+                    {
+                        OperatorId = x.OperatorId,
+                        ApplicationUserId = x.ApplicationUserId,
+                        DepartmentId = x.DepartmentId,
+                        DepartmentNameEn = x.DepartmentNameEn,
+                        DepartmentNameAr = x.DepartmentNameAr,
+                        NameEn = x.NameEn,
+                        NameAr = x.NameAr,
+                        UserName = x.UserName,
+                        Email = x.Email,
+                        PhoneNumber = x.PhoneNumber,
+                        CreatedBy = creator is null
+                            ? null
+                            : new OperatorPaginationCreatedByResponse
+                            {
+                                NameEn = creator.NameEn,
+                                NameAr = creator.NameAr
+                            },
+                        CreatedOnUtc = x.CreatedOnUtc
+                    };
+                })
+                .ToArray();
+
             var response = new Pagination<OperatorPaginationItemResponse>(
                 currentPage: request.PageNumber,
                 pageSize: request.PageSize,
                 totalItems: totalCount,
-                data: items);
+                data: responseItems);
 
             return Result<Pagination<OperatorPaginationItemResponse>>.Ok(response);
         }

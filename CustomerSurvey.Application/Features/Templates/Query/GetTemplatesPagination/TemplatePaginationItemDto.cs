@@ -1,9 +1,4 @@
 ﻿using CustomerSurvey.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagination
 {
@@ -25,7 +20,10 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
 
         public int QuestionsCount { get; init; }
 
+        public Guid CreatedByApplicationUserId { get; init; }
+
         public DateTime CreatedOnUtc { get; init; }
+
         public DateTime ActiveFrom { get; init; }
 
         public DateTime? ExpireTo { get; init; }

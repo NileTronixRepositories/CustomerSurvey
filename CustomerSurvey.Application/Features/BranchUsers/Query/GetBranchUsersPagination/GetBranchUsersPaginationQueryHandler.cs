@@ -5,11 +5,6 @@ using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPagination
 {
@@ -19,12 +14,14 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<UserRole> _userRoleReadRepository;
+        private readonly IWriteReadRepository<ApplicationUser> _applicationUserReadRepository;
         private readonly ICurrentUser _currentUser;
 
         public GetBranchUsersPaginationQueryHandler(
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<UserRole> userRoleReadRepository,
+            IWriteReadRepository<ApplicationUser> applicationUserReadRepository,
             ICurrentUser currentUser)
         {
             _branchAdminReadRepository = branchAdminReadRepository
@@ -35,6 +32,9 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
 
             _userRoleReadRepository = userRoleReadRepository
                 ?? throw new ArgumentNullException(nameof(userRoleReadRepository));
+
+            _applicationUserReadRepository = applicationUserReadRepository
+                ?? throw new ArgumentNullException(nameof(applicationUserReadRepository));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -104,24 +104,60 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
                         })
                         .ToArray());
 
+            var creatorApplicationUserIds = users
+                .Select(x => x.CreatedByApplicationUserId)
+                .Distinct()
+                .ToArray();
+
+            IReadOnlyCollection<BranchUserPaginationCreatorDto> creators;
+
+            if (creatorApplicationUserIds.Length == 0)
+            {
+                creators = Array.Empty<BranchUserPaginationCreatorDto>();
+            }
+            else
+            {
+                creators = await _applicationUserReadRepository.ListAsync(
+                    new GetBranchUserCreatorsForBranchUsersPaginationSpec(creatorApplicationUserIds),
+                    cancellationToken);
+            }
+
+            var creatorsByApplicationUserId = creators.ToDictionary(
+                x => x.ApplicationUserId,
+                x => x);
+
             var items = users
-                .Select(user => new BranchUserPaginationItemResponse
+                .Select(user =>
                 {
-                    BranchUserId = user.BranchUserId,
-                    ApplicationUserId = user.ApplicationUserId,
-                    BranchId = user.BranchId,
-                    NameEn = user.NameEn,
-                    NameAr = user.NameAr,
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    PhoneNumber = user.PhoneNumber,
-                    CreatedOnUtc = user.CreatedOnUtc,
-                    IsActive = user.IsActive,
-                    Roles = rolesByApplicationUserId.TryGetValue(
-                        user.ApplicationUserId,
-                        out var roles)
-                            ? roles
-                            : Array.Empty<BranchUserPaginationRoleResponse>()
+                    creatorsByApplicationUserId.TryGetValue(
+                        user.CreatedByApplicationUserId,
+                        out var creator);
+
+                    return new BranchUserPaginationItemResponse
+                    {
+                        BranchUserId = user.BranchUserId,
+                        ApplicationUserId = user.ApplicationUserId,
+                        BranchId = user.BranchId,
+                        NameEn = user.NameEn,
+                        NameAr = user.NameAr,
+                        UserName = user.UserName,
+                        Email = user.Email,
+                        PhoneNumber = user.PhoneNumber,
+                        IsActive = user.IsActive,
+                        CreatedBy = creator is null
+                            ? null
+                            : new BranchUserPaginationCreatedByResponse
+                            {
+                                NameEn = creator.NameEn,
+                                NameAr = creator.NameAr
+                            },
+                        CreatedOnUtc = user.CreatedOnUtc,
+                        Roles = rolesByApplicationUserId.TryGetValue(
+                            user.ApplicationUserId,
+                            out var roles)
+                                ? roles
+                                : Array.Empty<BranchUserPaginationRoleResponse>()
+                    };
                 })
                 .ToArray();
 

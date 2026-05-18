@@ -6,11 +6,6 @@ using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchesPagination
 {
@@ -19,11 +14,13 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchesPaginati
     {
         private readonly IWriteReadRepository<Branch> _branchReadRepository;
         private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
+        private readonly IWriteReadRepository<ApplicationUser> _applicationUserReadRepository;
         private readonly ICurrentUser _currentUser;
 
         public GetBranchesPaginationQueryHandler(
             IWriteReadRepository<Branch> branchReadRepository,
             IWriteReadRepository<SuperAdmin> superAdminReadRepository,
+            IWriteReadRepository<ApplicationUser> applicationUserReadRepository,
             ICurrentUser currentUser)
         {
             _branchReadRepository = branchReadRepository
@@ -31,6 +28,9 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchesPaginati
 
             _superAdminReadRepository = superAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
+
+            _applicationUserReadRepository = applicationUserReadRepository
+                ?? throw new ArgumentNullException(nameof(applicationUserReadRepository));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -70,11 +70,60 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchesPaginati
                 spec,
                 cancellationToken);
 
+            var creatorApplicationUserIds = items
+                .Select(x => x.CreatedByApplicationUserId)
+                .Distinct()
+                .ToArray();
+
+            IReadOnlyCollection<BranchPaginationCreatorDto> creators;
+
+            if (creatorApplicationUserIds.Length == 0)
+            {
+                creators = Array.Empty<BranchPaginationCreatorDto>();
+            }
+            else
+            {
+                creators = await _applicationUserReadRepository.ListAsync(
+                    new GetBranchCreatorsForBranchesPaginationSpec(creatorApplicationUserIds),
+                    cancellationToken);
+            }
+
+            var creatorsByApplicationUserId = creators.ToDictionary(
+                x => x.ApplicationUserId,
+                x => x);
+
+            var responseItems = items
+                .Select(x =>
+                {
+                    creatorsByApplicationUserId.TryGetValue(
+                        x.CreatedByApplicationUserId,
+                        out var creator);
+
+                    return new BranchPaginationItemResponse
+                    {
+                        Id = x.Id,
+                        NameEn = x.NameEn,
+                        NameAr = x.NameAr,
+                        Code = x.Code,
+                        Address = x.Address,
+                        IsActive = x.IsActive,
+                        CreatedBy = creator is null
+                            ? null
+                            : new BranchPaginationCreatedByResponse
+                            {
+                                NameEn = creator.NameEn,
+                                NameAr = creator.NameAr
+                            },
+                        CreatedOnUtc = x.CreatedOnUtc
+                    };
+                })
+                .ToArray();
+
             var response = new Pagination<BranchPaginationItemResponse>(
                 currentPage: request.PageNumber,
                 pageSize: request.PageSize,
                 totalItems: totalCount,
-                data: items);
+                data: responseItems);
 
             return Result<Pagination<BranchPaginationItemResponse>>.Ok(response);
         }

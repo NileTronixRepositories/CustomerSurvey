@@ -7,26 +7,23 @@ using CustomerSurvey.Application.Features.QuestionGroups.Shared.Specs;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupsPagination
 {
     internal sealed class GetQuestionGroupsPaginationQueryHandler
-         : IQueryHandler<GetQuestionGroupsPaginationQuery, Pagination<QuestionGroupPaginationItemResponse>>
+        : IQueryHandler<GetQuestionGroupsPaginationQuery, Pagination<QuestionGroupPaginationItemResponse>>
     {
         private readonly IWriteReadRepository<QuestionGroup> _questionGroupReadRepository;
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly IWriteReadRepository<ApplicationUser> _applicationUserReadRepository;
         private readonly ICurrentUser _currentUser;
 
         public GetQuestionGroupsPaginationQueryHandler(
             IWriteReadRepository<QuestionGroup> questionGroupReadRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
+            IWriteReadRepository<ApplicationUser> applicationUserReadRepository,
             ICurrentUser currentUser)
         {
             _questionGroupReadRepository = questionGroupReadRepository
@@ -37,6 +34,9 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGr
 
             _branchUserReadRepository = branchUserReadRepository
                 ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+
+            _applicationUserReadRepository = applicationUserReadRepository
+                ?? throw new ArgumentNullException(nameof(applicationUserReadRepository));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -72,17 +72,66 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGr
 
             var spec = new GetQuestionGroupsPaginationSpec(
                 branchId: actorBranchId.Value,
-                query: request);
+                searchParameters: request);
 
             var (items, totalCount) = await _questionGroupReadRepository.ListWithCountAsync(
                 spec,
                 cancellationToken);
 
+            var creatorApplicationUserIds = items
+                .Select(x => x.CreatedByApplicationUserId)
+                .Distinct()
+                .ToArray();
+
+            IReadOnlyCollection<QuestionGroupPaginationCreatorDto> creators;
+
+            if (creatorApplicationUserIds.Length == 0)
+            {
+                creators = Array.Empty<QuestionGroupPaginationCreatorDto>();
+            }
+            else
+            {
+                creators = await _applicationUserReadRepository.ListAsync(
+                    new GetQuestionGroupCreatorsForQuestionGroupsPaginationSpec(creatorApplicationUserIds),
+                    cancellationToken);
+            }
+
+            var creatorsByApplicationUserId = creators.ToDictionary(
+                x => x.ApplicationUserId,
+                x => x);
+
+            var responseItems = items
+                .Select(group =>
+                {
+                    creatorsByApplicationUserId.TryGetValue(
+                        group.CreatedByApplicationUserId,
+                        out var creator);
+
+                    return new QuestionGroupPaginationItemResponse
+                    {
+                        GroupId = group.GroupId,
+                        BranchId = group.BranchId,
+                        NameEn = group.NameEn,
+                        NameAr = group.NameAr,
+                        IsActive = group.IsActive,
+                        QuestionsCount = group.QuestionsCount,
+                        CreatedBy = creator is null
+                            ? null
+                            : new QuestionGroupPaginationCreatedByResponse
+                            {
+                                NameEn = creator.NameEn,
+                                NameAr = creator.NameAr
+                            },
+                        CreatedOnUtc = group.CreatedOnUtc
+                    };
+                })
+                .ToArray();
+
             var response = new Pagination<QuestionGroupPaginationItemResponse>(
                 currentPage: request.PageNumber,
                 pageSize: request.PageSize,
                 totalItems: totalCount,
-                data: items);
+                data: responseItems);
 
             return Result<Pagination<QuestionGroupPaginationItemResponse>>.Ok(response);
         }
