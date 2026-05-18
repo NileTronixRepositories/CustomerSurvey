@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsToTemplate
 {
@@ -23,6 +19,16 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
         public Guid TemplateQuestionId { get; init; }
 
         public Guid QuestionId { get; init; }
+
+        public Guid? QuestionBranchId { get; init; }
+
+        public Guid GroupId { get; init; }
+
+        public QuestionScope Scope { get; init; }
+
+        public string ScopeName { get; init; } = string.Empty;
+
+        public bool IsGlobal { get; init; }
 
         public int Order { get; init; }
     }

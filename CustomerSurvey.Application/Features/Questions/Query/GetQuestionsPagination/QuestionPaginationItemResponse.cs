@@ -1,10 +1,5 @@
 ﻿using CustomerSurvey.Application.Features.Questions.Shared;
 using CustomerSurvey.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagination
 {
@@ -12,9 +7,19 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
     {
         public Guid QuestionId { get; init; }
 
-        public Guid BranchId { get; init; }
+        public Guid? BranchId { get; init; }
 
         public Guid GroupId { get; init; }
+
+        public Guid? GroupBranchId { get; init; }
+
+        public QuestionScope Scope { get; init; }
+
+        public string ScopeName { get; init; } = string.Empty;
+
+        public bool IsGlobal { get; init; }
+
+        public bool IsEditable { get; init; }
 
         public string GroupNameEn { get; init; } = string.Empty;
 

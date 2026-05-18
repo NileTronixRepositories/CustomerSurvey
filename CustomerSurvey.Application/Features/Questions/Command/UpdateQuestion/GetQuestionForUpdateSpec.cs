@@ -1,15 +1,10 @@
 ﻿using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
 {
-    internal sealed class GetQuestionForUpdateSpec
-         : Specification<Question>
+    internal sealed class GetQuestionForUpdateSpec : Specification<Question>
     {
         public GetQuestionForUpdateSpec(
             Guid questionId,
@@ -17,6 +12,7 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
         {
             AddCriteria(x =>
                 x.Id == questionId &&
+                x.Scope == QuestionScope.Branch &&
                 x.BranchId == branchId);
         }
     }

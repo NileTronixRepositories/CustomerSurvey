@@ -4,13 +4,9 @@ using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Features.QuestionGroups.Shared.Specs;
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.QuestionGroups.Command.UpdateQuestionGroup
 {
@@ -97,8 +93,9 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Command.UpdateQuest
 
             var nameEnExists = await _questionGroupReadRepository.AnyAsync(
                 x =>
-                    x.BranchId == branchId &&
                     x.Id != request.GroupId &&
+                    x.Scope == QuestionScope.Branch &&
+                    x.BranchId == branchId &&
                     x.NameEn == normalizedNameEn,
                 cancellationToken);
 
@@ -122,6 +119,10 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Command.UpdateQuest
             {
                 GroupId = group.Id,
                 BranchId = group.BranchId,
+                Scope = group.Scope,
+                ScopeName = group.Scope.ToString(),
+                IsGlobal = group.Scope == QuestionScope.Global,
+                IsEditable = group.Scope == QuestionScope.Branch,
                 NameEn = group.NameEn,
                 NameAr = group.NameAr,
                 IsActive = group.IsActive

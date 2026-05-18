@@ -299,13 +299,21 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                             {
                                 TemplateQuestionId = question.TemplateQuestionId,
                                 QuestionId = question.QuestionId,
+
+                                QuestionBranchId = question.QuestionBranchId,
+                                GroupId = question.GroupId,
+                                GroupBranchId = question.GroupBranchId,
+
+                                Scope = question.Scope,
+                                ScopeName = question.Scope.ToString(),
+                                IsGlobal = question.Scope == QuestionScope.Global,
+
                                 Order = question.Order,
 
                                 TextEn = question.TextEn,
                                 TextAr = question.TextAr,
                                 Type = question.Type,
 
-                                GroupId = question.GroupId,
                                 GroupNameEn = question.GroupNameEn,
                                 GroupNameAr = question.GroupNameAr,
 

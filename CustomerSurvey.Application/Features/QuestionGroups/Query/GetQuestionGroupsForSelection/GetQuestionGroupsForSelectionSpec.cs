@@ -1,10 +1,6 @@
 ﻿using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupsForSelection
 {
@@ -14,7 +10,9 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGr
         public GetQuestionGroupsForSelectionSpec(Guid branchId)
         {
             AddCriteria(x =>
-                x.BranchId == branchId &&
+                x.Scope == QuestionScope.Branch &&
+                x.BranchId.HasValue &&
+                x.BranchId.Value == branchId &&
                 x.IsActive);
 
             AddOrderBy(x => x.NameEn);
@@ -22,6 +20,15 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGr
             Select(x => new QuestionGroupSelectionResponse
             {
                 Id = x.Id,
+                BranchId = x.BranchId,
+                Scope = x.Scope,
+                ScopeName = x.Scope.ToString(),
+                IsGlobal = x.Scope == QuestionScope.Global,
+
+                // This endpoint is used for creating/updating Branch Questions only.
+                // So only Branch active groups are selectable here.
+                IsSelectable = x.Scope == QuestionScope.Branch,
+
                 NameEn = x.NameEn,
                 NameAr = x.NameAr
             });

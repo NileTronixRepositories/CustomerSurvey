@@ -2,8 +2,6 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
-using CustomerSurvey.Application.Features.Questions.Shared;
-using CustomerSurvey.Application.Features.Questions.Shared.Specs;
 using CustomerSurvey.Application.Features.Templates.Shared;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
@@ -90,10 +88,12 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                     Type: ErrorType.NotFound));
             }
 
+            var branchId = currentActor.BranchId;
+
             var template = await _templateReadRepository.FirstOrDefaultAsync(
                 new GetTemplateForQuestionsSelectionSpec(
                     templateId: request.TemplateId,
-                    branchId: currentActor.BranchId),
+                    branchId: branchId),
                 cancellationToken);
 
             if (template is null)
@@ -105,59 +105,50 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
             }
 
             var groups = await _questionGroupReadRepository.ListAsync(
-                new GetQuestionGroupsForTemplateQuestionsSelectionSpec(currentActor.BranchId),
+                new GetQuestionGroupsForTemplateQuestionsSelectionSpec(branchId),
                 cancellationToken);
 
             var questions = await _questionReadRepository.ListAsync(
-                new GetQuestionsForTemplateQuestionsSelectionSpec(currentActor.BranchId),
+                new GetQuestionsForTemplateQuestionsSelectionSpec(branchId),
                 cancellationToken);
 
             var templateQuestions = await _templateQuestionReadRepository.ListAsync(
                 new GetTemplateQuestionsForTemplateQuestionsSelectionSpec(template.TemplateId),
                 cancellationToken);
 
-            var questionConditions = await _conditionReadRepository.ListAsync(
-                new GetTemplateQuestionConditionsByTemplateIdsSpec(
-                    new[] { template.TemplateId }),
+            var questionIds = questions
+                .Select(x => x.QuestionId)
+                .Distinct()
+                .ToArray();
+            IReadOnlyCollection<TemplateQuestionSelectionOptionForReadDto> options =
+                questionIds.Length == 0
+                    ? Array.Empty<TemplateQuestionSelectionOptionForReadDto>()
+                    : await _questionOptionReadRepository.ListAsync(
+                        new GetQuestionOptionsForTemplateQuestionsSelectionSpec(questionIds),
+                        cancellationToken);
+
+            var conditions = await _conditionReadRepository.ListAsync(
+                new GetTemplateQuestionConditionsForTemplateQuestionsSelectionSpec(template.TemplateId),
                 cancellationToken);
 
             var validQuestionConditions = FilterValidConditions(
                 templateQuestions,
-                questionConditions);
+                conditions);
 
-            var singleChoiceQuestionIds = questions
-     .Where(x => x.Type == QuestionType.SingleChoice)
-     .Select(x => x.QuestionId)
-     .Distinct()
-     .ToArray();
-
-            IReadOnlyCollection<QuestionOptionResponse> questionOptions;
-
-            if (singleChoiceQuestionIds.Length == 0)
-            {
-                questionOptions = Array.Empty<QuestionOptionResponse>();
-            }
-            else
-            {
-                questionOptions = await _questionOptionReadRepository.ListAsync(
-                    new GetQuestionOptionsByQuestionIdsSpec(singleChoiceQuestionIds),
-                    cancellationToken);
-            }
-
-            var optionsByQuestionId = questionOptions
+            var optionsByQuestionId = options
                 .GroupBy(x => x.QuestionId)
                 .ToDictionary(
                     x => x.Key,
                     x => (IReadOnlyCollection<TemplateQuestionSelectionOptionResponse>)x
                         .OrderBy(option => option.Order)
-                       .Select(option => new TemplateQuestionSelectionOptionResponse
-                       {
-                           OptionId = option.OptionId,
-                           TextEn = option.TextEn,
-                           TextAr = option.TextAr,
-                           Order = option.Order,
-                           Value = option.Value
-                       })
+                        .Select(option => new TemplateQuestionSelectionOptionResponse
+                        {
+                            OptionId = option.OptionId,
+                            TextEn = option.TextEn,
+                            TextAr = option.TextAr,
+                            Order = option.Order,
+                            Value = option.Value
+                        })
                         .ToArray());
 
             var selectedQuestionsByQuestionId = templateQuestions
@@ -187,6 +178,15 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                                     ? selectedTemplateQuestion!.TemplateQuestionId
                                     : null,
 
+                                BranchId = question.BranchId,
+                                GroupId = question.GroupId,
+                                Scope = question.Scope,
+                                ScopeName = question.Scope.ToString(),
+                                IsGlobal = question.Scope == QuestionScope.Global,
+
+                                IsSelectable = true,
+                                IsEditable = question.Scope == QuestionScope.Branch,
+
                                 TextEn = question.TextEn,
                                 TextAr = question.TextAr,
                                 Type = question.Type.ToString(),
@@ -196,16 +196,17 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                                     ? selectedTemplateQuestion!.Order
                                     : null,
 
-                                Options = question.Type == QuestionType.SingleChoice
-                                          && optionsByQuestionId.TryGetValue(
+                                Options = question.Type == QuestionType.SingleChoice &&
+                                          optionsByQuestionId.TryGetValue(
                                               question.QuestionId,
-                                              out var options)
-                                    ? options
+                                              out var optionResponses)
+                                    ? optionResponses
                                     : Array.Empty<TemplateQuestionSelectionOptionResponse>()
                             };
                         })
                         .OrderByDescending(question => question.IsSelected)
                         .ThenBy(question => question.Order ?? int.MaxValue)
+                        .ThenBy(question => question.IsGlobal)
                         .ThenBy(question => question.TextEn)
                         .ToArray());
 
@@ -222,6 +223,11 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                     .Select(group => new TemplateQuestionsSelectionGroupResponse
                     {
                         GroupId = group.GroupId,
+                        BranchId = group.BranchId,
+                        Scope = group.Scope,
+                        ScopeName = group.Scope.ToString(),
+                        IsGlobal = group.Scope == QuestionScope.Global,
+                        IsSelectable = true,
                         NameEn = group.NameEn,
                         NameAr = group.NameAr,
                         Questions = questionsByGroupId.TryGetValue(
@@ -230,6 +236,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                                 ? groupQuestions
                                 : Array.Empty<TemplateQuestionsSelectionQuestionResponse>()
                     })
+                    .Where(group => group.Questions.Count > 0)
+                    .OrderBy(group => group.IsGlobal)
+                    .ThenBy(group => group.NameEn)
                     .ToArray(),
 
                 QuestionConditions = validQuestionConditions
@@ -264,8 +273,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
         }
 
         private static TemplateQuestionConditionForReadDto[] FilterValidConditions(
-     IReadOnlyCollection<TemplateQuestionForTemplateQuestionsSelectionDto> templateQuestions,
-     IReadOnlyCollection<TemplateQuestionConditionForReadDto> conditions)
+            IReadOnlyCollection<TemplateQuestionForTemplateQuestionsSelectionDto> templateQuestions,
+            IReadOnlyCollection<TemplateQuestionConditionForReadDto> conditions)
         {
             if (templateQuestions.Count == 0 || conditions.Count == 0)
             {

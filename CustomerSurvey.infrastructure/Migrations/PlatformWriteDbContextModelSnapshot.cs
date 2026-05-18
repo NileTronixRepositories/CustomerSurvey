@@ -137,7 +137,7 @@ namespace CustomerSurvey.infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("BranchId")
+                    b.Property<Guid?>("BranchId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CreatedByApplicationUserId")
@@ -154,6 +154,11 @@ namespace CustomerSurvey.infrastructure.Migrations
 
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Scope")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("TextAr")
                         .HasMaxLength(1000)
@@ -173,7 +178,16 @@ namespace CustomerSurvey.infrastructure.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("Question");
+                    b.HasIndex("Scope");
+
+                    b.HasIndex("BranchId", "IsActive");
+
+                    b.HasIndex("Scope", "IsActive");
+
+                    b.ToTable("Question", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Question_Scope_BranchId", "([Scope] = 1 AND [BranchId] IS NOT NULL) OR ([Scope] = 2 AND [BranchId] IS NULL)");
+                        });
                 });
 
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.QuestionGroup", b =>
@@ -182,7 +196,7 @@ namespace CustomerSurvey.infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("BranchId")
+                    b.Property<Guid?>("BranchId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CreatedByApplicationUserId")
@@ -206,16 +220,33 @@ namespace CustomerSurvey.infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int>("Scope")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
 
+                    b.HasIndex("NameEn")
+                        .IsUnique()
+                        .HasDatabaseName("UX_QuestionGroup_Global_NameEn")
+                        .HasFilter("[Scope] = 2 AND [BranchId] IS NULL");
+
                     b.HasIndex("BranchId", "IsActive");
 
                     b.HasIndex("BranchId", "NameEn")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("UX_QuestionGroup_Branch_NameEn")
+                        .HasFilter("[Scope] = 1 AND [BranchId] IS NOT NULL");
 
-                    b.ToTable("QuestionGroup");
+                    b.HasIndex("Scope", "IsActive");
+
+                    b.ToTable("QuestionGroup", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_QuestionGroup_Scope_BranchId", "([Scope] = 1 AND [BranchId] IS NOT NULL) OR ([Scope] = 2 AND [BranchId] IS NULL)");
+                        });
                 });
 
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.QuestionOption", b =>
@@ -874,8 +905,7 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.HasOne("CustomerSurvey.Domain.Entities.Branch", "Branch")
                         .WithMany()
                         .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CustomerSurvey.Domain.Entities.QuestionGroup", "Group")
                         .WithMany("Questions")
@@ -893,8 +923,7 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.HasOne("CustomerSurvey.Domain.Entities.Branch", "Branch")
                         .WithMany("Groups")
                         .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Branch");
                 });

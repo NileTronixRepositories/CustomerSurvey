@@ -1,9 +1,5 @@
 ﻿using CustomerSurvey.Application.Features.Templates.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 {
@@ -29,12 +25,13 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
         public bool IsActive { get; init; }
 
-        public DateTime CreatedOnUtc { get; init; }
-
-        public DateTime? ModifiedOnUtc { get; init; }
         public DateTime ActiveFrom { get; init; }
 
         public DateTime? ExpireTo { get; init; }
+
+        public DateTime CreatedOnUtc { get; init; }
+
+        public DateTime? ModifiedOnUtc { get; init; }
 
         public TemplateDetailsSummaryResponse Summary { get; init; } = new();
 
@@ -42,7 +39,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
             = Array.Empty<TemplateDetailsQuestionResponse>();
 
         public IReadOnlyCollection<TemplateQuestionConditionResponse> QuestionConditions { get; init; }
-    = Array.Empty<TemplateQuestionConditionResponse>();
+            = Array.Empty<TemplateQuestionConditionResponse>();
     }
 
     public sealed record TemplateDetailsSummaryResponse
@@ -58,6 +55,20 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
         public Guid QuestionId { get; init; }
 
+        public Guid? QuestionBranchId { get; init; }
+
+        public Guid GroupId { get; init; }
+
+        public Guid? GroupBranchId { get; init; }
+
+        public QuestionScope Scope { get; init; }
+
+        public string ScopeName { get; init; } = string.Empty;
+
+        public bool IsGlobal { get; init; }
+
+        public bool IsEditable { get; init; }
+
         public int Order { get; init; }
 
         public string TextEn { get; init; } = string.Empty;
@@ -68,14 +79,14 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
         public bool IsActive { get; init; }
 
-        public Guid GroupId { get; init; }
-
         public string GroupNameEn { get; init; } = string.Empty;
 
         public string? GroupNameAr { get; init; }
+
         public IReadOnlyCollection<TemplateDetailsQuestionOptionResponse> Options { get; init; }
-     = Array.Empty<TemplateDetailsQuestionOptionResponse>();
+            = Array.Empty<TemplateDetailsQuestionOptionResponse>();
     }
+
     public sealed record TemplateDetailsQuestionOptionResponse
     {
         public Guid OptionId { get; init; }

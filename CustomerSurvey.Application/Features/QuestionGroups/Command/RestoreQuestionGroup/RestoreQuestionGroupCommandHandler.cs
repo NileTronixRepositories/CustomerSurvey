@@ -2,19 +2,16 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Features.QuestionGroups.Shared.Specs;
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.QuestionGroups.Command.RestoreQuestionGroup
 {
     internal sealed class RestoreQuestionGroupCommandHandler
-         : ICommandHandler<RestoreQuestionGroupCommand, RestoreQuestionGroupResponse>
+        : ICommandHandler<RestoreQuestionGroupCommand, RestoreQuestionGroupResponse>
     {
         private readonly IWriteReadRepository<QuestionGroup> _questionGroupReadRepository;
         private readonly IWriteRepository<QuestionGroup> _questionGroupWriteRepository;
@@ -76,10 +73,12 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Command.RestoreQues
                     Type: ErrorType.Security));
             }
 
+            var branchId = actorBranchId.Value;
+
             var group = await _questionGroupReadRepository.FirstOrDefaultAsync(
                 new GetQuestionGroupForRestoreQuestionGroupSpec(
                     groupId: request.GroupId,
-                    branchId: actorBranchId.Value),
+                    branchId: branchId),
                 cancellationToken);
 
             if (group is null)
@@ -108,6 +107,10 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Command.RestoreQues
             {
                 GroupId = group.Id,
                 BranchId = group.BranchId,
+                Scope = group.Scope,
+                ScopeName = group.Scope.ToString(),
+                IsGlobal = group.Scope == QuestionScope.Global,
+                IsEditable = group.Scope == QuestionScope.Branch,
                 NameEn = group.NameEn,
                 NameAr = group.NameAr,
                 IsActive = group.IsActive
@@ -121,7 +124,7 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Command.RestoreQues
             CancellationToken cancellationToken)
         {
             var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForRestoreQuestionGroupSpec(applicationUserId),
+                new GetCurrentBranchAdminForQuestionGroupSpec(applicationUserId),
                 cancellationToken);
 
             if (branchAdmin is not null)
@@ -130,7 +133,7 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Command.RestoreQues
             }
 
             var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForRestoreQuestionGroupSpec(applicationUserId),
+                new GetCurrentBranchUserForQuestionGroupSpec(applicationUserId),
                 cancellationToken);
 
             return branchUser?.BranchId;
