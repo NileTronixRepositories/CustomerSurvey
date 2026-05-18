@@ -1,10 +1,6 @@
 ﻿using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
 {
@@ -17,6 +13,7 @@ namespace CustomerSurvey.Application.Features.Questions.Command.UpdateQuestion
         {
             AddCriteria(x =>
                 x.Id == groupId &&
+                x.Scope == QuestionScope.Branch &&
                 x.BranchId == branchId);
         }
     }

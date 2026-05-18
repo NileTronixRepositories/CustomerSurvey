@@ -1374,4 +1374,10 @@
   <data name="SubmitOperatorTemplateResponse_Template_Expired" xml:space="preserve">
     <value>انتهت صلاحية هذا القالب.</value>
   </data>
+  <data name="CreateQuestion_Group_NotFound" xml:space="preserve">
+    <value>مجموعة الأسئلة غير موجودة أو غير متاحة لهذا الفرع.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_Question_NotFound" xml:space="preserve">
+    <value>سؤال واحد أو أكثر غير موجود أو غير متاح لهذا القالب.</value>
+  </data>
 </root>

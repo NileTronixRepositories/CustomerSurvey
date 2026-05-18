@@ -89,7 +89,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
                 return Result<AssignQuestionsToTemplateResponse>.Fail(new Error(
                     Code: "Templates.AssignQuestions.CurrentBranchActorNotFound",
                     Message: ErrorMessage.AssignQuestionsToTemplate_CurrentBranchActor_NotFound,
-                    Type: ErrorType.Security));
+                    Type: ErrorType.NotFound));
             }
 
             var branchId = currentActor.BranchId;
@@ -108,7 +108,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
                     Type: ErrorType.NotFound));
             }
 
-            if (!template.IsActive || template.Status == TemplateStatus.Inactive)
+            if (!template.IsActive)
             {
                 return Result<AssignQuestionsToTemplateResponse>.Fail(new Error(
                     Code: "Templates.AssignQuestions.TemplateInactive",
@@ -116,7 +116,20 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
                     Type: ErrorType.Validation));
             }
 
-            var requestedQuestionIds = request.QuestionIds.ToArray();
+            var requestedQuestionIds = request.QuestionIds
+                .Distinct()
+                .ToArray();
+
+            var requestedOrderByQuestionId = request.QuestionIds
+                .Select((questionId, index) => new
+                {
+                    QuestionId = questionId,
+                    Order = index + 1
+                })
+                .GroupBy(x => x.QuestionId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.First().Order);
 
             var questions = await _questionReadRepository.ListAsync(
                 new GetQuestionsForAssignQuestionsToTemplateSpec(
@@ -127,41 +140,41 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
             if (questions.Count != requestedQuestionIds.Length)
             {
                 return Result<AssignQuestionsToTemplateResponse>.Fail(new Error(
-                    Code: "Templates.AssignQuestions.SomeQuestionsNotFoundOrInactive",
-                    Message: ErrorMessage.AssignQuestionsToTemplate_Questions_NotFoundOrInactive,
-                    Type: ErrorType.Validation));
+                    Code: "Templates.AssignQuestions.QuestionNotFound",
+                    Message: ErrorMessage.AssignQuestionsToTemplate_Question_NotFound,
+                    Type: ErrorType.NotFound));
             }
+
+            var questionsById = questions.ToDictionary(x => x.QuestionId);
 
             var existingTemplateQuestions = await _templateQuestionReadRepository.ListAsync(
                 new GetTemplateQuestionsForAssignQuestionsToTemplateSpec(template.TemplateId),
                 cancellationToken);
 
-            var requestedOrderByQuestionId = requestedQuestionIds
-                .Select((questionId, index) => new
-                {
-                    QuestionId = questionId,
-                    Order = index + 1
-                })
-                .ToDictionary(x => x.QuestionId, x => x.Order);
-
             var existingByQuestionId = existingTemplateQuestions
                 .GroupBy(x => x.QuestionId)
-                .ToDictionary(x => x.Key, x => x.First());
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.First());
 
             var removedTemplateQuestions = existingTemplateQuestions
-                .Where(x => !requestedOrderByQuestionId.ContainsKey(x.QuestionId))
+                .Where(x => !requestedQuestionIds.Contains(x.QuestionId))
                 .ToArray();
 
             await DeleteConditionsForRemovedTemplateQuestionsAsync(
-     removedTemplateQuestions,
-     cancellationToken);
+                removedTemplateQuestions,
+                cancellationToken);
 
             foreach (var removedTemplateQuestion in removedTemplateQuestions)
             {
                 _templateQuestionWriteRepository.Delete(removedTemplateQuestion);
             }
 
-            var assignedTemplateQuestionsByQuestionId = new Dictionary<Guid, TemplateQuestion>();
+            var assignedTemplateQuestionsByQuestionId = existingTemplateQuestions
+                .Where(x => requestedQuestionIds.Contains(x.QuestionId))
+                .ToDictionary(
+                    x => x.QuestionId,
+                    x => x);
 
             foreach (var item in requestedOrderByQuestionId)
             {
@@ -202,11 +215,21 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
                 Questions = assignedTemplateQuestionsByQuestionId
                     .Values
                     .OrderBy(templateQuestion => templateQuestion.Order)
-                    .Select(templateQuestion => new AssignedTemplateQuestionResponse
+                    .Select(templateQuestion =>
                     {
-                        TemplateQuestionId = templateQuestion.Id,
-                        QuestionId = templateQuestion.QuestionId,
-                        Order = templateQuestion.Order
+                        var question = questionsById[templateQuestion.QuestionId];
+
+                        return new AssignedTemplateQuestionResponse
+                        {
+                            TemplateQuestionId = templateQuestion.Id,
+                            QuestionId = templateQuestion.QuestionId,
+                            QuestionBranchId = question.BranchId,
+                            GroupId = question.GroupId,
+                            Scope = question.Scope,
+                            ScopeName = question.Scope.ToString(),
+                            IsGlobal = question.Scope == QuestionScope.Global,
+                            Order = templateQuestion.Order
+                        };
                     })
                     .ToArray()
             };

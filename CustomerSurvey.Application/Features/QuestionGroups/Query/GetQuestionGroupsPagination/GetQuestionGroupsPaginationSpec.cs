@@ -1,22 +1,20 @@
 ﻿using BuildingBlock.Domain.Enums;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupsPagination
 {
     internal sealed class GetQuestionGroupsPaginationSpec
-           : Specification<QuestionGroup, QuestionGroupPaginationItemResponse>
+        : Specification<QuestionGroup, QuestionGroupPaginationItemResponse>
     {
         public GetQuestionGroupsPaginationSpec(
             Guid branchId,
             GetQuestionGroupsPaginationQuery query)
         {
-            AddCriteria(x => x.BranchId == branchId);
+            AddCriteria(x =>
+                x.Scope == QuestionScope.Branch &&
+                x.BranchId == branchId);
 
             if (query.IsActive.HasValue)
             {
@@ -51,6 +49,14 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGr
             {
                 GroupId = x.Id,
                 BranchId = x.BranchId,
+                Scope = x.Scope,
+                ScopeName = x.Scope.ToString(),
+                IsGlobal = x.Scope == QuestionScope.Global,
+
+                // This endpoint is branch-management only.
+                // Anything returned from here is editable according to endpoint permission.
+                IsEditable = x.Scope == QuestionScope.Branch,
+
                 NameEn = x.NameEn,
                 NameAr = x.NameAr,
                 IsActive = x.IsActive,

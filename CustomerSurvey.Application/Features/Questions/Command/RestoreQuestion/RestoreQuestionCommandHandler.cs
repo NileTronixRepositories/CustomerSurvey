@@ -3,13 +3,9 @@ using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Questions.Command.RestoreQuestion
 {
@@ -81,10 +77,12 @@ namespace CustomerSurvey.Application.Features.Questions.Command.RestoreQuestion
                     Type: ErrorType.Security));
             }
 
+            var branchId = actorBranchId.Value;
+
             var question = await _questionReadRepository.FirstOrDefaultAsync(
-                new GetQuestionForRestoreQuestionSpec(
+                new GetQuestionForRestoreSpec(
                     questionId: request.QuestionId,
-                    branchId: actorBranchId.Value),
+                    branchId: branchId),
                 cancellationToken);
 
             if (question is null)
@@ -106,7 +104,7 @@ namespace CustomerSurvey.Application.Features.Questions.Command.RestoreQuestion
             var group = await _questionGroupReadRepository.FirstOrDefaultAsync(
                 new GetQuestionGroupForRestoreQuestionSpec(
                     groupId: question.GroupId,
-                    branchId: actorBranchId.Value),
+                    branchId: branchId),
                 cancellationToken);
 
             if (group is null)
@@ -136,6 +134,14 @@ namespace CustomerSurvey.Application.Features.Questions.Command.RestoreQuestion
                 QuestionId = question.Id,
                 BranchId = question.BranchId,
                 GroupId = question.GroupId,
+                GroupBranchId = group.BranchId,
+                Scope = question.Scope,
+                ScopeName = question.Scope.ToString(),
+                IsGlobal = question.Scope == QuestionScope.Global,
+
+                // This endpoint restores Branch Questions only.
+                IsEditable = question.Scope == QuestionScope.Branch,
+
                 IsActive = question.IsActive
             };
 

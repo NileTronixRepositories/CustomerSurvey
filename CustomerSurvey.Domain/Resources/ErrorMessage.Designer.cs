@@ -70,6 +70,15 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to One or more questions were not found or are not available for this template..
+        /// </summary>
+        public static string AssignQuestionsToTemplate_Question_NotFound {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToTemplate_Question_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Question is required..
         /// </summary>
         public static string AssignQuestionsToTemplate_QuestionId_Required {
@@ -1191,6 +1200,15 @@ namespace CustomerSurvey.Domain.Resources {
         public static string CreateQuestion_CurrentBranchActor_NotFound {
             get {
                 return ResourceManager.GetString("CreateQuestion_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question group was not found or is not available for this branch..
+        /// </summary>
+        public static string CreateQuestion_Group_NotFound {
+            get {
+                return ResourceManager.GetString("CreateQuestion_Group_NotFound", resourceCulture);
             }
         }
         

@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Features.QuestionGroups.Shared.Specs;
 using CustomerSurvey.Application.Features.Questions.Shared;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
@@ -90,16 +91,8 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
             {
                 return Result<CreateQuestionResponse>.Fail(new Error(
                     Code: "Questions.Create.QuestionGroupNotFound",
-                    Message: ErrorMessage.CreateQuestion_QuestionGroup_NotFound,
+                    Message: ErrorMessage.CreateQuestion_Group_NotFound,
                     Type: ErrorType.NotFound));
-            }
-
-            if (!group.IsActive)
-            {
-                return Result<CreateQuestionResponse>.Fail(new Error(
-                    Code: "Questions.Create.QuestionGroupInactive",
-                    Message: ErrorMessage.CreateQuestion_QuestionGroup_Inactive,
-                    Type: ErrorType.Validation));
             }
 
             var question = Question.Create(
@@ -112,20 +105,20 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
 
             await _questionWriteRepository.AddAsync(question, cancellationToken);
 
-            var optionResponses = Array.Empty<QuestionOptionResponse>();
+            IReadOnlyCollection<QuestionOptionResponse> optionResponses =
+                Array.Empty<QuestionOptionResponse>();
 
             if (request.Type == QuestionType.SingleChoice)
             {
                 var options = request.Options
-     .OrderBy(x => x.Order)
-     .Select(option => QuestionOption.Create(
-         questionId: question.Id,
-         textEn: option.TextEn,
-         textAr: option.TextAr,
-         order: option.Order,
-         value: option.Value,
-         createdByApplicationUserId: currentApplicationUserId))
-     .ToArray();
+                    .Select(option => QuestionOption.Create(
+                        questionId: question.Id,
+                        textEn: option.TextEn,
+                        textAr: option.TextAr,
+                        order: option.Order,
+                        value: option.Value,
+                        createdByApplicationUserId: currentApplicationUserId))
+                    .ToArray();
 
                 foreach (var option in options)
                 {
@@ -133,17 +126,17 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
                 }
 
                 optionResponses = options
-     .Select(option => new QuestionOptionResponse
-     {
-         OptionId = option.Id,
-         QuestionId = option.QuestionId,
-         TextEn = option.TextEn,
-         TextAr = option.TextAr,
-         Order = option.Order,
-         Value = option.Value,
-         IsActive = option.IsActive
-     })
-     .ToArray();
+                    .Select(option => new QuestionOptionResponse
+                    {
+                        OptionId = option.Id,
+                        QuestionId = option.QuestionId,
+                        TextEn = option.TextEn,
+                        TextAr = option.TextAr,
+                        Order = option.Order,
+                        Value = option.Value,
+                        IsActive = option.IsActive
+                    })
+                    .ToArray();
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -153,6 +146,14 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
                 QuestionId = question.Id,
                 BranchId = question.BranchId,
                 GroupId = question.GroupId,
+                GroupBranchId = group.BranchId,
+                Scope = question.Scope,
+                ScopeName = question.Scope.ToString(),
+                IsGlobal = question.Scope == QuestionScope.Global,
+
+                // This endpoint creates branch questions only.
+                IsEditable = question.Scope == QuestionScope.Branch,
+
                 TextEn = question.TextEn,
                 TextAr = question.TextAr,
                 Type = question.Type,

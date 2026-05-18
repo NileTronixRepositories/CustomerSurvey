@@ -2,20 +2,18 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Features.Questions.Shared;
+using CustomerSurvey.Application.Features.Questions.Shared.Specs;
 using CustomerSurvey.Application.Features.Templates.Shared;
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 {
     internal sealed class GetTemplateDetailsQueryHandler
-          : IQueryHandler<GetTemplateDetailsQuery, GetTemplateDetailsResponse>
+        : IQueryHandler<GetTemplateDetailsQuery, GetTemplateDetailsResponse>
     {
         private readonly IWriteReadRepository<Template> _templateReadRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
@@ -46,13 +44,14 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
             _branchUserReadRepository = branchUserReadRepository
                 ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
 
-            _currentUser = currentUser
-                ?? throw new ArgumentNullException(nameof(currentUser));
-
             _conditionReadRepository = conditionReadRepository
                 ?? throw new ArgumentNullException(nameof(conditionReadRepository));
+
             _questionOptionReadRepository = questionOptionReadRepository
-    ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
+                ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
+
+            _currentUser = currentUser
+                ?? throw new ArgumentNullException(nameof(currentUser));
         }
 
         public async Task<Result<GetTemplateDetailsResponse>> Handle(
@@ -104,25 +103,30 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 .Count();
 
             var questionConditions = await _conditionReadRepository.ListAsync(
-    new GetTemplateQuestionConditionsByTemplateIdsSpec(
-        new[] { request.TemplateId }),
-    cancellationToken);
-            var singleChoiceQuestionIds = templateQuestions
-    .Where(x => x.Type == CustomerSurvey.Domain.Enums.QuestionType.SingleChoice)
-    .Select(x => x.QuestionId)
-    .Distinct()
-    .ToArray();
+                new GetTemplateQuestionConditionsByTemplateIdsSpec(
+                    new[] { request.TemplateId }),
+                cancellationToken);
 
-            IReadOnlyCollection<CustomerSurvey.Application.Features.Questions.Shared.QuestionOptionResponse> questionOptions;
+            var validQuestionConditions = FilterValidConditions(
+                templateQuestions,
+                questionConditions);
+
+            var singleChoiceQuestionIds = templateQuestions
+                .Where(x => x.Type == QuestionType.SingleChoice)
+                .Select(x => x.QuestionId)
+                .Distinct()
+                .ToArray();
+
+            IReadOnlyCollection<QuestionOptionResponse> questionOptions;
 
             if (singleChoiceQuestionIds.Length == 0)
             {
-                questionOptions = Array.Empty<CustomerSurvey.Application.Features.Questions.Shared.QuestionOptionResponse>();
+                questionOptions = Array.Empty<QuestionOptionResponse>();
             }
             else
             {
                 questionOptions = await _questionOptionReadRepository.ListAsync(
-                    new CustomerSurvey.Application.Features.Questions.Shared.Specs.GetQuestionOptionsByQuestionIdsSpec(singleChoiceQuestionIds),
+                    new GetQuestionOptionsByQuestionIdsSpec(singleChoiceQuestionIds),
                     cancellationToken);
             }
 
@@ -154,14 +158,10 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 Description = template.Description,
                 Status = template.Status.ToString(),
                 IsActive = template.IsActive,
+                ActiveFrom = template.ActiveFrom,
+                ExpireTo = template.ExpireTo,
                 CreatedOnUtc = template.CreatedOnUtc,
                 ModifiedOnUtc = template.ModifiedOnUtc,
-                ExpireTo = template.ExpireTo,
-                ActiveFrom = template.ActiveFrom,
-                QuestionConditions = questionConditions
-    .OrderBy(x => x.Order)
-    .Select(x => x.ToResponse())
-    .ToArray(),
 
                 Summary = new TemplateDetailsSummaryResponse
                 {
@@ -170,23 +170,44 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 },
 
                 Questions = templateQuestions
+                    .OrderBy(x => x.Order)
                     .Select(x => new TemplateDetailsQuestionResponse
                     {
                         TemplateQuestionId = x.TemplateQuestionId,
                         QuestionId = x.QuestionId,
+
+                        QuestionBranchId = x.QuestionBranchId,
+                        GroupId = x.GroupId,
+                        GroupBranchId = x.GroupBranchId,
+
+                        Scope = x.Scope,
+                        ScopeName = x.Scope.ToString(),
+                        IsGlobal = x.Scope == QuestionScope.Global,
+
+                        // Branch actor can edit Branch questions only.
+                        // Global questions are readonly for Branch actors.
+                        IsEditable = x.Scope == QuestionScope.Branch,
+
                         Order = x.Order,
                         TextEn = x.TextEn,
                         TextAr = x.TextAr,
                         Type = x.Type.ToString(),
                         IsActive = x.IsActive,
-                        GroupId = x.GroupId,
                         GroupNameEn = x.GroupNameEn,
                         GroupNameAr = x.GroupNameAr,
-                        Options = x.Type == CustomerSurvey.Domain.Enums.QuestionType.SingleChoice
-          && optionsByQuestionId.TryGetValue(x.QuestionId, out var options)
-    ? options
-    : Array.Empty<TemplateDetailsQuestionOptionResponse>()
+
+                        Options = x.Type == QuestionType.SingleChoice
+                                  && optionsByQuestionId.TryGetValue(x.QuestionId, out var options)
+                            ? options
+                            : Array.Empty<TemplateDetailsQuestionOptionResponse>()
                     })
+                    .ToArray(),
+
+                QuestionConditions = validQuestionConditions
+                    .OrderBy(x => x.Order)
+                    .ThenBy(x => x.ParentTemplateQuestionId)
+                    .ThenBy(x => x.ChildTemplateQuestionId)
+                    .Select(x => x.ToResponse())
                     .ToArray()
             };
 
@@ -219,6 +240,29 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 Code: "Templates.Details.CurrentBranchActorNotFound",
                 Message: ErrorMessage.GetTemplateDetails_CurrentBranchActor_NotFound,
                 Type: ErrorType.Security));
+        }
+
+        private static TemplateQuestionConditionForReadDto[] FilterValidConditions(
+            IReadOnlyCollection<TemplateQuestionForTemplateDetailsDto> templateQuestions,
+            IReadOnlyCollection<TemplateQuestionConditionForReadDto> conditions)
+        {
+            if (templateQuestions.Count == 0 || conditions.Count == 0)
+            {
+                return Array.Empty<TemplateQuestionConditionForReadDto>();
+            }
+
+            var selectedTemplateQuestionIds = templateQuestions
+                .Select(x => x.TemplateQuestionId)
+                .ToHashSet();
+
+            return conditions
+                .Where(condition =>
+                    selectedTemplateQuestionIds.Contains(condition.ParentTemplateQuestionId) &&
+                    selectedTemplateQuestionIds.Contains(condition.ChildTemplateQuestionId))
+                .OrderBy(condition => condition.Order)
+                .ThenBy(condition => condition.ParentTemplateQuestionId)
+                .ThenBy(condition => condition.ChildTemplateQuestionId)
+                .ToArray();
         }
     }
 }

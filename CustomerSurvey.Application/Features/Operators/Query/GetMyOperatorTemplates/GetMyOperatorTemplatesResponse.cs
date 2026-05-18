@@ -1,4 +1,5 @@
 ﻿using CustomerSurvey.Application.Features.Templates.Shared;
+using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTemplates
 {
@@ -35,6 +36,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public int QuestionsCount { get; init; }
 
         public bool HasAnswered { get; init; }
+
         public DateTime ActiveFrom { get; init; }
 
         public DateTime? ExpireTo { get; init; }
@@ -54,6 +56,18 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public Guid QuestionId { get; init; }
 
+        public Guid? QuestionBranchId { get; init; }
+
+        public Guid GroupId { get; init; }
+
+        public Guid? GroupBranchId { get; init; }
+
+        public QuestionScope Scope { get; init; }
+
+        public string ScopeName { get; init; } = string.Empty;
+
+        public bool IsGlobal { get; init; }
+
         public int Order { get; init; }
 
         public string TextEn { get; init; } = string.Empty;
@@ -61,8 +75,6 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public string? TextAr { get; init; }
 
         public string Type { get; init; } = string.Empty;
-
-        public Guid GroupId { get; init; }
 
         public string GroupNameEn { get; init; } = string.Empty;
 
@@ -81,6 +93,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public string? TextAr { get; init; }
 
         public int Order { get; init; }
+
         public int Value { get; init; }
     }
 
@@ -91,6 +104,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public DateTime SubmittedOnUtc { get; init; }
 
         public int AnswersCount { get; init; }
+
         public MyOperatorTemplateLatestScoreResponse Score { get; init; } = new();
 
         public IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse> Answers { get; init; }

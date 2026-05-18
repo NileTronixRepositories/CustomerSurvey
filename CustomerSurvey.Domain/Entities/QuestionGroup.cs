@@ -1,4 +1,5 @@
 ﻿using BuildingBlock.Domain.EntitiesHelper;
+using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Domain.Entities
 {
@@ -6,8 +7,10 @@ namespace CustomerSurvey.Domain.Entities
     {
         private readonly List<Question> _questions = new();
 
-        public Guid BranchId { get; private set; }
-        public Branch Branch { get; private set; } = null!;
+        public Guid? BranchId { get; private set; }
+        public Branch? Branch { get; private set; }
+
+        public QuestionScope Scope { get; private set; }
 
         public string NameEn { get; private set; } = string.Empty;
         public string? NameAr { get; private set; }
@@ -18,6 +21,10 @@ namespace CustomerSurvey.Domain.Entities
 
         public IReadOnlyCollection<Question> Questions => _questions.AsReadOnly();
 
+        public bool IsGlobal => Scope == QuestionScope.Global;
+
+        public bool IsBranchScoped => Scope == QuestionScope.Branch;
+
         private QuestionGroup()
         {
         }
@@ -27,6 +34,8 @@ namespace CustomerSurvey.Domain.Entities
         {
         }
 
+        // Old endpoint compatible factory.
+        // Existing POST /api/question-groups will keep using this.
         public static QuestionGroup Create(
             Guid branchId,
             string nameEn,
@@ -36,6 +45,25 @@ namespace CustomerSurvey.Domain.Entities
             return new QuestionGroup(Guid.NewGuid())
             {
                 BranchId = branchId,
+                Scope = QuestionScope.Branch,
+                NameEn = nameEn.Trim(),
+                NameAr = string.IsNullOrWhiteSpace(nameAr) ? null : nameAr.Trim(),
+                IsActive = true,
+                CreatedByApplicationUserId = createdByApplicationUserId
+            };
+        }
+
+        // Future SuperAdmin Global Question Group factory.
+        // No endpoint will use it now until we explicitly start Global endpoints.
+        public static QuestionGroup CreateGlobal(
+            string nameEn,
+            string? nameAr,
+            Guid createdByApplicationUserId)
+        {
+            return new QuestionGroup(Guid.NewGuid())
+            {
+                BranchId = null,
+                Scope = QuestionScope.Global,
                 NameEn = nameEn.Trim(),
                 NameAr = string.IsNullOrWhiteSpace(nameAr) ? null : nameAr.Trim(),
                 IsActive = true,

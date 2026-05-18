@@ -1,11 +1,6 @@
 ﻿using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestionsSelection
 {
@@ -13,7 +8,11 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
     {
         public Guid QuestionId { get; init; }
 
+        public Guid? BranchId { get; init; }
+
         public Guid GroupId { get; init; }
+
+        public QuestionScope Scope { get; init; }
 
         public string TextEn { get; init; } = string.Empty;
 
@@ -28,15 +27,21 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
         public GetQuestionsForTemplateQuestionsSelectionSpec(Guid branchId)
         {
             AddCriteria(x =>
-                x.BranchId == branchId &&
-                x.IsActive);
+                x.IsActive &&
+                x.Group.IsActive &&
+                (
+                    (x.Scope == QuestionScope.Branch && x.BranchId == branchId) ||
+                    (x.Scope == QuestionScope.Global && x.BranchId == null)
+                ));
 
             AddOrderBy(x => x.TextEn);
 
             Select(x => new QuestionForTemplateQuestionsSelectionDto
             {
                 QuestionId = x.Id,
+                BranchId = x.BranchId,
                 GroupId = x.GroupId,
+                Scope = x.Scope,
                 TextEn = x.TextEn,
                 TextAr = x.TextAr,
                 Type = x.Type

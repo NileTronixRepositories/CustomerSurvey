@@ -1374,4 +1374,10 @@
   <data name="SubmitOperatorTemplateResponse_Template_Expired" xml:space="preserve">
     <value>This template has expired.</value>
   </data>
+  <data name="CreateQuestion_Group_NotFound" xml:space="preserve">
+    <value>Question group was not found or is not available for this branch.</value>
+  </data>
+  <data name="AssignQuestionsToTemplate_Question_NotFound" xml:space="preserve">
+    <value>One or more questions were not found or are not available for this template.</value>
+  </data>
 </root>

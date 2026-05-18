@@ -1,15 +1,10 @@
 ﻿using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOperatorTemplateResponse
 {
     internal sealed class GetTemplateQuestionsForSubmitResponseSpec
-      : Specification<TemplateQuestion, TemplateQuestionForSubmitResponseDto>
+        : Specification<TemplateQuestion, TemplateQuestionForSubmitResponseDto>
     {
         public GetTemplateQuestionsForSubmitResponseSpec(Guid templateId)
         {
@@ -23,9 +18,16 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             Select(x => new TemplateQuestionForSubmitResponseDto
             {
                 TemplateQuestionId = x.Id,
+                TemplateId = x.TemplateId,
                 QuestionId = x.QuestionId,
-                Type = x.Question.Type,
-                Order = x.Order
+
+                QuestionBranchId = x.Question.BranchId,
+                GroupId = x.Question.GroupId,
+                GroupBranchId = x.Question.Group.BranchId,
+                Scope = x.Question.Scope,
+
+                Order = x.Order,
+                Type = x.Question.Type
             });
         }
     }

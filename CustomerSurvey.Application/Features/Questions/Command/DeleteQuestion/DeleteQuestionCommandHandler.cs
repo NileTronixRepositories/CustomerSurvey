@@ -3,18 +3,14 @@ using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Questions.Command.DeleteQuestion
 {
     internal sealed class DeleteQuestionCommandHandler
-         : ICommandHandler<DeleteQuestionCommand, DeleteQuestionResponse>
+        : ICommandHandler<DeleteQuestionCommand, DeleteQuestionResponse>
     {
         private readonly IWriteReadRepository<Question> _questionReadRepository;
         private readonly IWriteRepository<Question> _questionWriteRepository;
@@ -111,6 +107,13 @@ namespace CustomerSurvey.Application.Features.Questions.Command.DeleteQuestion
                 QuestionId = question.Id,
                 BranchId = question.BranchId,
                 GroupId = question.GroupId,
+                Scope = question.Scope,
+                ScopeName = question.Scope.ToString(),
+                IsGlobal = question.Scope == QuestionScope.Global,
+
+                // This endpoint deletes Branch Questions only.
+                IsEditable = question.Scope == QuestionScope.Branch,
+
                 IsActive = question.IsActive
             };
 

@@ -1,10 +1,5 @@
 ﻿using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 {
@@ -22,12 +17,15 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 TemplateQuestionId = x.Id,
                 TemplateId = x.TemplateId,
                 QuestionId = x.QuestionId,
+                QuestionBranchId = x.Question.BranchId,
+                GroupId = x.Question.GroupId,
+                GroupBranchId = x.Question.Group.BranchId,
+                Scope = x.Question.Scope,
                 Order = x.Order,
                 TextEn = x.Question.TextEn,
                 TextAr = x.Question.TextAr,
                 Type = x.Question.Type,
                 IsActive = x.Question.IsActive,
-                GroupId = x.Question.GroupId,
                 GroupNameEn = x.Question.Group.NameEn,
                 GroupNameAr = x.Question.Group.NameAr
             });
