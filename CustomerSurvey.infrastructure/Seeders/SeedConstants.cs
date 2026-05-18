@@ -68,6 +68,7 @@ internal static class SeedConstants
         public const string TemplatesViewDetails = "Templates.ViewDetails";
         public const string TemplatesViewSelection = "Templates.ViewSelection";
         public const string TemplatesAssignQuestions = "Templates.AssignQuestions";
+        public const string TemplatesManageQuestionConditions = "Templates.ManageQuestionConditions";
 
         public const string QuestionGroupsCreate = "QuestionGroups.Create";
         public const string QuestionGroupsUpdate = "QuestionGroups.Update";
@@ -89,8 +90,17 @@ internal static class SeedConstants
 
         public const string ReportsViewBranchReports = "Reports.ViewBranchReports";
 
-        public const string TemplatesManageQuestionConditions =
-    "Templates.ManageQuestionConditions";
+        public const string GlobalQuestionGroupsCreate = "GlobalQuestionGroups.Create";
+        public const string GlobalQuestionGroupsUpdate = "GlobalQuestionGroups.Update";
+        public const string GlobalQuestionGroupsDelete = "GlobalQuestionGroups.Delete";
+        public const string GlobalQuestionGroupsViewAll = "GlobalQuestionGroups.ViewAll";
+        public const string GlobalQuestionGroupsRestore = "GlobalQuestionGroups.Restore";
+
+        public const string GlobalQuestionsCreate = "GlobalQuestions.Create";
+        public const string GlobalQuestionsUpdate = "GlobalQuestions.Update";
+        public const string GlobalQuestionsDelete = "GlobalQuestions.Delete";
+        public const string GlobalQuestionsViewAll = "GlobalQuestions.ViewAll";
+        public const string GlobalQuestionsRestore = "GlobalQuestions.Restore";
     }
 
     public static class SeedIds
@@ -248,7 +258,37 @@ internal static class SeedConstants
                 Guid.Parse("12000000-0000-0000-0000-000000000042");
 
             public static readonly Guid TemplatesManageQuestionConditions =
-    Guid.Parse("12000000-0000-0000-0000-000000000043");
+                Guid.Parse("12000000-0000-0000-0000-000000000043");
+
+            public static readonly Guid GlobalQuestionGroupsCreate =
+                Guid.Parse("12000000-0000-0000-0000-000000000050");
+
+            public static readonly Guid GlobalQuestionGroupsUpdate =
+                Guid.Parse("12000000-0000-0000-0000-000000000051");
+
+            public static readonly Guid GlobalQuestionGroupsDelete =
+                Guid.Parse("12000000-0000-0000-0000-000000000052");
+
+            public static readonly Guid GlobalQuestionGroupsViewAll =
+                Guid.Parse("12000000-0000-0000-0000-000000000053");
+
+            public static readonly Guid GlobalQuestionGroupsRestore =
+                Guid.Parse("12000000-0000-0000-0000-000000000054");
+
+            public static readonly Guid GlobalQuestionsCreate =
+                Guid.Parse("12000000-0000-0000-0000-000000000055");
+
+            public static readonly Guid GlobalQuestionsUpdate =
+                Guid.Parse("12000000-0000-0000-0000-000000000056");
+
+            public static readonly Guid GlobalQuestionsDelete =
+                Guid.Parse("12000000-0000-0000-0000-000000000057");
+
+            public static readonly Guid GlobalQuestionsViewAll =
+                Guid.Parse("12000000-0000-0000-0000-000000000058");
+
+            public static readonly Guid GlobalQuestionsRestore =
+                Guid.Parse("12000000-0000-0000-0000-000000000059");
         }
     }
 
@@ -306,6 +346,7 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.TemplatesViewDetails, PermissionNames.TemplatesViewDetails),
             new PermissionSeedItem(SeedIds.Permissions.TemplatesViewSelection, PermissionNames.TemplatesViewSelection),
             new PermissionSeedItem(SeedIds.Permissions.TemplatesAssignQuestions, PermissionNames.TemplatesAssignQuestions),
+            new PermissionSeedItem(SeedIds.Permissions.TemplatesManageQuestionConditions, PermissionNames.TemplatesManageQuestionConditions),
 
             new PermissionSeedItem(SeedIds.Permissions.QuestionGroupsCreate, PermissionNames.QuestionGroupsCreate),
             new PermissionSeedItem(SeedIds.Permissions.QuestionGroupsUpdate, PermissionNames.QuestionGroupsUpdate),
@@ -325,10 +366,19 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.OperatorTemplatesViewMine, PermissionNames.OperatorTemplatesViewMine),
             new PermissionSeedItem(SeedIds.Permissions.OperatorTemplatesSubmitResponse, PermissionNames.OperatorTemplatesSubmitResponse),
 
-            new PermissionSeedItem(SeedIds.Permissions.ReportsViewBranchReports, PermissionNames.ReportsViewBranchReports) ,
-            new PermissionSeedItem(
-    SeedIds.Permissions.TemplatesManageQuestionConditions,
-    PermissionNames.TemplatesManageQuestionConditions),
+            new PermissionSeedItem(SeedIds.Permissions.ReportsViewBranchReports, PermissionNames.ReportsViewBranchReports),
+
+            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionGroupsCreate, PermissionNames.GlobalQuestionGroupsCreate),
+            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionGroupsUpdate, PermissionNames.GlobalQuestionGroupsUpdate),
+            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionGroupsDelete, PermissionNames.GlobalQuestionGroupsDelete),
+            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionGroupsViewAll, PermissionNames.GlobalQuestionGroupsViewAll),
+            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionGroupsRestore, PermissionNames.GlobalQuestionGroupsRestore),
+
+            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionsCreate, PermissionNames.GlobalQuestionsCreate),
+            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionsUpdate, PermissionNames.GlobalQuestionsUpdate),
+            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionsDelete, PermissionNames.GlobalQuestionsDelete),
+            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionsViewAll, PermissionNames.GlobalQuestionsViewAll),
+            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionsRestore, PermissionNames.GlobalQuestionsRestore)
         ];
 
         public static readonly IReadOnlyCollection<RolePermissionSeedItem> RolePermissions =
@@ -385,6 +435,7 @@ internal static class SeedConstants
                 SeedIds.Permissions.TemplatesViewDetails,
                 SeedIds.Permissions.TemplatesViewSelection,
                 SeedIds.Permissions.TemplatesAssignQuestions,
+                SeedIds.Permissions.TemplatesManageQuestionConditions,
 
                 SeedIds.Permissions.QuestionGroupsCreate,
                 SeedIds.Permissions.QuestionGroupsUpdate,
@@ -396,8 +447,7 @@ internal static class SeedConstants
                 SeedIds.Permissions.QuestionsDelete,
                 SeedIds.Permissions.QuestionsViewAll,
 
-                SeedIds.Permissions.ReportsViewBranchReports ,
-                SeedIds.Permissions.TemplatesManageQuestionConditions,
+                SeedIds.Permissions.ReportsViewBranchReports
             ];
 
             foreach (var permissionId in permissionIds)
@@ -437,8 +487,8 @@ internal static class SeedConstants
                 SeedIds.Permissions.TemplatesViewAll,
                 SeedIds.Permissions.TemplatesViewDetails,
                 SeedIds.Permissions.TemplatesViewSelection,
-                SeedIds.Permissions.TemplatesAssignQuestions ,
-                SeedIds.Permissions.TemplatesManageQuestionConditions,
+                SeedIds.Permissions.TemplatesAssignQuestions,
+                SeedIds.Permissions.TemplatesManageQuestionConditions
             ];
 
             foreach (var permissionId in permissionIds)

@@ -1006,6 +1006,177 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string CreateGlobalQuestion_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group was not found or is inactive..
+        /// </summary>
+        public static string CreateGlobalQuestion_Group_NotFound {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_Group_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group id is required..
+        /// </summary>
+        public static string CreateGlobalQuestion_GroupId_Required {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option order is invalid..
+        /// </summary>
+        public static string CreateGlobalQuestion_Option_Order_Invalid {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_Option_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option Arabic text must not exceed 500 characters..
+        /// </summary>
+        public static string CreateGlobalQuestion_Option_TextAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_Option_TextAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text must not exceed 500 characters..
+        /// </summary>
+        public static string CreateGlobalQuestion_Option_TextEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_Option_TextEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text is required..
+        /// </summary>
+        public static string CreateGlobalQuestion_Option_TextEn_Required {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_Option_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option value must be between 1 and 5..
+        /// </summary>
+        public static string CreateGlobalQuestion_Option_Value_Invalid {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_Option_Value_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options are not allowed for this global question type..
+        /// </summary>
+        public static string CreateGlobalQuestion_Options_NotAllowed {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_Options_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options are required for this global question type..
+        /// </summary>
+        public static string CreateGlobalQuestion_Options_Required {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_Options_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question Arabic text must not exceed 1000 characters..
+        /// </summary>
+        public static string CreateGlobalQuestion_TextAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_TextAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question English text must not exceed 1000 characters..
+        /// </summary>
+        public static string CreateGlobalQuestion_TextEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_TextEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question English text is required..
+        /// </summary>
+        public static string CreateGlobalQuestion_TextEn_Required {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question type is invalid..
+        /// </summary>
+        public static string CreateGlobalQuestion_Type_Invalid {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestion_Type_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string CreateGlobalQuestionGroup_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestionGroup_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateGlobalQuestionGroup_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestionGroup_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A global question group with the same name already exists..
+        /// </summary>
+        public static string CreateGlobalQuestionGroup_NameEn_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestionGroup_NameEn_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group English name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateGlobalQuestionGroup_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestionGroup_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group English name is required..
+        /// </summary>
+        public static string CreateGlobalQuestionGroup_NameEn_Required {
+            get {
+                return ResourceManager.GetString("CreateGlobalQuestionGroup_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current actor is ambiguous in the system..
         /// </summary>
         public static string CreateOperator_Actor_Ambiguous {
@@ -1564,6 +1735,87 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string DeleteGlobalQuestion_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteGlobalQuestion_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question is already inactive..
+        /// </summary>
+        public static string DeleteGlobalQuestion_Question_AlreadyInactive {
+            get {
+                return ResourceManager.GetString("DeleteGlobalQuestion_Question_AlreadyInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question was not found..
+        /// </summary>
+        public static string DeleteGlobalQuestion_Question_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteGlobalQuestion_Question_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question id is required..
+        /// </summary>
+        public static string DeleteGlobalQuestion_QuestionId_Required {
+            get {
+                return ResourceManager.GetString("DeleteGlobalQuestion_QuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string DeleteGlobalQuestionGroup_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteGlobalQuestionGroup_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group id is required..
+        /// </summary>
+        public static string DeleteGlobalQuestionGroup_GroupId_Required {
+            get {
+                return ResourceManager.GetString("DeleteGlobalQuestionGroup_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group is already inactive..
+        /// </summary>
+        public static string DeleteGlobalQuestionGroup_QuestionGroup_AlreadyInactive {
+            get {
+                return ResourceManager.GetString("DeleteGlobalQuestionGroup_QuestionGroup_AlreadyInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group cannot be deleted because it contains questions..
+        /// </summary>
+        public static string DeleteGlobalQuestionGroup_QuestionGroup_HasQuestions {
+            get {
+                return ResourceManager.GetString("DeleteGlobalQuestionGroup_QuestionGroup_HasQuestions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group was not found..
+        /// </summary>
+        public static string DeleteGlobalQuestionGroup_QuestionGroup_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteGlobalQuestionGroup_QuestionGroup_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DeleteQuestion_CurrentBranchActor_NotFound.
         /// </summary>
         public static string DeleteQuestion_CurrentBranchActor_NotFound {
@@ -1893,6 +2145,114 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetDepartmentsSelection_CurrentSuperAdmin_NotFound {
             get {
                 return ResourceManager.GetString("GetDepartmentsSelection_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string GetGlobalQuestionDetails_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionDetails_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question was not found..
+        /// </summary>
+        public static string GetGlobalQuestionDetails_Question_NotFound {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionDetails_Question_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question id is required..
+        /// </summary>
+        public static string GetGlobalQuestionDetails_QuestionId_Required {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionDetails_QuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string GetGlobalQuestionGroupsPagination_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionGroupsPagination_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number is invalid..
+        /// </summary>
+        public static string GetGlobalQuestionGroupsPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionGroupsPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size is invalid..
+        /// </summary>
+        public static string GetGlobalQuestionGroupsPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionGroupsPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must not exceed 100..
+        /// </summary>
+        public static string GetGlobalQuestionGroupsPagination_PageSize_Max {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionGroupsPagination_PageSize_Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string GetGlobalQuestionGroupsSelection_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionGroupsSelection_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string GetGlobalQuestionsPagination_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionsPagination_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number is invalid..
+        /// </summary>
+        public static string GetGlobalQuestionsPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionsPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size is invalid..
+        /// </summary>
+        public static string GetGlobalQuestionsPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionsPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must not exceed 100..
+        /// </summary>
+        public static string GetGlobalQuestionsPagination_PageSize_Max {
+            get {
+                return ResourceManager.GetString("GetGlobalQuestionsPagination_PageSize_Max", resourceCulture);
             }
         }
         
@@ -2662,6 +3022,96 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string RestoreGlobalQuestion_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreGlobalQuestion_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question is already active..
+        /// </summary>
+        public static string RestoreGlobalQuestion_Question_AlreadyActive {
+            get {
+                return ResourceManager.GetString("RestoreGlobalQuestion_Question_AlreadyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question was not found..
+        /// </summary>
+        public static string RestoreGlobalQuestion_Question_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreGlobalQuestion_Question_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question cannot be restored because its group is inactive..
+        /// </summary>
+        public static string RestoreGlobalQuestion_QuestionGroup_Inactive {
+            get {
+                return ResourceManager.GetString("RestoreGlobalQuestion_QuestionGroup_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group was not found..
+        /// </summary>
+        public static string RestoreGlobalQuestion_QuestionGroup_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreGlobalQuestion_QuestionGroup_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question id is required..
+        /// </summary>
+        public static string RestoreGlobalQuestion_QuestionId_Required {
+            get {
+                return ResourceManager.GetString("RestoreGlobalQuestion_QuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string RestoreGlobalQuestionGroup_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreGlobalQuestionGroup_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group id is required..
+        /// </summary>
+        public static string RestoreGlobalQuestionGroup_GroupId_Required {
+            get {
+                return ResourceManager.GetString("RestoreGlobalQuestionGroup_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group is already active..
+        /// </summary>
+        public static string RestoreGlobalQuestionGroup_QuestionGroup_AlreadyActive {
+            get {
+                return ResourceManager.GetString("RestoreGlobalQuestionGroup_QuestionGroup_AlreadyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group was not found..
+        /// </summary>
+        public static string RestoreGlobalQuestionGroup_QuestionGroup_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreGlobalQuestionGroup_QuestionGroup_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current branch actor profile was not found..
         /// </summary>
         public static string RestoreQuestion_CurrentBranchActor_NotFound {
@@ -3360,6 +3810,249 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateDepartment_NameEn_Required {
             get {
                 return ResourceManager.GetString("UpdateDepartment_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string UpdateGlobalQuestion_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group id is required..
+        /// </summary>
+        public static string UpdateGlobalQuestion_GroupId_Required {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the options does not belong to this global question..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Option_NotBelongToQuestion {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Option_NotBelongToQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option order is invalid..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Option_Order_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Option_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option Arabic text must not exceed 500 characters..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Option_TextAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Option_TextAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text must not exceed 500 characters..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Option_TextEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Option_TextEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option English text is required..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Option_TextEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Option_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot remove or deactivate an option used in a condition..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Option_UsedInCondition {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Option_UsedInCondition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option value must be between 1 and 5..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Option_Value_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Option_Value_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option id cannot be duplicated in the same request..
+        /// </summary>
+        public static string UpdateGlobalQuestion_OptionId_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_OptionId_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options are not allowed for this global question type..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Options_NotAllowed {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Options_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options are required for this global question type..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Options_Required {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Options_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question was not found..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Question_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Question_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group was not found or is inactive..
+        /// </summary>
+        public static string UpdateGlobalQuestion_QuestionGroup_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_QuestionGroup_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question id is required..
+        /// </summary>
+        public static string UpdateGlobalQuestion_QuestionId_Required {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_QuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question Arabic text must not exceed 1000 characters..
+        /// </summary>
+        public static string UpdateGlobalQuestion_TextAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_TextAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question English text must not exceed 1000 characters..
+        /// </summary>
+        public static string UpdateGlobalQuestion_TextEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_TextEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question English text is required..
+        /// </summary>
+        public static string UpdateGlobalQuestion_TextEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_TextEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question type cannot be changed after being assigned to a template..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Type_CannotChangeAfterTemplateAssignment {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Type_CannotChangeAfterTemplateAssignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question type is invalid..
+        /// </summary>
+        public static string UpdateGlobalQuestion_Type_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestion_Type_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not a Super Admin or was not found..
+        /// </summary>
+        public static string UpdateGlobalQuestionGroup_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestionGroup_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group id is required..
+        /// </summary>
+        public static string UpdateGlobalQuestionGroup_GroupId_Required {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestionGroup_GroupId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateGlobalQuestionGroup_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestionGroup_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A global question group with the same name already exists..
+        /// </summary>
+        public static string UpdateGlobalQuestionGroup_NameEn_AlreadyExists {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestionGroup_NameEn_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group English name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateGlobalQuestionGroup_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestionGroup_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group English name is required..
+        /// </summary>
+        public static string UpdateGlobalQuestionGroup_NameEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestionGroup_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global question group was not found..
+        /// </summary>
+        public static string UpdateGlobalQuestionGroup_QuestionGroup_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateGlobalQuestionGroup_QuestionGroup_NotFound", resourceCulture);
             }
         }
         

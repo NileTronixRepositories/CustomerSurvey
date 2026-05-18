@@ -1380,4 +1380,235 @@
   <data name="AssignQuestionsToTemplate_Question_NotFound" xml:space="preserve">
     <value>One or more questions were not found or are not available for this template.</value>
   </data>
+  <data name="CreateGlobalQuestionGroup_NameEn_Required" xml:space="preserve">
+    <value>Global question group English name is required.</value>
+  </data>
+  <data name="CreateGlobalQuestionGroup_NameEn_MaxLength" xml:space="preserve">
+    <value>Global question group English name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateGlobalQuestionGroup_NameAr_MaxLength" xml:space="preserve">
+    <value>Global question group Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateGlobalQuestionGroup_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="CreateGlobalQuestionGroup_NameEn_AlreadyExists" xml:space="preserve">
+    <value>A global question group with the same name already exists.</value>
+  </data>
+  <data name="GetGlobalQuestionGroupsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number is invalid.</value>
+  </data>
+  <data name="GetGlobalQuestionGroupsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>Page size is invalid.</value>
+  </data>
+  <data name="GetGlobalQuestionGroupsPagination_PageSize_Max" xml:space="preserve">
+    <value>Page size must not exceed 100.</value>
+  </data>
+  <data name="GetGlobalQuestionGroupsPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_GroupId_Required" xml:space="preserve">
+    <value>Global question group id is required.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_NameEn_Required" xml:space="preserve">
+    <value>Global question group English name is required.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_NameEn_MaxLength" xml:space="preserve">
+    <value>Global question group English name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_NameAr_MaxLength" xml:space="preserve">
+    <value>Global question group Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_QuestionGroup_NotFound" xml:space="preserve">
+    <value>Global question group was not found.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_NameEn_AlreadyExists" xml:space="preserve">
+    <value>A global question group with the same name already exists.</value>
+  </data>
+  <data name="DeleteGlobalQuestionGroup_GroupId_Required" xml:space="preserve">
+    <value>Global question group id is required.</value>
+  </data>
+  <data name="DeleteGlobalQuestionGroup_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="DeleteGlobalQuestionGroup_QuestionGroup_NotFound" xml:space="preserve">
+    <value>Global question group was not found.</value>
+  </data>
+  <data name="DeleteGlobalQuestionGroup_QuestionGroup_AlreadyInactive" xml:space="preserve">
+    <value>Global question group is already inactive.</value>
+  </data>
+  <data name="DeleteGlobalQuestionGroup_QuestionGroup_HasQuestions" xml:space="preserve">
+    <value>Global question group cannot be deleted because it contains questions.</value>
+  </data>
+  <data name="RestoreGlobalQuestionGroup_GroupId_Required" xml:space="preserve">
+    <value>Global question group id is required.</value>
+  </data>
+  <data name="RestoreGlobalQuestionGroup_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="RestoreGlobalQuestionGroup_QuestionGroup_NotFound" xml:space="preserve">
+    <value>Global question group was not found.</value>
+  </data>
+  <data name="RestoreGlobalQuestionGroup_QuestionGroup_AlreadyActive" xml:space="preserve">
+    <value>Global question group is already active.</value>
+  </data>
+  <data name="CreateGlobalQuestion_GroupId_Required" xml:space="preserve">
+    <value>Global question group id is required.</value>
+  </data>
+  <data name="CreateGlobalQuestion_TextEn_Required" xml:space="preserve">
+    <value>Global question English text is required.</value>
+  </data>
+  <data name="CreateGlobalQuestion_TextEn_MaxLength" xml:space="preserve">
+    <value>Global question English text must not exceed 1000 characters.</value>
+  </data>
+  <data name="CreateGlobalQuestion_TextAr_MaxLength" xml:space="preserve">
+    <value>Global question Arabic text must not exceed 1000 characters.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Type_Invalid" xml:space="preserve">
+    <value>Global question type is invalid.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Options_Required" xml:space="preserve">
+    <value>Options are required for this global question type.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Options_NotAllowed" xml:space="preserve">
+    <value>Options are not allowed for this global question type.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Option_TextEn_Required" xml:space="preserve">
+    <value>Option English text is required.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Option_TextEn_MaxLength" xml:space="preserve">
+    <value>Option English text must not exceed 500 characters.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Option_TextAr_MaxLength" xml:space="preserve">
+    <value>Option Arabic text must not exceed 500 characters.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Option_Order_Invalid" xml:space="preserve">
+    <value>Option order is invalid.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Option_Value_Invalid" xml:space="preserve">
+    <value>Option value must be between 1 and 5.</value>
+  </data>
+  <data name="CreateGlobalQuestion_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Group_NotFound" xml:space="preserve">
+    <value>Global question group was not found or is inactive.</value>
+  </data>
+  <data name="GetGlobalQuestionsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number is invalid.</value>
+  </data>
+  <data name="GetGlobalQuestionsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>Page size is invalid.</value>
+  </data>
+  <data name="GetGlobalQuestionsPagination_PageSize_Max" xml:space="preserve">
+    <value>Page size must not exceed 100.</value>
+  </data>
+  <data name="GetGlobalQuestionsPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_QuestionId_Required" xml:space="preserve">
+    <value>Global question id is required.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_GroupId_Required" xml:space="preserve">
+    <value>Global question group id is required.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_TextEn_Required" xml:space="preserve">
+    <value>Global question English text is required.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_TextEn_MaxLength" xml:space="preserve">
+    <value>Global question English text must not exceed 1000 characters.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_TextAr_MaxLength" xml:space="preserve">
+    <value>Global question Arabic text must not exceed 1000 characters.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Type_Invalid" xml:space="preserve">
+    <value>Global question type is invalid.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Options_Required" xml:space="preserve">
+    <value>Options are required for this global question type.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Options_NotAllowed" xml:space="preserve">
+    <value>Options are not allowed for this global question type.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_TextEn_Required" xml:space="preserve">
+    <value>Option English text is required.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_TextEn_MaxLength" xml:space="preserve">
+    <value>Option English text must not exceed 500 characters.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_Order_Invalid" xml:space="preserve">
+    <value>Option order is invalid.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_Value_Invalid" xml:space="preserve">
+    <value>Option value must be between 1 and 5.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Question_NotFound" xml:space="preserve">
+    <value>Global question was not found.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_TextAr_MaxLength" xml:space="preserve">
+    <value>Option Arabic text must not exceed 500 characters.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_QuestionGroup_NotFound" xml:space="preserve">
+    <value>Global question group was not found or is inactive.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Type_CannotChangeAfterTemplateAssignment" xml:space="preserve">
+    <value>Global question type cannot be changed after being assigned to a template.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_OptionId_Duplicated" xml:space="preserve">
+    <value>Option id cannot be duplicated in the same request.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_NotBelongToQuestion" xml:space="preserve">
+    <value>One of the options does not belong to this global question.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_UsedInCondition" xml:space="preserve">
+    <value>Cannot remove or deactivate an option used in a condition.</value>
+  </data>
+  <data name="DeleteGlobalQuestion_QuestionId_Required" xml:space="preserve">
+    <value>Global question id is required.</value>
+  </data>
+  <data name="DeleteGlobalQuestion_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="DeleteGlobalQuestion_Question_NotFound" xml:space="preserve">
+    <value>Global question was not found.</value>
+  </data>
+  <data name="DeleteGlobalQuestion_Question_AlreadyInactive" xml:space="preserve">
+    <value>Global question is already inactive.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_QuestionId_Required" xml:space="preserve">
+    <value>Global question id is required.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_Question_NotFound" xml:space="preserve">
+    <value>Global question was not found.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_Question_AlreadyActive" xml:space="preserve">
+    <value>Global question is already active.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_QuestionGroup_NotFound" xml:space="preserve">
+    <value>Global question group was not found.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_QuestionGroup_Inactive" xml:space="preserve">
+    <value>Global question cannot be restored because its group is inactive.</value>
+  </data>
+  <data name="GetGlobalQuestionGroupsSelection_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="GetGlobalQuestionDetails_QuestionId_Required" xml:space="preserve">
+    <value>Global question id is required.</value>
+  </data>
+  <data name="GetGlobalQuestionDetails_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current user is not a Super Admin or was not found.</value>
+  </data>
+  <data name="GetGlobalQuestionDetails_Question_NotFound" xml:space="preserve">
+    <value>Global question was not found.</value>
+  </data>
 </root>

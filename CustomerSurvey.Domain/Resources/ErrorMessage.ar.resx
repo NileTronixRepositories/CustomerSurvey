@@ -1380,4 +1380,235 @@
   <data name="AssignQuestionsToTemplate_Question_NotFound" xml:space="preserve">
     <value>سؤال واحد أو أكثر غير موجود أو غير متاح لهذا القالب.</value>
   </data>
+  <data name="CreateGlobalQuestionGroup_NameEn_Required" xml:space="preserve">
+    <value>اسم مجموعة الأسئلة العامة باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="CreateGlobalQuestionGroup_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم مجموعة الأسئلة العامة باللغة الإنجليزية يجب ألا يتجاوز 200 حرف.</value>
+  </data>
+  <data name="CreateGlobalQuestionGroup_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم مجموعة الأسئلة العامة باللغة العربية يجب ألا يتجاوز 200 حرف.</value>
+  </data>
+  <data name="CreateGlobalQuestionGroup_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="CreateGlobalQuestionGroup_NameEn_AlreadyExists" xml:space="preserve">
+    <value>توجد مجموعة أسئلة عامة بنفس الاسم بالفعل.</value>
+  </data>
+  <data name="GetGlobalQuestionGroupsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة غير صحيح.</value>
+  </data>
+  <data name="GetGlobalQuestionGroupsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة غير صحيح.</value>
+  </data>
+  <data name="GetGlobalQuestionGroupsPagination_PageSize_Max" xml:space="preserve">
+    <value>حجم الصفحة يجب ألا يتجاوز 100.</value>
+  </data>
+  <data name="GetGlobalQuestionGroupsPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_GroupId_Required" xml:space="preserve">
+    <value>معرف مجموعة الأسئلة العامة مطلوب.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_NameEn_Required" xml:space="preserve">
+    <value>اسم مجموعة الأسئلة العامة باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم مجموعة الأسئلة العامة باللغة الإنجليزية يجب ألا يتجاوز 200 حرف.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم مجموعة الأسئلة العامة باللغة العربية يجب ألا يتجاوز 200 حرف.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_QuestionGroup_NotFound" xml:space="preserve">
+    <value>مجموعة الأسئلة العامة غير موجودة.</value>
+  </data>
+  <data name="UpdateGlobalQuestionGroup_NameEn_AlreadyExists" xml:space="preserve">
+    <value>توجد مجموعة أسئلة عامة بنفس الاسم بالفعل.</value>
+  </data>
+  <data name="DeleteGlobalQuestionGroup_GroupId_Required" xml:space="preserve">
+    <value>معرف مجموعة الأسئلة العامة مطلوب.</value>
+  </data>
+  <data name="DeleteGlobalQuestionGroup_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="DeleteGlobalQuestionGroup_QuestionGroup_NotFound" xml:space="preserve">
+    <value>مجموعة الأسئلة العامة غير موجودة.</value>
+  </data>
+  <data name="DeleteGlobalQuestionGroup_QuestionGroup_AlreadyInactive" xml:space="preserve">
+    <value>مجموعة الأسئلة العامة غير مفعلة بالفعل.</value>
+  </data>
+  <data name="DeleteGlobalQuestionGroup_QuestionGroup_HasQuestions" xml:space="preserve">
+    <value>لا يمكن حذف مجموعة الأسئلة العامة لأنها تحتوي على أسئلة.</value>
+  </data>
+  <data name="RestoreGlobalQuestionGroup_GroupId_Required" xml:space="preserve">
+    <value>معرف مجموعة الأسئلة العامة مطلوب.</value>
+  </data>
+  <data name="RestoreGlobalQuestionGroup_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="RestoreGlobalQuestionGroup_QuestionGroup_NotFound" xml:space="preserve">
+    <value>مجموعة الأسئلة العامة غير موجودة.</value>
+  </data>
+  <data name="RestoreGlobalQuestionGroup_QuestionGroup_AlreadyActive" xml:space="preserve">
+    <value>مجموعة الأسئلة العامة مفعلة بالفعل.</value>
+  </data>
+  <data name="CreateGlobalQuestion_GroupId_Required" xml:space="preserve">
+    <value>معرف مجموعة الأسئلة العامة مطلوب.</value>
+  </data>
+  <data name="CreateGlobalQuestion_TextEn_Required" xml:space="preserve">
+    <value>نص السؤال العام باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="CreateGlobalQuestion_TextEn_MaxLength" xml:space="preserve">
+    <value>نص السؤال العام باللغة الإنجليزية يجب ألا يتجاوز 1000 حرف.</value>
+  </data>
+  <data name="CreateGlobalQuestion_TextAr_MaxLength" xml:space="preserve">
+    <value>نص السؤال العام باللغة العربية يجب ألا يتجاوز 1000 حرف.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Type_Invalid" xml:space="preserve">
+    <value>نوع السؤال العام غير صحيح.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Options_Required" xml:space="preserve">
+    <value>الاختيارات مطلوبة لهذا النوع من الأسئلة العامة.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Options_NotAllowed" xml:space="preserve">
+    <value>لا يمكن إرسال اختيارات لهذا النوع من الأسئلة العامة.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Option_TextEn_Required" xml:space="preserve">
+    <value>نص الاختيار باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Option_TextEn_MaxLength" xml:space="preserve">
+    <value>نص الاختيار باللغة الإنجليزية يجب ألا يتجاوز 500 حرف.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Option_TextAr_MaxLength" xml:space="preserve">
+    <value>نص الاختيار باللغة العربية يجب ألا يتجاوز 500 حرف.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Option_Order_Invalid" xml:space="preserve">
+    <value>ترتيب الاختيار غير صحيح.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Option_Value_Invalid" xml:space="preserve">
+    <value>قيمة الاختيار يجب أن تكون من 1 إلى 5.</value>
+  </data>
+  <data name="CreateGlobalQuestion_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="CreateGlobalQuestion_Group_NotFound" xml:space="preserve">
+    <value>مجموعة الأسئلة العامة غير موجودة أو غير مفعلة.</value>
+  </data>
+  <data name="GetGlobalQuestionsPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة غير صحيح.</value>
+  </data>
+  <data name="GetGlobalQuestionsPagination_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة غير صحيح.</value>
+  </data>
+  <data name="GetGlobalQuestionsPagination_PageSize_Max" xml:space="preserve">
+    <value>حجم الصفحة يجب ألا يتجاوز 100.</value>
+  </data>
+  <data name="GetGlobalQuestionsPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_QuestionId_Required" xml:space="preserve">
+    <value>معرف السؤال العام مطلوب.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_GroupId_Required" xml:space="preserve">
+    <value>معرف مجموعة السؤال العام مطلوب.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_TextEn_Required" xml:space="preserve">
+    <value>نص السؤال العام باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_TextEn_MaxLength" xml:space="preserve">
+    <value>نص السؤال العام باللغة الإنجليزية يجب ألا يتجاوز 1000 حرف.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_TextAr_MaxLength" xml:space="preserve">
+    <value>نص السؤال العام باللغة العربية يجب ألا يتجاوز 1000 حرف.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Type_Invalid" xml:space="preserve">
+    <value>نوع السؤال العام غير صحيح.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Options_Required" xml:space="preserve">
+    <value>الاختيارات مطلوبة لهذا النوع من الأسئلة العامة.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Options_NotAllowed" xml:space="preserve">
+    <value>لا يمكن إرسال اختيارات لهذا النوع من الأسئلة العامة.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_TextEn_Required" xml:space="preserve">
+    <value>نص الاختيار باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_TextEn_MaxLength" xml:space="preserve">
+    <value>نص الاختيار باللغة الإنجليزية يجب ألا يتجاوز 500 حرف.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_Order_Invalid" xml:space="preserve">
+    <value>ترتيب الاختيار غير صحيح.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_Value_Invalid" xml:space="preserve">
+    <value>قيمة الاختيار يجب أن تكون من 1 إلى 5.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Question_NotFound" xml:space="preserve">
+    <value>السؤال العام غير موجود.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_TextAr_MaxLength" xml:space="preserve">
+    <value>نص الاختيار باللغة العربية يجب ألا يتجاوز 500 حرف.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_QuestionGroup_NotFound" xml:space="preserve">
+    <value>مجموعة السؤال العام غير موجودة أو غير مفعلة.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Type_CannotChangeAfterTemplateAssignment" xml:space="preserve">
+    <value>لا يمكن تغيير نوع السؤال العام بعد استخدامه في قالب.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_OptionId_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار معرف الاختيار في نفس الطلب.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_NotBelongToQuestion" xml:space="preserve">
+    <value>أحد الاختيارات لا يتبع هذا السؤال العام.</value>
+  </data>
+  <data name="UpdateGlobalQuestion_Option_UsedInCondition" xml:space="preserve">
+    <value>لا يمكن حذف أو تعطيل اختيار مستخدم في شرط.</value>
+  </data>
+  <data name="DeleteGlobalQuestion_QuestionId_Required" xml:space="preserve">
+    <value>معرف السؤال العام مطلوب.</value>
+  </data>
+  <data name="DeleteGlobalQuestion_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="DeleteGlobalQuestion_Question_NotFound" xml:space="preserve">
+    <value>السؤال العام غير موجود.</value>
+  </data>
+  <data name="DeleteGlobalQuestion_Question_AlreadyInactive" xml:space="preserve">
+    <value>السؤال العام غير مفعل بالفعل.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_QuestionId_Required" xml:space="preserve">
+    <value>معرف السؤال العام مطلوب.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_Question_NotFound" xml:space="preserve">
+    <value>السؤال العام غير موجود.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_Question_AlreadyActive" xml:space="preserve">
+    <value>السؤال العام مفعل بالفعل.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_QuestionGroup_NotFound" xml:space="preserve">
+    <value>مجموعة السؤال العام غير موجودة.</value>
+  </data>
+  <data name="RestoreGlobalQuestion_QuestionGroup_Inactive" xml:space="preserve">
+    <value>لا يمكن استرجاع السؤال لأن مجموعة السؤال العام غير مفعلة.</value>
+  </data>
+  <data name="GetGlobalQuestionGroupsSelection_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="GetGlobalQuestionDetails_QuestionId_Required" xml:space="preserve">
+    <value>معرف السؤال العام مطلوب.</value>
+  </data>
+  <data name="GetGlobalQuestionDetails_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي ليس Super Admin أو غير موجود.</value>
+  </data>
+  <data name="GetGlobalQuestionDetails_Question_NotFound" xml:space="preserve">
+    <value>السؤال العام غير موجود.</value>
+  </data>
 </root>
