@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CustomerSurvey.Application.Features.Departments.Query.GetDepartmentsPagination
+﻿namespace CustomerSurvey.Application.Features.Departments.Query.GetDepartmentsPagination
 {
     public sealed record DepartmentPaginationItemResponse
     {
@@ -16,6 +10,15 @@ namespace CustomerSurvey.Application.Features.Departments.Query.GetDepartmentsPa
 
         public bool IsActive { get; init; }
 
+        public DepartmentPaginationCreatedByResponse? CreatedBy { get; init; }
+
         public DateTime CreatedOnUtc { get; init; }
+    }
+
+    public sealed record DepartmentPaginationCreatedByResponse
+    {
+        public string NameEn { get; init; } = string.Empty;
+
+        public string? NameAr { get; init; }
     }
 }

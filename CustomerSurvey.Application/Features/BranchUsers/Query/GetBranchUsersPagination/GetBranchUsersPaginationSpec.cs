@@ -2,11 +2,6 @@
 using BuildingBlock.Domain.SharedDto;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPagination
 {
@@ -27,7 +22,10 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
         public string Email { get; init; } = string.Empty;
 
         public string? PhoneNumber { get; init; }
+
         public bool IsActive { get; init; }
+
+        public Guid CreatedByApplicationUserId { get; init; }
 
         public DateTime CreatedOnUtc { get; init; }
     }
@@ -55,11 +53,11 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
 
             if (searchParameters.OrderSort == OrderSort.Oldest)
             {
-                AddOrderByDescending(x => x.CreatedOnUtc);
+                AddOrderBy(x => x.CreatedOnUtc);
             }
             else
             {
-                AddOrderBy(x => x.CreatedOnUtc);
+                AddOrderByDescending(x => x.CreatedOnUtc);
             }
 
             EnableTotalCount();
@@ -72,13 +70,14 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
             {
                 BranchUserId = x.Id,
                 ApplicationUserId = x.ApplicationUserId,
-                IsActive = x.ApplicationUser.IsActive,
                 BranchId = x.BranchId,
                 NameEn = x.ApplicationUser.NameEn,
                 NameAr = x.ApplicationUser.NameAr,
                 UserName = x.ApplicationUser.UserName,
                 Email = x.ApplicationUser.Email ?? string.Empty,
                 PhoneNumber = x.ApplicationUser.PhoneNumber,
+                IsActive = x.ApplicationUser.IsActive,
+                CreatedByApplicationUserId = x.CreatedByApplicationUserId,
                 CreatedOnUtc = x.CreatedOnUtc
             });
         }

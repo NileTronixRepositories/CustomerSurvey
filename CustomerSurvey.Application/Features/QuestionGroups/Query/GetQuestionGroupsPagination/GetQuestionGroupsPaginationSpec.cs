@@ -1,66 +1,56 @@
 ﻿using BuildingBlock.Domain.Enums;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
-using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupsPagination
 {
     internal sealed class GetQuestionGroupsPaginationSpec
-        : Specification<QuestionGroup, QuestionGroupPaginationItemResponse>
+        : Specification<QuestionGroup, QuestionGroupPaginationItemDto>
     {
         public GetQuestionGroupsPaginationSpec(
             Guid branchId,
-            GetQuestionGroupsPaginationQuery query)
+            GetQuestionGroupsPaginationQuery searchParameters)
         {
-            AddCriteria(x =>
-                x.Scope == QuestionScope.Branch &&
-                x.BranchId == branchId);
+            AddCriteria(x => x.BranchId == branchId);
 
-            if (query.IsActive.HasValue)
+            if (searchParameters.IsActive.HasValue)
             {
-                AddCriteria(x => x.IsActive == query.IsActive.Value);
+                AddCriteria(x => x.IsActive == searchParameters.IsActive.Value);
             }
 
-            if (!string.IsNullOrWhiteSpace(query.SearchText))
+            if (!string.IsNullOrWhiteSpace(searchParameters.SearchText))
             {
-                var searchText = query.SearchText.Trim();
+                var searchText = searchParameters.SearchText.Trim();
 
                 AddCriteria(x =>
                     x.NameEn.Contains(searchText) ||
                     (x.NameAr != null && x.NameAr.Contains(searchText)));
             }
 
-            if (query.OrderSort == OrderSort.Oldest)
+            if (searchParameters.OrderSort == OrderSort.Oldest)
             {
-                AddOrderBy(x => x.CreatedOnUtc);
+                AddOrderByDescending(x => x.CreatedOnUtc);
             }
             else
             {
-                AddOrderByDescending(x => x.CreatedOnUtc);
+                AddOrderBy(x => x.CreatedOnUtc);
             }
 
             EnableTotalCount();
 
             ApplyPaging(
-                query.PageNumber,
-                query.PageSize);
+                searchParameters.PageNumber,
+                searchParameters.PageSize);
 
-            Select(x => new QuestionGroupPaginationItemResponse
+            Select(x => new QuestionGroupPaginationItemDto
             {
                 GroupId = x.Id,
                 BranchId = x.BranchId,
-                Scope = x.Scope,
-                ScopeName = x.Scope.ToString(),
-                IsGlobal = x.Scope == QuestionScope.Global,
-
-                // This endpoint is branch-management only.
-                // Anything returned from here is editable according to endpoint permission.
-                IsEditable = x.Scope == QuestionScope.Branch,
-
                 NameEn = x.NameEn,
                 NameAr = x.NameAr,
                 IsActive = x.IsActive,
                 QuestionsCount = x.Questions.Count,
+                CreatedByApplicationUserId = x.CreatedByApplicationUserId,
                 CreatedOnUtc = x.CreatedOnUtc
             });
         }

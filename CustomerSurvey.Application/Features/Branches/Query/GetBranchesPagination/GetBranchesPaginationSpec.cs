@@ -2,16 +2,11 @@
 using BuildingBlock.Domain.SharedDto;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchesPagination
 {
     internal sealed class GetBranchesPaginationSpec
-        : Specification<Branch, BranchPaginationItemResponse>
+        : Specification<Branch, BranchPaginationItemDto>
     {
         public GetBranchesPaginationSpec(SearchParameters searchParameters)
         {
@@ -41,7 +36,7 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchesPaginati
                 searchParameters.PageNumber,
                 searchParameters.PageSize);
 
-            Select(x => new BranchPaginationItemResponse
+            Select(x => new BranchPaginationItemDto
             {
                 Id = x.Id,
                 NameEn = x.NameEn,
@@ -49,6 +44,7 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchesPaginati
                 Code = x.Code,
                 Address = x.Address,
                 IsActive = x.IsActive,
+                CreatedByApplicationUserId = x.CreatedByApplicationUserId,
                 CreatedOnUtc = x.CreatedOnUtc
             });
         }

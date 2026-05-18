@@ -1,9 +1,8 @@
-﻿using CustomerSurvey.Application.Features.Questions.Shared;
-using CustomerSurvey.Domain.Enums;
+﻿using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagination
 {
-    public sealed record QuestionPaginationItemResponse
+    internal sealed record QuestionPaginationItemDto
     {
         public Guid QuestionId { get; init; }
 
@@ -25,18 +24,8 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
 
         public bool IsActive { get; init; }
 
-        public QuestionPaginationCreatedByResponse? CreatedBy { get; init; }
+        public Guid CreatedByApplicationUserId { get; init; }
 
         public DateTime CreatedOnUtc { get; init; }
-
-        public IReadOnlyCollection<QuestionOptionResponse> Options { get; init; }
-            = Array.Empty<QuestionOptionResponse>();
-    }
-
-    public sealed record QuestionPaginationCreatedByResponse
-    {
-        public string NameEn { get; init; } = string.Empty;
-
-        public string? NameAr { get; init; }
     }
 }

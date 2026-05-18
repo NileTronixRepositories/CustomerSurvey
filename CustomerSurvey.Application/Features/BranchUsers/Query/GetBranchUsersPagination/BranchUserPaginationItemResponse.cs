@@ -20,10 +20,19 @@
 
         public bool IsActive { get; init; }
 
+        public BranchUserPaginationCreatedByResponse? CreatedBy { get; init; }
+
         public DateTime CreatedOnUtc { get; init; }
 
         public IReadOnlyCollection<BranchUserPaginationRoleResponse> Roles { get; init; }
             = Array.Empty<BranchUserPaginationRoleResponse>();
+    }
+
+    public sealed record BranchUserPaginationCreatedByResponse
+    {
+        public string NameEn { get; init; } = string.Empty;
+
+        public string? NameAr { get; init; }
     }
 
     public sealed record BranchUserPaginationRoleResponse
