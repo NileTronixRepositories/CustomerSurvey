@@ -13,8 +13,18 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
     {
         public Guid TemplateId { get; init; }
 
+        public IReadOnlyCollection<SubmitOperatorTemplateCustomInputCommandItem> CustomInputs { get; init; }
+            = Array.Empty<SubmitOperatorTemplateCustomInputCommandItem>();
+
         public IReadOnlyCollection<SubmitOperatorTemplateAnswerCommandItem> Answers { get; init; }
             = Array.Empty<SubmitOperatorTemplateAnswerCommandItem>();
+    }
+
+    public sealed record SubmitOperatorTemplateCustomInputCommandItem
+    {
+        public Guid CustomInputId { get; init; }
+
+        public string? Value { get; init; }
     }
 
     public sealed record SubmitOperatorTemplateAnswerCommandItem

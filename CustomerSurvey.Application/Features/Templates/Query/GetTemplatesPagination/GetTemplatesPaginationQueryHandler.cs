@@ -117,6 +117,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
                         Status = x.Status.ToString(),
                         IsActive = x.IsActive,
                         QuestionsCount = x.QuestionsCount,
+                        CustomInputsCount = x.CustomInputsCount,
                         CreatedBy = creator is null
                             ? null
                             : new TemplatePaginationCreatedByResponse

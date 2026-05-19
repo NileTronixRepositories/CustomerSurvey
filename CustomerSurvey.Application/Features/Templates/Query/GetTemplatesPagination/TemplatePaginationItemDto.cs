@@ -1,4 +1,9 @@
 ﻿using CustomerSurvey.Domain.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagination
 {
@@ -19,6 +24,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
         public bool IsActive { get; init; }
 
         public int QuestionsCount { get; init; }
+
+        public int CustomInputsCount { get; init; }
 
         public Guid CreatedByApplicationUserId { get; init; }
 

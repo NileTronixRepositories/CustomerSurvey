@@ -17,6 +17,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
     {
         private readonly IWriteReadRepository<Template> _templateReadRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
+        private readonly IWriteReadRepository<TemplateCustomInput> _templateCustomInputReadRepository;
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<TemplateQuestionCondition> _conditionReadRepository;
@@ -26,6 +27,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
         public GetTemplateDetailsQueryHandler(
             IWriteReadRepository<Template> templateReadRepository,
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
+            IWriteReadRepository<TemplateCustomInput> templateCustomInputReadRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<TemplateQuestionCondition> conditionReadRepository,
@@ -37,6 +39,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
             _templateQuestionReadRepository = templateQuestionReadRepository
                 ?? throw new ArgumentNullException(nameof(templateQuestionReadRepository));
+
+            _templateCustomInputReadRepository = templateCustomInputReadRepository
+                ?? throw new ArgumentNullException(nameof(templateCustomInputReadRepository));
 
             _branchAdminReadRepository = branchAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
@@ -93,6 +98,10 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                     Type: ErrorType.NotFound));
             }
 
+            var customInputs = await _templateCustomInputReadRepository.ListAsync(
+                new GetTemplateCustomInputsForTemplateDetailsSpec(request.TemplateId),
+                cancellationToken);
+
             var templateQuestions = await _templateQuestionReadRepository.ListAsync(
                 new GetTemplateQuestionsForTemplateDetailsSpec(request.TemplateId),
                 cancellationToken);
@@ -103,9 +112,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 .Count();
 
             var questionConditions = await _conditionReadRepository.ListAsync(
-                new GetTemplateQuestionConditionsByTemplateIdsSpec(
-                    new[] { request.TemplateId }),
-                cancellationToken);
+    new GetTemplateQuestionConditionsByTemplateIdsSpec(
+        new[] { request.TemplateId }),
+    cancellationToken);
 
             var validQuestionConditions = FilterValidConditions(
                 templateQuestions,
@@ -166,8 +175,29 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 Summary = new TemplateDetailsSummaryResponse
                 {
                     QuestionsCount = templateQuestions.Count,
-                    GroupsCount = groupsCount
+                    GroupsCount = groupsCount,
+                    CustomInputsCount = customInputs.Count
                 },
+
+                CustomInputs = customInputs
+                    .OrderBy(x => x.Order)
+                    .Select(x => new TemplateDetailsCustomInputResponse
+                    {
+                        CustomInputId = x.CustomInputId,
+                        Name = x.Name,
+                        LabelEn = x.LabelEn,
+                        LabelAr = x.LabelAr,
+                        Type = x.Type,
+                        TypeName = x.Type.ToString(),
+                        IsRequired = x.IsRequired,
+                        MinLength = x.MinLength,
+                        MaxLength = x.MaxLength,
+                        MinValue = x.MinValue,
+                        MaxValue = x.MaxValue,
+                        Order = x.Order,
+                        IsActive = x.IsActive
+                    })
+                    .ToArray(),
 
                 Questions = templateQuestions
                     .OrderBy(x => x.Order)

@@ -1,4 +1,10 @@
-﻿namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagination
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagination
 {
     public sealed record TemplatePaginationItemResponse
     {
@@ -17,6 +23,8 @@
         public bool IsActive { get; init; }
 
         public int QuestionsCount { get; init; }
+
+        public int CustomInputsCount { get; init; }
 
         public TemplatePaginationCreatedByResponse? CreatedBy { get; init; }
 

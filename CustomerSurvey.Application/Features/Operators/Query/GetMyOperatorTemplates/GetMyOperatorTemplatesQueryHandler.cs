@@ -20,20 +20,24 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         private readonly IWriteReadRepository<DomainOperator> _operatorReadRepository;
         private readonly IWriteReadRepository<OperatorTemplate> _operatorTemplateReadRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
+        private readonly IWriteReadRepository<TemplateCustomInput> _templateCustomInputReadRepository;
         private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
         private readonly IWriteReadRepository<TemplateQuestionCondition> _conditionReadRepository;
         private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
         private readonly IWriteReadRepository<SurveyAnswer> _surveyAnswerReadRepository;
+        private readonly IWriteReadRepository<SurveyResponseCustomInputValue> _surveyResponseCustomInputValueReadRepository;
         private readonly ICurrentUser _currentUser;
 
         public GetMyOperatorTemplatesQueryHandler(
             IWriteReadRepository<DomainOperator> operatorReadRepository,
             IWriteReadRepository<OperatorTemplate> operatorTemplateReadRepository,
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
+            IWriteReadRepository<TemplateCustomInput> templateCustomInputReadRepository,
             IWriteReadRepository<QuestionOption> questionOptionReadRepository,
             IWriteReadRepository<TemplateQuestionCondition> conditionReadRepository,
             IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
             IWriteReadRepository<SurveyAnswer> surveyAnswerReadRepository,
+            IWriteReadRepository<SurveyResponseCustomInputValue> surveyResponseCustomInputValueReadRepository,
             ICurrentUser currentUser)
         {
             _operatorReadRepository = operatorReadRepository
@@ -44,6 +48,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
             _templateQuestionReadRepository = templateQuestionReadRepository
                 ?? throw new ArgumentNullException(nameof(templateQuestionReadRepository));
+
+            _templateCustomInputReadRepository = templateCustomInputReadRepository
+                ?? throw new ArgumentNullException(nameof(templateCustomInputReadRepository));
 
             _questionOptionReadRepository = questionOptionReadRepository
                 ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
@@ -56,6 +63,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
             _surveyAnswerReadRepository = surveyAnswerReadRepository
                 ?? throw new ArgumentNullException(nameof(surveyAnswerReadRepository));
+
+            _surveyResponseCustomInputValueReadRepository = surveyResponseCustomInputValueReadRepository
+                ?? throw new ArgumentNullException(nameof(surveyResponseCustomInputValueReadRepository));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -112,6 +122,10 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 templateQuestions,
                 optionsByQuestionId);
 
+            var customInputsByTemplateId = await GetCustomInputsByTemplateIdAsync(
+                templateIds,
+                cancellationToken);
+
             var questionConditionsByTemplateId = await GetQuestionConditionsByTemplateIdAsync(
                 templateIds,
                 cancellationToken);
@@ -153,6 +167,10 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 templateQuestionIdByTemplateAndQuestion,
                 cancellationToken);
 
+            var latestCustomInputsBySurveyResponseId = await GetLatestCustomInputsBySurveyResponseIdAsync(
+                latestResponseIds,
+                cancellationToken);
+
             var templateItems = templates
                 .Select(template =>
                 {
@@ -162,6 +180,13 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                             out var templateQuestionsList)
                                 ? templateQuestionsList
                                 : Array.Empty<MyOperatorTemplateQuestionResponse>();
+
+                    IReadOnlyCollection<MyOperatorTemplateCustomInputResponse> customInputs =
+                        customInputsByTemplateId.TryGetValue(
+                            template.TemplateId,
+                            out var templateCustomInputsList)
+                                ? templateCustomInputsList
+                                : Array.Empty<MyOperatorTemplateCustomInputResponse>();
 
                     IReadOnlyCollection<TemplateQuestionConditionResponse> rawConditions =
                         questionConditionsByTemplateId.TryGetValue(
@@ -178,6 +203,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                         template.TemplateId,
                         latestResponsesByTemplateId,
                         latestAnswersBySurveyResponseId,
+                        latestCustomInputsBySurveyResponseId,
                         questions,
                         validConditions);
 
@@ -197,10 +223,12 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                         BranchCode = template.BranchCode,
 
                         QuestionsCount = questions.Count,
+                        CustomInputsCount = customInputs.Count,
 
                         HasAnswered = latestResponsesByTemplateId.ContainsKey(template.TemplateId),
                         LatestResponse = latestResponse,
 
+                        CustomInputs = customInputs,
                         Questions = questions,
                         QuestionConditions = validConditions
                     };
@@ -231,6 +259,44 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
             return await _templateQuestionReadRepository.ListAsync(
                 new GetTemplateQuestionsForMyOperatorTemplatesSpec(templateIds),
                 cancellationToken);
+        }
+
+        private async Task<IReadOnlyDictionary<Guid, IReadOnlyCollection<MyOperatorTemplateCustomInputResponse>>>
+            GetCustomInputsByTemplateIdAsync(
+                IReadOnlyCollection<Guid> templateIds,
+                CancellationToken cancellationToken)
+        {
+            if (templateIds.Count == 0)
+            {
+                return new Dictionary<Guid, IReadOnlyCollection<MyOperatorTemplateCustomInputResponse>>();
+            }
+
+            var customInputs = await _templateCustomInputReadRepository.ListAsync(
+                new GetTemplateCustomInputsForMyOperatorTemplatesSpec(templateIds),
+                cancellationToken);
+
+            return customInputs
+                .GroupBy(x => x.TemplateId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => (IReadOnlyCollection<MyOperatorTemplateCustomInputResponse>)x
+                        .OrderBy(customInput => customInput.Order)
+                        .Select(customInput => new MyOperatorTemplateCustomInputResponse
+                        {
+                            CustomInputId = customInput.CustomInputId,
+                            Name = customInput.Name,
+                            LabelEn = customInput.LabelEn,
+                            LabelAr = customInput.LabelAr,
+                            Type = customInput.Type,
+                            TypeName = customInput.Type.ToString(),
+                            IsRequired = customInput.IsRequired,
+                            MinLength = customInput.MinLength,
+                            MaxLength = customInput.MaxLength,
+                            MinValue = customInput.MinValue,
+                            MaxValue = customInput.MaxValue,
+                            Order = customInput.Order
+                        })
+                        .ToArray());
         }
 
         private async Task<IReadOnlyDictionary<Guid, IReadOnlyCollection<MyOperatorQuestionOptionResponse>>>
@@ -431,10 +497,42 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                         .ToArray());
         }
 
+        private async Task<IReadOnlyDictionary<Guid, IReadOnlyCollection<MyOperatorTemplateLatestCustomInputValueResponse>>>
+            GetLatestCustomInputsBySurveyResponseIdAsync(
+                IReadOnlyCollection<Guid> latestResponseIds,
+                CancellationToken cancellationToken)
+        {
+            if (latestResponseIds.Count == 0)
+            {
+                return new Dictionary<Guid, IReadOnlyCollection<MyOperatorTemplateLatestCustomInputValueResponse>>();
+            }
+
+            var customInputValues = await _surveyResponseCustomInputValueReadRepository.ListAsync(
+                new GetLatestSurveyResponseCustomInputValuesForMyOperatorTemplatesSpec(latestResponseIds),
+                cancellationToken);
+
+            return customInputValues
+                .GroupBy(x => x.SurveyResponseId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => (IReadOnlyCollection<MyOperatorTemplateLatestCustomInputValueResponse>)x
+                        .Select(customInputValue => new MyOperatorTemplateLatestCustomInputValueResponse
+                        {
+                            CustomInputId = customInputValue.CustomInputId,
+                            Name = customInputValue.Name,
+                            Type = customInputValue.Type,
+                            TypeName = customInputValue.Type.ToString(),
+                            StringValue = customInputValue.StringValue,
+                            IntegerValue = customInputValue.IntegerValue
+                        })
+                        .ToArray());
+        }
+
         private static MyOperatorTemplateLatestResponse? BuildLatestResponse(
             Guid templateId,
             IReadOnlyDictionary<Guid, LatestSurveyResponseForMyOperatorTemplateDto> latestResponsesByTemplateId,
             IReadOnlyDictionary<Guid, IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse>> answersBySurveyResponseId,
+            IReadOnlyDictionary<Guid, IReadOnlyCollection<MyOperatorTemplateLatestCustomInputValueResponse>> customInputsBySurveyResponseId,
             IReadOnlyCollection<MyOperatorTemplateQuestionResponse> questions,
             IReadOnlyCollection<TemplateQuestionConditionResponse> conditions)
         {
@@ -449,6 +547,13 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                     out var latestAnswers)
                         ? latestAnswers
                         : Array.Empty<MyOperatorTemplateLatestAnswerResponse>();
+
+            IReadOnlyCollection<MyOperatorTemplateLatestCustomInputValueResponse> customInputs =
+                customInputsBySurveyResponseId.TryGetValue(
+                    latestResponse.SurveyResponseId,
+                    out var latestCustomInputs)
+                        ? latestCustomInputs
+                        : Array.Empty<MyOperatorTemplateLatestCustomInputValueResponse>();
 
             var validConditions = FilterValidConditions(
                 questions,
@@ -476,12 +581,16 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 SurveyResponseId = latestResponse.SurveyResponseId,
                 SubmittedOnUtc = latestResponse.SubmittedOnUtc,
                 AnswersCount = visibleAnswers.Length,
+                CustomInputsCount = customInputs.Count,
+
                 Score = new MyOperatorTemplateLatestScoreResponse
                 {
                     ActualScore = latestResponse.ActualScore,
                     MaxScore = latestResponse.MaxScore,
                     Percentage = latestResponse.ScorePercentage
                 },
+
+                CustomInputs = customInputs,
                 Answers = visibleAnswers
             };
         }
@@ -627,88 +736,6 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 .ThenBy(condition => condition.ParentTemplateQuestionId)
                 .ThenBy(condition => condition.ChildTemplateQuestionId)
                 .ToArray();
-        }
-
-        private static HashSet<Guid> CalculateVisibleTemplateQuestionIds(
-            IReadOnlyCollection<MyOperatorTemplateQuestionResponse> questions,
-            IReadOnlyCollection<TemplateQuestionConditionResponse> conditions,
-            IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse> answers)
-        {
-            var validConditions = FilterValidConditions(
-                questions,
-                conditions);
-
-            var existingTemplateQuestionIds = questions
-                .Select(question => question.TemplateQuestionId)
-                .ToHashSet();
-
-            var childTemplateQuestionIds = validConditions
-                .Select(condition => condition.ChildTemplateQuestionId)
-                .ToHashSet();
-
-            var rootTemplateQuestionIds = questions
-                .Where(question => !childTemplateQuestionIds.Contains(question.TemplateQuestionId))
-                .OrderBy(question => question.Order)
-                .Select(question => question.TemplateQuestionId)
-                .ToArray();
-
-            var answersByTemplateQuestionId = answers
-                .Where(answer => answer.TemplateQuestionId.HasValue)
-                .GroupBy(answer => answer.TemplateQuestionId!.Value)
-                .ToDictionary(
-                    group => group.Key,
-                    group => group.First());
-
-            var conditionsByParentTemplateQuestionId = validConditions
-                .GroupBy(condition => condition.ParentTemplateQuestionId)
-                .ToDictionary(
-                    group => group.Key,
-                    group => group
-                        .OrderBy(condition => condition.Order)
-                        .ThenBy(condition => condition.ChildTemplateQuestionId)
-                        .ToArray());
-
-            var visibleTemplateQuestionIds = new HashSet<Guid>(rootTemplateQuestionIds);
-            var queue = new Queue<Guid>(rootTemplateQuestionIds);
-
-            while (queue.Count > 0)
-            {
-                var parentTemplateQuestionId = queue.Dequeue();
-
-                if (!answersByTemplateQuestionId.TryGetValue(
-                        parentTemplateQuestionId,
-                        out var parentAnswer))
-                {
-                    continue;
-                }
-
-                if (!conditionsByParentTemplateQuestionId.TryGetValue(
-                        parentTemplateQuestionId,
-                        out var parentConditions))
-                {
-                    continue;
-                }
-
-                foreach (var condition in parentConditions)
-                {
-                    if (!existingTemplateQuestionIds.Contains(condition.ChildTemplateQuestionId))
-                    {
-                        continue;
-                    }
-
-                    if (!ConditionMatchesAnswer(condition, parentAnswer))
-                    {
-                        continue;
-                    }
-
-                    if (visibleTemplateQuestionIds.Add(condition.ChildTemplateQuestionId))
-                    {
-                        queue.Enqueue(condition.ChildTemplateQuestionId);
-                    }
-                }
-            }
-
-            return visibleTemplateQuestionIds;
         }
 
         private static bool ConditionMatchesAnswer(

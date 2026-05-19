@@ -6,6 +6,7 @@ namespace CustomerSurvey.Domain.Entities
     public sealed class Template : AggregateRoot<Guid>
     {
         private readonly List<TemplateQuestion> _templateQuestions = new();
+        private readonly List<TemplateCustomInput> _customInputs = new();
 
         public Guid BranchId { get; private set; }
         public Branch Branch { get; private set; } = null!;
@@ -24,6 +25,9 @@ namespace CustomerSurvey.Domain.Entities
 
         public IReadOnlyCollection<TemplateQuestion> TemplateQuestions =>
             _templateQuestions.AsReadOnly();
+
+        public IReadOnlyCollection<TemplateCustomInput> CustomInputs =>
+            _customInputs.AsReadOnly();
 
         private Template()
         {
@@ -72,6 +76,16 @@ namespace CustomerSurvey.Domain.Entities
             return IsActive &&
                    ActiveFrom <= utcNow &&
                    (!ExpireTo.HasValue || ExpireTo.Value > utcNow);
+        }
+
+        public void AddCustomInput(TemplateCustomInput customInput)
+        {
+            if (_customInputs.Any(x => x.Name == customInput.Name && x.IsActive))
+            {
+                return;
+            }
+
+            _customInputs.Add(customInput);
         }
 
         public void Activate()

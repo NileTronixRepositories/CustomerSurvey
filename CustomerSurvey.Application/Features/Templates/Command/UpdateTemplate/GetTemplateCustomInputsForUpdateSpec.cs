@@ -8,15 +8,14 @@ using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
 {
-    internal sealed class GetTemplateForUpdateSpec : Specification<Template>
+    internal sealed class GetTemplateCustomInputsForUpdateSpec
+        : Specification<TemplateCustomInput>
     {
-        public GetTemplateForUpdateSpec(Guid templateId, Guid branchId)
+        public GetTemplateCustomInputsForUpdateSpec(Guid templateId)
         {
-            AddCriteria(x =>
-                x.Id == templateId &&
-                x.BranchId == branchId);
+            AddCriteria(x => x.TemplateId == templateId);
 
-            Include(x => x.CustomInputs);
+            AddOrderBy(x => x.Order);
         }
     }
 }

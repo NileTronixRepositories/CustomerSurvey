@@ -90,6 +90,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
                     Message: ErrorMessage.CreateTemplate_NameEn_AlreadyExists_InsideBranch,
                     Type: ErrorType.Validation));
             }
+
             var template = Template.Create(
                 branchId: branchId,
                 nameEn: normalizedNameEn,
@@ -98,6 +99,25 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
                 activeFrom: request.ActiveFrom,
                 expireTo: request.ExpireTo,
                 createdByApplicationUserId: currentApplicationUserId);
+
+            foreach (var customInputRequest in request.CustomInputs.OrderBy(x => x.Order))
+            {
+                var customInput = TemplateCustomInput.Create(
+                    templateId: template.Id,
+                    name: customInputRequest.Name,
+                    labelEn: customInputRequest.LabelEn,
+                    labelAr: customInputRequest.LabelAr,
+                    type: customInputRequest.Type,
+                    isRequired: customInputRequest.IsRequired,
+                    minLength: customInputRequest.MinLength,
+                    maxLength: customInputRequest.MaxLength,
+                    minValue: customInputRequest.MinValue,
+                    maxValue: customInputRequest.MaxValue,
+                    order: customInputRequest.Order,
+                    createdByApplicationUserId: currentApplicationUserId);
+
+                template.AddCustomInput(customInput);
+            }
 
             await _templateWriteRepository.AddAsync(template, cancellationToken);
 
@@ -113,7 +133,25 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
                 ActiveFrom = template.ActiveFrom,
                 ExpireTo = template.ExpireTo,
                 Status = template.Status.ToString(),
-                IsActive = template.IsActive
+                IsActive = template.IsActive,
+                CustomInputs = template.CustomInputs
+                    .OrderBy(x => x.Order)
+                    .Select(x => new CreateTemplateCustomInputResponse
+                    {
+                        CustomInputId = x.Id,
+                        Name = x.Name,
+                        LabelEn = x.LabelEn,
+                        LabelAr = x.LabelAr,
+                        Type = x.Type,
+                        IsRequired = x.IsRequired,
+                        MinLength = x.MinLength,
+                        MaxLength = x.MaxLength,
+                        MinValue = x.MinValue,
+                        MaxValue = x.MaxValue,
+                        Order = x.Order,
+                        IsActive = x.IsActive
+                    })
+                    .ToArray()
             };
 
             return Result<CreateTemplateResponse>.Ok(response);

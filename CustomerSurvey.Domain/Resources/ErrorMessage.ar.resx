@@ -1611,4 +1611,106 @@
   <data name="GetGlobalQuestionDetails_Question_NotFound" xml:space="preserve">
     <value>السؤال العام غير موجود.</value>
   </data>
+  <data name="CreateTemplate_CustomInputs_Invalid" xml:space="preserve">
+    <value>بيانات الحقول المخصصة غير صحيحة.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Name_Required" xml:space="preserve">
+    <value>اسم الحقل المخصص مطلوب.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
+    <value>اسم الحقل المخصص يجب ألا يزيد عن 100 حرف.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Name_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار اسم الحقل المخصص داخل نفس القالب.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_LabelEn_MaxLength" xml:space="preserve">
+    <value>عنوان الحقل باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_LabelAr_MaxLength" xml:space="preserve">
+    <value>عنوان الحقل باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>نوع الحقل المخصص غير صحيح.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Order_Invalid" xml:space="preserve">
+    <value>ترتيب الحقل المخصص غير صحيح.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Order_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار ترتيب الحقول المخصصة داخل نفس القالب.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_StringValidation_Invalid" xml:space="preserve">
+    <value>إعدادات تحقق الحقل النصي غير صحيحة.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
+    <value>إعدادات تحقق الحقل الرقمي غير صحيحة.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInputs_Invalid" xml:space="preserve">
+    <value>بيانات الحقول المخصصة غير صحيحة.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Id_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار نفس الحقل المخصص أكثر من مرة في الطلب.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_NotFound" xml:space="preserve">
+    <value>أحد الحقول المخصصة غير موجود داخل هذا القالب.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Name_Required" xml:space="preserve">
+    <value>اسم الحقل المخصص مطلوب.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
+    <value>اسم الحقل المخصص يجب ألا يزيد عن 100 حرف.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Name_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار اسم الحقل المخصص داخل نفس القالب.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_LabelEn_MaxLength" xml:space="preserve">
+    <value>عنوان الحقل باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_LabelAr_MaxLength" xml:space="preserve">
+    <value>عنوان الحقل باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>نوع الحقل المخصص غير صحيح.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Type_CannotBeChanged" xml:space="preserve">
+    <value>لا يمكن تغيير نوع الحقل المخصص بعد إنشائه.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Order_Invalid" xml:space="preserve">
+    <value>ترتيب الحقل المخصص غير صحيح.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Order_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار ترتيب الحقول المخصصة داخل نفس القالب.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_StringValidation_Invalid" xml:space="preserve">
+    <value>إعدادات تحقق الحقل النصي غير صحيحة.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
+    <value>إعدادات تحقق الحقل الرقمي غير صحيحة.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Duplicated" xml:space="preserve">
+    <value>لا يمكن إرسال نفس الحقل المخصص أكثر من مرة.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_NotFound" xml:space="preserve">
+    <value>أحد الحقول المخصصة غير موجود داخل هذا القالب.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Value_Required" xml:space="preserve">
+    <value>قيمة الحقل المخصص مطلوبة.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>نوع الحقل المخصص غير صحيح.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_String_MinLength" xml:space="preserve">
+    <value>قيمة الحقل النصي أقل من الحد الأدنى المسموح.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_String_MaxLength" xml:space="preserve">
+    <value>قيمة الحقل النصي أكبر من الحد الأقصى المسموح.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Integer_Invalid" xml:space="preserve">
+    <value>قيمة الحقل الرقمي يجب أن تكون رقمًا صحيحًا.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Integer_MinValue" xml:space="preserve">
+    <value>قيمة الحقل الرقمي أقل من الحد الأدنى المسموح.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Integer_MaxValue" xml:space="preserve">
+    <value>قيمة الحقل الرقمي أكبر من الحد الأقصى المسموح.</value>
+  </data>
 </root>

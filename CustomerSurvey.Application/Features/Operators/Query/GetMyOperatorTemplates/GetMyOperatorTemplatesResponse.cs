@@ -1,5 +1,10 @@
 ﻿using CustomerSurvey.Application.Features.Templates.Shared;
 using CustomerSurvey.Domain.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTemplates
 {
@@ -35,6 +40,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public int QuestionsCount { get; init; }
 
+        public int CustomInputsCount { get; init; }
+
         public bool HasAnswered { get; init; }
 
         public DateTime ActiveFrom { get; init; }
@@ -43,11 +50,41 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public MyOperatorTemplateLatestResponse? LatestResponse { get; init; }
 
+        public IReadOnlyCollection<MyOperatorTemplateCustomInputResponse> CustomInputs { get; init; }
+            = Array.Empty<MyOperatorTemplateCustomInputResponse>();
+
         public IReadOnlyCollection<MyOperatorTemplateQuestionResponse> Questions { get; init; }
             = Array.Empty<MyOperatorTemplateQuestionResponse>();
 
         public IReadOnlyCollection<TemplateQuestionConditionResponse> QuestionConditions { get; init; }
             = Array.Empty<TemplateQuestionConditionResponse>();
+    }
+
+    public sealed record MyOperatorTemplateCustomInputResponse
+    {
+        public Guid CustomInputId { get; init; }
+
+        public string Name { get; init; } = string.Empty;
+
+        public string? LabelEn { get; init; }
+
+        public string? LabelAr { get; init; }
+
+        public TemplateCustomInputType Type { get; init; }
+
+        public string TypeName { get; init; } = string.Empty;
+
+        public bool IsRequired { get; init; }
+
+        public int? MinLength { get; init; }
+
+        public int? MaxLength { get; init; }
+
+        public int? MinValue { get; init; }
+
+        public int? MaxValue { get; init; }
+
+        public int Order { get; init; }
     }
 
     public sealed record MyOperatorTemplateQuestionResponse
@@ -105,10 +142,29 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public int AnswersCount { get; init; }
 
+        public int CustomInputsCount { get; init; }
+
         public MyOperatorTemplateLatestScoreResponse Score { get; init; } = new();
+
+        public IReadOnlyCollection<MyOperatorTemplateLatestCustomInputValueResponse> CustomInputs { get; init; }
+            = Array.Empty<MyOperatorTemplateLatestCustomInputValueResponse>();
 
         public IReadOnlyCollection<MyOperatorTemplateLatestAnswerResponse> Answers { get; init; }
             = Array.Empty<MyOperatorTemplateLatestAnswerResponse>();
+    }
+    public sealed record MyOperatorTemplateLatestCustomInputValueResponse
+    {
+        public Guid CustomInputId { get; init; }
+
+        public string Name { get; init; } = string.Empty;
+
+        public TemplateCustomInputType Type { get; init; }
+
+        public string TypeName { get; init; } = string.Empty;
+
+        public string? StringValue { get; init; }
+
+        public int? IntegerValue { get; init; }
     }
 
     public sealed record MyOperatorTemplateLatestScoreResponse

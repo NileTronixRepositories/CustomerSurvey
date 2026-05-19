@@ -35,6 +35,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
         public TemplateDetailsSummaryResponse Summary { get; init; } = new();
 
+        public IReadOnlyCollection<TemplateDetailsCustomInputResponse> CustomInputs { get; init; }
+            = Array.Empty<TemplateDetailsCustomInputResponse>();
+
         public IReadOnlyCollection<TemplateDetailsQuestionResponse> Questions { get; init; }
             = Array.Empty<TemplateDetailsQuestionResponse>();
 
@@ -47,6 +50,37 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
         public int QuestionsCount { get; init; }
 
         public int GroupsCount { get; init; }
+
+        public int CustomInputsCount { get; init; }
+    }
+
+    public sealed record TemplateDetailsCustomInputResponse
+    {
+        public Guid CustomInputId { get; init; }
+
+        public string Name { get; init; } = string.Empty;
+
+        public string? LabelEn { get; init; }
+
+        public string? LabelAr { get; init; }
+
+        public TemplateCustomInputType Type { get; init; }
+
+        public string TypeName { get; init; } = string.Empty;
+
+        public bool IsRequired { get; init; }
+
+        public int? MinLength { get; init; }
+
+        public int? MaxLength { get; init; }
+
+        public int? MinValue { get; init; }
+
+        public int? MaxValue { get; init; }
+
+        public int Order { get; init; }
+
+        public bool IsActive { get; init; }
     }
 
     public sealed record TemplateDetailsQuestionResponse

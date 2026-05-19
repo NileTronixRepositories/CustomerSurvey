@@ -28,6 +28,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         private readonly IWriteReadRepository<DomainOperator> _operatorReadRepository;
         private readonly IWriteReadRepository<OperatorTemplate> _operatorTemplateReadRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
+        private readonly IWriteReadRepository<TemplateCustomInput> _templateCustomInputReadRepository;
         private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
         private readonly IWriteReadRepository<TemplateQuestionCondition> _conditionReadRepository;
         private readonly IWriteRepository<SurveyResponse> _surveyResponseWriteRepository;
@@ -39,6 +40,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             IWriteReadRepository<DomainOperator> operatorReadRepository,
             IWriteReadRepository<OperatorTemplate> operatorTemplateReadRepository,
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
+            IWriteReadRepository<TemplateCustomInput> templateCustomInputReadRepository,
             IWriteReadRepository<QuestionOption> questionOptionReadRepository,
             IWriteReadRepository<TemplateQuestionCondition> conditionReadRepository,
             IWriteRepository<SurveyResponse> surveyResponseWriteRepository,
@@ -54,6 +56,9 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
 
             _templateQuestionReadRepository = templateQuestionReadRepository
                 ?? throw new ArgumentNullException(nameof(templateQuestionReadRepository));
+
+            _templateCustomInputReadRepository = templateCustomInputReadRepository
+                ?? throw new ArgumentNullException(nameof(templateCustomInputReadRepository));
 
             _questionOptionReadRepository = questionOptionReadRepository
                 ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
@@ -151,6 +156,19 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     Code: "SurveyResponses.Submit.TemplateHasNoQuestions",
                     Message: ErrorMessage.SubmitOperatorTemplateResponse_Template_HasNoQuestions,
                     Type: ErrorType.Validation));
+            }
+
+            var templateCustomInputs = await _templateCustomInputReadRepository.ListAsync(
+                new GetTemplateCustomInputsForSubmitResponseSpec(request.TemplateId),
+                cancellationToken);
+
+            var customInputsValidationError = ValidateCustomInputs(
+                templateCustomInputs,
+                request.CustomInputs);
+
+            if (customInputsValidationError is not null)
+            {
+                return Result<SubmitOperatorTemplateResponseResponse>.Fail(customInputsValidationError);
             }
 
             var submittedAnswers = request.Answers.ToArray();
@@ -277,6 +295,16 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 maxScore: score.MaxScore,
                 scorePercentage: score.Percentage);
 
+            var customInputValues = BuildCustomInputValues(
+                surveyResponse.Id,
+                templateCustomInputs,
+                request.CustomInputs);
+
+            foreach (var customInputValue in customInputValues)
+            {
+                surveyResponse.AddCustomInputValue(customInputValue);
+            }
+
             var savedVoiceFileNames = new List<string>();
 
             try
@@ -312,14 +340,228 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 SurveyResponseId = surveyResponse.Id,
                 OperatorId = surveyResponse.OperatorId,
                 TemplateId = surveyResponse.TemplateId,
+                CustomInputsCount = surveyResponse.CustomInputValues.Count,
                 AnswersCount = surveyResponse.Answers.Count,
                 ActualScore = surveyResponse.ActualScore,
                 MaxScore = surveyResponse.MaxScore,
                 ScorePercentage = surveyResponse.ScorePercentage,
-                SubmittedOnUtc = surveyResponse.SubmittedOnUtc
+                SubmittedOnUtc = surveyResponse.SubmittedOnUtc,
+
+                CustomInputs = surveyResponse.CustomInputValues
+                    .Select(x => new SubmittedCustomInputValueResponse
+                    {
+                        CustomInputId = x.TemplateCustomInputId,
+                        Name = x.NameSnapshot,
+                        Type = x.TypeSnapshot,
+                        TypeName = x.TypeSnapshot.ToString(),
+                        StringValue = x.StringValue,
+                        IntegerValue = x.IntegerValue
+                    })
+                    .ToArray()
             };
 
             return Result<SubmitOperatorTemplateResponseResponse>.Ok(response);
+        }
+
+        private static Error? ValidateCustomInputs(
+            IReadOnlyCollection<TemplateCustomInputForSubmitResponseDto> templateCustomInputs,
+            IReadOnlyCollection<SubmitOperatorTemplateCustomInputCommandItem> submittedCustomInputs)
+        {
+            submittedCustomInputs ??= Array.Empty<SubmitOperatorTemplateCustomInputCommandItem>();
+
+            var duplicatedCustomInputExists = submittedCustomInputs
+                .Where(x => x.CustomInputId != Guid.Empty)
+                .GroupBy(x => x.CustomInputId)
+                .Any(x => x.Count() > 1);
+
+            if (duplicatedCustomInputExists)
+            {
+                return new Error(
+                    Code: "SurveyResponses.Submit.CustomInputDuplicated",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_CustomInput_Duplicated,
+                    Type: ErrorType.Validation);
+            }
+
+            var templateCustomInputIds = templateCustomInputs
+                .Select(x => x.CustomInputId)
+                .ToHashSet();
+
+            var hasUnknownCustomInput = submittedCustomInputs
+                .Any(x => x.CustomInputId == Guid.Empty || !templateCustomInputIds.Contains(x.CustomInputId));
+
+            if (hasUnknownCustomInput)
+            {
+                return new Error(
+                    Code: "SurveyResponses.Submit.CustomInputNotFound",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_CustomInput_NotFound,
+                    Type: ErrorType.Validation);
+            }
+
+            var submittedCustomInputsById = submittedCustomInputs
+                .ToDictionary(x => x.CustomInputId, x => x);
+
+            foreach (var templateCustomInput in templateCustomInputs.OrderBy(x => x.Order))
+            {
+                submittedCustomInputsById.TryGetValue(
+                    templateCustomInput.CustomInputId,
+                    out var submittedCustomInput);
+
+                var value = submittedCustomInput?.Value;
+
+                if (templateCustomInput.IsRequired && string.IsNullOrWhiteSpace(value))
+                {
+                    return new Error(
+                        Code: "SurveyResponses.Submit.CustomInputValueRequired",
+                        Message: ErrorMessage.SubmitOperatorTemplateResponse_CustomInput_Value_Required,
+                        Type: ErrorType.Validation);
+                }
+
+                if (!templateCustomInput.IsRequired && string.IsNullOrWhiteSpace(value))
+                {
+                    continue;
+                }
+
+                var validationError = templateCustomInput.Type switch
+                {
+                    TemplateCustomInputType.String => ValidateStringCustomInput(
+                        templateCustomInput,
+                        value),
+
+                    TemplateCustomInputType.Integer => ValidateIntegerCustomInput(
+                        templateCustomInput,
+                        value),
+
+                    _ => new Error(
+                        Code: "SurveyResponses.Submit.CustomInputTypeInvalid",
+                        Message: ErrorMessage.SubmitOperatorTemplateResponse_CustomInput_Type_Invalid,
+                        Type: ErrorType.Validation)
+                };
+
+                if (validationError is not null)
+                {
+                    return validationError;
+                }
+            }
+
+            return null;
+        }
+
+        private static Error? ValidateStringCustomInput(
+            TemplateCustomInputForSubmitResponseDto templateCustomInput,
+            string? value)
+        {
+            var normalizedValue = value?.Trim() ?? string.Empty;
+
+            if (templateCustomInput.MinLength.HasValue &&
+                normalizedValue.Length < templateCustomInput.MinLength.Value)
+            {
+                return new Error(
+                    Code: "SurveyResponses.Submit.CustomInputStringMinLength",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_CustomInput_String_MinLength,
+                    Type: ErrorType.Validation);
+            }
+
+            if (templateCustomInput.MaxLength.HasValue &&
+                normalizedValue.Length > templateCustomInput.MaxLength.Value)
+            {
+                return new Error(
+                    Code: "SurveyResponses.Submit.CustomInputStringMaxLength",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_CustomInput_String_MaxLength,
+                    Type: ErrorType.Validation);
+            }
+
+            return null;
+        }
+
+        private static Error? ValidateIntegerCustomInput(
+            TemplateCustomInputForSubmitResponseDto templateCustomInput,
+            string? value)
+        {
+            var normalizedValue = value?.Trim() ?? string.Empty;
+
+            if (!int.TryParse(normalizedValue, out var integerValue))
+            {
+                return new Error(
+                    Code: "SurveyResponses.Submit.CustomInputIntegerInvalid",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_CustomInput_Integer_Invalid,
+                    Type: ErrorType.Validation);
+            }
+
+            if (templateCustomInput.MinValue.HasValue &&
+                integerValue < templateCustomInput.MinValue.Value)
+            {
+                return new Error(
+                    Code: "SurveyResponses.Submit.CustomInputIntegerMinValue",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_CustomInput_Integer_MinValue,
+                    Type: ErrorType.Validation);
+            }
+
+            if (templateCustomInput.MaxValue.HasValue &&
+                integerValue > templateCustomInput.MaxValue.Value)
+            {
+                return new Error(
+                    Code: "SurveyResponses.Submit.CustomInputIntegerMaxValue",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_CustomInput_Integer_MaxValue,
+                    Type: ErrorType.Validation);
+            }
+
+            return null;
+        }
+
+        private static IReadOnlyCollection<SurveyResponseCustomInputValue> BuildCustomInputValues(
+            Guid surveyResponseId,
+            IReadOnlyCollection<TemplateCustomInputForSubmitResponseDto> templateCustomInputs,
+            IReadOnlyCollection<SubmitOperatorTemplateCustomInputCommandItem> submittedCustomInputs)
+        {
+            submittedCustomInputs ??= Array.Empty<SubmitOperatorTemplateCustomInputCommandItem>();
+
+            var submittedCustomInputsById = submittedCustomInputs
+                .Where(x => x.CustomInputId != Guid.Empty)
+                .GroupBy(x => x.CustomInputId)
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.First());
+
+            var values = new List<SurveyResponseCustomInputValue>();
+
+            foreach (var templateCustomInput in templateCustomInputs.OrderBy(x => x.Order))
+            {
+                if (!submittedCustomInputsById.TryGetValue(
+                        templateCustomInput.CustomInputId,
+                        out var submittedCustomInput))
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(submittedCustomInput.Value))
+                {
+                    continue;
+                }
+
+                if (templateCustomInput.Type == TemplateCustomInputType.String)
+                {
+                    values.Add(SurveyResponseCustomInputValue.CreateStringValue(
+                        surveyResponseId: surveyResponseId,
+                        templateCustomInputId: templateCustomInput.CustomInputId,
+                        nameSnapshot: templateCustomInput.Name,
+                        value: submittedCustomInput.Value));
+
+                    continue;
+                }
+
+                if (templateCustomInput.Type == TemplateCustomInputType.Integer)
+                {
+                    var integerValue = int.Parse(submittedCustomInput.Value.Trim());
+
+                    values.Add(SurveyResponseCustomInputValue.CreateIntegerValue(
+                        surveyResponseId: surveyResponseId,
+                        templateCustomInputId: templateCustomInput.CustomInputId,
+                        nameSnapshot: templateCustomInput.Name,
+                        value: integerValue));
+                }
+            }
+
+            return values;
         }
 
         private static TemplateQuestionConditionForSubmitResponseDto[] FilterValidConditions(
