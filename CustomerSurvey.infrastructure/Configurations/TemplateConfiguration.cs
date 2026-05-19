@@ -56,6 +56,11 @@ namespace CustomerSurvey.infrastructure.Configurations
                 .WithOne(x => x.Template)
                 .HasForeignKey(x => x.TemplateId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(x => x.CustomInputs)
+    .WithOne(x => x.Template)
+    .HasForeignKey(x => x.TemplateId)
+    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

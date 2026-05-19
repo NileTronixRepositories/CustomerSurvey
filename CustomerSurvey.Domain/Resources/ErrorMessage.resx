@@ -1611,4 +1611,106 @@
   <data name="GetGlobalQuestionDetails_Question_NotFound" xml:space="preserve">
     <value>Global question was not found.</value>
   </data>
+  <data name="CreateTemplate_CustomInputs_Invalid" xml:space="preserve">
+    <value>Custom inputs are invalid.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Name_Required" xml:space="preserve">
+    <value>Custom input name is required.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
+    <value>Custom input name must not exceed 100 characters.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Name_Duplicated" xml:space="preserve">
+    <value>Custom input name cannot be duplicated inside the same template.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_LabelEn_MaxLength" xml:space="preserve">
+    <value>Custom input English label must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_LabelAr_MaxLength" xml:space="preserve">
+    <value>Custom input Arabic label must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>Custom input type is invalid.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Order_Invalid" xml:space="preserve">
+    <value>Custom input order is invalid.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_Order_Duplicated" xml:space="preserve">
+    <value>Custom input order cannot be duplicated inside the same template.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_StringValidation_Invalid" xml:space="preserve">
+    <value>String custom input validation settings are invalid.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
+    <value>Integer custom input validation settings are invalid.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInputs_Invalid" xml:space="preserve">
+    <value>Custom inputs are invalid.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Id_Duplicated" xml:space="preserve">
+    <value>The same custom input cannot be sent more than once in the request.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_NotFound" xml:space="preserve">
+    <value>One custom input was not found inside this template.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Name_Required" xml:space="preserve">
+    <value>Custom input name is required.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
+    <value>Custom input name must not exceed 100 characters.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Name_Duplicated" xml:space="preserve">
+    <value>Custom input name cannot be duplicated inside the same template.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_LabelEn_MaxLength" xml:space="preserve">
+    <value>Custom input English label must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_LabelAr_MaxLength" xml:space="preserve">
+    <value>Custom input Arabic label must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>Custom input type is invalid.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Type_CannotBeChanged" xml:space="preserve">
+    <value>Custom input type cannot be changed after creation.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Order_Invalid" xml:space="preserve">
+    <value>Custom input order is invalid.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_Order_Duplicated" xml:space="preserve">
+    <value>Custom input order cannot be duplicated inside the same template.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_StringValidation_Invalid" xml:space="preserve">
+    <value>String custom input validation settings are invalid.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
+    <value>Integer custom input validation settings are invalid.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Duplicated" xml:space="preserve">
+    <value>The same custom input cannot be submitted more than once.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_NotFound" xml:space="preserve">
+    <value>One custom input does not belong to this template.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Value_Required" xml:space="preserve">
+    <value>Custom input value is required.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>Custom input type is invalid.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_String_MinLength" xml:space="preserve">
+    <value>String custom input value is shorter than the minimum length.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_String_MaxLength" xml:space="preserve">
+    <value>String custom input value exceeds the maximum length.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Integer_Invalid" xml:space="preserve">
+    <value>Integer custom input value must be a valid integer.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Integer_MinValue" xml:space="preserve">
+    <value>Integer custom input value is less than the minimum value.</value>
+  </data>
+  <data name="SubmitOperatorTemplateResponse_CustomInput_Integer_MaxValue" xml:space="preserve">
+    <value>Integer custom input value is greater than the maximum value.</value>
+  </data>
 </root>

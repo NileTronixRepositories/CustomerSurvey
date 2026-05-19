@@ -136,14 +136,23 @@ namespace CustomerSurvey.Api.Controllers
         [HttpPost("my-templates/{templateId:guid}/responses")]
         [Permission("OperatorTemplates.SubmitResponse")]
         public async Task<IActionResult> SubmitTemplateResponse(
-    Guid templateId,
-    [FromForm] SubmitOperatorTemplateResponseRequest request,
-    CancellationToken cancellationToken)
+     Guid templateId,
+     [FromForm] SubmitOperatorTemplateResponseRequest request,
+     CancellationToken cancellationToken)
         {
             var command = new SubmitOperatorTemplateResponseCommand
             {
                 TemplateId = templateId,
-                Answers = request.Answers
+
+                CustomInputs = (request.CustomInputs ?? new List<SubmitOperatorTemplateCustomInputRequest>())
+                    .Select(x => new SubmitOperatorTemplateCustomInputCommandItem
+                    {
+                        CustomInputId = x.CustomInputId,
+                        Value = x.Value
+                    })
+                    .ToArray(),
+
+                Answers = (request.Answers ?? new List<SubmitOperatorTemplateAnswerRequest>())
                     .Select(x => new SubmitOperatorTemplateAnswerCommandItem
                     {
                         QuestionId = x.QuestionId,

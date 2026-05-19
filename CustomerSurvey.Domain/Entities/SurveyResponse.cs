@@ -10,6 +10,7 @@ namespace CustomerSurvey.Domain.Entities
     public sealed class SurveyResponse : AggregateRoot<Guid>
     {
         private readonly List<SurveyAnswer> _answers = new();
+        private readonly List<SurveyResponseCustomInputValue> _customInputValues = new();
 
         public Guid OperatorId { get; private set; }
         public CustomerSurvey.Domain.Identity.Operator Operator { get; private set; } = null!;
@@ -19,7 +20,6 @@ namespace CustomerSurvey.Domain.Entities
 
         public DateTime SubmittedOnUtc { get; private set; }
 
-        // New scoring snapshot.
         public int ActualScore { get; private set; }
 
         public int MaxScore { get; private set; }
@@ -29,6 +29,9 @@ namespace CustomerSurvey.Domain.Entities
         public Guid CreatedByApplicationUserId { get; private set; }
 
         public IReadOnlyCollection<SurveyAnswer> Answers => _answers.AsReadOnly();
+
+        public IReadOnlyCollection<SurveyResponseCustomInputValue> CustomInputValues =>
+            _customInputValues.AsReadOnly();
 
         private SurveyResponse()
         {
@@ -63,6 +66,16 @@ namespace CustomerSurvey.Domain.Entities
             }
 
             _answers.Add(answer);
+        }
+
+        public void AddCustomInputValue(SurveyResponseCustomInputValue customInputValue)
+        {
+            if (_customInputValues.Any(x => x.TemplateCustomInputId == customInputValue.TemplateCustomInputId))
+            {
+                return;
+            }
+
+            _customInputValues.Add(customInputValue);
         }
     }
 }

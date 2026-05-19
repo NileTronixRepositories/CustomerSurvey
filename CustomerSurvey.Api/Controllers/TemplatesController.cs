@@ -108,8 +108,8 @@ namespace CustomerSurvey.Api.Controllers
         [HttpPost]
         [Permission("Templates.Create")]
         public async Task<IActionResult> Create(
-            [FromBody] CreateTemplateRequest request,
-            CancellationToken cancellationToken)
+     [FromBody] CreateTemplateRequest request,
+     CancellationToken cancellationToken)
         {
             var command = new CreateTemplateCommand
             {
@@ -117,7 +117,22 @@ namespace CustomerSurvey.Api.Controllers
                 NameAr = request.NameAr,
                 Description = request.Description,
                 ActiveFrom = request.ActiveFrom,
-                ExpireTo = request.ExpireTo
+                ExpireTo = request.ExpireTo,
+                CustomInputs = request.CustomInputs
+                    .Select(customInput => new CreateTemplateCustomInputCommandItem
+                    {
+                        Name = customInput.Name,
+                        LabelEn = customInput.LabelEn,
+                        LabelAr = customInput.LabelAr,
+                        Type = customInput.Type,
+                        IsRequired = customInput.IsRequired,
+                        MinLength = customInput.MinLength,
+                        MaxLength = customInput.MaxLength,
+                        MinValue = customInput.MinValue,
+                        MaxValue = customInput.MaxValue,
+                        Order = customInput.Order
+                    })
+                    .ToArray()
             };
 
             var result = await sender.Send(command, cancellationToken);
@@ -127,9 +142,9 @@ namespace CustomerSurvey.Api.Controllers
         [HttpPut("{templateId:guid}")]
         [Permission("Templates.Update")]
         public async Task<IActionResult> Update(
-    Guid templateId,
-    [FromBody] UpdateTemplateRequest request,
-    CancellationToken cancellationToken)
+      Guid templateId,
+      [FromBody] UpdateTemplateRequest request,
+      CancellationToken cancellationToken)
         {
             var command = new UpdateTemplateCommand
             {
@@ -138,7 +153,23 @@ namespace CustomerSurvey.Api.Controllers
                 NameAr = request.NameAr,
                 Description = request.Description,
                 ActiveFrom = request.ActiveFrom,
-                ExpireTo = request.ExpireTo
+                ExpireTo = request.ExpireTo,
+                CustomInputs = request.CustomInputs
+                    .Select(customInput => new UpdateTemplateCustomInputCommandItem
+                    {
+                        CustomInputId = customInput.CustomInputId,
+                        Name = customInput.Name,
+                        LabelEn = customInput.LabelEn,
+                        LabelAr = customInput.LabelAr,
+                        Type = customInput.Type,
+                        IsRequired = customInput.IsRequired,
+                        MinLength = customInput.MinLength,
+                        MaxLength = customInput.MaxLength,
+                        MinValue = customInput.MinValue,
+                        MaxValue = customInput.MaxValue,
+                        Order = customInput.Order
+                    })
+                    .ToArray()
             };
 
             var result = await sender.Send(command, cancellationToken);

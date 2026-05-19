@@ -55,6 +55,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
                 Status = x.Status,
                 IsActive = x.IsActive,
                 QuestionsCount = x.TemplateQuestions.Count,
+                CustomInputsCount = x.CustomInputs.Count(customInput => customInput.IsActive),
                 CreatedByApplicationUserId = x.CreatedByApplicationUserId,
                 CreatedOnUtc = x.CreatedOnUtc,
                 ActiveFrom = x.ActiveFrom,

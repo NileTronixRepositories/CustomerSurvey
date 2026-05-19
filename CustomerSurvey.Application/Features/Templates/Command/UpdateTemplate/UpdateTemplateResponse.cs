@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CustomerSurvey.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,36 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
         public DateTime? ExpireTo { get; init; }
 
         public string Status { get; init; } = string.Empty;
+
+        public bool IsActive { get; init; }
+
+        public IReadOnlyCollection<UpdateTemplateCustomInputResponse> CustomInputs { get; init; }
+            = Array.Empty<UpdateTemplateCustomInputResponse>();
+    }
+
+    public sealed record UpdateTemplateCustomInputResponse
+    {
+        public Guid CustomInputId { get; init; }
+
+        public string Name { get; init; } = string.Empty;
+
+        public string? LabelEn { get; init; }
+
+        public string? LabelAr { get; init; }
+
+        public TemplateCustomInputType Type { get; init; }
+
+        public bool IsRequired { get; init; }
+
+        public int? MinLength { get; init; }
+
+        public int? MaxLength { get; init; }
+
+        public int? MinValue { get; init; }
+
+        public int? MaxValue { get; init; }
+
+        public int Order { get; init; }
 
         public bool IsActive { get; init; }
     }

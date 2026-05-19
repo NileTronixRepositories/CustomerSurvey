@@ -1591,6 +1591,105 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Integer custom input validation settings are invalid..
+        /// </summary>
+        public static string CreateTemplate_CustomInput_IntegerValidation_Invalid {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CustomInput_IntegerValidation_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input Arabic label must not exceed 200 characters..
+        /// </summary>
+        public static string CreateTemplate_CustomInput_LabelAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CustomInput_LabelAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input English label must not exceed 200 characters..
+        /// </summary>
+        public static string CreateTemplate_CustomInput_LabelEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CustomInput_LabelEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name cannot be duplicated inside the same template..
+        /// </summary>
+        public static string CreateTemplate_CustomInput_Name_Duplicated {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CustomInput_Name_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name must not exceed 100 characters..
+        /// </summary>
+        public static string CreateTemplate_CustomInput_Name_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CustomInput_Name_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name is required..
+        /// </summary>
+        public static string CreateTemplate_CustomInput_Name_Required {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CustomInput_Name_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input order cannot be duplicated inside the same template..
+        /// </summary>
+        public static string CreateTemplate_CustomInput_Order_Duplicated {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CustomInput_Order_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input order is invalid..
+        /// </summary>
+        public static string CreateTemplate_CustomInput_Order_Invalid {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CustomInput_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String custom input validation settings are invalid..
+        /// </summary>
+        public static string CreateTemplate_CustomInput_StringValidation_Invalid {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CustomInput_StringValidation_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input type is invalid..
+        /// </summary>
+        public static string CreateTemplate_CustomInput_Type_Invalid {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CustomInput_Type_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom inputs are invalid..
+        /// </summary>
+        public static string CreateTemplate_CustomInputs_Invalid {
+            get {
+                return ResourceManager.GetString("CreateTemplate_CustomInputs_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Template description must not exceed 1000 characters..
         /// </summary>
         public static string CreateTemplate_Description_MaxLength {
@@ -3283,6 +3382,87 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The same custom input cannot be submitted more than once..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_CustomInput_Duplicated {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_CustomInput_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integer custom input value must be a valid integer..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_CustomInput_Integer_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_CustomInput_Integer_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integer custom input value is greater than the maximum value..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_CustomInput_Integer_MaxValue {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_CustomInput_Integer_MaxValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integer custom input value is less than the minimum value..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_CustomInput_Integer_MinValue {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_CustomInput_Integer_MinValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One custom input does not belong to this template..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_CustomInput_NotFound {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_CustomInput_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String custom input value exceeds the maximum length..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_CustomInput_String_MaxLength {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_CustomInput_String_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String custom input value is shorter than the minimum length..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_CustomInput_String_MinLength {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_CustomInput_String_MinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input type is invalid..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_CustomInput_Type_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_CustomInput_Type_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input value is required..
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_CustomInput_Value_Required {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_CustomInput_Value_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SubmitOperatorTemplateResponse_DuplicateQuestionAnswers.
         /// </summary>
         public static string SubmitOperatorTemplateResponse_DuplicateQuestionAnswers {
@@ -4467,6 +4647,132 @@ namespace CustomerSurvey.Domain.Resources {
         public static string UpdateTemplate_CurrentBranchActor_NotFound {
             get {
                 return ResourceManager.GetString("UpdateTemplate_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The same custom input cannot be sent more than once in the request..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_Id_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_Id_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integer custom input validation settings are invalid..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_IntegerValidation_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_IntegerValidation_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input Arabic label must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_LabelAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_LabelAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input English label must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_LabelEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_LabelEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name cannot be duplicated inside the same template..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_Name_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_Name_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name must not exceed 100 characters..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_Name_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_Name_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name is required..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_Name_Required {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_Name_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One custom input was not found inside this template..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input order cannot be duplicated inside the same template..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_Order_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_Order_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input order is invalid..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_Order_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String custom input validation settings are invalid..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_StringValidation_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_StringValidation_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input type cannot be changed after creation..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_Type_CannotBeChanged {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_Type_CannotBeChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input type is invalid..
+        /// </summary>
+        public static string UpdateTemplate_CustomInput_Type_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInput_Type_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom inputs are invalid..
+        /// </summary>
+        public static string UpdateTemplate_CustomInputs_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateTemplate_CustomInputs_Invalid", resourceCulture);
             }
         }
         
