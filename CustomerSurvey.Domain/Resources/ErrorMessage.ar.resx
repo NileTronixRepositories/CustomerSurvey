@@ -2244,6 +2244,51 @@
   <data name="GetDepartmentDashboard_GroupBy_Invalid" xml:space="preserve">
     <value>طريقة التجميع غير صحيحة.</value>
   </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_OperatorId_Required" xml:space="preserve">
+    <value>المشغل مطلوب.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_CurrentDepartmentAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير القسم الحالي.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_Operator_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المشغل داخل القسم الحالي.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة يجب أن يكون بين 1 و 100.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_DateRange_Invalid" xml:space="preserve">
+    <value>تاريخ البداية يجب أن يكون قبل أو يساوي تاريخ النهاية.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_DateRange_TooLarge" xml:space="preserve">
+    <value>المدة المطلوبة لا يجب أن تزيد عن 12 شهر.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_MinScore_Invalid" xml:space="preserve">
+    <value>أقل نسبة تقييم يجب أن تكون بين 0 و 100.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_MaxScore_Invalid" xml:space="preserve">
+    <value>أعلى نسبة تقييم يجب أن تكون بين 0 و 100.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_ScoreRange_Invalid" xml:space="preserve">
+    <value>أقل نسبة تقييم يجب أن تكون أقل من أو تساوي أعلى نسبة تقييم.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponseDetails_OperatorId_Required" xml:space="preserve">
+    <value>المشغل مطلوب.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponseDetails_SurveyResponseId_Required" xml:space="preserve">
+    <value>رقم رد الاستبيان مطلوب.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponseDetails_CurrentDepartmentAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير القسم الحالي.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponseDetails_Operator_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المشغل داخل القسم الحالي.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponseDetails_Response_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على رد الاستبيان لهذا المشغل داخل القسم الحالي.</value>
+  </data>
   <data name="GetBranchSurveyResponseDetails_SurveyResponseId_Required" xml:space="preserve">
     <value>رقم رد الاستبيان مطلوب.</value>
   </data>

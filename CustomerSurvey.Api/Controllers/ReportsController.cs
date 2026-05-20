@@ -5,6 +5,8 @@ using CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactionRep
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSurveyResponsesPagination;
 using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
+using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperatorSurveyResponseDetails;
+using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperatorSurveyResponsesPagination;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponsesPagination;
@@ -59,6 +61,40 @@ namespace CustomerSurvey.Api.Controllers
     CancellationToken cancellationToken)
         {
             query ??= new GetDepartmentDashboardQuery();
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("department-operators/{operatorId:guid}/responses")]
+        [Permission("Reports.ViewDepartmentReports")]
+        public async Task<IActionResult> GetDepartmentOperatorResponses(
+    [FromRoute] Guid operatorId,
+    [FromQuery] GetDepartmentOperatorSurveyResponsesPaginationQuery query,
+    CancellationToken cancellationToken)
+        {
+            query ??= new GetDepartmentOperatorSurveyResponsesPaginationQuery();
+            query.OperatorId = operatorId;
+            query.SearchText ??= string.Empty;
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("department-operators/{operatorId:guid}/responses/{surveyResponseId:guid}")]
+        [Permission("Reports.ViewDepartmentReports")]
+        public async Task<IActionResult> GetDepartmentOperatorResponseDetails(
+    [FromRoute] Guid operatorId,
+    [FromRoute] Guid surveyResponseId,
+    CancellationToken cancellationToken)
+        {
+            var query = new GetDepartmentOperatorSurveyResponseDetailsQuery
+            {
+                OperatorId = operatorId,
+                SurveyResponseId = surveyResponseId
+            };
 
             var result = await sender.Send(query, cancellationToken);
 

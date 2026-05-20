@@ -2244,6 +2244,51 @@
   <data name="GetDepartmentDashboard_GroupBy_Invalid" xml:space="preserve">
     <value>Group by value is invalid.</value>
   </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_OperatorId_Required" xml:space="preserve">
+    <value>Operator is required.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_CurrentDepartmentAdmin_NotFound" xml:space="preserve">
+    <value>Current Department Admin profile was not found.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_Operator_NotFound" xml:space="preserve">
+    <value>Operator was not found inside the current department.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_PageSize_Invalid" xml:space="preserve">
+    <value>Page size must be between 1 and 100.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_DateRange_Invalid" xml:space="preserve">
+    <value>From date must be less than or equal to To date.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_DateRange_TooLarge" xml:space="preserve">
+    <value>Requested date range must not exceed 12 months.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_MinScore_Invalid" xml:space="preserve">
+    <value>Minimum score percentage must be between 0 and 100.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_MaxScore_Invalid" xml:space="preserve">
+    <value>Maximum score percentage must be between 0 and 100.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponsesPagination_ScoreRange_Invalid" xml:space="preserve">
+    <value>Minimum score percentage must be less than or equal to maximum score percentage.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponseDetails_OperatorId_Required" xml:space="preserve">
+    <value>Operator is required.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponseDetails_SurveyResponseId_Required" xml:space="preserve">
+    <value>Survey response id is required.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponseDetails_CurrentDepartmentAdmin_NotFound" xml:space="preserve">
+    <value>Current Department Admin profile was not found.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponseDetails_Operator_NotFound" xml:space="preserve">
+    <value>Operator was not found inside the current department.</value>
+  </data>
+  <data name="GetDepartmentOperatorSurveyResponseDetails_Response_NotFound" xml:space="preserve">
+    <value>Survey response was not found for this operator inside the current department.</value>
+  </data>
   <data name="GetBranchSurveyResponseDetails_SurveyResponseId_Required" xml:space="preserve">
     <value>Survey response id is required.</value>
   </data>
