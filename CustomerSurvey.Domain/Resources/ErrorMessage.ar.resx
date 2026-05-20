@@ -2220,6 +2220,30 @@
   <data name="GetBranchDashboard_GroupBy_Invalid" xml:space="preserve">
     <value>طريقة التجميع غير صحيحة.</value>
   </data>
+  <data name="GetDepartmentDashboard_CurrentDepartmentAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير القسم الحالي.</value>
+  </data>
+  <data name="GetDepartmentDashboard_Template_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القالب.</value>
+  </data>
+  <data name="GetDepartmentDashboard_DateRange_Invalid" xml:space="preserve">
+    <value>تاريخ البداية يجب أن يكون قبل أو يساوي تاريخ النهاية.</value>
+  </data>
+  <data name="GetDepartmentDashboard_DateRange_TooLarge" xml:space="preserve">
+    <value>المدة المطلوبة لا يجب أن تزيد عن 12 شهر.</value>
+  </data>
+  <data name="GetDepartmentDashboard_TopQuestionsCount_Invalid" xml:space="preserve">
+    <value>عدد الأسئلة الأقل تقييمًا يجب أن يكون بين 1 و 20.</value>
+  </data>
+  <data name="GetDepartmentDashboard_CriticalResponsesCount_Invalid" xml:space="preserve">
+    <value>عدد الردود الحرجة يجب أن يكون بين 1 و 50.</value>
+  </data>
+  <data name="GetDepartmentDashboard_CriticalScoreThreshold_Invalid" xml:space="preserve">
+    <value>حد التقييم الحرج يجب أن يكون بين 0 و 100.</value>
+  </data>
+  <data name="GetDepartmentDashboard_GroupBy_Invalid" xml:space="preserve">
+    <value>طريقة التجميع غير صحيحة.</value>
+  </data>
   <data name="GetBranchSurveyResponseDetails_SurveyResponseId_Required" xml:space="preserve">
     <value>رقم رد الاستبيان مطلوب.</value>
   </data>

@@ -89,6 +89,7 @@ internal static class SeedConstants
         public const string OperatorTemplatesSubmitResponse = "OperatorTemplates.SubmitResponse";
 
         public const string ReportsViewBranchReports = "Reports.ViewBranchReports";
+        public const string ReportsViewDepartmentReports = "Reports.ViewDepartmentReports";
         public const string ReportsViewSystemDashboard = "Reports.ViewSystemDashboard";
 
         public const string GlobalQuestionGroupsCreate = "GlobalQuestionGroups.Create";
@@ -330,6 +331,9 @@ internal static class SeedConstants
 
             public static readonly Guid ReportsViewSystemDashboard =
                 Guid.Parse("12000000-0000-0000-0000-000000000069");
+
+            public static readonly Guid ReportsViewDepartmentReports =
+                Guid.Parse("12000000-0000-0000-0000-000000000070");
         }
     }
 
@@ -408,6 +412,7 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.OperatorTemplatesSubmitResponse, PermissionNames.OperatorTemplatesSubmitResponse),
 
             new PermissionSeedItem(SeedIds.Permissions.ReportsViewBranchReports, PermissionNames.ReportsViewBranchReports),
+            new PermissionSeedItem(SeedIds.Permissions.ReportsViewDepartmentReports, PermissionNames.ReportsViewDepartmentReports),
             new PermissionSeedItem(SeedIds.Permissions.ReportsViewSystemDashboard, PermissionNames.ReportsViewSystemDashboard),
 
             new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionGroupsCreate, PermissionNames.GlobalQuestionGroupsCreate),
@@ -528,7 +533,8 @@ internal static class SeedConstants
                 SeedIds.Permissions.OperatorsViewAll,
                 SeedIds.Permissions.OperatorsAssignTemplates,
                 SeedIds.Permissions.OperatorsUpdate,
-                SeedIds.Permissions.TemplatesViewSelection
+                SeedIds.Permissions.TemplatesViewSelection,
+                SeedIds.Permissions.ReportsViewDepartmentReports
             ];
 
             foreach (var permissionId in permissionIds)

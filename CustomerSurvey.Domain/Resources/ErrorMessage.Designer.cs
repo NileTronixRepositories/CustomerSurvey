@@ -2725,6 +2725,78 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Critical responses count must be between 1 and 50..
+        /// </summary>
+        public static string GetDepartmentDashboard_CriticalResponsesCount_Invalid {
+            get {
+                return ResourceManager.GetString("GetDepartmentDashboard_CriticalResponsesCount_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Critical score threshold must be between 0 and 100..
+        /// </summary>
+        public static string GetDepartmentDashboard_CriticalScoreThreshold_Invalid {
+            get {
+                return ResourceManager.GetString("GetDepartmentDashboard_CriticalScoreThreshold_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Department Admin profile was not found..
+        /// </summary>
+        public static string GetDepartmentDashboard_CurrentDepartmentAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetDepartmentDashboard_CurrentDepartmentAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From date must be less than or equal to To date..
+        /// </summary>
+        public static string GetDepartmentDashboard_DateRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetDepartmentDashboard_DateRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requested date range must not exceed 12 months..
+        /// </summary>
+        public static string GetDepartmentDashboard_DateRange_TooLarge {
+            get {
+                return ResourceManager.GetString("GetDepartmentDashboard_DateRange_TooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Group by value is invalid..
+        /// </summary>
+        public static string GetDepartmentDashboard_GroupBy_Invalid {
+            get {
+                return ResourceManager.GetString("GetDepartmentDashboard_GroupBy_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found..
+        /// </summary>
+        public static string GetDepartmentDashboard_Template_NotFound {
+            get {
+                return ResourceManager.GetString("GetDepartmentDashboard_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top questions count must be between 1 and 20..
+        /// </summary>
+        public static string GetDepartmentDashboard_TopQuestionsCount_Invalid {
+            get {
+                return ResourceManager.GetString("GetDepartmentDashboard_TopQuestionsCount_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Branch was not found..
         /// </summary>
         public static string GetBranchDetails_Branch_NotFound {
