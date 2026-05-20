@@ -4,6 +4,7 @@ using CustomerSurvey.Application.Features.Reports.Query.GetBranchDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactionReport;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSurveyResponsesPagination;
+using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponsesPagination;
@@ -45,6 +46,19 @@ namespace CustomerSurvey.Api.Controllers
     CancellationToken cancellationToken)
         {
             query ??= new GetBranchDashboardQuery();
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("department-dashboard")]
+        [Permission("Reports.ViewDepartmentReports")]
+        public async Task<IActionResult> GetDepartmentDashboard(
+    [FromQuery] GetDepartmentDashboardQuery query,
+    CancellationToken cancellationToken)
+        {
+            query ??= new GetDepartmentDashboardQuery();
 
             var result = await sender.Send(query, cancellationToken);
 
