@@ -101,6 +101,16 @@ internal static class SeedConstants
         public const string GlobalQuestionsDelete = "GlobalQuestions.Delete";
         public const string GlobalQuestionsViewAll = "GlobalQuestions.ViewAll";
         public const string GlobalQuestionsRestore = "GlobalQuestions.Restore";
+
+        public const string AnonymousTemplatesCreate = "AnonymousTemplates.Create";
+        public const string AnonymousTemplatesUpdate = "AnonymousTemplates.Update";
+        public const string AnonymousTemplatesDelete = "AnonymousTemplates.Delete";
+        public const string AnonymousTemplatesRestore = "AnonymousTemplates.Restore";
+        public const string AnonymousTemplatesViewAll = "AnonymousTemplates.ViewAll";
+        public const string AnonymousTemplatesViewDetails = "AnonymousTemplates.ViewDetails";
+        public const string AnonymousTemplatesAssignQuestions = "AnonymousTemplates.AssignQuestions";
+        public const string AnonymousTemplatesManageQuestionConditions = "AnonymousTemplates.ManageQuestionConditions";
+        public const string AnonymousTemplatesViewResponses = "AnonymousTemplates.ViewResponses";
     }
 
     public static class SeedIds
@@ -289,6 +299,33 @@ internal static class SeedConstants
 
             public static readonly Guid GlobalQuestionsRestore =
                 Guid.Parse("12000000-0000-0000-0000-000000000059");
+
+            public static readonly Guid AnonymousTemplatesCreate =
+                Guid.Parse("12000000-0000-0000-0000-000000000060");
+
+            public static readonly Guid AnonymousTemplatesUpdate =
+                Guid.Parse("12000000-0000-0000-0000-000000000061");
+
+            public static readonly Guid AnonymousTemplatesDelete =
+                Guid.Parse("12000000-0000-0000-0000-000000000062");
+
+            public static readonly Guid AnonymousTemplatesRestore =
+                Guid.Parse("12000000-0000-0000-0000-000000000063");
+
+            public static readonly Guid AnonymousTemplatesViewAll =
+                Guid.Parse("12000000-0000-0000-0000-000000000064");
+
+            public static readonly Guid AnonymousTemplatesViewDetails =
+                Guid.Parse("12000000-0000-0000-0000-000000000065");
+
+            public static readonly Guid AnonymousTemplatesAssignQuestions =
+                Guid.Parse("12000000-0000-0000-0000-000000000066");
+
+            public static readonly Guid AnonymousTemplatesManageQuestionConditions =
+                Guid.Parse("12000000-0000-0000-0000-000000000067");
+
+            public static readonly Guid AnonymousTemplatesViewResponses =
+                Guid.Parse("12000000-0000-0000-0000-000000000068");
         }
     }
 
@@ -378,7 +415,17 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionsUpdate, PermissionNames.GlobalQuestionsUpdate),
             new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionsDelete, PermissionNames.GlobalQuestionsDelete),
             new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionsViewAll, PermissionNames.GlobalQuestionsViewAll),
-            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionsRestore, PermissionNames.GlobalQuestionsRestore)
+            new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionsRestore, PermissionNames.GlobalQuestionsRestore),
+
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesCreate, PermissionNames.AnonymousTemplatesCreate),
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesUpdate, PermissionNames.AnonymousTemplatesUpdate),
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesDelete, PermissionNames.AnonymousTemplatesDelete),
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesRestore, PermissionNames.AnonymousTemplatesRestore),
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesViewAll, PermissionNames.AnonymousTemplatesViewAll),
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesViewDetails, PermissionNames.AnonymousTemplatesViewDetails),
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesAssignQuestions, PermissionNames.AnonymousTemplatesAssignQuestions),
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesManageQuestionConditions, PermissionNames.AnonymousTemplatesManageQuestionConditions),
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesViewResponses, PermissionNames.AnonymousTemplatesViewResponses)
         ];
 
         public static readonly IReadOnlyCollection<RolePermissionSeedItem> RolePermissions =
@@ -437,6 +484,16 @@ internal static class SeedConstants
                 SeedIds.Permissions.TemplatesAssignQuestions,
                 SeedIds.Permissions.TemplatesManageQuestionConditions,
 
+                SeedIds.Permissions.AnonymousTemplatesCreate,
+                SeedIds.Permissions.AnonymousTemplatesUpdate,
+                SeedIds.Permissions.AnonymousTemplatesDelete,
+                SeedIds.Permissions.AnonymousTemplatesRestore,
+                SeedIds.Permissions.AnonymousTemplatesViewAll,
+                SeedIds.Permissions.AnonymousTemplatesViewDetails,
+                SeedIds.Permissions.AnonymousTemplatesAssignQuestions,
+                SeedIds.Permissions.AnonymousTemplatesManageQuestionConditions,
+                SeedIds.Permissions.AnonymousTemplatesViewResponses,
+
                 SeedIds.Permissions.QuestionGroupsCreate,
                 SeedIds.Permissions.QuestionGroupsUpdate,
                 SeedIds.Permissions.QuestionGroupsDelete,
@@ -488,7 +545,17 @@ internal static class SeedConstants
                 SeedIds.Permissions.TemplatesViewDetails,
                 SeedIds.Permissions.TemplatesViewSelection,
                 SeedIds.Permissions.TemplatesAssignQuestions,
-                SeedIds.Permissions.TemplatesManageQuestionConditions
+                SeedIds.Permissions.TemplatesManageQuestionConditions,
+
+                SeedIds.Permissions.AnonymousTemplatesCreate,
+                SeedIds.Permissions.AnonymousTemplatesUpdate,
+                SeedIds.Permissions.AnonymousTemplatesDelete,
+                SeedIds.Permissions.AnonymousTemplatesRestore,
+                SeedIds.Permissions.AnonymousTemplatesViewAll,
+                SeedIds.Permissions.AnonymousTemplatesViewDetails,
+                SeedIds.Permissions.AnonymousTemplatesAssignQuestions,
+                SeedIds.Permissions.AnonymousTemplatesManageQuestionConditions,
+                SeedIds.Permissions.AnonymousTemplatesViewResponses
             ];
 
             foreach (var permissionId in permissionIds)

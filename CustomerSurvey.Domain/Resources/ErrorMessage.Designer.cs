@@ -61,6 +61,123 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_AnonymousTemplateId_Required {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_AnonymousTemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to assign questions to anonymous template..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global anonymous template can contain global questions only..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_GlobalTemplate_GlobalQuestionsOnly {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_GlobalTemplate_GlobalQuestionsOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question order cannot be duplicated inside the template..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_Order_Duplicated {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_Order_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question order must be greater than zero..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_Order_Invalid {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question cannot be duplicated inside the template..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_Question_Duplicated {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_Question_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the questions or its group is inactive..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_Question_Inactive {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_Question_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question is not allowed inside this anonymous template..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_Question_NotAllowed {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_Question_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the questions was not found..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_Question_NotFound {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_Question_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question id is required..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_QuestionId_Required {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_QuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Questions list is invalid..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_Questions_Invalid {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_Questions_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot update questions for inactive anonymous template..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_Template_Inactive {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_Template_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string AssignQuestionsToAnonymousTemplate_Template_NotFound {
+            get {
+                return ResourceManager.GetString("AssignQuestionsToAnonymousTemplate_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current branch actor profile was not found..
         /// </summary>
         public static string AssignQuestionsToTemplate_CurrentBranchActor_NotFound {
@@ -300,6 +417,222 @@ namespace CustomerSurvey.Domain.Resources {
         public static string Auth_Token_Missing {
             get {
                 return ResourceManager.GetString("Auth_Token_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template active from date is required..
+        /// </summary>
+        public static string CreateAnonymousTemplate_ActiveFrom_Required {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_ActiveFrom_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch actor can create branch anonymous templates only..
+        /// </summary>
+        public static string CreateAnonymousTemplate_BranchActor_BranchOnly {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_BranchActor_BranchOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to create anonymous template..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integer custom input cannot have MinLength or MaxLength..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_IntegerValidation_Invalid {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_IntegerValidation_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input Arabic label must not exceed 200 characters..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_LabelAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_LabelAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input English label must not exceed 200 characters..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_LabelEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_LabelEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MaxLength must be greater than or equal to MinLength..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_LengthRange_Invalid {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_LengthRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name cannot be duplicated in the same template..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_Name_Duplicated {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_Name_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name must not exceed 100 characters..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_Name_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_Name_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name is required..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_Name_Required {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_Name_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input order cannot be duplicated in the same template..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_Order_Duplicated {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_Order_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input order must be greater than zero..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_Order_Invalid {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String custom input cannot have MinValue or MaxValue..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_StringValidation_Invalid {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_StringValidation_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to v.
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_Type_Invalid {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_Type_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MaxValue must be greater than or equal to MinValue..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInput_ValueRange_Invalid {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInput_ValueRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom inputs are invalid..
+        /// </summary>
+        public static string CreateAnonymousTemplate_CustomInputs_Invalid {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_CustomInputs_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template description must not exceed 1000 characters..
+        /// </summary>
+        public static string CreateAnonymousTemplate_Description_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_Description_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template expire date must be after active from date..
+        /// </summary>
+        public static string CreateAnonymousTemplate_ExpireTo_MustBeAfterActiveFrom {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_ExpireTo_MustBeAfterActiveFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template name already exists..
+        /// </summary>
+        public static string CreateAnonymousTemplate_Name_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_Name_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateAnonymousTemplate_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template English name must not exceed 200 characters..
+        /// </summary>
+        public static string CreateAnonymousTemplate_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CreateAnonymousTemplate_NameEn_Required.
+        /// </summary>
+        public static string CreateAnonymousTemplate_NameEn_Required {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template scope is invalid..
+        /// </summary>
+        public static string CreateAnonymousTemplate_Scope_Invalid {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_Scope_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SuperAdmin can create global anonymous templates only..
+        /// </summary>
+        public static string CreateAnonymousTemplate_SuperAdmin_GlobalOnly {
+            get {
+                return ResourceManager.GetString("CreateAnonymousTemplate_SuperAdmin_GlobalOnly", resourceCulture);
             }
         }
         
@@ -1744,6 +2077,42 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string DeleteAnonymousTemplate_AnonymousTemplateId_Required {
+            get {
+                return ResourceManager.GetString("DeleteAnonymousTemplate_AnonymousTemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to delete anonymous templates..
+        /// </summary>
+        public static string DeleteAnonymousTemplate_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteAnonymousTemplate_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template is already inactive..
+        /// </summary>
+        public static string DeleteAnonymousTemplate_Template_AlreadyInactive {
+            get {
+                return ResourceManager.GetString("DeleteAnonymousTemplate_Template_AlreadyInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string DeleteAnonymousTemplate_Template_NotFound {
+            get {
+                return ResourceManager.GetString("DeleteAnonymousTemplate_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User is already inactive..
         /// </summary>
         public static string DeleteBranchUser_Already_Inactive {
@@ -2028,6 +2397,258 @@ namespace CustomerSurvey.Domain.Resources {
         public static string DeleteTemplate_TemplateId_Required {
             get {
                 return ResourceManager.GetString("DeleteTemplate_TemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string GetAnonymousTemplateDetails_AnonymousTemplateId_Required {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateDetails_AnonymousTemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to view anonymous template details..
+        /// </summary>
+        public static string GetAnonymousTemplateDetails_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateDetails_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string GetAnonymousTemplateDetails_Template_NotFound {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateDetails_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string GetAnonymousTemplateQuestionsSelection_AnonymousTemplateId_Required {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateQuestionsSelection_AnonymousTemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to view anonymous template questions selection..
+        /// </summary>
+        public static string GetAnonymousTemplateQuestionsSelection_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateQuestionsSelection_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search text must not exceed 200 characters..
+        /// </summary>
+        public static string GetAnonymousTemplateQuestionsSelection_SearchText_MaxLength {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateQuestionsSelection_SearchText_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot select questions for inactive anonymous template..
+        /// </summary>
+        public static string GetAnonymousTemplateQuestionsSelection_Template_Inactive {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateQuestionsSelection_Template_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string GetAnonymousTemplateQuestionsSelection_Template_NotFound {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateQuestionsSelection_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string GetAnonymousTemplateResponseDetails_AnonymousTemplateId_Required {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponseDetails_AnonymousTemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to view anonymous template response details..
+        /// </summary>
+        public static string GetAnonymousTemplateResponseDetails_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponseDetails_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template response was not found..
+        /// </summary>
+        public static string GetAnonymousTemplateResponseDetails_Response_NotFound {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponseDetails_Response_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous response id is required..
+        /// </summary>
+        public static string GetAnonymousTemplateResponseDetails_ResponseId_Required {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponseDetails_ResponseId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string GetAnonymousTemplateResponseDetails_Template_NotFound {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponseDetails_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string GetAnonymousTemplateResponsesPagination_AnonymousTemplateId_Required {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponsesPagination_AnonymousTemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to view anonymous template responses..
+        /// </summary>
+        public static string GetAnonymousTemplateResponsesPagination_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponsesPagination_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date range is invalid..
+        /// </summary>
+        public static string GetAnonymousTemplateResponsesPagination_DateRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponsesPagination_DateRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum score percentage is invalid..
+        /// </summary>
+        public static string GetAnonymousTemplateResponsesPagination_MaxScorePercentage_Invalid {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponsesPagination_MaxScorePercentage_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum score percentage is invalid..
+        /// </summary>
+        public static string GetAnonymousTemplateResponsesPagination_MinScorePercentage_Invalid {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponsesPagination_MinScorePercentage_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number is invalid..
+        /// </summary>
+        public static string GetAnonymousTemplateResponsesPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponsesPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size is invalid..
+        /// </summary>
+        public static string GetAnonymousTemplateResponsesPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponsesPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must not exceed 100..
+        /// </summary>
+        public static string GetAnonymousTemplateResponsesPagination_PageSize_Max {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponsesPagination_PageSize_Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Score percentage range is invalid..
+        /// </summary>
+        public static string GetAnonymousTemplateResponsesPagination_ScoreRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponsesPagination_ScoreRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string GetAnonymousTemplateResponsesPagination_Template_NotFound {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplateResponsesPagination_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to view anonymous templates..
+        /// </summary>
+        public static string GetAnonymousTemplatesPagination_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplatesPagination_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number is invalid..
+        /// </summary>
+        public static string GetAnonymousTemplatesPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplatesPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size is invalid..
+        /// </summary>
+        public static string GetAnonymousTemplatesPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplatesPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must not exceed 100..
+        /// </summary>
+        public static string GetAnonymousTemplatesPagination_PageSize_Max {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplatesPagination_PageSize_Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template scope is invalid..
+        /// </summary>
+        public static string GetAnonymousTemplatesPagination_Scope_Invalid {
+            get {
+                return ResourceManager.GetString("GetAnonymousTemplatesPagination_Scope_Invalid", resourceCulture);
             }
         }
         
@@ -2518,6 +3139,60 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string GetPublicAnonymousTemplate_AnonymousTemplateId_Required {
+            get {
+                return ResourceManager.GetString("GetPublicAnonymousTemplate_AnonymousTemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template has expired..
+        /// </summary>
+        public static string GetPublicAnonymousTemplate_Template_Expired {
+            get {
+                return ResourceManager.GetString("GetPublicAnonymousTemplate_Template_Expired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template has no available questions..
+        /// </summary>
+        public static string GetPublicAnonymousTemplate_Template_HasNoQuestions {
+            get {
+                return ResourceManager.GetString("GetPublicAnonymousTemplate_Template_HasNoQuestions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template is not available..
+        /// </summary>
+        public static string GetPublicAnonymousTemplate_Template_NotAvailable {
+            get {
+                return ResourceManager.GetString("GetPublicAnonymousTemplate_Template_NotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string GetPublicAnonymousTemplate_Template_NotFound {
+            get {
+                return ResourceManager.GetString("GetPublicAnonymousTemplate_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template has not started yet..
+        /// </summary>
+        public static string GetPublicAnonymousTemplate_Template_NotStarted {
+            get {
+                return ResourceManager.GetString("GetPublicAnonymousTemplate_Template_NotStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current branch actor profile was not found..
         /// </summary>
         public static string GetQuestionGroupsPagination_CurrentBranchActor_NotFound {
@@ -2775,6 +3450,205 @@ namespace CustomerSurvey.Domain.Resources {
         public static string Login_UserNameOrEmail_Required {
             get {
                 return ResourceManager.GetString("Login_UserNameOrEmail_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_AnonymousTemplateId_Required {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_AnonymousTemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Child question was not found inside this template..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_ChildQuestion_NotFound {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_ChildQuestion_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Child question id is required..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_ChildQuestionId_Required {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_ChildQuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Circular question flow is not allowed..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_CircularFlow_Detected {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_CircularFlow_Detected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question conditions list is invalid..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_Conditions_Invalid {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_Conditions_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to manage anonymous template question conditions..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The same question condition cannot be duplicated..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_Duplicated {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Condition order cannot be duplicated..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_Order_Duplicated {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_Order_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Condition order must be greater than zero..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_Order_Invalid {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent and child question cannot be the same..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_ParentAndChild_CannotBeSame {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_ParentAndChild_CannotBeSame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent question was not found inside this template..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_ParentQuestion_NotFound {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_ParentQuestion_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent question id is required..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_ParentQuestionId_Required {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_ParentQuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent question type does not support visibility conditions..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_ParentQuestionType_NotAllowed {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_ParentQuestionType_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the questions is inactive..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_Question_Inactive {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_Question_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected option is inactive..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_SelectedOption_Inactive {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_SelectedOption_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected option does not belong to the parent question..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_SelectedOption_NotBelongToParentQuestion {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_SelectedOption_NotBelongToParentQuestio" +
+                        "n", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected option was not found..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_SelectedOption_NotFound {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_SelectedOption_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot manage conditions for inactive anonymous template..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_Template_Inactive {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_Template_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_Template_NotFound {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trigger data shape is invalid for the selected trigger type..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_TriggerShape_Invalid {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_TriggerShape_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trigger type does not match parent question type..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_TriggerType_DoesNotMatchParentQuestion {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_TriggerType_DoesNotMatchParentQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trigger type is invalid..
+        /// </summary>
+        public static string ManageAnonymousTemplateQuestionConditions_TriggerType_Invalid {
+            get {
+                return ResourceManager.GetString("ManageAnonymousTemplateQuestionConditions_TriggerType_Invalid", resourceCulture);
             }
         }
         
@@ -3067,6 +3941,42 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string RestoreAnonymousTemplate_AnonymousTemplateId_Required {
+            get {
+                return ResourceManager.GetString("RestoreAnonymousTemplate_AnonymousTemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string RestoreAnonymousTemplate_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreAnonymousTemplate_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template is already active..
+        /// </summary>
+        public static string RestoreAnonymousTemplate_Template_AlreadyActive {
+            get {
+                return ResourceManager.GetString("RestoreAnonymousTemplate_Template_AlreadyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string RestoreAnonymousTemplate_Template_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreAnonymousTemplate_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User is already active..
         /// </summary>
         public static string RestoreBranchUser_Already_Active {
@@ -3333,6 +4243,303 @@ namespace CustomerSurvey.Domain.Resources {
         public static string RestoreTemplate_TemplateId_Required {
             get {
                 return ResourceManager.GetString("RestoreTemplate_TemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All visible questions must be answered..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_AllVisibleQuestions_Required {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_AllVisibleQuestions_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_AnonymousTemplateId_Required {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_AnonymousTemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template question id is required..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_AnonymousTemplateQuestionId_Required {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_AnonymousTemplateQuestionId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The same question cannot be answered more than once..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_Answer_Duplicated {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_Answer_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Answers are invalid..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_Answers_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_Answers_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Complain answer is invalid..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_ComplainAnswer_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_ComplainAnswer_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input cannot be submitted more than once..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInput_Duplicated {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInput_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integer custom input value shape is invalid..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInput_IntegerShape_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInput_IntegerShape_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String custom input value exceeds the maximum length..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInput_MaxLength_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInput_MaxLength_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integer custom input value exceeds the maximum value..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInput_MaxValue_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInput_MaxValue_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String custom input value is shorter than the minimum length..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInput_MinLength_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInput_MinLength_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integer custom input value is less than the minimum value..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInput_MinValue_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInput_MinValue_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input was not found inside this template..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInput_NotFound {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInput_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This custom input is required..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInput_Required {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInput_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String custom input value shape is invalid..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInput_StringShape_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInput_StringShape_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input type is invalid..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInput_Type_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInput_Type_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input id is required..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInputId_Required {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInputId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input values are invalid..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_CustomInputValues_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_CustomInputValues_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hidden question answer is not allowed..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_HiddenQuestion_NotAllowed {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_HiddenQuestion_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One of the questions was not found inside the template..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_Question_NotFound {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_Question_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question type is not supported in submit..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_QuestionType_Unsupported {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_QuestionType_Unsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected option is inactive..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_SelectedOption_Inactive {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_SelectedOption_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected option does not belong to the question..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_SelectedOption_NotBelongToQuestion {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_SelectedOption_NotBelongToQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected option was not found..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_SelectedOption_NotFound {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_SelectedOption_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Single choice answer is invalid..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_SingleChoiceAnswer_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_SingleChoiceAnswer_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Smiles answer is invalid..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_SmilesAnswer_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_SmilesAnswer_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star rating answer is invalid..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_StarRatingAnswer_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_StarRatingAnswer_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template has expired..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_Template_Expired {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_Template_Expired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template has no available questions..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_Template_HasNoQuestions {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_Template_HasNoQuestions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template is not available..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_Template_NotAvailable {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_Template_NotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_Template_NotFound {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template has not started yet..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_Template_NotStarted {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_Template_NotStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Voice answer is invalid..
+        /// </summary>
+        public static string SubmitAnonymousTemplateResponse_VoiceAnswer_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitAnonymousTemplateResponse_VoiceAnswer_Invalid", resourceCulture);
             }
         }
         
@@ -3675,6 +4882,249 @@ namespace CustomerSurvey.Domain.Resources {
         public static string SubmitOperatorTemplateResponse_Voice_InvalidShape {
             get {
                 return ResourceManager.GetString("SubmitOperatorTemplateResponse_Voice_InvalidShape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template active from date is required..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_ActiveFrom_Required {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_ActiveFrom_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template id is required..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_AnonymousTemplateId_Required {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_AnonymousTemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current user is not allowed to update anonymous templates..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input id cannot be duplicated..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_Id_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_Id_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integer custom input cannot have MinLength or MaxLength..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_IntegerValidation_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_IntegerValidation_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input Arabic label must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_LabelAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_LabelAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input English label must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_LabelEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_LabelEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MaxLength must be greater than or equal to MinLength..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_LengthRange_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_LengthRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name cannot be duplicated in the same template..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_Name_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_Name_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name must not exceed 100 characters..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_Name_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_Name_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input name is required..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_Name_Required {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_Name_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input was not found inside this anonymous template..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input order cannot be duplicated in the same template..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_Order_Duplicated {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_Order_Duplicated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input order must be greater than zero..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_Order_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_Order_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String custom input cannot have MinValue or MaxValue..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_StringValidation_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_StringValidation_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Existing custom input type cannot be changed..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_Type_CannotBeChanged {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_Type_CannotBeChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom input type is invalid..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_Type_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_Type_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MaxValue must be greater than or equal to MinValue..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInput_ValueRange_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInput_ValueRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom inputs are invalid..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_CustomInputs_Invalid {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_CustomInputs_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template description must not exceed 1000 characters..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_Description_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_Description_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template expire date must be after active from date..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_ExpireTo_MustBeAfterActiveFrom {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_ExpireTo_MustBeAfterActiveFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template name already exists..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_Name_AlreadyExists {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_Name_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template Arabic name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_NameAr_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template English name must not exceed 200 characters..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_NameEn_MaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template English name is required..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_NameEn_Required {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_NameEn_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inactive anonymous template cannot be updated..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_Template_Inactive {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_Template_Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string UpdateAnonymousTemplate_Template_NotFound {
+            get {
+                return ResourceManager.GetString("UpdateAnonymousTemplate_Template_NotFound", resourceCulture);
             }
         }
         

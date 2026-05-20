@@ -22,6 +22,395 @@ namespace CustomerSurvey.infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousSurveyAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AnonymousSurveyResponseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AnonymousTemplateQuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("QuestionType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SelectedQuestionOptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("SmileValue")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StarRatingValue")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TextAnswer")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("VoiceFileName")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnonymousTemplateQuestionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("SelectedQuestionOptionId");
+
+                    b.HasIndex("AnonymousSurveyResponseId", "AnonymousTemplateQuestionId")
+                        .IsUnique();
+
+                    b.ToTable("AnonymousSurveyAnswer");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousSurveyResponse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ActualScore")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("AnonymousTemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MaxScore")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("ScorePercentage")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime>("SubmittedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnonymousTemplateId");
+
+                    b.HasIndex("SubmittedOnUtc");
+
+                    b.HasIndex("AnonymousTemplateId", "SubmittedOnUtc");
+
+                    b.ToTable("AnonymousSurveyResponse");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousSurveyResponseCustomInputValue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AnonymousSurveyResponseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AnonymousTemplateCustomInputId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IntegerValue")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NameSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("StringValue")
+                        .HasMaxLength(3000)
+                        .HasColumnType("nvarchar(3000)");
+
+                    b.Property<int>("TypeSnapshot")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnonymousSurveyResponseId");
+
+                    b.HasIndex("AnonymousTemplateCustomInputId");
+
+                    b.HasIndex("AnonymousSurveyResponseId", "AnonymousTemplateCustomInputId")
+                        .IsUnique();
+
+                    b.ToTable("AnonymousSurveyResponseCustomInputValue", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ASRCIV_Integer_Value", "([TypeSnapshot] <> 2) OR ([IntegerValue] IS NOT NULL AND [StringValue] IS NULL)");
+
+                            t.HasCheckConstraint("CK_ASRCIV_String_Value", "([TypeSnapshot] <> 1) OR ([StringValue] IS NOT NULL AND [IntegerValue] IS NULL)");
+                        });
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ActiveFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("BranchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ExpireTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NameAr")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PublicUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("QrCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Scope")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.ToTable("AnonymousTemplate");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousTemplateCustomInput", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AnonymousTemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LabelAr")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("LabelEn")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("MaxLength")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MaxValue")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinLength")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinValue")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnonymousTemplateId");
+
+                    b.HasIndex("AnonymousTemplateId", "Name")
+                        .IsUnique();
+
+                    b.HasIndex("AnonymousTemplateId", "IsActive", "Order");
+
+                    b.ToTable("AnonymousTemplateCustomInput", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_AnonymousTemplateCustomInput_Integer_Validation", "([Type] <> 2) OR ([MinLength] IS NULL AND [MaxLength] IS NULL)");
+
+                            t.HasCheckConstraint("CK_AnonymousTemplateCustomInput_Length_Range", "([MinLength] IS NULL OR [MaxLength] IS NULL OR [MaxLength] >= [MinLength])");
+
+                            t.HasCheckConstraint("CK_AnonymousTemplateCustomInput_Order_Positive", "[Order] > 0");
+
+                            t.HasCheckConstraint("CK_AnonymousTemplateCustomInput_String_Validation", "([Type] <> 1) OR ([MinValue] IS NULL AND [MaxValue] IS NULL)");
+
+                            t.HasCheckConstraint("CK_AnonymousTemplateCustomInput_Value_Range", "([MinValue] IS NULL OR [MaxValue] IS NULL OR [MaxValue] >= [MinValue])");
+                        });
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousTemplateQuestion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AnonymousTemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnonymousTemplateId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("AnonymousTemplateId", "Order");
+
+                    b.HasIndex("AnonymousTemplateId", "QuestionId")
+                        .IsUnique();
+
+                    b.ToTable("AnonymousTemplateQuestion", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_AnonymousTemplateQuestion_Order_Positive", "[Order] > 0");
+                        });
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousTemplateQuestionCondition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AnonymousTemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ChildAnonymousTemplateQuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ParentAnonymousTemplateQuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SelectedQuestionOptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TriggerType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TriggerValue")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnonymousTemplateId");
+
+                    b.HasIndex("ChildAnonymousTemplateQuestionId");
+
+                    b.HasIndex("ParentAnonymousTemplateQuestionId");
+
+                    b.HasIndex("SelectedQuestionOptionId");
+
+                    b.HasIndex("AnonymousTemplateId", "ParentAnonymousTemplateQuestionId", "ChildAnonymousTemplateQuestionId", "TriggerType", "SelectedQuestionOptionId", "TriggerValue")
+                        .IsUnique()
+                        .HasFilter("[SelectedQuestionOptionId] IS NOT NULL AND [TriggerValue] IS NOT NULL");
+
+                    b.ToTable("AnonymousTemplateQuestionCondition", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_AnonymousTemplateQuestionCondition_Not_Same_Question", "[ParentAnonymousTemplateQuestionId] <> [ChildAnonymousTemplateQuestionId]");
+
+                            t.HasCheckConstraint("CK_AnonymousTemplateQuestionCondition_Order_Positive", "[Order] > 0");
+
+                            t.HasCheckConstraint("CK_AnonymousTemplateQuestionCondition_RatingOrSmile", "([TriggerType] NOT IN (2, 3)) OR ([SelectedQuestionOptionId] IS NULL AND [TriggerValue] BETWEEN 1 AND 5)");
+
+                            t.HasCheckConstraint("CK_AnonymousTemplateQuestionCondition_SingleChoice", "([TriggerType] <> 1) OR ([SelectedQuestionOptionId] IS NOT NULL AND [TriggerValue] IS NULL)");
+                        });
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Branch", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1013,6 +1402,143 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.ToTable("UserRole");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousSurveyAnswer", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Entities.AnonymousSurveyResponse", "AnonymousSurveyResponse")
+                        .WithMany("Answers")
+                        .HasForeignKey("AnonymousSurveyResponseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.AnonymousTemplateQuestion", "AnonymousTemplateQuestion")
+                        .WithMany()
+                        .HasForeignKey("AnonymousTemplateQuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.QuestionOption", "SelectedQuestionOption")
+                        .WithMany()
+                        .HasForeignKey("SelectedQuestionOptionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AnonymousSurveyResponse");
+
+                    b.Navigation("AnonymousTemplateQuestion");
+
+                    b.Navigation("Question");
+
+                    b.Navigation("SelectedQuestionOption");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousSurveyResponse", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Entities.AnonymousTemplate", "AnonymousTemplate")
+                        .WithMany()
+                        .HasForeignKey("AnonymousTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AnonymousTemplate");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousSurveyResponseCustomInputValue", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Entities.AnonymousSurveyResponse", "AnonymousSurveyResponse")
+                        .WithMany("CustomInputValues")
+                        .HasForeignKey("AnonymousSurveyResponseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.AnonymousTemplateCustomInput", "AnonymousTemplateCustomInput")
+                        .WithMany()
+                        .HasForeignKey("AnonymousTemplateCustomInputId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AnonymousSurveyResponse");
+
+                    b.Navigation("AnonymousTemplateCustomInput");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousTemplate", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId");
+
+                    b.Navigation("Branch");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousTemplateCustomInput", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Entities.AnonymousTemplate", "AnonymousTemplate")
+                        .WithMany("CustomInputs")
+                        .HasForeignKey("AnonymousTemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AnonymousTemplate");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousTemplateQuestion", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Entities.AnonymousTemplate", "AnonymousTemplate")
+                        .WithMany("Questions")
+                        .HasForeignKey("AnonymousTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AnonymousTemplate");
+
+                    b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousTemplateQuestionCondition", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Entities.AnonymousTemplate", "AnonymousTemplate")
+                        .WithMany()
+                        .HasForeignKey("AnonymousTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.AnonymousTemplateQuestion", "ChildAnonymousTemplateQuestion")
+                        .WithMany()
+                        .HasForeignKey("ChildAnonymousTemplateQuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.AnonymousTemplateQuestion", "ParentAnonymousTemplateQuestion")
+                        .WithMany()
+                        .HasForeignKey("ParentAnonymousTemplateQuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.QuestionOption", "SelectedQuestionOption")
+                        .WithMany()
+                        .HasForeignKey("SelectedQuestionOptionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AnonymousTemplate");
+
+                    b.Navigation("ChildAnonymousTemplateQuestion");
+
+                    b.Navigation("ParentAnonymousTemplateQuestion");
+
+                    b.Navigation("SelectedQuestionOption");
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.OperatorTemplate", b =>
                 {
                     b.HasOne("CustomerSurvey.Domain.Identity.Operator", "Operator")
@@ -1333,6 +1859,20 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousSurveyResponse", b =>
+                {
+                    b.Navigation("Answers");
+
+                    b.Navigation("CustomInputValues");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousTemplate", b =>
+                {
+                    b.Navigation("CustomInputs");
+
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Branch", b =>
