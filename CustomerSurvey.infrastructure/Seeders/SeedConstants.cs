@@ -89,6 +89,7 @@ internal static class SeedConstants
         public const string OperatorTemplatesSubmitResponse = "OperatorTemplates.SubmitResponse";
 
         public const string ReportsViewBranchReports = "Reports.ViewBranchReports";
+        public const string ReportsViewSystemDashboard = "Reports.ViewSystemDashboard";
 
         public const string GlobalQuestionGroupsCreate = "GlobalQuestionGroups.Create";
         public const string GlobalQuestionGroupsUpdate = "GlobalQuestionGroups.Update";
@@ -326,6 +327,9 @@ internal static class SeedConstants
 
             public static readonly Guid AnonymousTemplatesViewResponses =
                 Guid.Parse("12000000-0000-0000-0000-000000000068");
+
+            public static readonly Guid ReportsViewSystemDashboard =
+                Guid.Parse("12000000-0000-0000-0000-000000000069");
         }
     }
 
@@ -404,6 +408,7 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.OperatorTemplatesSubmitResponse, PermissionNames.OperatorTemplatesSubmitResponse),
 
             new PermissionSeedItem(SeedIds.Permissions.ReportsViewBranchReports, PermissionNames.ReportsViewBranchReports),
+            new PermissionSeedItem(SeedIds.Permissions.ReportsViewSystemDashboard, PermissionNames.ReportsViewSystemDashboard),
 
             new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionGroupsCreate, PermissionNames.GlobalQuestionGroupsCreate),
             new PermissionSeedItem(SeedIds.Permissions.GlobalQuestionGroupsUpdate, PermissionNames.GlobalQuestionGroupsUpdate),

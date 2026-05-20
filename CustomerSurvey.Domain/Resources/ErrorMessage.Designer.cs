@@ -2653,6 +2653,78 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Critical responses count must be between 1 and 50..
+        /// </summary>
+        public static string GetBranchDashboard_CriticalResponsesCount_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchDashboard_CriticalResponsesCount_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Critical score threshold must be between 0 and 100..
+        /// </summary>
+        public static string GetBranchDashboard_CriticalScoreThreshold_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchDashboard_CriticalScoreThreshold_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string GetBranchDashboard_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetBranchDashboard_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From date must be less than or equal to To date..
+        /// </summary>
+        public static string GetBranchDashboard_DateRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchDashboard_DateRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requested date range must not exceed 12 months..
+        /// </summary>
+        public static string GetBranchDashboard_DateRange_TooLarge {
+            get {
+                return ResourceManager.GetString("GetBranchDashboard_DateRange_TooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Group by value is invalid..
+        /// </summary>
+        public static string GetBranchDashboard_GroupBy_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchDashboard_GroupBy_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found inside the current branch..
+        /// </summary>
+        public static string GetBranchDashboard_Template_NotFound {
+            get {
+                return ResourceManager.GetString("GetBranchDashboard_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top questions count must be between 1 and 20..
+        /// </summary>
+        public static string GetBranchDashboard_TopQuestionsCount_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchDashboard_TopQuestionsCount_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Branch was not found..
         /// </summary>
         public static string GetBranchDetails_Branch_NotFound {
@@ -2757,6 +2829,105 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetBranchSatisfactionReport_Template_NotFound {
             get {
                 return ResourceManager.GetString("GetBranchSatisfactionReport_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string GetBranchSurveyResponseDetails_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetBranchSurveyResponseDetails_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Survey response was not found inside the current branch..
+        /// </summary>
+        public static string GetBranchSurveyResponseDetails_Response_NotFound {
+            get {
+                return ResourceManager.GetString("GetBranchSurveyResponseDetails_Response_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Survey response id is required..
+        /// </summary>
+        public static string GetBranchSurveyResponseDetails_SurveyResponseId_Required {
+            get {
+                return ResourceManager.GetString("GetBranchSurveyResponseDetails_SurveyResponseId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string GetBranchSurveyResponsesPagination_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetBranchSurveyResponsesPagination_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From date must be less than or equal to To date..
+        /// </summary>
+        public static string GetBranchSurveyResponsesPagination_DateRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchSurveyResponsesPagination_DateRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requested date range must not exceed 12 months..
+        /// </summary>
+        public static string GetBranchSurveyResponsesPagination_DateRange_TooLarge {
+            get {
+                return ResourceManager.GetString("GetBranchSurveyResponsesPagination_DateRange_TooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum score percentage must be between 0 and 100..
+        /// </summary>
+        public static string GetBranchSurveyResponsesPagination_MaxScore_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchSurveyResponsesPagination_MaxScore_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum score percentage must be between 0 and 100..
+        /// </summary>
+        public static string GetBranchSurveyResponsesPagination_MinScore_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchSurveyResponsesPagination_MinScore_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number must be greater than or equal to 1..
+        /// </summary>
+        public static string GetBranchSurveyResponsesPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchSurveyResponsesPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must be between 1 and 100..
+        /// </summary>
+        public static string GetBranchSurveyResponsesPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchSurveyResponsesPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum score percentage must be less than or equal to maximum score percentage..
+        /// </summary>
+        public static string GetBranchSurveyResponsesPagination_ScoreRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchSurveyResponsesPagination_ScoreRange_Invalid", resourceCulture);
             }
         }
         
@@ -3288,6 +3459,186 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetRolesSelection_RequiredRoles_NotSeeded {
             get {
                 return ResourceManager.GetString("GetRolesSelection_RequiredRoles_NotSeeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected branch was not found..
+        /// </summary>
+        public static string GetSystemDashboard_Branch_NotFound {
+            get {
+                return ResourceManager.GetString("GetSystemDashboard_Branch_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Critical responses count must be between 1 and 50..
+        /// </summary>
+        public static string GetSystemDashboard_CriticalResponsesCount_Invalid {
+            get {
+                return ResourceManager.GetString("GetSystemDashboard_CriticalResponsesCount_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Critical score threshold must be between 0 and 100..
+        /// </summary>
+        public static string GetSystemDashboard_CriticalScoreThreshold_Invalid {
+            get {
+                return ResourceManager.GetString("GetSystemDashboard_CriticalScoreThreshold_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current SuperAdmin profile was not found..
+        /// </summary>
+        public static string GetSystemDashboard_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetSystemDashboard_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GetSystemDashboard_DateRange_Invalid.
+        /// </summary>
+        public static string GetSystemDashboard_DateRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetSystemDashboard_DateRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requested date range must not exceed 12 months..
+        /// </summary>
+        public static string GetSystemDashboard_DateRange_TooLarge {
+            get {
+                return ResourceManager.GetString("GetSystemDashboard_DateRange_TooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected department was not found..
+        /// </summary>
+        public static string GetSystemDashboard_Department_NotFound {
+            get {
+                return ResourceManager.GetString("GetSystemDashboard_Department_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Group by value is invalid..
+        /// </summary>
+        public static string GetSystemDashboard_GroupBy_Invalid {
+            get {
+                return ResourceManager.GetString("GetSystemDashboard_GroupBy_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top templates count must be between 1 and 50..
+        /// </summary>
+        public static string GetSystemDashboard_TopTemplatesCount_Invalid {
+            get {
+                return ResourceManager.GetString("GetSystemDashboard_TopTemplatesCount_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current SuperAdmin profile was not found..
+        /// </summary>
+        public static string GetSystemSurveyResponseDetails_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetSystemSurveyResponseDetails_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Survey response was not found..
+        /// </summary>
+        public static string GetSystemSurveyResponseDetails_Response_NotFound {
+            get {
+                return ResourceManager.GetString("GetSystemSurveyResponseDetails_Response_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Survey response id is required..
+        /// </summary>
+        public static string GetSystemSurveyResponseDetails_SurveyResponseId_Required {
+            get {
+                return ResourceManager.GetString("GetSystemSurveyResponseDetails_SurveyResponseId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current SuperAdmin profile was not found..
+        /// </summary>
+        public static string GetSystemSurveyResponsesPagination_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetSystemSurveyResponsesPagination_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From date must be less than or equal to To date..
+        /// </summary>
+        public static string GetSystemSurveyResponsesPagination_DateRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetSystemSurveyResponsesPagination_DateRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requested date range must not exceed 12 months..
+        /// </summary>
+        public static string GetSystemSurveyResponsesPagination_DateRange_TooLarge {
+            get {
+                return ResourceManager.GetString("GetSystemSurveyResponsesPagination_DateRange_TooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum score percentage must be between 0 and 100..
+        /// </summary>
+        public static string GetSystemSurveyResponsesPagination_MaxScore_Invalid {
+            get {
+                return ResourceManager.GetString("GetSystemSurveyResponsesPagination_MaxScore_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum score percentage must be between 0 and 100..
+        /// </summary>
+        public static string GetSystemSurveyResponsesPagination_MinScore_Invalid {
+            get {
+                return ResourceManager.GetString("GetSystemSurveyResponsesPagination_MinScore_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number must be greater than or equal to 1..
+        /// </summary>
+        public static string GetSystemSurveyResponsesPagination_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetSystemSurveyResponsesPagination_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must be between 1 and 100..
+        /// </summary>
+        public static string GetSystemSurveyResponsesPagination_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetSystemSurveyResponsesPagination_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum score percentage must be less than or equal to maximum score percentage..
+        /// </summary>
+        public static string GetSystemSurveyResponsesPagination_ScoreRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetSystemSurveyResponsesPagination_ScoreRange_Invalid", resourceCulture);
             }
         }
         
