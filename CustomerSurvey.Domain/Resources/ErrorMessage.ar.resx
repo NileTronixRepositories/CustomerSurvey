@@ -1201,7 +1201,7 @@
     <value>لم يتم العثور على حساب المستخدم.</value>
   </data>
   <data name="ResetBranchUserPassword_User_Inactive" xml:space="preserve">
-    <value>لا يمكن تغيير كلمة مرور مستخدم غير مفعل.</value>
+    <value>RestoreAnonymousTemplate_Template_NotFound</value>
   </data>
   <data name="DeleteBranchUser_CurrentBranchAdmin_NotFound" xml:space="preserve">
     <value>لم يتم العثور على مستخدم الفرع.</value>
@@ -1712,5 +1712,488 @@
   </data>
   <data name="SubmitOperatorTemplateResponse_CustomInput_Integer_MaxValue" xml:space="preserve">
     <value>قيمة الحقل الرقمي أكبر من الحد الأقصى المسموح.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_NameEn_Required" xml:space="preserve">
+    <value>اسم قالب Anonymous باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم قالب Anonymous باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم قالب Anonymous باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_Description_MaxLength" xml:space="preserve">
+    <value>وصف قالب Anonymous يجب ألا يزيد عن 1000 حرف.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_ActiveFrom_Required" xml:space="preserve">
+    <value>تاريخ بداية صلاحية قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_ExpireTo_MustBeAfterActiveFrom" xml:space="preserve">
+    <value>تاريخ انتهاء قالب Anonymous يجب أن يكون بعد تاريخ البداية.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_Scope_Invalid" xml:space="preserve">
+    <value>نوع قالب Anonymous غير صحيح.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CurrentActor_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي غير مصرح له بإنشاء قالب Anonymous.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_SuperAdmin_GlobalOnly" xml:space="preserve">
+    <value>الـ SuperAdmin يمكنه إنشاء Global Anonymous Template فقط.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_BranchActor_BranchOnly" xml:space="preserve">
+    <value>مستخدم الفرع يمكنه إنشاء Branch Anonymous Template فقط.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_Name_AlreadyExists" xml:space="preserve">
+    <value>يوجد قالب Anonymous بنفس الاسم.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInputs_Invalid" xml:space="preserve">
+    <value>بيانات الحقول المخصصة غير صحيحة.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Name_Required" xml:space="preserve">
+    <value>اسم الحقل المخصص مطلوب.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
+    <value>اسم الحقل المخصص يجب ألا يزيد عن 100 حرف.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_LabelEn_MaxLength" xml:space="preserve">
+    <value>عنوان الحقل المخصص بالإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_LabelAr_MaxLength" xml:space="preserve">
+    <value>عنوان الحقل المخصص بالعربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>نوع الحقل المخصص غير صحيح.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Order_Invalid" xml:space="preserve">
+    <value>ترتيب الحقل المخصص يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_StringValidation_Invalid" xml:space="preserve">
+    <value>حقول النص لا تقبل MinValue أو MaxValue.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
+    <value>حقول الأرقام لا تقبل MinLength أو MaxLength.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_LengthRange_Invalid" xml:space="preserve">
+    <value>MaxLength يجب أن يكون أكبر من أو يساوي MinLength.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_ValueRange_Invalid" xml:space="preserve">
+    <value>MaxValue يجب أن يكون أكبر من أو يساوي MinValue.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Name_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار اسم الحقل المخصص داخل نفس القالب.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Order_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار ترتيب الحقول المخصصة داخل نفس القالب.</value>
+  </data>
+  <data name="GetAnonymousTemplatesPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة غير صحيح.</value>
+  </data>
+  <data name="GetAnonymousTemplatesPagination_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة غير صحيح.</value>
+  </data>
+  <data name="GetAnonymousTemplatesPagination_PageSize_Max" xml:space="preserve">
+    <value>حجم الصفحة يجب ألا يزيد عن 100.</value>
+  </data>
+  <data name="GetAnonymousTemplatesPagination_Scope_Invalid" xml:space="preserve">
+    <value>نوع قالب Anonymous غير صحيح.</value>
+  </data>
+  <data name="GetAnonymousTemplatesPagination_CurrentActor_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي غير مصرح له بعرض قوالب Anonymous.</value>
+  </data>
+  <data name="GetAnonymousTemplateDetails_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>رقم قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="GetAnonymousTemplateDetails_CurrentActor_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي غير مصرح له بعرض تفاصيل قوالب Anonymous.</value>
+  </data>
+  <data name="GetAnonymousTemplateDetails_Template_NotFound" xml:space="preserve">
+    <value>قالب Anonymous غير موجود.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>رقم قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_NameEn_Required" xml:space="preserve">
+    <value>اسم قالب Anonymous باللغة الإنجليزية مطلوب.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_NameEn_MaxLength" xml:space="preserve">
+    <value>اسم قالب Anonymous باللغة الإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_NameAr_MaxLength" xml:space="preserve">
+    <value>اسم قالب Anonymous باللغة العربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_Description_MaxLength" xml:space="preserve">
+    <value>وصف قالب Anonymous يجب ألا يزيد عن 1000 حرف.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_ActiveFrom_Required" xml:space="preserve">
+    <value>تاريخ بداية صلاحية قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInputs_Invalid" xml:space="preserve">
+    <value>بيانات الحقول المخصصة غير صحيحة.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Name_Required" xml:space="preserve">
+    <value>اسم الحقل المخصص مطلوب.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
+    <value>اسم الحقل المخصص يجب ألا يزيد عن 100 حرف.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_LabelEn_MaxLength" xml:space="preserve">
+    <value>عنوان الحقل المخصص بالإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_LabelAr_MaxLength" xml:space="preserve">
+    <value>عنوان الحقل المخصص بالعربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>نوع الحقل المخصص غير صحيح.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Order_Invalid" xml:space="preserve">
+    <value>ترتيب الحقل المخصص يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_StringValidation_Invalid" xml:space="preserve">
+    <value>حقول النص لا تقبل MinValue أو MaxValue.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
+    <value>حقول الأرقام لا تقبل MinLength أو MaxLength.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_LengthRange_Invalid" xml:space="preserve">
+    <value>MaxLength يجب أن يكون أكبر من أو يساوي MinLength.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_ValueRange_Invalid" xml:space="preserve">
+    <value>MaxValue يجب أن يكون أكبر من أو يساوي MinValue.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Id_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار رقم الحقل المخصص.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Name_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار اسم الحقل المخصص داخل نفس القالب.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Order_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار ترتيب الحقول المخصصة داخل نفس القالب.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CurrentActor_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي غير مصرح له بتعديل قوالب Anonymous.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_Template_NotFound" xml:space="preserve">
+    <value>قالب Anonymous غير موجود.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_Template_Inactive" xml:space="preserve">
+    <value>لا يمكن تعديل قالب Anonymous غير مفعل.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_Name_AlreadyExists" xml:space="preserve">
+    <value>يوجد قالب Anonymous بنفس الاسم.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_NotFound" xml:space="preserve">
+    <value>الحقل المخصص غير موجود داخل هذا القالب.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Type_CannotBeChanged" xml:space="preserve">
+    <value>لا يمكن تغيير نوع حقل مخصص موجود بالفعل.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_ExpireTo_MustBeAfterActiveFrom" xml:space="preserve">
+    <value>تاريخ انتهاء قالب Anonymous يجب أن يكون بعد تاريخ البداية.</value>
+  </data>
+  <data name="DeleteAnonymousTemplate_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>رقم قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="DeleteAnonymousTemplate_CurrentActor_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي غير مصرح له بحذف قوالب Anonymous.</value>
+  </data>
+  <data name="DeleteAnonymousTemplate_Template_NotFound" xml:space="preserve">
+    <value>قالب Anonymous غير موجود.</value>
+  </data>
+  <data name="DeleteAnonymousTemplate_Template_AlreadyInactive" xml:space="preserve">
+    <value>قالب Anonymous غير مفعل بالفعل.</value>
+  </data>
+  <data name="RestoreAnonymousTemplate_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>رقم قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="RestoreAnonymousTemplate_CurrentActor_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي غير مصرح له باسترجاع قوالب Anonymous.</value>
+  </data>
+  <data name="RestoreAnonymousTemplate_Template_NotFound" xml:space="preserve">
+    <value>قالب Anonymous غير موجود.</value>
+  </data>
+  <data name="RestoreAnonymousTemplate_Template_AlreadyActive" xml:space="preserve">
+    <value>قالب Anonymous مفعل بالفعل.</value>
+  </data>
+  <data name="GetAnonymousTemplateQuestionsSelection_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>رقم قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="GetAnonymousTemplateQuestionsSelection_SearchText_MaxLength" xml:space="preserve">
+    <value>نص البحث يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="GetAnonymousTemplateQuestionsSelection_CurrentActor_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي غير مصرح له بعرض أسئلة قالب Anonymous.</value>
+  </data>
+  <data name="GetAnonymousTemplateQuestionsSelection_Template_NotFound" xml:space="preserve">
+    <value>قالب Anonymous غير موجود.</value>
+  </data>
+  <data name="GetAnonymousTemplateQuestionsSelection_Template_Inactive" xml:space="preserve">
+    <value>لا يمكن اختيار أسئلة لقالب Anonymous غير مفعل.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>رقم قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Questions_Invalid" xml:space="preserve">
+    <value>قائمة الأسئلة غير صحيحة.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_QuestionId_Required" xml:space="preserve">
+    <value>رقم السؤال مطلوب.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Order_Invalid" xml:space="preserve">
+    <value>ترتيب السؤال يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Question_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار نفس السؤال داخل القالب.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Order_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار ترتيب الأسئلة داخل القالب.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_CurrentActor_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي غير مصرح له بإسناد أسئلة لقالب Anonymous.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Template_NotFound" xml:space="preserve">
+    <value>قالب Anonymous غير موجود.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Template_Inactive" xml:space="preserve">
+    <value>لا يمكن تعديل أسئلة قالب Anonymous غير مفعل.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Question_NotFound" xml:space="preserve">
+    <value>أحد الأسئلة غير موجود.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Question_Inactive" xml:space="preserve">
+    <value>أحد الأسئلة أو المجموعة الخاصة به غير مفعلة.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_GlobalTemplate_GlobalQuestionsOnly" xml:space="preserve">
+    <value>القالب العام يقبل Global Questions فقط.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Question_NotAllowed" xml:space="preserve">
+    <value>السؤال غير مسموح استخدامه داخل هذا القالب.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>رقم قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Conditions_Invalid" xml:space="preserve">
+    <value>قائمة شروط الأسئلة غير صحيحة.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ParentQuestionId_Required" xml:space="preserve">
+    <value>رقم السؤال الأب مطلوب.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ChildQuestionId_Required" xml:space="preserve">
+    <value>رقم السؤال التابع مطلوب.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ParentAndChild_CannotBeSame" xml:space="preserve">
+    <value>لا يمكن أن يكون السؤال الأب هو نفس السؤال التابع.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_TriggerType_Invalid" xml:space="preserve">
+    <value>نوع شرط الظهور غير صحيح.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Order_Invalid" xml:space="preserve">
+    <value>ترتيب الشرط يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_TriggerShape_Invalid" xml:space="preserve">
+    <value>بيانات شرط الظهور غير متوافقة مع نوع الشرط.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Order_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار ترتيب الشروط.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار نفس شرط الظهور.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_CurrentActor_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي غير مصرح له بتعديل شروط قالب Anonymous.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Template_NotFound" xml:space="preserve">
+    <value>قالب Anonymous غير موجود.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Template_Inactive" xml:space="preserve">
+    <value>لا يمكن تعديل شروط قالب Anonymous غير مفعل.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ParentQuestion_NotFound" xml:space="preserve">
+    <value>السؤال الأب غير موجود داخل القالب.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ChildQuestion_NotFound" xml:space="preserve">
+    <value>السؤال التابع غير موجود داخل القالب.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Question_Inactive" xml:space="preserve">
+    <value>أحد الأسئلة غير مفعل.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ParentQuestionType_NotAllowed" xml:space="preserve">
+    <value>نوع السؤال الأب لا يدعم شروط الظهور.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_TriggerType_DoesNotMatchParentQuestion" xml:space="preserve">
+    <value>نوع الشرط غير متوافق مع نوع السؤال الأب.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_SelectedOption_NotFound" xml:space="preserve">
+    <value>الاختيار المحدد غير موجود.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_SelectedOption_Inactive" xml:space="preserve">
+    <value>الاختيار المحدد غير مفعل.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_SelectedOption_NotBelongToParentQuestion" xml:space="preserve">
+    <value>الاختيار المحدد لا يتبع السؤال الأب.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_CircularFlow_Detected" xml:space="preserve">
+    <value>لا يمكن إنشاء دورة مغلقة بين الأسئلة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>رقم قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInputValues_Invalid" xml:space="preserve">
+    <value>بيانات الحقول المخصصة غير صحيحة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Answers_Invalid" xml:space="preserve">
+    <value>بيانات الإجابات غير صحيحة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInputId_Required" xml:space="preserve">
+    <value>رقم الحقل المخصص مطلوب.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_AnonymousTemplateQuestionId_Required" xml:space="preserve">
+    <value>رقم سؤال القالب مطلوب.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_Duplicated" xml:space="preserve">
+    <value>لا يمكن تكرار نفس الحقل المخصص في الإرسال.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Answer_Duplicated" xml:space="preserve">
+    <value>لا يمكن إرسال أكثر من إجابة لنفس السؤال.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Template_NotFound" xml:space="preserve">
+    <value>قالب Anonymous غير موجود.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Template_NotAvailable" xml:space="preserve">
+    <value>قالب Anonymous لم يبدأ بعد.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Template_NotStarted" xml:space="preserve">
+    <value>قالب Anonymous غير متاح حاليًا.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Template_Expired" xml:space="preserve">
+    <value>انتهت صلاحية قالب Anonymous.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_NotFound" xml:space="preserve">
+    <value>الحقل المخصص غير موجود داخل هذا القالب.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_Required" xml:space="preserve">
+    <value>هذا الحقل المخصص مطلوب.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>نوع الحقل المخصص غير صحيح.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_StringShape_Invalid" xml:space="preserve">
+    <value>قيمة الحقل النصي غير صحيحة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_IntegerShape_Invalid" xml:space="preserve">
+    <value>قيمة الحقل الرقمي غير صحيحة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_MinLength_Invalid" xml:space="preserve">
+    <value>قيمة الحقل النصي أقل من الحد الأدنى.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_MaxLength_Invalid" xml:space="preserve">
+    <value>قيمة الحقل النصي أكبر من الحد الأقصى.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_MinValue_Invalid" xml:space="preserve">
+    <value>قيمة الحقل الرقمي أقل من الحد الأدنى.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_MaxValue_Invalid" xml:space="preserve">
+    <value>قيمة الحقل الرقمي أكبر من الحد الأقصى.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Template_HasNoQuestions" xml:space="preserve">
+    <value>قالب Anonymous لا يحتوي على أسئلة متاحة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Question_NotFound" xml:space="preserve">
+    <value>أحد الأسئلة غير موجود داخل القالب.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_QuestionType_Unsupported" xml:space="preserve">
+    <value>نوع السؤال غير مدعوم في الإرسال.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_SingleChoiceAnswer_Invalid" xml:space="preserve">
+    <value>إجابة الاختيار غير صحيحة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_SelectedOption_NotFound" xml:space="preserve">
+    <value>الاختيار المحدد غير موجود.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_SelectedOption_Inactive" xml:space="preserve">
+    <value>الاختيار المحدد غير مفعل.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_SelectedOption_NotBelongToQuestion" xml:space="preserve">
+    <value>الاختيار المحدد لا يتبع السؤال.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_StarRatingAnswer_Invalid" xml:space="preserve">
+    <value>إجابة التقييم غير صحيحة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_SmilesAnswer_Invalid" xml:space="preserve">
+    <value>إجابة الوجوه غير صحيحة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_ComplainAnswer_Invalid" xml:space="preserve">
+    <value>إجابة الشكوى غير صحيحة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_VoiceAnswer_Invalid" xml:space="preserve">
+    <value>إجابة الصوت غير صحيحة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_AllVisibleQuestions_Required" xml:space="preserve">
+    <value>يجب الإجابة على كل الأسئلة الظاهرة.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_HiddenQuestion_NotAllowed" xml:space="preserve">
+    <value>لا يمكن إرسال إجابة لسؤال مخفي.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>رقم قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_Template_NotFound" xml:space="preserve">
+    <value>قالب Anonymous غير موجود.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_Template_NotAvailable" xml:space="preserve">
+    <value>قالب Anonymous غير متاح حاليًا.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_Template_NotStarted" xml:space="preserve">
+    <value>قالب Anonymous لم يبدأ بعد.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_Template_Expired" xml:space="preserve">
+    <value>انتهت صلاحية قالب Anonymous.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_Template_HasNoQuestions" xml:space="preserve">
+    <value>قالب Anonymous لا يحتوي على أسئلة متاحة.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>رقم قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة غير صحيح.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة غير صحيح.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_PageSize_Max" xml:space="preserve">
+    <value>حجم الصفحة يجب ألا يزيد عن 100.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_DateRange_Invalid" xml:space="preserve">
+    <value>نطاق التاريخ غير صحيح.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_MinScorePercentage_Invalid" xml:space="preserve">
+    <value>أقل نسبة تقييم غير صحيحة.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_MaxScorePercentage_Invalid" xml:space="preserve">
+    <value>أعلى نسبة تقييم غير صحيحة.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_ScoreRange_Invalid" xml:space="preserve">
+    <value>نطاق نسبة التقييم غير صحيح.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_CurrentActor_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي غير مصرح له بعرض إجابات قوالب Anonymous.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_Template_NotFound" xml:space="preserve">
+    <value>قالب Anonymous غير موجود.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponseDetails_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>رقم قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponseDetails_ResponseId_Required" xml:space="preserve">
+    <value>رقم إجابة قالب Anonymous مطلوب.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponseDetails_CurrentActor_NotFound" xml:space="preserve">
+    <value>المستخدم الحالي غير مصرح له بعرض تفاصيل إجابات قوالب Anonymous.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponseDetails_Template_NotFound" xml:space="preserve">
+    <value>قالب Anonymous غير موجود.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponseDetails_Response_NotFound" xml:space="preserve">
+    <value>إجابة قالب Anonymous غير موجودة.</value>
   </data>
 </root>

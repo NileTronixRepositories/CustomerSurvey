@@ -8,12 +8,14 @@ using BuildingBlock.Infrastracture.Service;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Abstraction.Seeding;
+using CustomerSurvey.Application.Abstraction.Services;
 using CustomerSurvey.infrastructure.Authorization;
 using CustomerSurvey.infrastructure.BackgroundJobs.Templates;
 using CustomerSurvey.infrastructure.Options;
 using CustomerSurvey.infrastructure.Persistence;
 using CustomerSurvey.infrastructure.Repositories;
 using CustomerSurvey.infrastructure.Seeders;
+using CustomerSurvey.infrastructure.Services;
 using CustomerSurvey.infrastructure.Services.Security;
 using CustomerSurvey.infrastructure.Services.Token;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -72,6 +74,13 @@ namespace CustomerSurvey.infrastructure.Bootstrap
             services.AddScoped(typeof(IWriteReadRepository<>), typeof(PlatformWriteReadRepository<>));
             services.AddScoped<IWriteDbContextAccessor, PlatformWriteDbContextAccessor>();
             services.AddScoped(typeof(IReadModelWriter<>), typeof(EfReadModelWriter<>));
+
+            // public survey related services
+            services.Configure<PublicSurveyOptions>(
+    configuration.GetSection(PublicSurveyOptions.SectionName));
+
+            services.AddScoped<IPublicSurveyUrlBuilder, PublicSurveyUrlBuilder>();
+            services.AddScoped<IQrCodeGenerator, QrCodeGenerator>();
 
             // Http + Cache
             services.AddHttpClient();

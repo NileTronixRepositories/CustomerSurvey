@@ -1713,4 +1713,487 @@
   <data name="SubmitOperatorTemplateResponse_CustomInput_Integer_MaxValue" xml:space="preserve">
     <value>Integer custom input value is greater than the maximum value.</value>
   </data>
+  <data name="CreateAnonymousTemplate_NameEn_Required" xml:space="preserve">
+    <value>CreateAnonymousTemplate_NameEn_Required</value>
+  </data>
+  <data name="CreateAnonymousTemplate_NameEn_MaxLength" xml:space="preserve">
+    <value>Anonymous template English name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_NameAr_MaxLength" xml:space="preserve">
+    <value>Anonymous template Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_Description_MaxLength" xml:space="preserve">
+    <value>Anonymous template description must not exceed 1000 characters.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_ActiveFrom_Required" xml:space="preserve">
+    <value>Anonymous template active from date is required.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_ExpireTo_MustBeAfterActiveFrom" xml:space="preserve">
+    <value>Anonymous template expire date must be after active from date.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_Scope_Invalid" xml:space="preserve">
+    <value>Anonymous template scope is invalid.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current user is not allowed to create anonymous template.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_SuperAdmin_GlobalOnly" xml:space="preserve">
+    <value>SuperAdmin can create global anonymous templates only.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_BranchActor_BranchOnly" xml:space="preserve">
+    <value>Branch actor can create branch anonymous templates only.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_Name_AlreadyExists" xml:space="preserve">
+    <value>Anonymous template name already exists.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInputs_Invalid" xml:space="preserve">
+    <value>Custom inputs are invalid.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Name_Required" xml:space="preserve">
+    <value>Custom input name is required.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
+    <value>Custom input name must not exceed 100 characters.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_LabelEn_MaxLength" xml:space="preserve">
+    <value>Custom input English label must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_LabelAr_MaxLength" xml:space="preserve">
+    <value>Custom input Arabic label must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>v</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Order_Invalid" xml:space="preserve">
+    <value>Custom input order must be greater than zero.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_StringValidation_Invalid" xml:space="preserve">
+    <value>String custom input cannot have MinValue or MaxValue.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
+    <value>Integer custom input cannot have MinLength or MaxLength.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_LengthRange_Invalid" xml:space="preserve">
+    <value>MaxLength must be greater than or equal to MinLength.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_ValueRange_Invalid" xml:space="preserve">
+    <value>MaxValue must be greater than or equal to MinValue.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Name_Duplicated" xml:space="preserve">
+    <value>Custom input name cannot be duplicated in the same template.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_Order_Duplicated" xml:space="preserve">
+    <value>Custom input order cannot be duplicated in the same template.</value>
+  </data>
+  <data name="GetAnonymousTemplatesPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number is invalid.</value>
+  </data>
+  <data name="GetAnonymousTemplatesPagination_PageSize_Invalid" xml:space="preserve">
+    <value>Page size is invalid.</value>
+  </data>
+  <data name="GetAnonymousTemplatesPagination_PageSize_Max" xml:space="preserve">
+    <value>Page size must not exceed 100.</value>
+  </data>
+  <data name="GetAnonymousTemplatesPagination_Scope_Invalid" xml:space="preserve">
+    <value>Anonymous template scope is invalid.</value>
+  </data>
+  <data name="GetAnonymousTemplatesPagination_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current user is not allowed to view anonymous templates.</value>
+  </data>
+  <data name="GetAnonymousTemplateDetails_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="GetAnonymousTemplateDetails_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current user is not allowed to view anonymous template details.</value>
+  </data>
+  <data name="GetAnonymousTemplateDetails_Template_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_NameEn_Required" xml:space="preserve">
+    <value>Anonymous template English name is required.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_NameEn_MaxLength" xml:space="preserve">
+    <value>Anonymous template English name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_NameAr_MaxLength" xml:space="preserve">
+    <value>Anonymous template Arabic name must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_Description_MaxLength" xml:space="preserve">
+    <value>Anonymous template description must not exceed 1000 characters.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_ActiveFrom_Required" xml:space="preserve">
+    <value>Anonymous template active from date is required.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInputs_Invalid" xml:space="preserve">
+    <value>Custom inputs are invalid.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Name_Required" xml:space="preserve">
+    <value>Custom input name is required.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
+    <value>Custom input name must not exceed 100 characters.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_LabelEn_MaxLength" xml:space="preserve">
+    <value>Custom input English label must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_LabelAr_MaxLength" xml:space="preserve">
+    <value>Custom input Arabic label must not exceed 200 characters.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>Custom input type is invalid.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Order_Invalid" xml:space="preserve">
+    <value>Custom input order must be greater than zero.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_StringValidation_Invalid" xml:space="preserve">
+    <value>String custom input cannot have MinValue or MaxValue.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
+    <value>Integer custom input cannot have MinLength or MaxLength.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_LengthRange_Invalid" xml:space="preserve">
+    <value>MaxLength must be greater than or equal to MinLength.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_ValueRange_Invalid" xml:space="preserve">
+    <value>MaxValue must be greater than or equal to MinValue.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Id_Duplicated" xml:space="preserve">
+    <value>Custom input id cannot be duplicated.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Name_Duplicated" xml:space="preserve">
+    <value>Custom input name cannot be duplicated in the same template.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Order_Duplicated" xml:space="preserve">
+    <value>Custom input order cannot be duplicated in the same template.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current user is not allowed to update anonymous templates.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_Template_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_Template_Inactive" xml:space="preserve">
+    <value>Inactive anonymous template cannot be updated.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_Name_AlreadyExists" xml:space="preserve">
+    <value>Anonymous template name already exists.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_NotFound" xml:space="preserve">
+    <value>Custom input was not found inside this anonymous template.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_Type_CannotBeChanged" xml:space="preserve">
+    <value>Existing custom input type cannot be changed.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_ExpireTo_MustBeAfterActiveFrom" xml:space="preserve">
+    <value>Anonymous template expire date must be after active from date.</value>
+  </data>
+  <data name="DeleteAnonymousTemplate_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="DeleteAnonymousTemplate_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current user is not allowed to delete anonymous templates.</value>
+  </data>
+  <data name="DeleteAnonymousTemplate_Template_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="DeleteAnonymousTemplate_Template_AlreadyInactive" xml:space="preserve">
+    <value>Anonymous template is already inactive.</value>
+  </data>
+  <data name="RestoreAnonymousTemplate_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="RestoreAnonymousTemplate_CurrentActor_NotFound" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="RestoreAnonymousTemplate_Template_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="RestoreAnonymousTemplate_Template_AlreadyActive" xml:space="preserve">
+    <value>Anonymous template is already active.</value>
+  </data>
+  <data name="GetAnonymousTemplateQuestionsSelection_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="GetAnonymousTemplateQuestionsSelection_SearchText_MaxLength" xml:space="preserve">
+    <value>Search text must not exceed 200 characters.</value>
+  </data>
+  <data name="GetAnonymousTemplateQuestionsSelection_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current user is not allowed to view anonymous template questions selection.</value>
+  </data>
+  <data name="GetAnonymousTemplateQuestionsSelection_Template_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="GetAnonymousTemplateQuestionsSelection_Template_Inactive" xml:space="preserve">
+    <value>Cannot select questions for inactive anonymous template.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Questions_Invalid" xml:space="preserve">
+    <value>Questions list is invalid.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_QuestionId_Required" xml:space="preserve">
+    <value>Question id is required.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Order_Invalid" xml:space="preserve">
+    <value>Question order must be greater than zero.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Question_Duplicated" xml:space="preserve">
+    <value>Question cannot be duplicated inside the template.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Order_Duplicated" xml:space="preserve">
+    <value>Question order cannot be duplicated inside the template.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current user is not allowed to assign questions to anonymous template.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Template_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Template_Inactive" xml:space="preserve">
+    <value>Cannot update questions for inactive anonymous template.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Question_NotFound" xml:space="preserve">
+    <value>One of the questions was not found.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Question_Inactive" xml:space="preserve">
+    <value>One of the questions or its group is inactive.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_GlobalTemplate_GlobalQuestionsOnly" xml:space="preserve">
+    <value>Global anonymous template can contain global questions only.</value>
+  </data>
+  <data name="AssignQuestionsToAnonymousTemplate_Question_NotAllowed" xml:space="preserve">
+    <value>Question is not allowed inside this anonymous template.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Conditions_Invalid" xml:space="preserve">
+    <value>Question conditions list is invalid.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ParentQuestionId_Required" xml:space="preserve">
+    <value>Parent question id is required.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ChildQuestionId_Required" xml:space="preserve">
+    <value>Child question id is required.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ParentAndChild_CannotBeSame" xml:space="preserve">
+    <value>Parent and child question cannot be the same.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_TriggerType_Invalid" xml:space="preserve">
+    <value>Trigger type is invalid.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Order_Invalid" xml:space="preserve">
+    <value>Condition order must be greater than zero.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_TriggerShape_Invalid" xml:space="preserve">
+    <value>Trigger data shape is invalid for the selected trigger type.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Order_Duplicated" xml:space="preserve">
+    <value>Condition order cannot be duplicated.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Duplicated" xml:space="preserve">
+    <value>The same question condition cannot be duplicated.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current user is not allowed to manage anonymous template question conditions.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Template_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Template_Inactive" xml:space="preserve">
+    <value>Cannot manage conditions for inactive anonymous template.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ParentQuestion_NotFound" xml:space="preserve">
+    <value>Parent question was not found inside this template.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ChildQuestion_NotFound" xml:space="preserve">
+    <value>Child question was not found inside this template.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_Question_Inactive" xml:space="preserve">
+    <value>One of the questions is inactive.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_ParentQuestionType_NotAllowed" xml:space="preserve">
+    <value>Parent question type does not support visibility conditions.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_TriggerType_DoesNotMatchParentQuestion" xml:space="preserve">
+    <value>Trigger type does not match parent question type.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_SelectedOption_NotFound" xml:space="preserve">
+    <value>Selected option was not found.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_SelectedOption_Inactive" xml:space="preserve">
+    <value>Selected option is inactive.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_SelectedOption_NotBelongToParentQuestion" xml:space="preserve">
+    <value>Selected option does not belong to the parent question.</value>
+  </data>
+  <data name="ManageAnonymousTemplateQuestionConditions_CircularFlow_Detected" xml:space="preserve">
+    <value>Circular question flow is not allowed.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInputValues_Invalid" xml:space="preserve">
+    <value>Custom input values are invalid.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Answers_Invalid" xml:space="preserve">
+    <value>Answers are invalid.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInputId_Required" xml:space="preserve">
+    <value>Custom input id is required.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_AnonymousTemplateQuestionId_Required" xml:space="preserve">
+    <value>Anonymous template question id is required.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_Duplicated" xml:space="preserve">
+    <value>Custom input cannot be submitted more than once.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Answer_Duplicated" xml:space="preserve">
+    <value>The same question cannot be answered more than once.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Template_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Template_NotAvailable" xml:space="preserve">
+    <value>Anonymous template is not available.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Template_NotStarted" xml:space="preserve">
+    <value>Anonymous template has not started yet.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Template_Expired" xml:space="preserve">
+    <value>Anonymous template has expired.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_NotFound" xml:space="preserve">
+    <value>Custom input was not found inside this template.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_Required" xml:space="preserve">
+    <value>This custom input is required.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_Type_Invalid" xml:space="preserve">
+    <value>Custom input type is invalid.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_StringShape_Invalid" xml:space="preserve">
+    <value>String custom input value shape is invalid.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_IntegerShape_Invalid" xml:space="preserve">
+    <value>Integer custom input value shape is invalid.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_MinLength_Invalid" xml:space="preserve">
+    <value>String custom input value is shorter than the minimum length.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_MaxLength_Invalid" xml:space="preserve">
+    <value>String custom input value exceeds the maximum length.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_MinValue_Invalid" xml:space="preserve">
+    <value>Integer custom input value is less than the minimum value.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_MaxValue_Invalid" xml:space="preserve">
+    <value>Integer custom input value exceeds the maximum value.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Template_HasNoQuestions" xml:space="preserve">
+    <value>Anonymous template has no available questions.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_Question_NotFound" xml:space="preserve">
+    <value>One of the questions was not found inside the template.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_QuestionType_Unsupported" xml:space="preserve">
+    <value>Question type is not supported in submit.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_SingleChoiceAnswer_Invalid" xml:space="preserve">
+    <value>Single choice answer is invalid.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_SelectedOption_NotFound" xml:space="preserve">
+    <value>Selected option was not found.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_SelectedOption_Inactive" xml:space="preserve">
+    <value>Selected option is inactive.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_SelectedOption_NotBelongToQuestion" xml:space="preserve">
+    <value>Selected option does not belong to the question.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_StarRatingAnswer_Invalid" xml:space="preserve">
+    <value>Star rating answer is invalid.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_SmilesAnswer_Invalid" xml:space="preserve">
+    <value>Smiles answer is invalid.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_ComplainAnswer_Invalid" xml:space="preserve">
+    <value>Complain answer is invalid.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_VoiceAnswer_Invalid" xml:space="preserve">
+    <value>Voice answer is invalid.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_AllVisibleQuestions_Required" xml:space="preserve">
+    <value>All visible questions must be answered.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_HiddenQuestion_NotAllowed" xml:space="preserve">
+    <value>Hidden question answer is not allowed.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_Template_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_Template_NotAvailable" xml:space="preserve">
+    <value>Anonymous template is not available.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_Template_NotStarted" xml:space="preserve">
+    <value>Anonymous template has not started yet.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_Template_Expired" xml:space="preserve">
+    <value>Anonymous template has expired.</value>
+  </data>
+  <data name="GetPublicAnonymousTemplate_Template_HasNoQuestions" xml:space="preserve">
+    <value>Anonymous template has no available questions.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number is invalid.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_PageSize_Invalid" xml:space="preserve">
+    <value>Page size is invalid.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_PageSize_Max" xml:space="preserve">
+    <value>Page size must not exceed 100.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_DateRange_Invalid" xml:space="preserve">
+    <value>Date range is invalid.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_MinScorePercentage_Invalid" xml:space="preserve">
+    <value>Minimum score percentage is invalid.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_MaxScorePercentage_Invalid" xml:space="preserve">
+    <value>Maximum score percentage is invalid.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_ScoreRange_Invalid" xml:space="preserve">
+    <value>Score percentage range is invalid.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current user is not allowed to view anonymous template responses.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponsesPagination_Template_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponseDetails_AnonymousTemplateId_Required" xml:space="preserve">
+    <value>Anonymous template id is required.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponseDetails_ResponseId_Required" xml:space="preserve">
+    <value>Anonymous response id is required.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponseDetails_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current user is not allowed to view anonymous template response details.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponseDetails_Template_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="GetAnonymousTemplateResponseDetails_Response_NotFound" xml:space="preserve">
+    <value>Anonymous template response was not found.</value>
+  </data>
 </root>
