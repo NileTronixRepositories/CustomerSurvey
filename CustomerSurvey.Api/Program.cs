@@ -1,10 +1,11 @@
 using BuildingBlock.Api.Bootstrap;
 using BuildingBlock.Api.Logging;
 using BuildingBlock.Api.OpenAi;
-using Microsoft.OpenApi.Models;
+using CustomerSurvey.Api.Swagger;
 using CustomerSurvey.Application.Bootstrap;
 using CustomerSurvey.infrastructure.Bootstrap;
 using CustomerSurvey.infrastructure.Options;
+using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json.Serialization;
 
@@ -12,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddControllersWithViews();
 builder.Services.AddApplicationBootstrap();
 builder.Services.InfrastructureInjection(builder.Configuration);
 builder.Services
@@ -26,7 +27,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSignalR();
 builder.Services.AddSwaggerGen(c =>
 {
-    // Add Bearer Authentication to Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -47,11 +47,14 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 
     c.OperationFilter<ResultPatternOperationFilter>();
+
+    // Add Accept-Language dropdown to all Swagger endpoints
+    c.OperationFilter<AcceptLanguageHeaderOperationFilter>();
 });
 
 // ---------Serilog-------- /

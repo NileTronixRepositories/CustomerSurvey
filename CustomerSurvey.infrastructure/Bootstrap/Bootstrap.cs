@@ -6,6 +6,7 @@ using BuildingBlock.Infrastracture.Interceptors;
 using BuildingBlock.Infrastracture.Options;
 using BuildingBlock.Infrastracture.Service;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Reports;
 using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Abstraction.Seeding;
 using CustomerSurvey.Application.Abstraction.Services;
@@ -13,11 +14,14 @@ using CustomerSurvey.infrastructure.Authorization;
 using CustomerSurvey.infrastructure.BackgroundJobs.Templates;
 using CustomerSurvey.infrastructure.Options;
 using CustomerSurvey.infrastructure.Persistence;
+using CustomerSurvey.infrastructure.Reports;
 using CustomerSurvey.infrastructure.Repositories;
 using CustomerSurvey.infrastructure.Seeders;
 using CustomerSurvey.infrastructure.Services;
 using CustomerSurvey.infrastructure.Services.Security;
 using CustomerSurvey.infrastructure.Services.Token;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -96,6 +100,12 @@ namespace CustomerSurvey.infrastructure.Bootstrap
             services.AddSeeding();
             services.AddHostedService<DbInitAndSeedingHostedService>();
             services.AddHostedService<ExpireTemplatesBackgroundService>();
+
+            //Pdf
+            services.AddScoped<IRazorViewRenderer, RazorViewRenderer>();
+            services.AddScoped<IPdfService, PdfService>();
+
+            services.AddScoped<IBranchTemplatesPdfReportService, BranchTemplatesPdfReportService>();
 
             return services;
         }
