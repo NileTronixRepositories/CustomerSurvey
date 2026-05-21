@@ -7,6 +7,7 @@ using CustomerSurvey.Application.Features.AnonymousTemplates.Command.DeleteAnony
 using CustomerSurvey.Application.Features.AnonymousTemplates.Command.ManageAnonymousTemplateQuestionConditions;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Command.RestoreAnonymousTemplate;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateAnonymousTemplate;
+using CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateDashboard;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateDetails;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateQuestionsSelection;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateResponseDetails;
@@ -38,6 +39,19 @@ namespace CustomerSurvey.Api.Controllers
         {
             query ??= new GetAnonymousTemplatesPaginationQuery();
             query.SearchText ??= string.Empty;
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("dashboard")]
+        [Permission("AnonymousTemplates.ViewResponses")]
+        public async Task<IActionResult> GetDashboard(
+            [FromQuery] GetAnonymousTemplateDashboardQuery query,
+            CancellationToken cancellationToken)
+        {
+            query ??= new GetAnonymousTemplateDashboardQuery();
 
             var result = await sender.Send(query, cancellationToken);
 
