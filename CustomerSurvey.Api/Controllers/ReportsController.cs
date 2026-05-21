@@ -4,6 +4,7 @@ using CustomerSurvey.Application.Features.Reports.Query.GetBranchDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactionReport;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSurveyResponsesPagination;
+using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperatorSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperatorSurveyResponsesPagination;
@@ -172,6 +173,49 @@ namespace CustomerSurvey.Api.Controllers
             var result = await sender.Send(query, cancellationToken);
 
             return result.ToIActionResult();
+        }
+
+        [HttpGet("templates/pdf")]
+        [Permission("Reports.ViewBranchReports")]
+        [Produces("application/pdf")]
+        public async Task<IActionResult> GetBranchTemplatesPdfReport(
+     [FromQuery] GetBranchTemplatesPdfReportQuery query,
+     CancellationToken cancellationToken)
+        {
+            var language = Request.Headers.AcceptLanguage.ToString();
+
+            var normalizedLanguage =
+                language.StartsWith("ar", StringComparison.OrdinalIgnoreCase)
+                    ? "ar"
+                    : "en";
+
+            query = query with
+            {
+                Language = normalizedLanguage
+            };
+
+            var result = await sender.Send(query, cancellationToken);
+
+            if (result.IsFailure)
+            {
+                return result.ToIActionResult();
+            }
+
+            if (result.Value.Content is null || result.Value.Content.Length == 0)
+            {
+                return Problem(
+                    title: "PDF generation failed",
+                    detail: "Generated PDF content is empty.",
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+
+            Response.Headers.Append("X-Pdf-File-Name", result.Value.FileName);
+            Response.Headers.Append("X-Pdf-Size", result.Value.Content.Length.ToString());
+
+            return File(
+                fileContents: result.Value.Content,
+                contentType: "application/pdf",
+                fileDownloadName: result.Value.FileName);
         }
     }
 }

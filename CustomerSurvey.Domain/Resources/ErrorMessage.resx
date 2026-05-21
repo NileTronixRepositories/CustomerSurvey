@@ -2382,4 +2382,31 @@
   <data name="GetSystemSurveyResponsesPagination_ScoreRange_Invalid" xml:space="preserve">
     <value>Minimum score percentage must be less than or equal to maximum score percentage.</value>
   </data>
+  <data name="GetBranchTemplatesPdfReport_FromDate_Required" xml:space="preserve">
+    <value>From date is required.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_ToDate_Required" xml:space="preserve">
+    <value>To date is required.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_DateRange_Invalid" xml:space="preserve">
+    <value>From date must be before or equal to to date.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_MinDuration_Invalid" xml:space="preserve">
+    <value>Minimum report duration is one day.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_MaxDuration_Invalid" xml:space="preserve">
+    <value>Maximum report duration is 12 months.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_Language_Invalid" xml:space="preserve">
+    <value>Report language is invalid.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_TemplateKind_Requires_TemplateId" xml:space="preserve">
+    <value>Template kind requires template id.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current user is not allowed to view branch report.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_ScoreCalculationMode_Invalid" xml:space="preserve">
+    <value>Score calculation mode is invalid.</value>
+  </data>
 </root>
