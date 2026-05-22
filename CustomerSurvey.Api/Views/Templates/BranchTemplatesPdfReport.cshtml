@@ -1,237 +1,675 @@
-﻿@model CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.BranchTemplatesPdfReportModel
+@model CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.BranchTemplatesPdfReportModel
+@using System.Globalization
 @using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport
 
 @{
     var ar = Model.IsArabic;
+
     string T(string en, string arText) => ar ? arText : en;
+
     string ValueOrDash(object? value) => value is null ? "-" : value.ToString()!;
 
-    var scoreModeText = Model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions
-        ? T("Root Questions Only", "الأسئلة الرئيسية فقط")
-        : T("Lowest Condition Level", "أقل مستوى في الأسئلة الشرطية");
+    string DecimalOrDash(decimal? value) =>
+        value.HasValue ? value.Value.ToString("0.##", CultureInfo.InvariantCulture) : "-";
+
+    string PercentOrDash(decimal? value) =>
+        value.HasValue ? $"{value.Value.ToString("0.##", CultureInfo.InvariantCulture)}%" : "N/A";
+
+    string DateOrDash(DateTime? value) =>
+        value.HasValue ? value.Value.ToString("yyyy-MM-dd") : "-";
+
+    string ProgressWidth(decimal value)
+    {
+        var clamped = value < 0 ? 0 : value > 100 ? 100 : value;
+        return clamped.ToString("0.##", CultureInfo.InvariantCulture);
+    }
+
+    string TemplateKindLabel(ReportTemplateKind? kind)
+    {
+        if (!kind.HasValue)
+        {
+            return T("Authorized + Anonymous", "مصرح + مجهول");
+        }
+
+        return kind.Value == ReportTemplateKind.Normal
+            ? T("Authorized", "مصرح")
+            : T("Anonymous", "مجهول");
+    }
+
+    string ScoreModeText() =>
+        Model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions
+            ? T("RootQuestions", "الأسئلة الرئيسية")
+            : T("LowestConditionLevel", "أعمق مستوى شرطي");
+
+    string ScoreStatusText(decimal? percentage)
+    {
+        if (!percentage.HasValue)
+        {
+            return T("No Score", "لا يوجد تقييم");
+        }
+
+        if (percentage.Value >= 80)
+        {
+            return T("Excellent", "ممتاز");
+        }
+
+        if (percentage.Value >= 60)
+        {
+            return T("Good", "جيد");
+        }
+
+        if (percentage.Value >= 40)
+        {
+            return T("Average", "متوسط");
+        }
+
+        if (percentage.Value >= 20)
+        {
+            return T("Poor", "ضعيف");
+        }
+
+        return T("Critical", "حرج");
+    }
+
+    string ScoreStatusClass(decimal? percentage)
+    {
+        if (!percentage.HasValue)
+        {
+            return "score-na";
+        }
+
+        if (percentage.Value >= 80)
+        {
+            return "score-excellent";
+        }
+
+        if (percentage.Value >= 60)
+        {
+            return "score-good";
+        }
+
+        if (percentage.Value >= 40)
+        {
+            return "score-average";
+        }
+
+        if (percentage.Value >= 20)
+        {
+            return "score-poor";
+        }
+
+        return "score-critical";
+    }
+
+    string QuestionTypeLabel(string type) =>
+        type switch
+        {
+            "SingleChoice" => T("Single Choice", "اختيار واحد"),
+            "StarRating" => T("Star Rating", "تقييم نجوم"),
+            "Smiles" => T("Smiles", "وجوه تعبيرية"),
+            "Complain" => T("Complaint", "شكوى"),
+            "Voice" => T("Voice", "صوت"),
+            _ => type
+        };
+
+    string FlowLineClass(BranchTemplatesPdfFlowLine line) =>
+        line.LineKind switch
+        {
+            BranchTemplatesPdfFlowLineKind.RootQuestion => "flow-line root",
+            BranchTemplatesPdfFlowLineKind.ConditionalQuestion => "flow-line conditional",
+            _ => "flow-line trigger"
+        };
 }
 
 <!DOCTYPE html>
 <html lang="@Model.Language" dir="@Model.Direction">
 <head>
     <meta charset="utf-8" />
-    <title>@T("Customer Survey Report", "تقرير استبيانات العملاء")</title>
+    <title>@T("Customer Survey Executive Report", "تقرير استبيانات العملاء التنفيذي")</title>
 
     <style>
-            body {
-                font-family: Arial, "Tahoma", sans-serif;
-                font-size: 12px;
-                color: #111827;
-                margin: 0;
-                padding: 0;
-                direction: @Model.Direction;
-            }
+        * {
+            box-sizing: border-box;
+        }
 
-            .page {
-                padding: 20px;
-            }
+        body {
+            font-family: Arial, "Tahoma", sans-serif;
+            font-size: 12px;
+            line-height: 1.45;
+            color: #172033;
+            margin: 0;
+            padding: 0;
+            direction: @Model.Direction;
+            background: #ffffff;
+        }
 
-            .header {
-                border-bottom: 2px solid #111827;
-                padding-bottom: 12px;
-                margin-bottom: 16px;
-            }
+        .page {
+            padding: 20px;
+        }
 
-            .title {
-                font-size: 24px;
-                font-weight: 700;
-                margin-bottom: 8px;
-            }
+        .cover {
+            background: #0b1f3a;
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 26px;
+            margin-bottom: 18px;
+            page-break-inside: avoid;
+        }
 
-            .subtitle {
-                color: #4b5563;
-                font-size: 12px;
-            }
+        .cover-kicker {
+            color: #9fb8d8;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0;
+            margin-bottom: 10px;
+        }
 
-            .section {
-                margin-top: 18px;
-                page-break-inside: avoid;
-            }
+        .cover h1 {
+            font-size: 30px;
+            line-height: 1.15;
+            margin: 0 0 6px;
+            font-weight: 800;
+        }
 
-            .section-title {
-                font-size: 16px;
-                font-weight: 700;
-                margin-bottom: 8px;
-                padding: 8px 10px;
-                background: #f3f4f6;
-                border: 1px solid #e5e7eb;
-            }
+        .cover .arabic-title {
+            color: #dbeafe;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
 
-            .cards {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 8px;
-                margin-bottom: 12px;
-            }
+        .cover-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 18px;
+        }
 
-            .card {
-                border: 1px solid #e5e7eb;
-                padding: 10px;
-                background: #ffffff;
-            }
+        .cover-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(219, 234, 254, 0.22);
+            border-radius: 7px;
+            padding: 10px 12px;
+            min-height: 58px;
+        }
 
-            .card-label {
-                color: #6b7280;
-                font-size: 11px;
-            }
+        .cover-label,
+        .card-label {
+            color: #65758b;
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0;
+        }
 
-            .card-value {
-                font-size: 18px;
-                font-weight: 700;
-                margin-top: 4px;
-            }
+        .cover-label {
+            color: #a9c4e5;
+        }
 
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 12px;
-            }
+        .cover-value {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
 
-            th {
-                background: #f9fafb;
-                font-weight: 700;
-            }
+        .section {
+            margin-top: 18px;
+        }
 
-            th, td {
-                border: 1px solid #e5e7eb;
-                padding: 6px 8px;
-                vertical-align: top;
-            }
+        .section.page-break,
+        .template-detail {
+            page-break-before: always;
+        }
 
-            .muted {
-                color: #6b7280;
-            }
+        .section-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: #0b1f3a;
+            margin: 0 0 10px;
+            padding-bottom: 7px;
+            border-bottom: 2px solid #d7e3f3;
+        }
 
-            .badge {
-                display: inline-block;
-                padding: 2px 6px;
-                border: 1px solid #d1d5db;
-                background: #f9fafb;
-                border-radius: 4px;
-                font-size: 10px;
-            }
+        .section-subtitle {
+            color: #64748b;
+            font-size: 11px;
+            margin-top: -5px;
+            margin-bottom: 10px;
+        }
 
-            .note {
-                background: #fffbeb;
-                border: 1px solid #fde68a;
-                padding: 10px;
-                line-height: 1.6;
-            }
+        .kpi-grid,
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 9px;
+            margin-bottom: 12px;
+        }
 
-            .page-break {
-                page-break-before: always;
-            }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .card,
+        .filter-card {
+            border: 1px solid #dce5f1;
+            border-radius: 7px;
+            padding: 10px;
+            background: #ffffff;
+            page-break-inside: avoid;
+        }
+
+        .card {
+            border-top: 4px solid #1d4ed8;
+        }
+
+        .card-value {
+            color: #0b1f3a;
+            font-size: 20px;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        .card-hint {
+            color: #64748b;
+            font-size: 10.5px;
+            margin-top: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            page-break-inside: auto;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        th {
+            background: #0b1f3a;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        th,
+        td {
+            border: 1px solid #dce5f1;
+            padding: 7px 8px;
+            vertical-align: top;
+        }
+
+        td {
+            background: #ffffff;
+        }
+
+        tbody tr:nth-child(even) td {
+            background: #f8fbff;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .muted {
+            color: #64748b;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 7px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .badge-authorized {
+            color: #075985;
+            background: #e0f2fe;
+            border-color: #bae6fd;
+        }
+
+        .badge-anonymous {
+            color: #6d28d9;
+            background: #ede9fe;
+            border-color: #ddd6fe;
+        }
+
+        .badge-root {
+            color: #1d4ed8;
+            background: #dbeafe;
+            border-color: #bfdbfe;
+        }
+
+        .badge-conditional {
+            color: #92400e;
+            background: #fef3c7;
+            border-color: #fde68a;
+        }
+
+        .score-excellent {
+            color: #065f46;
+            background: #d1fae5;
+            border-color: #a7f3d0;
+        }
+
+        .score-good {
+            color: #166534;
+            background: #dcfce7;
+            border-color: #bbf7d0;
+        }
+
+        .score-average {
+            color: #854d0e;
+            background: #fef9c3;
+            border-color: #fde68a;
+        }
+
+        .score-poor {
+            color: #9a3412;
+            background: #ffedd5;
+            border-color: #fed7aa;
+        }
+
+        .score-critical {
+            color: #991b1b;
+            background: #fee2e2;
+            border-color: #fecaca;
+        }
+
+        .score-na {
+            color: #475569;
+            background: #f1f5f9;
+            border-color: #e2e8f0;
+        }
+
+        .note {
+            background: #f8fbff;
+            border: 1px solid #dce5f1;
+            border-inline-start: 4px solid #1d4ed8;
+            border-radius: 7px;
+            padding: 10px 12px;
+            line-height: 1.6;
+            page-break-inside: avoid;
+        }
+
+        .note.warning {
+            background: #fffbeb;
+            border-color: #fde68a;
+            border-inline-start-color: #f59e0b;
+        }
+
+        .template-header {
+            background: #0b1f3a;
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            page-break-inside: avoid;
+        }
+
+        .template-header h2 {
+            margin: 0 0 8px;
+            font-size: 22px;
+            line-height: 1.2;
+        }
+
+        .template-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .flow-list {
+            margin-top: 8px;
+        }
+
+        .flow-line {
+            border: 1px solid #dce5f1;
+            border-radius: 7px;
+            padding: 7px 9px;
+            margin-bottom: 6px;
+            page-break-inside: avoid;
+        }
+
+        .flow-line.root {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .flow-line.conditional {
+            background: #fffbeb;
+            border-color: #fde68a;
+        }
+
+        .flow-line.trigger {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+        }
+
+        .flow-number {
+            color: #475569;
+            font-weight: 800;
+            margin-inline-end: 6px;
+        }
+
+        .flow-text {
+            font-weight: 700;
+            color: #102033;
+        }
+
+        .options-wrap {
+            background: #ffffff;
+            border: 1px solid #dce5f1;
+            border-radius: 7px;
+            padding: 8px;
+        }
+
+        .options-title {
+            color: #0b1f3a;
+            font-size: 11px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .bar span {
+            display: block;
+            height: 100%;
+            background: #1d4ed8;
+        }
+
+        .data-notes ul {
+            margin: 0;
+            padding-inline-start: 18px;
+        }
+
+        .data-notes li {
+            margin-bottom: 6px;
+        }
     </style>
 </head>
 
 <body>
     <div class="page">
+        <section class="cover">
+            <div class="cover-kicker">@T("Executive Management Report", "تقرير الإدارة التنفيذي")</div>
+            <h1>Customer Survey Executive Report</h1>
+            <div class="arabic-title">تقرير استبيانات العملاء التنفيذي</div>
 
-        <div class="header">
-            <div class="title">@T("Customer Survey Report", "تقرير استبيانات العملاء")</div>
-            <div class="subtitle">
-                @T("Branch", "الفرع"): @Model.BranchName |
-                @T("Generated By", "تم الإنشاء بواسطة"): @Model.GeneratedBy |
-                @T("Generated At UTC", "تاريخ الإنشاء UTC"): @Model.GeneratedAtUtc.ToString("yyyy-MM-dd HH:mm")
+            <div class="cover-grid">
+                <div class="cover-card">
+                    <div class="cover-label">@T("Branch", "الفرع")</div>
+                    <div class="cover-value">@Model.BranchName</div>
+                </div>
+                <div class="cover-card">
+                    <div class="cover-label">@T("Generated By", "تم الإنشاء بواسطة")</div>
+                    <div class="cover-value">@Model.GeneratedBy</div>
+                </div>
+                <div class="cover-card">
+                    <div class="cover-label">@T("Generated At UTC", "تاريخ الإنشاء UTC")</div>
+                    <div class="cover-value">@Model.GeneratedAtUtc.ToString("yyyy-MM-dd HH:mm")</div>
+                </div>
+                <div class="cover-card">
+                    <div class="cover-label">@T("Period", "الفترة")</div>
+                    <div class="cover-value">@Model.FromDate.ToString("yyyy-MM-dd") - @Model.ToDate.ToString("yyyy-MM-dd")</div>
+                </div>
+                <div class="cover-card">
+                    <div class="cover-label">@T("Selected Template", "النموذج المحدد")</div>
+                    <div class="cover-value">@(string.IsNullOrWhiteSpace(Model.SelectedTemplateName) ? T("All Templates", "كل النماذج") : Model.SelectedTemplateName)</div>
+                </div>
+                <div class="cover-card">
+                    <div class="cover-label">@T("Score Mode", "طريقة حساب التقييم")</div>
+                    <div class="cover-value">@ScoreModeText()</div>
+                </div>
             </div>
-            <div class="subtitle">
-                @T("Period", "الفترة"):
-                @Model.FromDate.ToString("yyyy-MM-dd")
-                -
-                @Model.ToDate.ToString("yyyy-MM-dd")
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">@T("Applied Filters Summary", "ملخص الفلاتر المستخدمة")</h2>
+            <div class="filter-grid">
+                <div class="filter-card">
+                    <div class="card-label">@T("Template", "النموذج")</div>
+                    <div class="card-value">@(string.IsNullOrWhiteSpace(Model.SelectedTemplateName) ? T("All Templates", "كل النماذج") : Model.SelectedTemplateName)</div>
+                </div>
+                <div class="filter-card">
+                    <div class="card-label">@T("Template Kind", "نوع النموذج")</div>
+                    <div class="card-value">@TemplateKindLabel(Model.SelectedTemplateKind)</div>
+                </div>
+                <div class="filter-card">
+                    <div class="card-label">@T("Top / Worst Questions", "عدد أفضل وأسوأ الأسئلة")</div>
+                    <div class="card-value">@Model.TopWorstQuestionsCount</div>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="section">
-            <div class="section-title">@T("Applied Filters", "الفلاتر المستخدمة")</div>
-            <table>
-                <tr>
-                    <th>@T("Template", "النموذج")</th>
-                    <td>@(string.IsNullOrWhiteSpace(Model.SelectedTemplateName) ? T("All Templates", "كل النماذج") : Model.SelectedTemplateName)</td>
-                </tr>
-                <tr>
-                    <th>@T("Template Kind", "نوع النموذج")</th>
-                    <td>@(Model.SelectedTemplateKind?.ToString() ?? T("Normal + Anonymous", "عادي + مجهول"))</td>
-                </tr>
-                <tr>
-                    <th>@T("Score Calculation Mode", "طريقة حساب التقييم")</th>
-                    <td>@scoreModeText</td>
-                </tr>
-                <tr>
-                    <th>@T("Language", "اللغة")</th>
-                    <td>@Model.Language</td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="section">
-            <div class="section-title">@T("Executive Summary", "الملخص التنفيذي")</div>
-
-            <div class="cards">
+        <section class="section">
+            <h2 class="section-title">@T("Executive Dashboard Summary", "ملخص لوحة القيادة التنفيذية")</h2>
+            <div class="kpi-grid">
                 <div class="card">
                     <div class="card-label">@T("Total Templates", "إجمالي النماذج")</div>
                     <div class="card-value">@Model.ExecutiveSummary.TotalTemplates</div>
                 </div>
-
                 <div class="card">
                     <div class="card-label">@T("Total Responses", "إجمالي الردود")</div>
                     <div class="card-value">@Model.ExecutiveSummary.TotalResponses</div>
                 </div>
-
                 <div class="card">
-                    <div class="card-label">@T("Scored Answers", "الإجابات المحسوبة")</div>
-                    <div class="card-value">@Model.ExecutiveSummary.TotalScoredAnswers</div>
+                    <div class="card-label">@T("Average Satisfaction", "متوسط الرضا")</div>
+                    <div class="card-value">@PercentOrDash(Model.ExecutiveSummary.AverageScorePercentage)</div>
+                    <div class="card-hint">@DecimalOrDash(Model.ExecutiveSummary.AverageScoreValue) / 5</div>
                 </div>
-
                 <div class="card">
-                    <div class="card-label">@T("Average Score", "متوسط التقييم")</div>
-                    <div class="card-value">
-                        @(Model.ExecutiveSummary.AverageScorePercentage.HasValue
-                            ? $"{Model.ExecutiveSummary.AverageScorePercentage}%"
-                            : "N/A")
-                    </div>
+                    <div class="card-label">@T("Templates Without Responses", "نماذج بدون ردود")</div>
+                    <div class="card-value">@Model.ExecutiveSummary.TemplatesWithoutResponses</div>
                 </div>
             </div>
 
             <table>
-                <tr>
-                    <th>@T("Average Score Value", "متوسط قيمة التقييم")</th>
-                    <td>@(Model.ExecutiveSummary.AverageScoreValue.HasValue ? $"{Model.ExecutiveSummary.AverageScoreValue} / 5" : "N/A")</td>
-                    <th>@T("Total Answers", "إجمالي الإجابات")</th>
-                    <td>@Model.ExecutiveSummary.TotalAnswers</td>
-                </tr>
-                <tr>
-                    <th>@T("Normal Responses", "ردود النماذج العادية")</th>
-                    <td>@Model.ExecutiveSummary.TotalNormalResponses</td>
-                    <th>@T("Anonymous Responses", "ردود النماذج المجهولة")</th>
-                    <td>@Model.ExecutiveSummary.TotalAnonymousResponses</td>
-                </tr>
-                <tr>
-                    <th>@T("Highest Rated Template", "أعلى نموذج تقييمًا")</th>
-                    <td>@Model.ExecutiveSummary.HighestRatedTemplateName</td>
-                    <th>@T("Lowest Rated Template", "أقل نموذج تقييمًا")</th>
-                    <td>@Model.ExecutiveSummary.LowestRatedTemplateName</td>
-                </tr>
-                <tr>
-                    <th>@T("Most Answered Template", "أكثر نموذج عليه ردود")</th>
-                    <td>@Model.ExecutiveSummary.MostAnsweredTemplateName</td>
-                    <th>@T("Templates Without Responses", "نماذج بدون ردود")</th>
-                    <td>@Model.ExecutiveSummary.TemplatesWithoutResponses</td>
-                </tr>
+                <tbody>
+                    <tr>
+                        <th>@T("Total Authorized Templates", "إجمالي النماذج المصرح بها")</th>
+                        <td>@Model.ExecutiveSummary.TotalNormalTemplates</td>
+                        <th>@T("Total Anonymous Templates", "إجمالي النماذج المجهولة")</th>
+                        <td>@Model.ExecutiveSummary.TotalAnonymousTemplates</td>
+                    </tr>
+                    <tr>
+                        <th>@T("Total Authorized Responses", "ردود النماذج المصرح بها")</th>
+                        <td>@Model.ExecutiveSummary.TotalNormalResponses</td>
+                        <th>@T("Total Anonymous Responses", "ردود النماذج المجهولة")</th>
+                        <td>@Model.ExecutiveSummary.TotalAnonymousResponses</td>
+                    </tr>
+                    <tr>
+                        <th>@T("Average Score Value", "متوسط قيمة التقييم")</th>
+                        <td>@DecimalOrDash(Model.ExecutiveSummary.AverageScoreValue) / 5</td>
+                        <th>@T("Most Answered Template", "أكثر نموذج عليه ردود")</th>
+                        <td>@Model.ExecutiveSummary.MostAnsweredTemplateName</td>
+                    </tr>
+                    <tr>
+                        <th>@T("Highest Rated Template", "أعلى نموذج تقييمًا")</th>
+                        <td>@Model.ExecutiveSummary.HighestRatedTemplateName</td>
+                        <th>@T("Lowest Rated Template", "أقل نموذج تقييمًا")</th>
+                        <td>@Model.ExecutiveSummary.LowestRatedTemplateName</td>
+                    </tr>
+                    <tr>
+                        <th>@T("Total Answers", "إجمالي الإجابات")</th>
+                        <td>@Model.ExecutiveSummary.TotalAnswers</td>
+                        <th>@T("Total Scored Answers", "إجمالي الإجابات المحسوبة")</th>
+                        <td>@Model.ExecutiveSummary.TotalScoredAnswers</td>
+                    </tr>
+                    <tr>
+                        <th>@T("Total Non-Scored Answers", "إجمالي الإجابات غير المحسوبة")</th>
+                        <td>@Model.ExecutiveSummary.TotalNonScoredAnswers</td>
+                        <th>@T("Score Status", "حالة التقييم")</th>
+                        <td>
+                            <span class="badge @ScoreStatusClass(Model.ExecutiveSummary.AverageScorePercentage)">
+                                @ScoreStatusText(Model.ExecutiveSummary.AverageScorePercentage)
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
-        </div>
+        </section>
 
-        <div class="section page-break">
-            <div class="section-title">@T("Templates Overview", "ملخص النماذج")</div>
+        <section class="section">
+            <h2 class="section-title">@T("Score Calculation Explanation", "شرح طريقة حساب التقييم")</h2>
+            <div class="note">
+                @if (ar)
+                {
+                    if (Model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions)
+                    {
+                        <div>يتم حساب التقييم من الأسئلة الرئيسية فقط.</div>
+                        <div>الأسئلة الشرطية تظهر في الشجرة والتحليل، لكنها لا تؤثر على تقييم النموذج الأساسي.</div>
+                    }
+                    else
+                    {
+                        <div>يتم حساب التقييم من أعمق سؤال قابل للتقييم داخل مسار الإجابة الشرطي.</div>
+                        <div>لو أعمق سؤال غير قابل للتقييم، يتم الرجوع لآخر سؤال قابل للتقييم في نفس المسار.</div>
+                    }
+                    <div>أسئلة الاختيار الواحد والنجوم والوجوه التعبيرية يتم تقييمها من 1 إلى 5.</div>
+                    <div>أسئلة الشكوى والصوت تظهر للتحليل فقط ولا تدخل مباشرة في حساب التقييم.</div>
+                }
+                else
+                {
+                    if (Model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions)
+                    {
+                        <div>Score is calculated from root questions only.</div>
+                        <div>Conditional questions are displayed in the flow and analysis, but they do not affect the main template score.</div>
+                    }
+                    else
+                    {
+                        <div>Score is calculated from the deepest scorable question in the answered conditional path.</div>
+                        <div>If the deepest question is not scorable, the report uses the last scorable question in the same path.</div>
+                    }
+                    <div>SingleChoice, StarRating, and Smiles are scored from 1 to 5.</div>
+                    <div>Complaint and Voice questions are displayed for analysis but are not scored directly.</div>
+                }
+            </div>
+        </section>
 
+        <section class="section page-break">
+            <h2 class="section-title">@T("Template Comparison", "مقارنة النماذج")</h2>
             @if (!Model.Templates.Any())
             {
-                <div class="note">@T("No templates found for the selected filters.", "لا توجد نماذج مطابقة للفلاتر المحددة.")</div>
+                <div class="note warning">@T("No templates found for the selected filters.", "لا توجد نماذج مطابقة للفلاتر المحددة.")</div>
             }
             else
             {
@@ -240,13 +678,12 @@
                         <tr>
                             <th>@T("Template", "النموذج")</th>
                             <th>@T("Kind", "النوع")</th>
-                            <th>@T("Questions", "الأسئلة")</th>
-                            <th>@T("Root", "رئيسية")</th>
-                            <th>@T("Conditional", "شرطية")</th>
                             <th>@T("Responses", "الردود")</th>
-                            <th>@T("Answers", "الإجابات")</th>
-                            <th>@T("Scored", "محسوبة")</th>
-                            <th>@T("Avg Score", "متوسط التقييم")</th>
+                            <th>@T("Root Questions", "أسئلة رئيسية")</th>
+                            <th>@T("Conditional Questions", "أسئلة شرطية")</th>
+                            <th>@T("Average Value", "متوسط القيمة")</th>
+                            <th>@T("Satisfaction %", "نسبة الرضا")</th>
+                            <th>@T("Status", "الحالة")</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -254,93 +691,278 @@
                         {
                             <tr>
                                 <td>@item.DisplayName(ar)</td>
-                                <td>@item.TemplateKindName</td>
-                                <td>@item.TotalQuestions</td>
+                                <td>
+                                    <span class="badge @(item.TemplateKind == ReportTemplateKind.Normal ? "badge-authorized" : "badge-anonymous")">
+                                        @item.DisplayKind(ar)
+                                    </span>
+                                </td>
+                                <td>@item.TotalResponses</td>
                                 <td>@item.RootQuestions</td>
                                 <td>@item.ConditionalQuestions</td>
-                                <td>@item.TotalResponses</td>
-                                <td>@item.TotalAnswers</td>
-                                <td>@item.TotalScoredAnswers</td>
-                                <td>@(item.AverageScorePercentage.HasValue ? $"{item.AverageScorePercentage}%" : "N/A")</td>
+                                <td>@DecimalOrDash(item.AverageScoreValue)</td>
+                                <td>@PercentOrDash(item.AverageScorePercentage)</td>
+                                <td>@item.Status</td>
                             </tr>
                         }
                     </tbody>
                 </table>
             }
-        </div>
+        </section>
 
-        <div class="section page-break">
-            <div class="section-title">@T("Answer Analytics", "تحليل الإجابات")</div>
-
-            @if (!Model.Questions.Any())
+        <section class="section">
+            <h2 class="section-title">@T("Worst Questions Overall", "أسوأ الأسئلة إجمالًا")</h2>
+            @if (!Model.WorstQuestions.Any())
             {
-                <div class="note">@T("No answers found for the selected filters.", "لا توجد إجابات مطابقة للفلاتر المحددة.")</div>
+                <div class="note warning">@T("No scored questions were found for the selected filters.", "لا توجد أسئلة محسوبة للتقييم ضمن الفلاتر المحددة.")</div>
             }
             else
             {
-                @foreach (var group in Model.Questions.GroupBy(x => new { x.TemplateId, x.TemplateKind }))
+                <table>
+                    <thead>
+                        <tr>
+                            <th>@T("Rank", "الترتيب")</th>
+                            <th>@T("Question", "السؤال")</th>
+                            <th>@T("Template", "النموذج")</th>
+                            <th>@T("Kind", "النوع")</th>
+                            <th>@T("Level", "المستوى")</th>
+                            <th>@T("Type", "النوع")</th>
+                            <th>@T("Answers", "الإجابات")</th>
+                            <th>@T("Average Score", "متوسط التقييم")</th>
+                            <th>@T("Satisfaction %", "نسبة الرضا")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var question in Model.WorstQuestions)
+                        {
+                            <tr>
+                                <td>@question.Rank</td>
+                                <td>@question.DisplayQuestionText(ar)</td>
+                                <td>@question.DisplayTemplateName(ar)</td>
+                                <td>@question.DisplayKind(ar)</td>
+                                <td>@question.DisplayLevel(ar)</td>
+                                <td>@QuestionTypeLabel(question.QuestionType)</td>
+                                <td>@question.TotalAnswers</td>
+                                <td>@question.AverageScoreValue.ToString("0.##", CultureInfo.InvariantCulture)</td>
+                                <td>@question.SatisfactionPercentage.ToString("0.##", CultureInfo.InvariantCulture)%</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">@T("Best Questions Overall", "أفضل الأسئلة إجمالًا")</h2>
+            @if (!Model.BestQuestions.Any())
+            {
+                <div class="note warning">@T("No scored questions were found for the selected filters.", "لا توجد أسئلة محسوبة للتقييم ضمن الفلاتر المحددة.")</div>
+            }
+            else
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>@T("Rank", "الترتيب")</th>
+                            <th>@T("Question", "السؤال")</th>
+                            <th>@T("Template", "النموذج")</th>
+                            <th>@T("Kind", "النوع")</th>
+                            <th>@T("Level", "المستوى")</th>
+                            <th>@T("Type", "النوع")</th>
+                            <th>@T("Answers", "الإجابات")</th>
+                            <th>@T("Average Score", "متوسط التقييم")</th>
+                            <th>@T("Satisfaction %", "نسبة الرضا")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var question in Model.BestQuestions)
+                        {
+                            <tr>
+                                <td>@question.Rank</td>
+                                <td>@question.DisplayQuestionText(ar)</td>
+                                <td>@question.DisplayTemplateName(ar)</td>
+                                <td>@question.DisplayKind(ar)</td>
+                                <td>@question.DisplayLevel(ar)</td>
+                                <td>@QuestionTypeLabel(question.QuestionType)</td>
+                                <td>@question.TotalAnswers</td>
+                                <td>@question.AverageScoreValue.ToString("0.##", CultureInfo.InvariantCulture)</td>
+                                <td>@question.SatisfactionPercentage.ToString("0.##", CultureInfo.InvariantCulture)%</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+
+        @if (Model.TemplatesWithoutResponses.Any())
+        {
+            <section class="section">
+                <h2 class="section-title">@T("Templates Without Responses", "نماذج بدون ردود")</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>@T("Template", "النموذج")</th>
+                            <th>@T("Kind", "النوع")</th>
+                            <th>@T("Status", "الحالة")</th>
+                            <th>@T("Active From", "يبدأ من")</th>
+                            <th>@T("Expire To", "ينتهي في")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.TemplatesWithoutResponses)
+                        {
+                            <tr>
+                                <td>@item.DisplayName(ar)</td>
+                                <td>@item.DisplayKind(ar)</td>
+                                <td>@item.Status</td>
+                                <td>@DateOrDash(item.ActiveFrom)</td>
+                                <td>@DateOrDash(item.ExpireTo)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </section>
+        }
+
+        @foreach (var detail in Model.TemplateDetails)
+        {
+            var summary = detail.Summary;
+
+            <section class="section template-detail">
+                <div class="template-header">
+                    <h2>@summary.DisplayName(ar)</h2>
+                    <div class="template-meta">
+                        <span class="badge @(summary.TemplateKind == ReportTemplateKind.Normal ? "badge-authorized" : "badge-anonymous")">@summary.DisplayKind(ar)</span>
+                        <span class="badge score-na">@summary.Status</span>
+                        <span class="badge score-na">@T("Responses", "الردود"): @summary.TotalResponses</span>
+                        <span class="badge @ScoreStatusClass(summary.AverageScorePercentage)">
+                            @T("Satisfaction", "الرضا"): @PercentOrDash(summary.AverageScorePercentage)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="card">
+                        <div class="card-label">@T("Root Questions", "أسئلة رئيسية")</div>
+                        <div class="card-value">@summary.RootQuestions</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-label">@T("Conditional Questions", "أسئلة شرطية")</div>
+                        <div class="card-value">@summary.ConditionalQuestions</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-label">@T("Total Answers", "إجمالي الإجابات")</div>
+                        <div class="card-value">@summary.TotalAnswers</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-label">@T("Average Score", "متوسط التقييم")</div>
+                        <div class="card-value">@DecimalOrDash(summary.AverageScoreValue)</div>
+                    </div>
+                </div>
+
+                <h3 class="section-title">@T("Question Hierarchy / Flow Tree", "شجرة الأسئلة ومسارها")</h3>
+                @if (!detail.FlowLines.Any())
                 {
-                    var first = group.First();
+                    <div class="note warning">@T("No question flow is available for this template.", "لا توجد شجرة أسئلة متاحة لهذا النموذج.")</div>
+                }
+                else
+                {
+                    <div class="flow-list">
+                        @foreach (var line in detail.FlowLines)
+                        {
+                            <div class="@FlowLineClass(line)" style="margin-inline-start:@(line.Depth * 14)px">
+                                <span class="flow-number">@line.Number</span>
+                                @if (line.IsQuestion)
+                                {
+                                    <span class="badge @(line.IsRootQuestion ? "badge-root" : "badge-conditional")">
+                                        @(line.IsRootQuestion ? T("Root", "رئيسي") : T("Conditional", "شرطي"))
+                                    </span>
+                                    <span class="badge score-na">@QuestionTypeLabel(line.QuestionType ?? string.Empty)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge score-na">@T("Trigger / Option", "شرط / اختيار")</span>
+                                }
+                                <span class="flow-text">@line.DisplayText(ar)</span>
+                                @if (line.Value.HasValue)
+                                {
+                                    <span class="badge score-good">@T("Value", "القيمة"): @line.Value</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
 
-                    <h3>
-                        @first.DisplayTemplateName(ar)
-                        <span class="badge">@first.TemplateKind</span>
-                    </h3>
-
+                <h3 class="section-title">@T("Question Analysis", "تحليل الأسئلة")</h3>
+                @if (!detail.Questions.Any())
+                {
+                    <div class="note warning">@T("No question analysis is available for this template.", "لا يوجد تحليل أسئلة متاح لهذا النموذج.")</div>
+                }
+                else
+                {
                     <table>
                         <thead>
                             <tr>
                                 <th>@T("Question", "السؤال")</th>
+                                <th>@T("Level", "المستوى")</th>
+                                <th>@T("Parent Trigger", "شرط الظهور")</th>
                                 <th>@T("Type", "النوع")</th>
-                                <th>@T("Root", "رئيسي")</th>
                                 <th>@T("Answers", "الإجابات")</th>
-                                <th>@T("Skipped", "لم يتم الإجابة")</th>
-                                <th>@T("Answer Rate", "نسبة الإجابة")</th>
                                 <th>@T("Avg Value", "متوسط القيمة")</th>
-                                <th>@T("Score Included", "يدخل في التقييم")</th>
-                                <th>@T("Scored Count", "عدد المحسوب")</th>
+                                <th>@T("Included In Score", "يدخل في التقييم")</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var q in group)
+                            @foreach (var q in detail.Questions)
                             {
                                 <tr>
                                     <td>@q.DisplayQuestionText(ar)</td>
-                                    <td>@q.QuestionType</td>
-                                    <td>@(q.IsRootQuestion ? T("Yes", "نعم") : T("No", "لا"))</td>
+                                    <td>
+                                        <span class="badge @(q.IsRootQuestion ? "badge-root" : "badge-conditional")">
+                                            @q.DisplayLevel(ar)
+                                        </span>
+                                    </td>
+                                    <td>@q.DisplayParentTrigger(ar)</td>
+                                    <td>@QuestionTypeLabel(q.QuestionType)</td>
                                     <td>@q.TotalAnswers</td>
-                                    <td>@q.SkippedCount</td>
-                                    <td>@q.AnswerRatePercentage%</td>
-                                    <td>@(q.AverageValue.HasValue ? q.AverageValue.Value.ToString("0.##") : "-")</td>
-                                    <td>@(q.IsScoreIncluded ? T("Yes", "نعم") : T("No", "لا"))</td>
-                                    <td>@q.ScoreIncludedAnswersCount</td>
+                                    <td>@DecimalOrDash(q.AverageValue)</td>
+                                    <td>
+                                        <span class="badge @(q.IsScoreIncluded ? "score-good" : "score-na")">
+                                            @(q.IsScoreIncluded ? T("Yes", "نعم") : T("No", "لا"))
+                                        </span>
+                                    </td>
                                 </tr>
 
                                 @if (q.Options.Any())
                                 {
                                     <tr>
-                                        <td colspan="9">
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th>@T("Option", "الاختيار")</th>
-                                                        <th>@T("Value", "القيمة")</th>
-                                                        <th>@T("Count", "العدد")</th>
-                                                        <th>@T("Percentage", "النسبة")</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach (var option in q.Options)
-                                                    {
+                                        <td colspan="7">
+                                            <div class="options-wrap">
+                                                <div class="options-title">@T("Options Distribution", "توزيع الاختيارات")</div>
+                                                <table>
+                                                    <thead>
                                                         <tr>
-                                                            <td>@option.DisplayLabel(ar)</td>
-                                                            <td>@ValueOrDash(option.Value)</td>
-                                                            <td>@option.Count</td>
-                                                            <td>@option.Percentage%</td>
+                                                            <th>@T("Option", "الاختيار")</th>
+                                                            <th>@T("Value", "القيمة")</th>
+                                                            <th>@T("Count", "العدد")</th>
+                                                            <th>@T("Percentage", "النسبة")</th>
                                                         </tr>
-                                                    }
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var option in q.Options)
+                                                        {
+                                                            <tr>
+                                                                <td>@option.DisplayLabel(ar)</td>
+                                                                <td>@ValueOrDash(option.Value)</td>
+                                                                <td>@option.Count</td>
+                                                                <td>
+                                                                    @option.Percentage.ToString("0.##", CultureInfo.InvariantCulture)%
+                                                                    <div class="bar"><span style="width:@ProgressWidth(option.Percentage)%"></span></div>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -348,86 +970,38 @@
                         </tbody>
                     </table>
                 }
-            }
-        </div>
-
-        @if (Model.CustomInputs.Any())
-        {
-            <div class="section page-break">
-                <div class="section-title">@T("Anonymous Custom Inputs Summary", "ملخص بيانات النماذج المجهولة")</div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>@T("Template", "النموذج")</th>
-                            <th>@T("Input", "الحقل")</th>
-                            <th>@T("Type", "النوع")</th>
-                            <th>@T("Required", "إجباري")</th>
-                            <th>@T("Filled", "تم إدخاله")</th>
-                            <th>@T("Empty", "فارغ")</th>
-                            <th>@T("Completion", "نسبة الاكتمال")</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var input in Model.CustomInputs)
-                        {
-                            <tr>
-                                <td>@input.DisplayTemplateName(ar)</td>
-                                <td>@input.DisplayLabel(ar)</td>
-                                <td>@input.Type</td>
-                                <td>@(input.IsRequired ? T("Yes", "نعم") : T("No", "لا"))</td>
-                                <td>@input.FilledCount</td>
-                                <td>@input.EmptyCount</td>
-                                <td>@input.CompletionRatePercentage%</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+            </section>
         }
 
-        <div class="section">
-            <div class="section-title">@T("Scoring Rules", "قواعد حساب التقييم")</div>
-            <div class="note">
-                @if (ar)
-                {
-                    if (Model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions)
-                    {
-                        <div>يتم حساب التقييم من الأسئلة الرئيسية فقط.</div>
-                        <div>الأسئلة الشرطية تظهر في الإحصائيات لكنها لا تدخل في إجمالي تقييم النموذج.</div>
-                    }
-                    else
-                    {
-                        <div>يتم حساب التقييم من أعمق سؤال قابل للتقييم في مسار الإجابة.</div>
-                        <div>إذا كان أعمق سؤال من نوع نص أو شكوى أو صوت، يتم الرجوع إلى آخر سؤال قابل للتقييم في نفس المسار.</div>
-                        <div>إذا لم يتم فتح أسئلة شرطية، يتم حساب السؤال الرئيسي إذا كان قابلًا للتقييم.</div>
-                    }
-
-                    <div>أسئلة النجوم والوجوه التعبيرية يتم حسابها من 1 إلى 5.</div>
-                    <div>أسئلة الاختيار الواحد تعتمد على قيمة الاختيار المحددة مسبقًا.</div>
-                    <div>أسئلة الشكوى والصوت لا تدخل في حساب التقييم مباشرة.</div>
-                }
-                else
-                {
-                    if (Model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions)
-                    {
-                        <div>Score is calculated from root questions only.</div>
-                        <div>Conditional child questions are shown in analytics but do not affect the total template score.</div>
-                    }
-                    else
-                    {
-                        <div>Score is calculated from the deepest scorable question in the answered condition path.</div>
-                        <div>If the deepest question is Text, Complaint, or Voice, the report falls back to the last scorable question in the same path.</div>
-                        <div>If no conditional question is opened, the root question is used when it is scorable.</div>
-                    }
-
-                    <div>Star Rating and Smiles use values from 1 to 5.</div>
-                    <div>Single Choice uses the configured option value.</div>
-                    <div>Complaint and Voice questions do not directly affect scoring.</div>
-                }
-            </div>
-        </div>
-
+        <section class="section page-break data-notes">
+            <h2 class="section-title">@T("Data Quality Notes", "ملاحظات جودة البيانات")</h2>
+            @if (ar)
+            {
+                <div class="note">
+                    <ul>
+                        <li>Authorized تعني النماذج الداخلية التي يتم الإجابة عليها بواسطة مستخدم مصرح له.</li>
+                        <li>Anonymous تعني النماذج العامة التي يتم الإجابة عليها بدون تسجيل دخول.</li>
+                        <li>الأسئلة التي لا تحتوي على قيمة تقييم تظهر للتحليل فقط ولا تدخل في متوسط التقييم.</li>
+                        <li>أسئلة الصوت والشكوى لا تؤثر مباشرة على التقييم.</li>
+                        <li>الأسئلة الشرطية قد يكون لها عدد إجابات أقل لأنها تظهر فقط عند تحقق شرط السؤال الأب.</li>
+                        <li>النماذج بدون ردود يتم عرضها لكنها لا تدخل في متوسطات التقييم.</li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <div class="note">
+                    <ul>
+                        <li>Authorized means internal templates answered by authenticated/authorized users.</li>
+                        <li>Anonymous means public templates answered without login.</li>
+                        <li>Questions without scoring values are displayed for analysis but excluded from average score.</li>
+                        <li>Voice and Complaint questions do not directly affect the score.</li>
+                        <li>Conditional questions may have fewer answers because they appear only when their parent trigger is selected.</li>
+                        <li>Templates with zero responses are listed but excluded from scored averages.</li>
+                    </ul>
+                </div>
+            }
+        </section>
     </div>
 </body>
 </html>

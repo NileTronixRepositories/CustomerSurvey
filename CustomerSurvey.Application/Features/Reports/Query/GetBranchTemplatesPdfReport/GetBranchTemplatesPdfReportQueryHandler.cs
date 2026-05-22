@@ -66,16 +66,22 @@ internal sealed class GetBranchTemplatesPdfReportQueryHandler
                 TemplateId = request.TemplateId,
                 TemplateKind = request.TemplateKind,
                 ScoreCalculationMode = request.ScoreCalculationMode,
+                TopWorstQuestionsCount = request.TopWorstQuestionsCount,
                 Language = request.Language.ToLowerInvariant()
             },
             cancellationToken);
 
+        if (file.IsFailure)
+        {
+            return Result<GetBranchTemplatesPdfReportResponse>.Fail(file.Errors);
+        }
+
         return Result<GetBranchTemplatesPdfReportResponse>.Ok(
             new GetBranchTemplatesPdfReportResponse
             {
-                FileName = file.FileName,
-                ContentType = file.ContentType,
-                Content = file.Content
+                FileName = file.Value.FileName,
+                ContentType = file.Value.ContentType,
+                Content = file.Value.Content
             });
     }
 

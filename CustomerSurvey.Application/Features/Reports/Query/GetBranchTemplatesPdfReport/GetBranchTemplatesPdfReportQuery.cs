@@ -16,6 +16,8 @@ public sealed record GetBranchTemplatesPdfReportQuery
     public ScoreCalculationMode ScoreCalculationMode { get; init; }
         = ScoreCalculationMode.RootQuestions;
 
+    public int TopWorstQuestionsCount { get; init; } = 5;
+
     /// <summary>
     /// Comes from Accept-Language header inside controller.
     /// Supported values: ar, en.

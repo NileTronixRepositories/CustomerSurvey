@@ -38,9 +38,14 @@ internal sealed class GetBranchTemplatesPdfReportQueryValidator
             .IsInEnum()
             .WithMessage(ErrorMessage.GetBranchTemplatesPdfReport_ScoreCalculationMode_Invalid);
 
-        RuleFor(x => x)
-            .Must(x => !x.TemplateKind.HasValue || x.TemplateId.HasValue)
-            .WithMessage(ErrorMessage.GetBranchTemplatesPdfReport_TemplateKind_Requires_TemplateId);
+        RuleFor(x => x.TemplateKind)
+            .IsInEnum()
+            .When(x => x.TemplateKind.HasValue)
+            .WithMessage(ErrorMessage.GetBranchTemplatesPdfReport_TemplateKind_Invalid);
+
+        RuleFor(x => x.TopWorstQuestionsCount)
+            .Must(x => x is 5 or 10 or 20)
+            .WithMessage(ErrorMessage.GetBranchTemplatesPdfReport_TopWorstQuestionsCount_Invalid);
     }
 
     private static int GetInclusiveDays(DateOnly fromDate, DateOnly toDate)
