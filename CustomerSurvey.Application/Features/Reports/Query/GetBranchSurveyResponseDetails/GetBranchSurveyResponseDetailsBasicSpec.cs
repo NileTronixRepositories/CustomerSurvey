@@ -8,11 +8,16 @@ internal sealed class GetBranchSurveyResponseDetailsBasicSpec
 {
     public GetBranchSurveyResponseDetailsBasicSpec(
         Guid surveyResponseId,
-        Guid branchId)
+        Guid? branchId)
     {
-        AddCriteria(x =>
-            x.Id == surveyResponseId &&
-            x.Template.BranchId == branchId);
+        AddCriteria(x => x.Id == surveyResponseId);
+
+        // Branch scoped actors only.
+        // SuperAdmin sends null => global access.
+        if (branchId.HasValue)
+        {
+            AddCriteria(x => x.Template.BranchId == branchId.Value);
+        }
 
         Select(x => new BranchSurveyResponseDetailsBasicDto
         {
@@ -20,9 +25,11 @@ internal sealed class GetBranchSurveyResponseDetailsBasicSpec
             TemplateId = x.TemplateId,
             TemplateNameEn = x.Template.NameEn,
             TemplateNameAr = x.Template.NameAr,
+
             OperatorId = x.OperatorId,
             OperatorNameEn = x.Operator.ApplicationUser.NameEn,
             OperatorNameAr = x.Operator.ApplicationUser.NameAr,
+
             SubmittedOnUtc = x.SubmittedOnUtc,
             ActualScore = x.ActualScore,
             MaxScore = x.MaxScore,

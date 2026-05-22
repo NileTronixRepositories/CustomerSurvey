@@ -9,15 +9,21 @@ internal sealed class GetBranchSurveyResponsesPaginationSpec
     : Specification<SurveyResponse, BranchSurveyResponsePaginationItemResponse>
 {
     public GetBranchSurveyResponsesPaginationSpec(
-        Guid branchId,
+        Guid? branchId,
         DateTime fromUtc,
         DateTime toExclusiveUtc,
         GetBranchSurveyResponsesPaginationQuery query)
     {
         AddCriteria(x =>
-            x.Template.BranchId == branchId &&
             x.SubmittedOnUtc >= fromUtc &&
             x.SubmittedOnUtc < toExclusiveUtc);
+
+        // SuperAdmin => branchId = null => Global access.
+        // BranchAdmin / BranchUser => branchId has value => Branch scoped access.
+        if (branchId.HasValue)
+        {
+            AddCriteria(x => x.Template.BranchId == branchId.Value);
+        }
 
         if (query.TemplateId.HasValue)
         {
@@ -106,6 +112,7 @@ internal sealed class GetBranchSurveyResponsesPaginationSpec
         Select(x => new BranchSurveyResponsePaginationItemResponse
         {
             SurveyResponseId = x.Id,
+
             TemplateId = x.TemplateId,
             TemplateNameEn = x.Template.NameEn,
             TemplateNameAr = x.Template.NameAr,

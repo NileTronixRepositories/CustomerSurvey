@@ -14,6 +14,7 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
 {
     private const string SurveyVoiceAnswersBasePath = "Media/SurveyVoiceAnswers";
 
+    private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
     private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
     private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
     private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
@@ -23,6 +24,7 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
     private readonly ICurrentUser _currentUser;
 
     public GetBranchSurveyResponseDetailsQueryHandler(
+        IWriteReadRepository<SuperAdmin> superAdminReadRepository,
         IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
         IWriteReadRepository<BranchUser> branchUserReadRepository,
         IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
@@ -31,6 +33,9 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
         IWriteReadRepository<QuestionOption> questionOptionReadRepository,
         ICurrentUser currentUser)
     {
+        _superAdminReadRepository = superAdminReadRepository
+            ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
+
         _branchAdminReadRepository = branchAdminReadRepository
             ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
 
@@ -65,22 +70,35 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
                 Type: ErrorType.Security));
         }
 
-        var currentActor = await ResolveCurrentBranchActorAsync(
-            _currentUser.UserId.Value,
+        var currentApplicationUserId = _currentUser.UserId.Value;
+
+        Guid? currentBranchId = null;
+
+        var currentSuperAdminExists = await _superAdminReadRepository.AnyAsync(
+            x => x.ApplicationUserId == currentApplicationUserId,
             cancellationToken);
 
-        if (currentActor is null)
+        if (!currentSuperAdminExists)
         {
-            return Result<GetBranchSurveyResponseDetailsResponse>.Fail(new Error(
-                Code: "Reports.BranchResponseDetails.CurrentBranchActorNotFound",
-                Message: ErrorMessage.GetBranchSurveyResponseDetails_CurrentBranchActor_NotFound,
-                Type: ErrorType.NotFound));
+            var currentActor = await ResolveCurrentBranchActorAsync(
+                currentApplicationUserId,
+                cancellationToken);
+
+            if (currentActor is null)
+            {
+                return Result<GetBranchSurveyResponseDetailsResponse>.Fail(new Error(
+                    Code: "Reports.BranchResponseDetails.CurrentBranchActorNotFound",
+                    Message: ErrorMessage.GetBranchSurveyResponseDetails_CurrentBranchActor_NotFound,
+                    Type: ErrorType.NotFound));
+            }
+
+            currentBranchId = currentActor.BranchId;
         }
 
         var surveyResponse = await _surveyResponseReadRepository.FirstOrDefaultAsync(
             new GetBranchSurveyResponseDetailsBasicSpec(
                 request.SurveyResponseId,
-                currentActor.BranchId),
+                currentBranchId),
             cancellationToken);
 
         if (surveyResponse is null)
