@@ -1,6 +1,7 @@
 ﻿using BuildingBlock.Api;
 using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchDashboard;
+using CustomerSurvey.Application.Features.Reports.Query.GetBranchAnonymousResponsesPagination;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactionReport;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSurveyResponsesPagination;
@@ -125,6 +126,20 @@ namespace CustomerSurvey.Api.Controllers
     CancellationToken cancellationToken)
         {
             query ??= new GetBranchSurveyResponsesPaginationQuery();
+            query.SearchText ??= string.Empty;
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("anonymous-responses")]
+        [Permission("Reports.ViewBranchReports")]
+        public async Task<IActionResult> GetBranchAnonymousResponses(
+    [FromQuery] GetBranchAnonymousResponsesPaginationQuery query,
+    CancellationToken cancellationToken)
+        {
+            query ??= new GetBranchAnonymousResponsesPaginationQuery();
             query.SearchText ??= string.Empty;
 
             var result = await sender.Send(query, cancellationToken);

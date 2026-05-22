@@ -2298,6 +2298,36 @@
   <data name="GetBranchSurveyResponseDetails_Response_NotFound" xml:space="preserve">
     <value>Survey response was not found inside the current branch.</value>
   </data>
+  <data name="GetBranchAnonymousResponses_Unauthenticated" xml:space="preserve">
+    <value>Authentication token is missing or invalid.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch user profile was not found.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_AnonymousTemplate_NotFound" xml:space="preserve">
+    <value>Anonymous template was not found.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_PageNumber_Invalid" xml:space="preserve">
+    <value>Page number must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_PageSize_Invalid" xml:space="preserve">
+    <value>Page size must be greater than or equal to 1.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_PageSize_Max" xml:space="preserve">
+    <value>Page size must not exceed 100.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_DateRange_Invalid" xml:space="preserve">
+    <value>From date must be earlier than or equal to To date.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_MinScore_Invalid" xml:space="preserve">
+    <value>Minimum score percentage must be between 0 and 100.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_MaxScore_Invalid" xml:space="preserve">
+    <value>Maximum score percentage must be between 0 and 100.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_ScoreRange_Invalid" xml:space="preserve">
+    <value>Minimum score percentage must be less than or equal to maximum score percentage.</value>
+  </data>
   <data name="GetBranchSurveyResponsesPagination_CurrentBranchActor_NotFound" xml:space="preserve">
     <value>Current branch actor profile was not found.</value>
   </data>

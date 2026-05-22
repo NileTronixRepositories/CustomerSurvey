@@ -2298,6 +2298,36 @@
   <data name="GetBranchSurveyResponseDetails_Response_NotFound" xml:space="preserve">
     <value>لم يتم العثور على رد الاستبيان داخل الفرع الحالي.</value>
   </data>
+  <data name="GetBranchAnonymousResponses_Unauthenticated" xml:space="preserve">
+    <value>رمز المصادقة غير موجود أو غير صالح.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على ملف مستخدم الفرع الحالي.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_AnonymousTemplate_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على نموذج الاستبيان المجهول.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_PageNumber_Invalid" xml:space="preserve">
+    <value>رقم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_PageSize_Invalid" xml:space="preserve">
+    <value>حجم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_PageSize_Max" xml:space="preserve">
+    <value>حجم الصفحة يجب ألا يتجاوز 100.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_DateRange_Invalid" xml:space="preserve">
+    <value>تاريخ البداية يجب أن يكون أقل من أو يساوي تاريخ النهاية.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_MinScore_Invalid" xml:space="preserve">
+    <value>أقل نسبة تقييم يجب أن تكون بين 0 و 100.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_MaxScore_Invalid" xml:space="preserve">
+    <value>أعلى نسبة تقييم يجب أن تكون بين 0 و 100.</value>
+  </data>
+  <data name="GetBranchAnonymousResponses_ScoreRange_Invalid" xml:space="preserve">
+    <value>أقل نسبة تقييم يجب أن تكون أقل من أو تساوي أعلى نسبة تقييم.</value>
+  </data>
   <data name="GetBranchSurveyResponsesPagination_CurrentBranchActor_NotFound" xml:space="preserve">
     <value>لم يتم العثور على حساب الفرع الحالي.</value>
   </data>

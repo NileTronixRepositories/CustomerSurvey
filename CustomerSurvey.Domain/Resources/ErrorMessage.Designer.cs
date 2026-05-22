@@ -2858,6 +2858,96 @@ namespace CustomerSurvey.Domain.Resources {
                 return ResourceManager.GetString("GetBranchSurveyResponseDetails_SurveyResponseId_Required", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string GetBranchAnonymousResponses_AnonymousTemplate_NotFound {
+            get {
+                return ResourceManager.GetString("GetBranchAnonymousResponses_AnonymousTemplate_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch user profile was not found..
+        /// </summary>
+        public static string GetBranchAnonymousResponses_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetBranchAnonymousResponses_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From date must be earlier than or equal to To date..
+        /// </summary>
+        public static string GetBranchAnonymousResponses_DateRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchAnonymousResponses_DateRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum score percentage must be between 0 and 100..
+        /// </summary>
+        public static string GetBranchAnonymousResponses_MaxScore_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchAnonymousResponses_MaxScore_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum score percentage must be between 0 and 100..
+        /// </summary>
+        public static string GetBranchAnonymousResponses_MinScore_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchAnonymousResponses_MinScore_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page number must be greater than or equal to 1..
+        /// </summary>
+        public static string GetBranchAnonymousResponses_PageNumber_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchAnonymousResponses_PageNumber_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must be greater than or equal to 1..
+        /// </summary>
+        public static string GetBranchAnonymousResponses_PageSize_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchAnonymousResponses_PageSize_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page size must not exceed 100..
+        /// </summary>
+        public static string GetBranchAnonymousResponses_PageSize_Max {
+            get {
+                return ResourceManager.GetString("GetBranchAnonymousResponses_PageSize_Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum score percentage must be less than or equal to maximum score percentage..
+        /// </summary>
+        public static string GetBranchAnonymousResponses_ScoreRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchAnonymousResponses_ScoreRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authentication token is missing or invalid..
+        /// </summary>
+        public static string GetBranchAnonymousResponses_Unauthenticated {
+            get {
+                return ResourceManager.GetString("GetBranchAnonymousResponses_Unauthenticated", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Current branch actor profile was not found..
