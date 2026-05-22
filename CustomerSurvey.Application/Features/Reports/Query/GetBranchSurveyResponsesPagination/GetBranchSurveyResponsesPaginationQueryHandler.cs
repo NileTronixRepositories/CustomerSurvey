@@ -17,6 +17,7 @@ internal sealed class GetBranchSurveyResponsesPaginationQueryHandler
     private const int MaxAllowedMonths = 12;
     private const int CustomInputsPreviewCount = 3;
 
+    private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
     private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
     private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
     private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
@@ -24,12 +25,16 @@ internal sealed class GetBranchSurveyResponsesPaginationQueryHandler
     private readonly ICurrentUser _currentUser;
 
     public GetBranchSurveyResponsesPaginationQueryHandler(
+        IWriteReadRepository<SuperAdmin> superAdminReadRepository,
         IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
         IWriteReadRepository<BranchUser> branchUserReadRepository,
         IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
         IWriteReadRepository<SurveyResponseCustomInputValue> customInputValueReadRepository,
         ICurrentUser currentUser)
     {
+        _superAdminReadRepository = superAdminReadRepository
+            ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
+
         _branchAdminReadRepository = branchAdminReadRepository
             ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
 
@@ -58,16 +63,29 @@ internal sealed class GetBranchSurveyResponsesPaginationQueryHandler
                 Type: ErrorType.Security));
         }
 
-        var currentActor = await ResolveCurrentBranchActorAsync(
-            _currentUser.UserId.Value,
+        var currentApplicationUserId = _currentUser.UserId.Value;
+
+        Guid? currentBranchId = null;
+
+        var currentSuperAdminExists = await _superAdminReadRepository.AnyAsync(
+            x => x.ApplicationUserId == currentApplicationUserId,
             cancellationToken);
 
-        if (currentActor is null)
+        if (!currentSuperAdminExists)
         {
-            return Result<Pagination<BranchSurveyResponsePaginationItemResponse>>.Fail(new Error(
-                Code: "Reports.BranchResponsesPagination.CurrentBranchActorNotFound",
-                Message: ErrorMessage.GetBranchSurveyResponsesPagination_CurrentBranchActor_NotFound,
-                Type: ErrorType.NotFound));
+            var currentActor = await ResolveCurrentBranchActorAsync(
+                currentApplicationUserId,
+                cancellationToken);
+
+            if (currentActor is null)
+            {
+                return Result<Pagination<BranchSurveyResponsePaginationItemResponse>>.Fail(new Error(
+                    Code: "Reports.BranchResponsesPagination.CurrentBranchActorNotFound",
+                    Message: ErrorMessage.GetBranchSurveyResponsesPagination_CurrentBranchActor_NotFound,
+                    Type: ErrorType.NotFound));
+            }
+
+            currentBranchId = currentActor.BranchId;
         }
 
         var periodResult = ResolvePeriod(request);
@@ -84,7 +102,7 @@ internal sealed class GetBranchSurveyResponsesPaginationQueryHandler
         var toExclusiveUtc = period.To.AddDays(1).ToDateTime(TimeOnly.MinValue);
 
         var spec = new GetBranchSurveyResponsesPaginationSpec(
-            currentActor.BranchId,
+            currentBranchId,
             fromUtc,
             toExclusiveUtc,
             request);

@@ -2723,6 +2723,114 @@ namespace CustomerSurvey.Domain.Resources {
                 return ResourceManager.GetString("GetBranchDashboard_TopQuestionsCount_Invalid", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template filter is allowed only when source is Anonymous..
+        /// </summary>
+        public static string GetSurveyDashboard_AnonymousTemplateId_NotAllowed {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_AnonymousTemplateId_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anonymous template was not found..
+        /// </summary>
+        public static string GetSurveyDashboard_AnonymousTemplate_NotFound {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_AnonymousTemplate_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch filter is allowed only for Super Admin..
+        /// </summary>
+        public static string GetSurveyDashboard_BranchId_NotAllowed {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_BranchId_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch was not found..
+        /// </summary>
+        public static string GetSurveyDashboard_Branch_NotFound {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_Branch_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Critical responses count must be between 1 and 100..
+        /// </summary>
+        public static string GetSurveyDashboard_CriticalResponsesCount_Invalid {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_CriticalResponsesCount_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Critical score threshold must be between 0 and 100..
+        /// </summary>
+        public static string GetSurveyDashboard_CriticalScoreThreshold_Invalid {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_CriticalScoreThreshold_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current reporting actor profile was not found..
+        /// </summary>
+        public static string GetSurveyDashboard_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From date must be earlier than or equal to To date..
+        /// </summary>
+        public static string GetSurveyDashboard_DateRange_Invalid {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_DateRange_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template filter is allowed only when source is Internal..
+        /// </summary>
+        public static string GetSurveyDashboard_TemplateId_NotAllowed {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_TemplateId_NotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found..
+        /// </summary>
+        public static string GetSurveyDashboard_Template_NotFound {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top questions count must be between 1 and 50..
+        /// </summary>
+        public static string GetSurveyDashboard_TopQuestionsCount_Invalid {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_TopQuestionsCount_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authentication token is missing or invalid..
+        /// </summary>
+        public static string GetSurveyDashboard_Unauthenticated {
+            get {
+                return ResourceManager.GetString("GetSurveyDashboard_Unauthenticated", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Branch was not found..
