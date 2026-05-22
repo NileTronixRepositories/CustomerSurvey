@@ -2466,8 +2466,17 @@
   <data name="GetBranchTemplatesPdfReport_Language_Invalid" xml:space="preserve">
     <value>Report language is invalid.</value>
   </data>
-  <data name="GetBranchTemplatesPdfReport_TemplateKind_Requires_TemplateId" xml:space="preserve">
-    <value>Template kind requires template id.</value>
+  <data name="GetBranchTemplatesPdfReport_TemplateKind_Invalid" xml:space="preserve">
+    <value>Template kind is invalid.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_TopWorstQuestionsCount_Invalid" xml:space="preserve">
+    <value>Top worst questions count must be 5, 10, or 20.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_Template_NotFound" xml:space="preserve">
+    <value>Template was not found inside the current branch.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_TemplateKind_Required_ForAmbiguousTemplate" xml:space="preserve">
+    <value>Template kind is required because template id matches more than one template kind.</value>
   </data>
   <data name="GetBranchTemplatesPdfReport_CurrentActor_NotFound" xml:space="preserve">
     <value>Current user is not allowed to view branch report.</value>

@@ -1,10 +1,11 @@
-﻿using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
+﻿using BuildingBlock.Domain.Results;
+using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 
 namespace CustomerSurvey.Application.Abstraction.Reports;
 
 public interface IBranchTemplatesPdfReportService
 {
-    Task<BranchTemplatesPdfReportFile> GenerateAsync(
+    Task<Result<BranchTemplatesPdfReportFile>> GenerateAsync(
         BranchTemplatesPdfReportRequest request,
         CancellationToken cancellationToken);
 }
@@ -27,6 +28,8 @@ public sealed record BranchTemplatesPdfReportRequest
 
     public ScoreCalculationMode ScoreCalculationMode { get; init; }
         = ScoreCalculationMode.RootQuestions;
+
+    public int TopWorstQuestionsCount { get; init; } = 5;
 
     public string Language { get; init; } = "en";
 }

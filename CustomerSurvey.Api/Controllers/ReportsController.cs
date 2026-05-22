@@ -238,7 +238,7 @@ namespace CustomerSurvey.Api.Controllers
                     statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            Response.Headers.Append("X-Pdf-File-Name", result.Value.FileName);
+            Response.Headers.Append("X-Pdf-File-Name", Uri.EscapeDataString(result.Value.FileName));
             Response.Headers.Append("X-Pdf-Size", result.Value.Content.Length.ToString());
 
             return File(

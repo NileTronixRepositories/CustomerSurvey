@@ -3193,11 +3193,38 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Template kind requires template id..
+        ///   Looks up a localized string similar to Template was not found inside the current branch..
         /// </summary>
-        public static string GetBranchTemplatesPdfReport_TemplateKind_Requires_TemplateId {
+        public static string GetBranchTemplatesPdfReport_Template_NotFound {
             get {
-                return ResourceManager.GetString("GetBranchTemplatesPdfReport_TemplateKind_Requires_TemplateId", resourceCulture);
+                return ResourceManager.GetString("GetBranchTemplatesPdfReport_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template kind is invalid..
+        /// </summary>
+        public static string GetBranchTemplatesPdfReport_TemplateKind_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchTemplatesPdfReport_TemplateKind_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template kind is required because template id matches more than one template kind..
+        /// </summary>
+        public static string GetBranchTemplatesPdfReport_TemplateKind_Required_ForAmbiguousTemplate {
+            get {
+                return ResourceManager.GetString("GetBranchTemplatesPdfReport_TemplateKind_Required_ForAmbiguousTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top worst questions count must be 5, 10, or 20..
+        /// </summary>
+        public static string GetBranchTemplatesPdfReport_TopWorstQuestionsCount_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchTemplatesPdfReport_TopWorstQuestionsCount_Invalid", resourceCulture);
             }
         }
         

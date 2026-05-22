@@ -2466,8 +2466,17 @@
   <data name="GetBranchTemplatesPdfReport_Language_Invalid" xml:space="preserve">
     <value>لغة التقرير غير صحيحة.</value>
   </data>
-  <data name="GetBranchTemplatesPdfReport_TemplateKind_Requires_TemplateId" xml:space="preserve">
-    <value>لا يمكن تحديد نوع النموذج بدون تحديد النموذج.</value>
+  <data name="GetBranchTemplatesPdfReport_TemplateKind_Invalid" xml:space="preserve">
+    <value>نوع النموذج غير صحيح.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_TopWorstQuestionsCount_Invalid" xml:space="preserve">
+    <value>عدد الأسئلة الأسوأ يجب أن يكون 5 أو 10 أو 20.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_Template_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على النموذج داخل الفرع الحالي.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_TemplateKind_Required_ForAmbiguousTemplate" xml:space="preserve">
+    <value>نوع النموذج مطلوب لأن رقم النموذج مطابق لأكثر من نوع.</value>
   </data>
   <data name="GetBranchTemplatesPdfReport_CurrentActor_NotFound" xml:space="preserve">
     <value>المستخدم الحالي غير مسموح له بعرض تقرير الفرع.</value>
