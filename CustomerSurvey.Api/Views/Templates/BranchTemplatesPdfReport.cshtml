@@ -28,12 +28,35 @@
     {
         if (!kind.HasValue)
         {
-            return T("Authorized + Anonymous", "مصرح + مجهول");
+            return T("Authorized + Anonymous", "Authorized + Anonymous");
         }
 
         return kind.Value == ReportTemplateKind.Normal
-            ? T("Authorized", "مصرح")
-            : T("Anonymous", "مجهول");
+            ? T("Authorized", "Authorized")
+            : T("Anonymous", "Anonymous");
+    }
+
+    string TemplateKindLabelFromText(string? kindText)
+    {
+        if (string.IsNullOrWhiteSpace(kindText))
+        {
+            return "-";
+        }
+
+        var normalized = kindText.Trim();
+
+        if (normalized.Equals("Authorized", StringComparison.OrdinalIgnoreCase) ||
+            normalized.Equals("Normal", StringComparison.OrdinalIgnoreCase))
+        {
+            return T("Authorized", "Authorized");
+        }
+
+        if (normalized.Equals("Anonymous", StringComparison.OrdinalIgnoreCase))
+        {
+            return T("Anonymous", "Anonymous");
+        }
+
+        return normalized;
     }
 
     string ScoreModeText() =>
@@ -586,15 +609,15 @@
             <table>
                 <tbody>
                     <tr>
-                        <th>@T("Total Authorized Templates", "إجمالي النماذج المصرح بها")</th>
+                        <th>@T("Total Authorized Templates", "إجمالي النماذج Authorized")</th>
                         <td>@Model.ExecutiveSummary.TotalNormalTemplates</td>
-                        <th>@T("Total Anonymous Templates", "إجمالي النماذج المجهولة")</th>
+                        <th>@T("Total Anonymous Templates", "إجمالي النماذج Anonymous")</th>
                         <td>@Model.ExecutiveSummary.TotalAnonymousTemplates</td>
                     </tr>
                     <tr>
-                        <th>@T("Total Authorized Responses", "ردود النماذج المصرح بها")</th>
+                        <th>@T("Total Authorized Responses", "ردود النماذج Authorized")</th>
                         <td>@Model.ExecutiveSummary.TotalNormalResponses</td>
-                        <th>@T("Total Anonymous Responses", "ردود النماذج المجهولة")</th>
+                        <th>@T("Total Anonymous Responses", "ردود النماذج Anonymous")</th>
                         <td>@Model.ExecutiveSummary.TotalAnonymousResponses</td>
                     </tr>
                     <tr>
@@ -609,15 +632,15 @@
                         <th>@T("Lowest Rated Template", "أقل نموذج تقييمًا")</th>
                         <td>@Model.ExecutiveSummary.LowestRatedTemplateName</td>
                     </tr>
-                    <tr>
+                    @* <tr>
                         <th>@T("Total Answers", "إجمالي الإجابات")</th>
                         <td>@Model.ExecutiveSummary.TotalAnswers</td>
                         <th>@T("Total Scored Answers", "إجمالي الإجابات المحسوبة")</th>
                         <td>@Model.ExecutiveSummary.TotalScoredAnswers</td>
-                    </tr>
+                    </tr> *@
                     <tr>
-                        <th>@T("Total Non-Scored Answers", "إجمالي الإجابات غير المحسوبة")</th>
-                        <td>@Model.ExecutiveSummary.TotalNonScoredAnswers</td>
+                        @* <th>@T("Total Non-Scored Answers", "إجمالي الإجابات غير المحسوبة")</th>
+                        <td>@Model.ExecutiveSummary.TotalNonScoredAnswers</td> *@
                         <th>@T("Score Status", "حالة التقييم")</th>
                         <td>
                             <span class="badge @ScoreStatusClass(Model.ExecutiveSummary.AverageScorePercentage)">
@@ -693,7 +716,7 @@
                                 <td>@item.DisplayName(ar)</td>
                                 <td>
                                     <span class="badge @(item.TemplateKind == ReportTemplateKind.Normal ? "badge-authorized" : "badge-anonymous")">
-                                        @item.DisplayKind(ar)
+                                        @TemplateKindLabel(item.TemplateKind)
                                     </span>
                                 </td>
                                 <td>@item.TotalResponses</td>
@@ -738,7 +761,7 @@
                                 <td>@question.Rank</td>
                                 <td>@question.DisplayQuestionText(ar)</td>
                                 <td>@question.DisplayTemplateName(ar)</td>
-                                <td>@question.DisplayKind(ar)</td>
+                                <td>@TemplateKindLabelFromText(question.DisplayKind(false))</td>
                                 <td>@question.DisplayLevel(ar)</td>
                                 <td>@QuestionTypeLabel(question.QuestionType)</td>
                                 <td>@question.TotalAnswers</td>
@@ -780,7 +803,7 @@
                                 <td>@question.Rank</td>
                                 <td>@question.DisplayQuestionText(ar)</td>
                                 <td>@question.DisplayTemplateName(ar)</td>
-                                <td>@question.DisplayKind(ar)</td>
+                                <td>@TemplateKindLabelFromText(question.DisplayKind(false))</td>
                                 <td>@question.DisplayLevel(ar)</td>
                                 <td>@QuestionTypeLabel(question.QuestionType)</td>
                                 <td>@question.TotalAnswers</td>
@@ -812,7 +835,7 @@
                         {
                             <tr>
                                 <td>@item.DisplayName(ar)</td>
-                                <td>@item.DisplayKind(ar)</td>
+                                <td>@TemplateKindLabelFromText(item.DisplayKind(false))</td>
                                 <td>@item.Status</td>
                                 <td>@DateOrDash(item.ActiveFrom)</td>
                                 <td>@DateOrDash(item.ExpireTo)</td>
@@ -831,7 +854,9 @@
                 <div class="template-header">
                     <h2>@summary.DisplayName(ar)</h2>
                     <div class="template-meta">
-                        <span class="badge @(summary.TemplateKind == ReportTemplateKind.Normal ? "badge-authorized" : "badge-anonymous")">@summary.DisplayKind(ar)</span>
+                        <span class="badge @(summary.TemplateKind == ReportTemplateKind.Normal ? "badge-authorized" : "badge-anonymous")">
+                            @TemplateKindLabel(summary.TemplateKind)
+                        </span>
                         <span class="badge score-na">@summary.Status</span>
                         <span class="badge score-na">@T("Responses", "الردود"): @summary.TotalResponses</span>
                         <span class="badge @ScoreStatusClass(summary.AverageScorePercentage)">
@@ -859,8 +884,8 @@
                     </div>
                 </div>
 
-                <h3 class="section-title">@T("Question Hierarchy / Flow Tree", "شجرة الأسئلة ومسارها")</h3>
-                @if (!detail.FlowLines.Any())
+                @* <h3 class="section-title">@T("Question Hierarchy / Flow Tree", "شجرة الأسئلة ومسارها")</h3> *@
+                @* @if (!detail.FlowLines.Any())
                 {
                     <div class="note warning">@T("No question flow is available for this template.", "لا توجد شجرة أسئلة متاحة لهذا النموذج.")</div>
                 }
@@ -890,7 +915,7 @@
                             </div>
                         }
                     </div>
-                }
+                } *@
 
                 <h3 class="section-title">@T("Question Analysis", "تحليل الأسئلة")</h3>
                 @if (!detail.Questions.Any())
@@ -906,7 +931,7 @@
                                 <th>@T("Level", "المستوى")</th>
                                 <th>@T("Parent Trigger", "شرط الظهور")</th>
                                 <th>@T("Type", "النوع")</th>
-                                <th>@T("Answers", "الإجابات")</th>
+                                @* <th>@T("Answers", "الإجابات")</th> *@
                                 <th>@T("Avg Value", "متوسط القيمة")</th>
                                 <th>@T("Included In Score", "يدخل في التقييم")</th>
                             </tr>
@@ -923,7 +948,7 @@
                                     </td>
                                     <td>@q.DisplayParentTrigger(ar)</td>
                                     <td>@QuestionTypeLabel(q.QuestionType)</td>
-                                    <td>@q.TotalAnswers</td>
+                                    @* <td>@q.TotalAnswers</td> *@
                                     <td>@DecimalOrDash(q.AverageValue)</td>
                                     <td>
                                         <span class="badge @(q.IsScoreIncluded ? "score-good" : "score-na")">
@@ -979,10 +1004,10 @@
             {
                 <div class="note">
                     <ul>
-                        <li>Authorized تعني النماذج الداخلية التي يتم الإجابة عليها بواسطة مستخدم مصرح له.</li>
-                        <li>Anonymous تعني النماذج العامة التي يتم الإجابة عليها بدون تسجيل دخول.</li>
+                        <li>النماذج المصرح لها تعني النماذج الداخلية التي يتم الإجابة عليها بواسطة مستخدم مصرح له.</li>
+                        <li>النماذج المجهولة تعني النماذج العامة التي يتم الإجابة عليها بدون تسجيل دخول.</li>
                         <li>الأسئلة التي لا تحتوي على قيمة تقييم تظهر للتحليل فقط ولا تدخل في متوسط التقييم.</li>
-                        <li>أسئلة الصوت والشكوى لا تؤثر مباشرة على التقييم.</li>
+                        @* <li>أسئلة الصوت والشكوى لا تؤثر مباشرة على التقييم.</li> *@
                         <li>الأسئلة الشرطية قد يكون لها عدد إجابات أقل لأنها تظهر فقط عند تحقق شرط السؤال الأب.</li>
                         <li>النماذج بدون ردود يتم عرضها لكنها لا تدخل في متوسطات التقييم.</li>
                     </ul>
@@ -995,7 +1020,7 @@
                         <li>Authorized means internal templates answered by authenticated/authorized users.</li>
                         <li>Anonymous means public templates answered without login.</li>
                         <li>Questions without scoring values are displayed for analysis but excluded from average score.</li>
-                        <li>Voice and Complaint questions do not directly affect the score.</li>
+                        @* <li>Voice and Complaint questions do not directly affect the score.</li> *@
                         <li>Conditional questions may have fewer answers because they appear only when their parent trigger is selected.</li>
                         <li>Templates with zero responses are listed but excluded from scored averages.</li>
                     </ul>

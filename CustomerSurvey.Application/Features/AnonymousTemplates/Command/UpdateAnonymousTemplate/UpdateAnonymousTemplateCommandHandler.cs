@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Services;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -21,6 +22,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IPublicSurveyUrlBuilder _publicSurveyUrlBuilder;
+        private readonly IQrCodeGenerator _qrCodeGenerator;
 
         public UpdateAnonymousTemplateCommandHandler(
             IWriteReadRepository<AnonymousTemplate> anonymousTemplateReadRepository,
@@ -31,7 +34,9 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             ICurrentUser currentUser,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IPublicSurveyUrlBuilder publicSurveyUrlBuilder,
+            IQrCodeGenerator qrCodeGenerator)
         {
             _anonymousTemplateReadRepository = anonymousTemplateReadRepository
                 ?? throw new ArgumentNullException(nameof(anonymousTemplateReadRepository));
@@ -59,6 +64,12 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
 
             _unitOfWork = unitOfWork
                 ?? throw new ArgumentNullException(nameof(unitOfWork));
+
+            _publicSurveyUrlBuilder = publicSurveyUrlBuilder
+                ?? throw new ArgumentNullException(nameof(publicSurveyUrlBuilder));
+
+            _qrCodeGenerator = qrCodeGenerator
+                ?? throw new ArgumentNullException(nameof(qrCodeGenerator));
         }
 
         public async Task<Result<UpdateAnonymousTemplateResponse>> Handle(
@@ -161,6 +172,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                 activeFrom: request.ActiveFrom,
                 expireTo: request.ExpireTo);
 
+            RefreshPublicAccess(anonymousTemplate);
+
             _anonymousTemplateWriteRepository.Update(anonymousTemplate);
 
             if (customInputsUpdateResult.CustomInputsToUpdate.Count > 0)
@@ -186,6 +199,18 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
 
             return Result<UpdateAnonymousTemplateResponse>.Ok(
                 MapToResponse(anonymousTemplate, activeCustomInputs));
+        }
+
+        private void RefreshPublicAccess(AnonymousTemplate anonymousTemplate)
+        {
+            var publicUrl = _publicSurveyUrlBuilder.BuildAnonymousTemplateUrl(
+                anonymousTemplate.Id);
+
+            var qrCode = _qrCodeGenerator.GenerateBase64Png(publicUrl);
+
+            anonymousTemplate.SetPublicAccess(
+                publicUrl: publicUrl,
+                qrCode: qrCode);
         }
 
         private async Task<CurrentBranchActorForUpdateAnonymousTemplateDto?> ResolveBranchActorAsync(
