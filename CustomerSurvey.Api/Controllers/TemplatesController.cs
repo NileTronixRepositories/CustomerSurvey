@@ -9,6 +9,7 @@ using CustomerSurvey.Application.Features.Templates.Command.RestoreTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate;
 using CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails;
 using CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestionsSelection;
+using CustomerSurvey.Application.Features.Templates.Query.GetSuperAdminTemplatesPagination;
 using CustomerSurvey.Application.Features.Templates.Query.GetTemplatesForSelection;
 using CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagination;
 using MediatR;
@@ -36,6 +37,20 @@ namespace CustomerSurvey.Api.Controllers
         CancellationToken cancellationToken)
         {
             query ??= new GetTemplatesPaginationQuery();
+            query.SearchText ??= string.Empty;
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("super-admin")]
+        [Permission("Templates.ViewSuperAdminCatalog")]
+        public async Task<IActionResult> GetSuperAdminPaginated(
+            [FromQuery] GetSuperAdminTemplatesPaginationQuery query,
+            CancellationToken cancellationToken)
+        {
+            query ??= new GetSuperAdminTemplatesPaginationQuery();
             query.SearchText ??= string.Empty;
 
             var result = await sender.Send(query, cancellationToken);

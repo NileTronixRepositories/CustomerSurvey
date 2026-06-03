@@ -2415,6 +2415,15 @@
   <data name="GetSystemDashboard_TopTemplatesCount_Invalid" xml:space="preserve">
     <value>عدد القوالب الأعلى استخدامًا يجب أن يكون بين 1 و 50.</value>
   </data>
+  <data name="GetSuperAdminTemplatesPagination_Branch_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على الفرع المحدد.</value>
+  </data>
+  <data name="GetSuperAdminTemplatesPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير النظام الحالي.</value>
+  </data>
+  <data name="GetSuperAdminTemplatesPagination_TemplateKind_Invalid" xml:space="preserve">
+    <value>نوع النموذج غير صحيح.</value>
+  </data>
   <data name="GetSystemSurveyResponseDetails_SurveyResponseId_Required" xml:space="preserve">
     <value>رقم رد الاستبيان مطلوب.</value>
   </data>

@@ -9,6 +9,7 @@ namespace CustomerSurvey.Domain.Enums
     public enum TemplateCatalogKind
     {
         Authorized = 1,
-        Anonymous = 2
+        Anonymous = 2,
+        AuthorizeAndAnonymous = 3
     }
 }

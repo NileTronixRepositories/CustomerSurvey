@@ -67,6 +67,7 @@ internal static class SeedConstants
         public const string TemplatesViewAll = "Templates.ViewAll";
         public const string TemplatesViewDetails = "Templates.ViewDetails";
         public const string TemplatesViewSelection = "Templates.ViewSelection";
+        public const string TemplatesViewSuperAdminCatalog = "Templates.ViewSuperAdminCatalog";
         public const string TemplatesAssignQuestions = "Templates.AssignQuestions";
         public const string TemplatesManageQuestionConditions = "Templates.ManageQuestionConditions";
 
@@ -334,6 +335,9 @@ internal static class SeedConstants
 
             public static readonly Guid ReportsViewDepartmentReports =
                 Guid.Parse("12000000-0000-0000-0000-000000000070");
+
+            public static readonly Guid TemplatesViewSuperAdminCatalog =
+                Guid.Parse("12000000-0000-0000-0000-000000000071");
         }
     }
 
@@ -390,6 +394,7 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.TemplatesViewAll, PermissionNames.TemplatesViewAll),
             new PermissionSeedItem(SeedIds.Permissions.TemplatesViewDetails, PermissionNames.TemplatesViewDetails),
             new PermissionSeedItem(SeedIds.Permissions.TemplatesViewSelection, PermissionNames.TemplatesViewSelection),
+            new PermissionSeedItem(SeedIds.Permissions.TemplatesViewSuperAdminCatalog, PermissionNames.TemplatesViewSuperAdminCatalog),
             new PermissionSeedItem(SeedIds.Permissions.TemplatesAssignQuestions, PermissionNames.TemplatesAssignQuestions),
             new PermissionSeedItem(SeedIds.Permissions.TemplatesManageQuestionConditions, PermissionNames.TemplatesManageQuestionConditions),
 

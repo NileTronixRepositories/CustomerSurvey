@@ -4056,6 +4056,31 @@ namespace CustomerSurvey.Domain.Resources {
             }
         }
         
+        ///   Looks up a localized string similar to Selected branch was not found..
+        /// </summary>
+        public static string GetSuperAdminTemplatesPagination_Branch_NotFound {
+            get {
+                return ResourceManager.GetString("GetSuperAdminTemplatesPagination_Branch_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current SuperAdmin profile was not found..
+        /// </summary>
+        public static string GetSuperAdminTemplatesPagination_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("GetSuperAdminTemplatesPagination_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        ///   Looks up a localized string similar to Template kind is invalid..
+        /// </summary>
+        public static string GetSuperAdminTemplatesPagination_TemplateKind_Invalid {
+            get {
+                return ResourceManager.GetString("GetSuperAdminTemplatesPagination_TemplateKind_Invalid", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Current SuperAdmin profile was not found..
         /// </summary>

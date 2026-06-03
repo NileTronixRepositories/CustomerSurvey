@@ -2415,6 +2415,15 @@
   <data name="GetSystemDashboard_TopTemplatesCount_Invalid" xml:space="preserve">
     <value>Top templates count must be between 1 and 50.</value>
   </data>
+  <data name="GetSuperAdminTemplatesPagination_Branch_NotFound" xml:space="preserve">
+    <value>Selected branch was not found.</value>
+  </data>
+  <data name="GetSuperAdminTemplatesPagination_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current SuperAdmin profile was not found.</value>
+  </data>
+  <data name="GetSuperAdminTemplatesPagination_TemplateKind_Invalid" xml:space="preserve">
+    <value>Template kind is invalid.</value>
+  </data>
   <data name="GetSystemSurveyResponseDetails_SurveyResponseId_Required" xml:space="preserve">
     <value>Survey response id is required.</value>
   </data>
