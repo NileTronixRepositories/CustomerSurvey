@@ -2,6 +2,7 @@
 using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Api.Contracts.Templates;
 using CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsToTemplate;
+using CustomerSurvey.Application.Features.Templates.Command.CopyTemplateToBranch;
 using CustomerSurvey.Application.Features.Templates.Command.CreateTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.DeleteTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQuestionConditions;
@@ -148,6 +149,22 @@ namespace CustomerSurvey.Api.Controllers
                         Order = customInput.Order
                     })
                     .ToArray()
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+            return result.ToIActionResult();
+        }
+
+        [HttpPost("super-admin/copy-to-branch")]
+        [Permission("Templates.Create")]
+        public async Task<IActionResult> CopyToBranch(
+     [FromBody] CopyTemplateToBranchRequest request,
+     CancellationToken cancellationToken)
+        {
+            var command = new CopyTemplateToBranchCommand
+            {
+                TemplateId = request.TemplateId,
+                BranchId = request.BranchId
             };
 
             var result = await sender.Send(command, cancellationToken);

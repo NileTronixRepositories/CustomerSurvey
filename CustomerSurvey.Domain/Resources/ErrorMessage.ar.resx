@@ -555,6 +555,27 @@
   <data name="CreateTemplate_NameEn_AlreadyExists_InsideBranch" xml:space="preserve">
     <value>اسم القالب باللغة الإنجليزية مستخدم من قبل داخل نفس الفرع.</value>
   </data>
+  <data name="CopyTemplateToBranch_TemplateId_Required" xml:space="preserve">
+    <value>رقم النموذج مطلوب.</value>
+  </data>
+  <data name="CopyTemplateToBranch_BranchId_Required" xml:space="preserve">
+    <value>رقم الفرع مطلوب.</value>
+  </data>
+  <data name="CopyTemplateToBranch_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير النظام الحالي.</value>
+  </data>
+  <data name="CopyTemplateToBranch_Branch_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على الفرع المحدد.</value>
+  </data>
+  <data name="CopyTemplateToBranch_Template_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على النموذج.</value>
+  </data>
+  <data name="CopyTemplateToBranch_TemplateId_Ambiguous" xml:space="preserve">
+    <value>رقم النموذج مطابق لأكثر من نوع نموذج.</value>
+  </data>
+  <data name="CopyTemplateToBranch_Template_AlreadyExists" xml:space="preserve">
+    <value>النموذج موجود بالفعل داخل الفرع المحدد.</value>
+  </data>
   <data name="GetTemplatesPagination_PageNumber_Invalid" xml:space="preserve">
     <value>رقم الصفحة يجب أن يكون أكبر من أو يساوي 1.</value>
   </data>
