@@ -1,0 +1,138 @@
+using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction.Security;
+using BuildingBlock.Domain.Results;
+using BuildingBlock.Domain.SharedDto;
+using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Identity;
+using CustomerSurvey.Domain.Resources;
+
+namespace CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupQuestionsPagination
+{
+    internal sealed class GetQuestionGroupQuestionsPaginationQueryHandler
+        : IQueryHandler<GetQuestionGroupQuestionsPaginationQuery, Pagination<QuestionByGroupPaginationItemResponse>>
+    {
+        private readonly IWriteReadRepository<QuestionGroup> _questionGroupReadRepository;
+        private readonly IWriteReadRepository<Question> _questionReadRepository;
+        private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
+        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
+        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly ICurrentUser _currentUser;
+
+        public GetQuestionGroupQuestionsPaginationQueryHandler(
+            IWriteReadRepository<QuestionGroup> questionGroupReadRepository,
+            IWriteReadRepository<Question> questionReadRepository,
+            IWriteReadRepository<SuperAdmin> superAdminReadRepository,
+            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
+            IWriteReadRepository<BranchUser> branchUserReadRepository,
+            ICurrentUser currentUser)
+        {
+            _questionGroupReadRepository = questionGroupReadRepository
+                ?? throw new ArgumentNullException(nameof(questionGroupReadRepository));
+
+            _questionReadRepository = questionReadRepository
+                ?? throw new ArgumentNullException(nameof(questionReadRepository));
+
+            _superAdminReadRepository = superAdminReadRepository
+                ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
+
+            _branchAdminReadRepository = branchAdminReadRepository
+                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
+
+            _branchUserReadRepository = branchUserReadRepository
+                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+
+            _currentUser = currentUser
+                ?? throw new ArgumentNullException(nameof(currentUser));
+        }
+
+        public async Task<Result<Pagination<QuestionByGroupPaginationItemResponse>>> Handle(
+            GetQuestionGroupQuestionsPaginationQuery request,
+            CancellationToken cancellationToken)
+        {
+            if (!_currentUser.IsAuthenticated || !_currentUser.UserId.HasValue)
+            {
+                return Result<Pagination<QuestionByGroupPaginationItemResponse>>.Fail(new Error(
+                    Code: "QuestionGroups.QuestionsPagination.Unauthenticated",
+                    Message: ErrorMessage.Auth_Token_Missing,
+                    Type: ErrorType.Security));
+            }
+
+            request.SearchText ??= string.Empty;
+
+            var currentApplicationUserId = _currentUser.UserId.Value;
+
+            var currentSuperAdminExists = await _superAdminReadRepository.AnyAsync(
+                x => x.ApplicationUserId == currentApplicationUserId,
+                cancellationToken);
+
+            Guid? currentBranchId = null;
+
+            if (!currentSuperAdminExists)
+            {
+                var currentBranchActor = await ResolveCurrentBranchActorAsync(
+                    currentApplicationUserId,
+                    cancellationToken);
+
+                if (currentBranchActor is null)
+                {
+                    return Result<Pagination<QuestionByGroupPaginationItemResponse>>.Fail(new Error(
+                        Code: "QuestionGroups.QuestionsPagination.CurrentBranchActorNotFound",
+                        Message: ErrorMessage.GetQuestionsPagination_CurrentBranchActor_NotFound,
+                        Type: ErrorType.Security));
+                }
+
+                currentBranchId = currentBranchActor.BranchId;
+            }
+
+            var questionGroup = await _questionGroupReadRepository.FirstOrDefaultAsync(
+                new GetQuestionGroupForQuestionsPaginationSpec(
+                    request.QuestionGroupId,
+                    currentBranchId),
+                cancellationToken);
+
+            if (questionGroup is null)
+            {
+                return Result<Pagination<QuestionByGroupPaginationItemResponse>>.Fail(new Error(
+                    Code: "QuestionGroups.QuestionsPagination.QuestionGroupNotFound",
+                    Message: ErrorMessage.DeleteQuestionGroup_QuestionGroup_NotFound,
+                    Type: ErrorType.NotFound));
+            }
+
+            var spec = new GetQuestionGroupQuestionsPaginationSpec(
+                questionGroup.Id,
+                questionGroup.BranchId,
+                request);
+
+            var (items, totalCount) = await _questionReadRepository.ListWithCountAsync(
+                spec,
+                cancellationToken);
+
+            var response = new Pagination<QuestionByGroupPaginationItemResponse>(
+                currentPage: request.PageNumber,
+                pageSize: request.PageSize,
+                totalItems: totalCount,
+                data: items);
+
+            return Result<Pagination<QuestionByGroupPaginationItemResponse>>.Ok(response);
+        }
+
+        private async Task<CurrentBranchActorForQuestionGroupQuestionsPaginationDto?> ResolveCurrentBranchActorAsync(
+            Guid applicationUserId,
+            CancellationToken cancellationToken)
+        {
+            var currentBranchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
+                new GetCurrentBranchAdminForQuestionGroupQuestionsPaginationSpec(applicationUserId),
+                cancellationToken);
+
+            if (currentBranchAdmin is not null)
+            {
+                return currentBranchAdmin;
+            }
+
+            return await _branchUserReadRepository.FirstOrDefaultAsync(
+                new GetCurrentBranchUserForQuestionGroupQuestionsPaginationSpec(applicationUserId),
+                cancellationToken);
+        }
+    }
+}

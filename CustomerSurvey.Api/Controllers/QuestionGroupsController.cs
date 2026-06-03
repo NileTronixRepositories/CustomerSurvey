@@ -7,6 +7,7 @@ using CustomerSurvey.Application.Features.QuestionGroups.Command.RestoreQuestion
 using CustomerSurvey.Application.Features.QuestionGroups.Command.UpdateQuestionGroup;
 using CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupsForSelection;
 using CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupsPagination;
+using CustomerSurvey.Application.Features.QuestionGroups.Query.GetQuestionGroupQuestionsPagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,22 @@ namespace CustomerSurvey.Api.Controllers
             CancellationToken cancellationToken)
         {
             query ??= new GetQuestionGroupsPaginationQuery();
+            query.SearchText ??= string.Empty;
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("{questionGroupId:guid}/questions")]
+        [Permission("Questions.ViewAll")]
+        public async Task<IActionResult> GetQuestionsPaginated(
+            Guid questionGroupId,
+            [FromQuery] GetQuestionGroupQuestionsPaginationQuery query,
+            CancellationToken cancellationToken)
+        {
+            query ??= new GetQuestionGroupQuestionsPaginationQuery();
+            query.QuestionGroupId = questionGroupId;
             query.SearchText ??= string.Empty;
 
             var result = await sender.Send(query, cancellationToken);
