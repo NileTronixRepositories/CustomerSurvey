@@ -2059,6 +2059,69 @@ namespace CustomerSurvey.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Branch id is required..
+        /// </summary>
+        public static string CopyTemplateToBranch_BranchId_Required {
+            get {
+                return ResourceManager.GetString("CopyTemplateToBranch_BranchId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected branch was not found..
+        /// </summary>
+        public static string CopyTemplateToBranch_Branch_NotFound {
+            get {
+                return ResourceManager.GetString("CopyTemplateToBranch_Branch_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current SuperAdmin profile was not found..
+        /// </summary>
+        public static string CopyTemplateToBranch_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("CopyTemplateToBranch_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template already exists inside the selected branch..
+        /// </summary>
+        public static string CopyTemplateToBranch_Template_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CopyTemplateToBranch_Template_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template was not found..
+        /// </summary>
+        public static string CopyTemplateToBranch_Template_NotFound {
+            get {
+                return ResourceManager.GetString("CopyTemplateToBranch_Template_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template id matches more than one template kind..
+        /// </summary>
+        public static string CopyTemplateToBranch_TemplateId_Ambiguous {
+            get {
+                return ResourceManager.GetString("CopyTemplateToBranch_TemplateId_Ambiguous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template id is required..
+        /// </summary>
+        public static string CopyTemplateToBranch_TemplateId_Required {
+            get {
+                return ResourceManager.GetString("CopyTemplateToBranch_TemplateId_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Template English name must not exceed 200 characters..
         /// </summary>
         public static string CreateTemplate_NameEn_MaxLength {
