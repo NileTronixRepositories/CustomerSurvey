@@ -47,6 +47,10 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.MaxValue)
                 .IsRequired(false);
 
+            builder.Property(x => x.StartWith)
+                .IsRequired(false)
+                .HasMaxLength(100);
+
             builder.Property(x => x.Order)
                 .IsRequired();
 
@@ -84,6 +88,10 @@ namespace CustomerSurvey.infrastructure.Configurations
                     "CK_AnonymousTemplateCustomInput_Integer_Validation",
                     $"([Type] <> {(int)TemplateCustomInputType.Integer}) OR " +
                     "([MinLength] IS NULL AND [MaxLength] IS NULL)");
+
+                table.HasCheckConstraint(
+                    "CK_AnonymousTemplateCustomInput_StartWith_StringOnly",
+                    $"([Type] = {(int)TemplateCustomInputType.String}) OR ([StartWith] IS NULL)");
 
                 table.HasCheckConstraint(
                     "CK_AnonymousTemplateCustomInput_Length_Range",

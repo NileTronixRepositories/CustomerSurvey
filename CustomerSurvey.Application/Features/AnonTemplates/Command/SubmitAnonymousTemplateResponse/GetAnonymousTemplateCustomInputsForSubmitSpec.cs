@@ -22,6 +22,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 MaxLength = x.MaxLength,
                 MinValue = x.MinValue,
                 MaxValue = x.MaxValue,
+                StartWith = x.StartWith,
                 IsActive = x.IsActive
             });
         }

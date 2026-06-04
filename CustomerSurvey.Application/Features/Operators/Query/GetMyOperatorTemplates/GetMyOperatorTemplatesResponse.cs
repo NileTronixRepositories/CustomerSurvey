@@ -84,6 +84,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public int? MaxValue { get; init; }
 
+        public string? StartWith { get; init; }
+
         public int Order { get; init; }
     }
 

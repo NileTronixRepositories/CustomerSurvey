@@ -7,6 +7,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
     internal sealed class UpdateAnonymousTemplateCommandValidator
         : AbstractValidator<UpdateAnonymousTemplateCommand>
     {
+        private const int CustomInputStartWithMaxLength = 100;
+
         public UpdateAnonymousTemplateCommandValidator()
         {
             RuleFor(x => x.AnonymousTemplateId)
@@ -67,6 +69,20 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                     input.RuleFor(x => x.Order)
                         .GreaterThan(0)
                         .WithMessage(ErrorMessage.UpdateAnonymousTemplate_CustomInput_Order_Invalid);
+
+                    input.RuleFor(x => x)
+                        .Must(x => x.Type == TemplateCustomInputType.String || x.StartWith is null)
+                        .WithMessage(ErrorMessage.UpdateAnonymousTemplate_CustomInput_StartWith_NotAllowed);
+
+                    input.RuleFor(x => x.StartWith)
+                        .Must(x => !string.IsNullOrWhiteSpace(x))
+                        .WithMessage(ErrorMessage.UpdateAnonymousTemplate_CustomInput_StartWith_Empty)
+                        .When(x => x.StartWith is not null);
+
+                    input.RuleFor(x => x.StartWith)
+                        .MaximumLength(CustomInputStartWithMaxLength)
+                        .WithMessage(ErrorMessage.UpdateAnonymousTemplate_CustomInput_StartWith_MaxLength)
+                        .When(x => x.StartWith is not null);
 
                     input.RuleFor(x => x)
                         .Must(ValidateStringValidationShape)

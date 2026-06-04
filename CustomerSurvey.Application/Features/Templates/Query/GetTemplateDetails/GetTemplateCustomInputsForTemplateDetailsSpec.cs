@@ -32,6 +32,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 MaxLength = x.MaxLength,
                 MinValue = x.MinValue,
                 MaxValue = x.MaxValue,
+                StartWith = x.StartWith,
                 Order = x.Order,
                 IsActive = x.IsActive
             });

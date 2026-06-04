@@ -38,6 +38,8 @@ namespace CustomerSurvey.Api.Contracts.Templates
 
         public int? MaxValue { get; init; }
 
+        public string? StartWith { get; init; }
+
         public int Order { get; init; }
     }
 }

@@ -336,6 +336,15 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                     Type: ErrorType.Validation));
             }
 
+            if (!string.IsNullOrEmpty(customInput.StartWith) &&
+                !value.StartsWith(customInput.StartWith, StringComparison.Ordinal))
+            {
+                return ValidationResult.Fail(new Error(
+                    Code: "AnonTemplates.Submit.CustomInputStartWithInvalid",
+                    Message: ErrorMessage.SubmitAnonymousTemplateResponse_CustomInput_StartWith_Invalid,
+                    Type: ErrorType.Validation));
+            }
+
             return ValidationResult.Ok();
         }
 

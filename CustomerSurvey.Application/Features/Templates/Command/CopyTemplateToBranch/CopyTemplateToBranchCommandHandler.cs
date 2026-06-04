@@ -209,6 +209,7 @@ internal sealed class CopyTemplateToBranchCommandHandler
                 maxLength: sourceInput.MaxLength,
                 minValue: sourceInput.MinValue,
                 maxValue: sourceInput.MaxValue,
+                startWith: sourceInput.StartWith,
                 order: sourceInput.Order,
                 createdByApplicationUserId: currentApplicationUserId));
         }
@@ -333,6 +334,7 @@ internal sealed class CopyTemplateToBranchCommandHandler
                 maxLength: sourceInput.MaxLength,
                 minValue: sourceInput.MinValue,
                 maxValue: sourceInput.MaxValue,
+                startWith: sourceInput.StartWith,
                 order: sourceInput.Order,
                 createdByApplicationUserId: currentApplicationUserId));
         }

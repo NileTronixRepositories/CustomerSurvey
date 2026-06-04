@@ -294,6 +294,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                             MaxLength = customInput.MaxLength,
                             MinValue = customInput.MinValue,
                             MaxValue = customInput.MaxValue,
+                            StartWith = customInput.StartWith,
                             Order = customInput.Order
                         })
                         .ToArray());

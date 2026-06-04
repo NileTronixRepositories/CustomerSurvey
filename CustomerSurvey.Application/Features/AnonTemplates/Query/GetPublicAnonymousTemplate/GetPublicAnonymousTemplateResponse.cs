@@ -61,6 +61,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
 
         public int? MaxValue { get; init; }
 
+        public string? StartWith { get; init; }
+
         public int Order { get; init; }
     }
 

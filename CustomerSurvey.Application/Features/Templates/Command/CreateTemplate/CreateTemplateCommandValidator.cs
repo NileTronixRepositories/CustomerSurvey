@@ -15,6 +15,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
         private const int CustomInputNameMaxLength = 100;
         private const int CustomInputLabelMaxLength = 200;
         private const int CustomInputStringMaxLength = 3000;
+        private const int CustomInputStartWithMaxLength = 100;
 
         public CreateTemplateCommandValidator()
         {
@@ -82,6 +83,20 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
                     customInput.RuleFor(x => x.Order)
                         .GreaterThan(0)
                         .WithMessage(ErrorMessage.CreateTemplate_CustomInput_Order_Invalid);
+
+                    customInput.RuleFor(x => x)
+                        .Must(x => x.Type == TemplateCustomInputType.String || x.StartWith is null)
+                        .WithMessage(ErrorMessage.CreateTemplate_CustomInput_StartWith_NotAllowed);
+
+                    customInput.RuleFor(x => x.StartWith)
+                        .Must(x => !string.IsNullOrWhiteSpace(x))
+                        .WithMessage(ErrorMessage.CreateTemplate_CustomInput_StartWith_Empty)
+                        .When(x => x.StartWith is not null);
+
+                    customInput.RuleFor(x => x.StartWith)
+                        .MaximumLength(CustomInputStartWithMaxLength)
+                        .WithMessage(ErrorMessage.CreateTemplate_CustomInput_StartWith_MaxLength)
+                        .When(x => x.StartWith is not null);
 
                     customInput.RuleFor(x => x)
                         .Must(BeValidStringValidation)

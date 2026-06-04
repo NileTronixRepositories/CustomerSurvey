@@ -1665,6 +1665,15 @@
   <data name="CreateTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
     <value>Integer custom input validation settings are invalid.</value>
   </data>
+  <data name="CreateTemplate_CustomInput_StartWith_NotAllowed" xml:space="preserve">
+    <value>Custom input startWith is allowed only for string inputs.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_StartWith_MaxLength" xml:space="preserve">
+    <value>Custom input startWith must not exceed 100 characters.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_StartWith_Empty" xml:space="preserve">
+    <value>Custom input startWith cannot be empty.</value>
+  </data>
   <data name="UpdateTemplate_CustomInputs_Invalid" xml:space="preserve">
     <value>Custom inputs are invalid.</value>
   </data>
@@ -1707,6 +1716,15 @@
   <data name="UpdateTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
     <value>Integer custom input validation settings are invalid.</value>
   </data>
+  <data name="UpdateTemplate_CustomInput_StartWith_NotAllowed" xml:space="preserve">
+    <value>Custom input startWith is allowed only for string inputs.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_StartWith_MaxLength" xml:space="preserve">
+    <value>Custom input startWith must not exceed 100 characters.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_StartWith_Empty" xml:space="preserve">
+    <value>Custom input startWith cannot be empty.</value>
+  </data>
   <data name="SubmitOperatorTemplateResponse_CustomInput_Duplicated" xml:space="preserve">
     <value>The same custom input cannot be submitted more than once.</value>
   </data>
@@ -1733,6 +1751,9 @@
   </data>
   <data name="SubmitOperatorTemplateResponse_CustomInput_Integer_MaxValue" xml:space="preserve">
     <value>Integer custom input value is greater than the maximum value.</value>
+  </data>
+  <data name="SubmitTemplateResponse_CustomInput_StartWith_Invalid" xml:space="preserve">
+    <value>Custom input value must start with the required prefix.</value>
   </data>
   <data name="CreateAnonymousTemplate_NameEn_Required" xml:space="preserve">
     <value>CreateAnonymousTemplate_NameEn_Required</value>
@@ -1793,6 +1814,15 @@
   </data>
   <data name="CreateAnonymousTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
     <value>Integer custom input cannot have MinLength or MaxLength.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_StartWith_NotAllowed" xml:space="preserve">
+    <value>Custom input startWith is allowed only for string inputs.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_StartWith_MaxLength" xml:space="preserve">
+    <value>Custom input startWith must not exceed 100 characters.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_StartWith_Empty" xml:space="preserve">
+    <value>Custom input startWith cannot be empty.</value>
   </data>
   <data name="CreateAnonymousTemplate_CustomInput_LengthRange_Invalid" xml:space="preserve">
     <value>MaxLength must be greater than or equal to MinLength.</value>
@@ -1874,6 +1904,15 @@
   </data>
   <data name="UpdateAnonymousTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
     <value>Integer custom input cannot have MinLength or MaxLength.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_StartWith_NotAllowed" xml:space="preserve">
+    <value>Custom input startWith is allowed only for string inputs.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_StartWith_MaxLength" xml:space="preserve">
+    <value>Custom input startWith must not exceed 100 characters.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_StartWith_Empty" xml:space="preserve">
+    <value>Custom input startWith cannot be empty.</value>
   </data>
   <data name="UpdateAnonymousTemplate_CustomInput_LengthRange_Invalid" xml:space="preserve">
     <value>MaxLength must be greater than or equal to MinLength.</value>
@@ -2114,6 +2153,9 @@
   </data>
   <data name="SubmitAnonymousTemplateResponse_CustomInput_MaxValue_Invalid" xml:space="preserve">
     <value>Integer custom input value exceeds the maximum value.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_StartWith_Invalid" xml:space="preserve">
+    <value>Custom input value must start with the required prefix.</value>
   </data>
   <data name="SubmitAnonymousTemplateResponse_Template_HasNoQuestions" xml:space="preserve">
     <value>Anonymous template has no available questions.</value>

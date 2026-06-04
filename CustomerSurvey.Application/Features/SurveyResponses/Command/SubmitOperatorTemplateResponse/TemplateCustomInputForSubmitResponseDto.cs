@@ -27,6 +27,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
 
         public int? MaxValue { get; init; }
 
+        public string? StartWith { get; init; }
+
         public int Order { get; init; }
     }
 }
