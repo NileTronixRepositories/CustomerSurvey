@@ -18,7 +18,32 @@ namespace BuildingBlock.Infrastracture.Service
         public bool IsAuthenticated => _tenant.IsAuthenticated;
         public Guid? UserId => _tenant.UserId;
         public Guid? AccountId => _tenant.AccountId;
+        public Guid? ActiveBranchId
+        {
+            get
+            {
+                var user = _http.HttpContext?.User;
+                var s = user?.FindFirst(JwtClaimTypesCustom.ActiveBranchId)?.Value;
+
+                return Guid.TryParse(s, out var branchId) && branchId != Guid.Empty
+                    ? branchId
+                    : null;
+            }
+        }
+
         public string? Role => _tenant.Role;
+        public int? UserTypeValue
+        {
+            get
+            {
+                var user = _http.HttpContext?.User;
+                var s = user?.FindFirst(JwtClaimTypesCustom.UserType)?.Value;
+
+                return int.TryParse(s, out var value)
+                    ? value
+                    : null;
+            }
+        }
 
         public UserType UserType
         {

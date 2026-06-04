@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
@@ -22,6 +23,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.DeleteTemplate
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
 
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -30,6 +32,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.DeleteTemplate
             IWriteRepository<Template> templateWriteRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -44,6 +47,9 @@ namespace CustomerSurvey.Application.Features.Templates.Command.DeleteTemplate
 
             _branchUserReadRepository = branchUserReadRepository
                 ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -66,37 +72,15 @@ namespace CustomerSurvey.Application.Features.Templates.Command.DeleteTemplate
 
             var currentApplicationUserId = _currentUser.UserId.Value;
 
-            Guid? actorBranchId = null;
-
-            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForDeleteTemplateSpec(currentApplicationUserId),
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (branchAdmin is not null)
+            if (currentBranchScope.IsFailure)
             {
-                actorBranchId = branchAdmin.BranchId;
-            }
-            else
-            {
-                var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                    new GetCurrentBranchUserForDeleteTemplateSpec(currentApplicationUserId),
-                    cancellationToken);
-
-                if (branchUser is not null)
-                {
-                    actorBranchId = branchUser.BranchId;
-                }
+                return Result<DeleteTemplateResponse>.Fail(currentBranchScope.Errors);
             }
 
-            if (!actorBranchId.HasValue)
-            {
-                return Result<DeleteTemplateResponse>.Fail(new Error(
-                    Code: "Templates.Delete.CurrentBranchActorNotFound",
-                    Message: ErrorMessage.DeleteTemplate_CurrentBranchActor_NotFound,
-                    Type: ErrorType.Security));
-            }
-
-            var branchId = actorBranchId.Value;
+            var branchId = currentBranchScope.Value.BranchId;
 
             var template = await _templateReadRepository.FirstOrDefaultAsync(
                 new GetTemplateForDeleteSpec(

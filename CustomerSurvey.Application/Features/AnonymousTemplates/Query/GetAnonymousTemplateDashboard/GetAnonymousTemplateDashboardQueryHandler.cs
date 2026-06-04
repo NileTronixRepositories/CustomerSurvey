@@ -2,6 +2,7 @@ using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -17,28 +18,25 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
     private const int MaxCustomInputsToReturn = 5;
     private const int MaxSegmentsPerCustomInput = 10;
 
-    private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-    private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+    private readonly IWriteReadRepository<Branch> _branchReadRepository;
     private readonly IWriteReadRepository<AnonymousTemplate> _anonymousTemplateReadRepository;
     private readonly IWriteReadRepository<AnonymousSurveyResponse> _anonymousSurveyResponseReadRepository;
     private readonly IWriteReadRepository<AnonymousSurveyAnswer> _anonymousSurveyAnswerReadRepository;
     private readonly IWriteReadRepository<AnonymousSurveyResponseCustomInputValue> _customInputValueReadRepository;
+    private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
     private readonly ICurrentUser _currentUser;
 
     public GetAnonymousTemplateDashboardQueryHandler(
-        IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-        IWriteReadRepository<BranchUser> branchUserReadRepository,
+        IWriteReadRepository<Branch> branchReadRepository,
         IWriteReadRepository<AnonymousTemplate> anonymousTemplateReadRepository,
         IWriteReadRepository<AnonymousSurveyResponse> anonymousSurveyResponseReadRepository,
         IWriteReadRepository<AnonymousSurveyAnswer> anonymousSurveyAnswerReadRepository,
         IWriteReadRepository<AnonymousSurveyResponseCustomInputValue> customInputValueReadRepository,
+        ICurrentBranchScopeResolver currentBranchScopeResolver,
         ICurrentUser currentUser)
     {
-        _branchAdminReadRepository = branchAdminReadRepository
-            ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-        _branchUserReadRepository = branchUserReadRepository
-            ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+        _branchReadRepository = branchReadRepository
+            ?? throw new ArgumentNullException(nameof(branchReadRepository));
 
         _anonymousTemplateReadRepository = anonymousTemplateReadRepository
             ?? throw new ArgumentNullException(nameof(anonymousTemplateReadRepository));
@@ -51,6 +49,9 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
 
         _customInputValueReadRepository = customInputValueReadRepository
             ?? throw new ArgumentNullException(nameof(customInputValueReadRepository));
+
+        _currentBranchScopeResolver = currentBranchScopeResolver
+            ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
         _currentUser = currentUser
             ?? throw new ArgumentNullException(nameof(currentUser));
@@ -68,8 +69,16 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
                 Type: ErrorType.Security));
         }
 
-        var currentActor = await ResolveCurrentBranchActorAsync(
-            _currentUser.UserId.Value,
+        var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
+            cancellationToken);
+
+        if (currentBranchScope.IsFailure)
+        {
+            return Result<GetAnonymousTemplateDashboardResponse>.Fail(currentBranchScope.Errors);
+        }
+
+        var currentActor = await _branchReadRepository.FirstOrDefaultAsync(
+            new GetCurrentBranchForAnonymousTemplateDashboardSpec(currentBranchScope.Value.BranchId),
             cancellationToken);
 
         if (currentActor is null)
@@ -147,24 +156,6 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
             customInputValues);
 
         return Result<GetAnonymousTemplateDashboardResponse>.Ok(response);
-    }
-
-    private async Task<CurrentBranchActorForAnonymousTemplateDashboardDto?> ResolveCurrentBranchActorAsync(
-        Guid applicationUserId,
-        CancellationToken cancellationToken)
-    {
-        var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchAdminForAnonymousTemplateDashboardSpec(applicationUserId),
-            cancellationToken);
-
-        if (branchAdmin is not null)
-        {
-            return branchAdmin;
-        }
-
-        return await _branchUserReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchUserForAnonymousTemplateDashboardSpec(applicationUserId),
-            cancellationToken);
     }
 
     private static PeriodResolveResult ResolvePeriod(GetAnonymousTemplateDashboardQuery request)

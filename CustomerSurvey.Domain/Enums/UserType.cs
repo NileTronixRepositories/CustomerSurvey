@@ -12,6 +12,7 @@ namespace CustomerSurvey.Domain.Enums
         BranchAdmin = 2,
         BranchUser = 3,
         DepartmentAdmin = 4,
-        Operator = 5
+        Operator = 5,
+        BranchArea = 6
     }
 }

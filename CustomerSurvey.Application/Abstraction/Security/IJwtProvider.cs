@@ -17,6 +17,7 @@ namespace CustomerSurvey.Application.Abstraction.Security
       IReadOnlyCollection<string> roleNames,
       UserType userType,
       IReadOnlyCollection<string> permissions,
+      Guid? activeBranchId = null,
       CancellationToken cancellationToken = default);
     }
 }

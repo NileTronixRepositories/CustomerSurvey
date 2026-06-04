@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -18,8 +19,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.ManageA
         private readonly IWriteRepository<AnonymousTemplateQuestionCondition> _conditionWriteRepository;
         private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
         private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
-        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -30,8 +30,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.ManageA
             IWriteRepository<AnonymousTemplateQuestionCondition> conditionWriteRepository,
             IWriteReadRepository<QuestionOption> questionOptionReadRepository,
             IWriteReadRepository<SuperAdmin> superAdminReadRepository,
-            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-            IWriteReadRepository<BranchUser> branchUserReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -53,11 +52,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.ManageA
             _superAdminReadRepository = superAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
 
-            _branchAdminReadRepository = branchAdminReadRepository
-                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-            _branchUserReadRepository = branchUserReadRepository
-                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -91,19 +87,15 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.ManageA
 
             if (!isSuperAdmin)
             {
-                var branchActor = await ResolveBranchActorAsync(
-                    currentApplicationUserId,
+                var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                     cancellationToken);
 
-                if (branchActor is null)
+                if (currentBranchScope.IsFailure)
                 {
-                    return Result<ManageAnonymousTemplateQuestionConditionsResponse>.Fail(new Error(
-                        Code: "AnonymousTemplates.ManageConditions.CurrentActorNotFound",
-                        Message: ErrorMessage.ManageAnonymousTemplateQuestionConditions_CurrentActor_NotFound,
-                        Type: ErrorType.Security));
+                    return Result<ManageAnonymousTemplateQuestionConditionsResponse>.Fail(currentBranchScope.Errors);
                 }
 
-                currentBranchId = branchActor.BranchId;
+                currentBranchId = currentBranchScope.Value.BranchId;
             }
 
             var anonymousTemplate = await _anonymousTemplateReadRepository.FirstOrDefaultAsync(
@@ -200,26 +192,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.ManageA
                     ConditionsCount = responseConditions.Length,
                     Conditions = responseConditions
                 });
-        }
-
-        private async Task<CurrentBranchActorForManageAnonymousTemplateQuestionConditionsDto?> ResolveBranchActorAsync(
-            Guid applicationUserId,
-            CancellationToken cancellationToken)
-        {
-            var currentBranchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForManageAnonymousTemplateQuestionConditionsSpec(applicationUserId),
-                cancellationToken);
-
-            if (currentBranchAdmin is not null)
-            {
-                return currentBranchAdmin;
-            }
-
-            var currentBranchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForManageAnonymousTemplateQuestionConditionsSpec(applicationUserId),
-                cancellationToken);
-
-            return currentBranchUser;
         }
 
         private async Task<ConditionsValidationResult> ValidateConditionsAsync(

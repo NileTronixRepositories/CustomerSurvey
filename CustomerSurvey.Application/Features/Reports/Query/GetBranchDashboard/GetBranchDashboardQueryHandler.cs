@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -17,28 +18,25 @@ internal sealed class GetBranchDashboardQueryHandler
     private const int MaxCustomInputsToReturn = 5;
     private const int MaxSegmentsPerCustomInput = 10;
 
-    private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-    private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+    private readonly IWriteReadRepository<Branch> _branchReadRepository;
     private readonly IWriteReadRepository<Template> _templateReadRepository;
     private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
     private readonly IWriteReadRepository<SurveyAnswer> _surveyAnswerReadRepository;
     private readonly IWriteReadRepository<SurveyResponseCustomInputValue> _customInputValueReadRepository;
+    private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
     private readonly ICurrentUser _currentUser;
 
     public GetBranchDashboardQueryHandler(
-        IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-        IWriteReadRepository<BranchUser> branchUserReadRepository,
+        IWriteReadRepository<Branch> branchReadRepository,
         IWriteReadRepository<Template> templateReadRepository,
         IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
         IWriteReadRepository<SurveyAnswer> surveyAnswerReadRepository,
         IWriteReadRepository<SurveyResponseCustomInputValue> customInputValueReadRepository,
+        ICurrentBranchScopeResolver currentBranchScopeResolver,
         ICurrentUser currentUser)
     {
-        _branchAdminReadRepository = branchAdminReadRepository
-            ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-        _branchUserReadRepository = branchUserReadRepository
-            ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+        _branchReadRepository = branchReadRepository
+            ?? throw new ArgumentNullException(nameof(branchReadRepository));
 
         _templateReadRepository = templateReadRepository
             ?? throw new ArgumentNullException(nameof(templateReadRepository));
@@ -51,6 +49,9 @@ internal sealed class GetBranchDashboardQueryHandler
 
         _customInputValueReadRepository = customInputValueReadRepository
             ?? throw new ArgumentNullException(nameof(customInputValueReadRepository));
+
+        _currentBranchScopeResolver = currentBranchScopeResolver
+            ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
         _currentUser = currentUser
             ?? throw new ArgumentNullException(nameof(currentUser));
@@ -68,8 +69,16 @@ internal sealed class GetBranchDashboardQueryHandler
                 Type: ErrorType.Security));
         }
 
-        var currentActor = await ResolveCurrentBranchActorAsync(
-            _currentUser.UserId.Value,
+        var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
+            cancellationToken);
+
+        if (currentBranchScope.IsFailure)
+        {
+            return Result<GetBranchDashboardResponse>.Fail(currentBranchScope.Errors);
+        }
+
+        var currentActor = await _branchReadRepository.FirstOrDefaultAsync(
+            new GetCurrentBranchForBranchDashboardSpec(currentBranchScope.Value.BranchId),
             cancellationToken);
 
         if (currentActor is null)
@@ -147,24 +156,6 @@ internal sealed class GetBranchDashboardQueryHandler
             customInputValues);
 
         return Result<GetBranchDashboardResponse>.Ok(response);
-    }
-
-    private async Task<CurrentBranchActorForBranchDashboardDto?> ResolveCurrentBranchActorAsync(
-        Guid applicationUserId,
-        CancellationToken cancellationToken)
-    {
-        var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchAdminForBranchDashboardSpec(applicationUserId),
-            cancellationToken);
-
-        if (branchAdmin is not null)
-        {
-            return branchAdmin;
-        }
-
-        return await _branchUserReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchUserForBranchDashboardSpec(applicationUserId),
-            cancellationToken);
     }
 
     private static PeriodResolveResult ResolvePeriod(GetBranchDashboardQuery request)

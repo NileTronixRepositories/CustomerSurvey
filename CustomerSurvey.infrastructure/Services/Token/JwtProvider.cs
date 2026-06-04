@@ -30,6 +30,7 @@ namespace CustomerSurvey.infrastructure.Services.Token
             IReadOnlyCollection<string> roleNames,
              CustomerSurvey.Domain.Enums.UserType userType,
             IReadOnlyCollection<string> permissions,
+            Guid? activeBranchId = null,
             CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -60,6 +61,11 @@ namespace CustomerSurvey.infrastructure.Services.Token
             if (!string.IsNullOrWhiteSpace(phoneNumber))
             {
                 claims.Add(new Claim(JwtClaimTypesCustom.PhoneNumber, phoneNumber.Trim()));
+            }
+
+            if (activeBranchId.HasValue && activeBranchId.Value != Guid.Empty)
+            {
+                claims.Add(new Claim(JwtClaimTypesCustom.ActiveBranchId, activeBranchId.Value.ToString()));
             }
 
             foreach (var roleName in normalizedRoles)
@@ -93,6 +99,7 @@ namespace CustomerSurvey.infrastructure.Services.Token
             {
                 Token = tokenValue,
                 UserType = userType.ToString(),
+                ActiveBranchId = activeBranchId,
             });
         }
     }

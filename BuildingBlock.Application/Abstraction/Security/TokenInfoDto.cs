@@ -6,12 +6,14 @@
 
         public Guid? UserId { get; set; }
         public Guid? AccountId { get; set; }
+        public Guid? ActiveBranchId { get; set; }
 
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
 
         public string? Role { get; set; }
         public UserType UserType { get; set; } = UserType.Unknown;
+        public int? UserTypeValue { get; set; }
 
         public string[] Permissions { get; set; } = Array.Empty<string>();
 

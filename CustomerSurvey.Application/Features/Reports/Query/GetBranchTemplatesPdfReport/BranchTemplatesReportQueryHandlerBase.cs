@@ -2,7 +2,7 @@ using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Reports;
-using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.Specs;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
 
@@ -11,17 +11,17 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPd
 internal abstract class BranchTemplatesReportQueryHandlerBase
 {
     private readonly ICurrentUser _currentUser;
-    private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-    private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+    private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
+    private readonly IWriteReadRepository<ApplicationUser> _applicationUserReadRepository;
 
     protected BranchTemplatesReportQueryHandlerBase(
         ICurrentUser currentUser,
-        IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-        IWriteReadRepository<BranchUser> branchUserReadRepository)
+        ICurrentBranchScopeResolver currentBranchScopeResolver,
+        IWriteReadRepository<ApplicationUser> applicationUserReadRepository)
     {
         _currentUser = currentUser ?? throw new ArgumentNullException(nameof(currentUser));
-        _branchAdminReadRepository = branchAdminReadRepository ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-        _branchUserReadRepository = branchUserReadRepository ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+        _currentBranchScopeResolver = currentBranchScopeResolver ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
+        _applicationUserReadRepository = applicationUserReadRepository ?? throw new ArgumentNullException(nameof(applicationUserReadRepository));
     }
 
     protected async Task<Result<BranchTemplatesPdfReportRequest>> BuildReportRequestAsync(
@@ -38,17 +38,33 @@ internal abstract class BranchTemplatesReportQueryHandlerBase
 
         var isArabic = string.Equals(request.Language, "ar", StringComparison.OrdinalIgnoreCase);
 
-        var actor = await ResolveBranchActorAsync(
-            _currentUser.UserId.Value,
+        var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
             cancellationToken);
 
-        if (actor is null)
+        if (currentBranchScope.IsFailure)
+        {
+            return Result<BranchTemplatesPdfReportRequest>.Fail(currentBranchScope.Errors);
+        }
+
+        var applicationUser = await _applicationUserReadRepository.FirstOrDefaultAsync(
+            new GetCurrentApplicationUserForTemplatesPdfReportSpec(currentBranchScope.Value.ApplicationUserId),
+            cancellationToken);
+
+        if (applicationUser is null)
         {
             return Result<BranchTemplatesPdfReportRequest>.Fail(new Error(
                 Code: "Reports.TemplatesPdf.CurrentActorNotFound",
                 Message: ErrorMessage.GetBranchTemplatesPdfReport_CurrentActor_NotFound,
                 Type: ErrorType.NotFound));
         }
+
+        var actor = new CurrentBranchReportActorDto
+        {
+            ApplicationUserId = currentBranchScope.Value.ApplicationUserId,
+            BranchId = currentBranchScope.Value.BranchId,
+            NameEn = applicationUser.NameEn,
+            NameAr = applicationUser.NameAr
+        };
 
         return Result<BranchTemplatesPdfReportRequest>.Ok(
             new BranchTemplatesPdfReportRequest
@@ -68,23 +84,4 @@ internal abstract class BranchTemplatesReportQueryHandlerBase
             });
     }
 
-    private async Task<CurrentBranchReportActorDto?> ResolveBranchActorAsync(
-        Guid applicationUserId,
-        CancellationToken cancellationToken)
-    {
-        var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchAdminForTemplatesPdfReportSpec(applicationUserId),
-            cancellationToken);
-
-        if (branchAdmin is not null)
-        {
-            return branchAdmin;
-        }
-
-        var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchUserForTemplatesPdfReportSpec(applicationUserId),
-            cancellationToken);
-
-        return branchUser;
-    }
 }

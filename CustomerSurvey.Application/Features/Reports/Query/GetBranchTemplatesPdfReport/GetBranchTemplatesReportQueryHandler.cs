@@ -3,6 +3,7 @@ using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Reports;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Identity;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
@@ -15,10 +16,10 @@ internal sealed class GetBranchTemplatesReportQueryHandler
 
     public GetBranchTemplatesReportQueryHandler(
         ICurrentUser currentUser,
-        IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-        IWriteReadRepository<BranchUser> branchUserReadRepository,
+        ICurrentBranchScopeResolver currentBranchScopeResolver,
+        IWriteReadRepository<ApplicationUser> applicationUserReadRepository,
         IBranchTemplatesPdfReportService reportService)
-        : base(currentUser, branchAdminReadRepository, branchUserReadRepository)
+        : base(currentUser, currentBranchScopeResolver, applicationUserReadRepository)
     {
         _reportService = reportService ?? throw new ArgumentNullException(nameof(reportService));
     }

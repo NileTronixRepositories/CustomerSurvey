@@ -7402,5 +7402,158 @@ namespace CustomerSurvey.Domain.Resources {
                 return ResourceManager.GetString("UpdateTemplate_TemplateId_Required", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch actor profile was not found..
+        /// </summary>
+        public static string CurrentBranchScope_CurrentBranchActor_NotFound {
+            get {
+                return ResourceManager.GetString("CurrentBranchScope_CurrentBranchActor_NotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Current Branch Area profile was not found..
+        /// </summary>
+        public static string BranchArea_CurrentProfile_NotFound {
+            get {
+                return ResourceManager.GetString("BranchArea_CurrentProfile_NotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No branches are assigned to the current Branch Area..
+        /// </summary>
+        public static string BranchArea_NoBranches_Assigned {
+            get {
+                return ResourceManager.GetString("BranchArea_NoBranches_Assigned", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to A branch must be selected before performing this operation..
+        /// </summary>
+        public static string BranchArea_SelectedBranch_Required {
+            get {
+                return ResourceManager.GetString("BranchArea_SelectedBranch_Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Selected branch is not assigned to the current Branch Area..
+        /// </summary>
+        public static string BranchArea_SelectedBranch_NotAllowed {
+            get {
+                return ResourceManager.GetString("BranchArea_SelectedBranch_NotAllowed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Branch id is required..
+        /// </summary>
+        public static string SelectBranch_BranchId_Required {
+            get {
+                return ResourceManager.GetString("SelectBranch_BranchId_Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Selected branch was not found..
+        /// </summary>
+        public static string SelectBranch_Branch_NotFound {
+            get {
+                return ResourceManager.GetString("SelectBranch_Branch_NotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to This operation is available only for Branch Area users..
+        /// </summary>
+        public static string SelectBranch_CurrentUser_NotBranchArea {
+            get {
+                return ResourceManager.GetString("SelectBranch_CurrentUser_NotBranchArea", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Branch Area must be assigned to at least one branch..
+        /// </summary>
+        public static string CreateBranchArea_Branches_Required {
+            get {
+                return ResourceManager.GetString("CreateBranchArea_Branches_Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Branch ids list is invalid..
+        /// </summary>
+        public static string CreateBranchArea_BranchIds_Invalid {
+            get {
+                return ResourceManager.GetString("CreateBranchArea_BranchIds_Invalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The same branch cannot be assigned more than once..
+        /// </summary>
+        public static string CreateBranchArea_BranchIds_Duplicated {
+            get {
+                return ResourceManager.GetString("CreateBranchArea_BranchIds_Duplicated", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Some selected branches were not found..
+        /// </summary>
+        public static string CreateBranchArea_Branches_NotFound {
+            get {
+                return ResourceManager.GetString("CreateBranchArea_Branches_NotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to User name already exists..
+        /// </summary>
+        public static string CreateBranchArea_UserName_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateBranchArea_UserName_AlreadyExists", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Email already exists..
+        /// </summary>
+        public static string CreateBranchArea_Email_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateBranchArea_Email_AlreadyExists", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Branch Area was not found..
+        /// </summary>
+        public static string AssignBranchAreaBranches_BranchArea_NotFound {
+            get {
+                return ResourceManager.GetString("AssignBranchAreaBranches_BranchArea_NotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to At least one branch must be selected..
+        /// </summary>
+        public static string AssignBranchAreaBranches_Branches_Required {
+            get {
+                return ResourceManager.GetString("AssignBranchAreaBranches_Branches_Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Some selected branches were not found..
+        /// </summary>
+        public static string AssignBranchAreaBranches_Branches_NotFound {
+            get {
+                return ResourceManager.GetString("AssignBranchAreaBranches_Branches_NotFound", resourceCulture);
+            }
+        }
     }
 }
