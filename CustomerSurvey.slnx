@@ -12,4 +12,7 @@
     <Project Path="CustomerSurvey.Domain/CustomerSurvey.Domain.csproj" Id="df1fbcd9-8471-4278-99a9-95e448ae4e96" />
     <Project Path="CustomerSurvey.infrastructure/CustomerSurvey.infrastructure.csproj" Id="5f575cb5-b315-4f7d-84b4-42a90205ab87" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="CustomerSurvey.Tests/CustomerSurvey.Tests.csproj" />
+  </Folder>
 </Solution>

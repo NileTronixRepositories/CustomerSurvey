@@ -35,6 +35,10 @@ public sealed record BranchTemplatesPdfReportRequest
 
     public int TopWorstQuestionsCount { get; init; } = 5;
 
+    public decimal? WorstQuestionsMaxScorePercentage { get; init; }
+
+    public decimal? BestQuestionsMinScorePercentage { get; init; }
+
     public string Language { get; init; } = "en";
 }
 

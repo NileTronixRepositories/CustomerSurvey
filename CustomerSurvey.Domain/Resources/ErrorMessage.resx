@@ -2502,6 +2502,15 @@
   <data name="GetBranchTemplatesPdfReport_TopWorstQuestionsCount_Invalid" xml:space="preserve">
     <value>Top worst questions count must be 5, 10, or 20.</value>
   </data>
+  <data name="GetBranchTemplatesPdfReport_WorstQuestionsMaxScorePercentage_Invalid" xml:space="preserve">
+    <value>Worst questions max score percentage must be between 0 and 100.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_BestQuestionsMinScorePercentage_Invalid" xml:space="preserve">
+    <value>Best questions min score percentage must be between 0 and 100.</value>
+  </data>
+  <data name="GetBranchTemplatesPdfReport_QuestionRankThresholds_Invalid" xml:space="preserve">
+    <value>Worst questions threshold must be less than or equal to best questions threshold.</value>
+  </data>
   <data name="GetBranchTemplatesPdfReport_Template_NotFound" xml:space="preserve">
     <value>Template was not found inside the current branch.</value>
   </data>
