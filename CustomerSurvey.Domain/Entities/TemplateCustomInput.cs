@@ -27,6 +27,8 @@ namespace CustomerSurvey.Domain.Entities
         public int? MinValue { get; private set; }
         public int? MaxValue { get; private set; }
 
+        public string? StartWith { get; private set; }
+
         public int Order { get; private set; }
 
         public bool IsActive { get; private set; }
@@ -48,6 +50,7 @@ namespace CustomerSurvey.Domain.Entities
             int? maxLength,
             int? minValue,
             int? maxValue,
+            string? startWith,
             int order,
             Guid createdByApplicationUserId)
         {
@@ -56,7 +59,8 @@ namespace CustomerSurvey.Domain.Entities
                 minLength,
                 maxLength,
                 minValue,
-                maxValue);
+                maxValue,
+                startWith);
 
             return new TemplateCustomInput
             {
@@ -71,6 +75,7 @@ namespace CustomerSurvey.Domain.Entities
                 MaxLength = normalizedValidation.MaxLength,
                 MinValue = normalizedValidation.MinValue,
                 MaxValue = normalizedValidation.MaxValue,
+                StartWith = normalizedValidation.StartWith,
                 Order = order,
                 IsActive = true,
                 CreatedByApplicationUserId = createdByApplicationUserId
@@ -87,6 +92,7 @@ namespace CustomerSurvey.Domain.Entities
             int? maxLength,
             int? minValue,
             int? maxValue,
+            string? startWith,
             int order)
         {
             var normalizedValidation = NormalizeValidationByType(
@@ -94,7 +100,8 @@ namespace CustomerSurvey.Domain.Entities
                 minLength,
                 maxLength,
                 minValue,
-                maxValue);
+                maxValue,
+                startWith);
 
             Name = name.Trim();
             LabelEn = string.IsNullOrWhiteSpace(labelEn) ? null : labelEn.Trim();
@@ -105,6 +112,7 @@ namespace CustomerSurvey.Domain.Entities
             MaxLength = normalizedValidation.MaxLength;
             MinValue = normalizedValidation.MinValue;
             MaxValue = normalizedValidation.MaxValue;
+            StartWith = normalizedValidation.StartWith;
             Order = order;
         }
 
@@ -128,7 +136,8 @@ namespace CustomerSurvey.Domain.Entities
             int? minLength,
             int? maxLength,
             int? minValue,
-            int? maxValue)
+            int? maxValue,
+            string? startWith)
         {
             return type switch
             {
@@ -137,7 +146,10 @@ namespace CustomerSurvey.Domain.Entities
                     MinLength = minLength,
                     MaxLength = maxLength,
                     MinValue = null,
-                    MaxValue = null
+                    MaxValue = null,
+                    StartWith = string.IsNullOrWhiteSpace(startWith)
+                        ? null
+                        : startWith.Trim()
                 },
 
                 TemplateCustomInputType.Integer => new CustomInputValidationValues
@@ -145,7 +157,8 @@ namespace CustomerSurvey.Domain.Entities
                     MinLength = null,
                     MaxLength = null,
                     MinValue = minValue,
-                    MaxValue = maxValue
+                    MaxValue = maxValue,
+                    StartWith = null
                 },
 
                 _ => new CustomInputValidationValues()
@@ -158,6 +171,7 @@ namespace CustomerSurvey.Domain.Entities
             public int? MaxLength { get; init; }
             public int? MinValue { get; init; }
             public int? MaxValue { get; init; }
+            public string? StartWith { get; init; }
         }
     }
 }

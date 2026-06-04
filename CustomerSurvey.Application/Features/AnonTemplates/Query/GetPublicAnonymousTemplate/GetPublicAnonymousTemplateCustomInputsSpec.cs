@@ -27,6 +27,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
                 MaxLength = x.MaxLength,
                 MinValue = x.MinValue,
                 MaxValue = x.MaxValue,
+                StartWith = x.StartWith,
                 Order = x.Order
             });
         }

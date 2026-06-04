@@ -1665,6 +1665,15 @@
   <data name="CreateTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
     <value>إعدادات تحقق الحقل الرقمي غير صحيحة.</value>
   </data>
+  <data name="CreateTemplate_CustomInput_StartWith_NotAllowed" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص مسموحة فقط للحقول النصية.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_StartWith_MaxLength" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص يجب ألا تزيد عن 100 حرف.</value>
+  </data>
+  <data name="CreateTemplate_CustomInput_StartWith_Empty" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص لا يمكن أن تكون فارغة.</value>
+  </data>
   <data name="UpdateTemplate_CustomInputs_Invalid" xml:space="preserve">
     <value>بيانات الحقول المخصصة غير صحيحة.</value>
   </data>
@@ -1707,6 +1716,15 @@
   <data name="UpdateTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
     <value>إعدادات تحقق الحقل الرقمي غير صحيحة.</value>
   </data>
+  <data name="UpdateTemplate_CustomInput_StartWith_NotAllowed" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص مسموحة فقط للحقول النصية.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_StartWith_MaxLength" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص يجب ألا تزيد عن 100 حرف.</value>
+  </data>
+  <data name="UpdateTemplate_CustomInput_StartWith_Empty" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص لا يمكن أن تكون فارغة.</value>
+  </data>
   <data name="SubmitOperatorTemplateResponse_CustomInput_Duplicated" xml:space="preserve">
     <value>لا يمكن إرسال نفس الحقل المخصص أكثر من مرة.</value>
   </data>
@@ -1733,6 +1751,9 @@
   </data>
   <data name="SubmitOperatorTemplateResponse_CustomInput_Integer_MaxValue" xml:space="preserve">
     <value>قيمة الحقل الرقمي أكبر من الحد الأقصى المسموح.</value>
+  </data>
+  <data name="SubmitTemplateResponse_CustomInput_StartWith_Invalid" xml:space="preserve">
+    <value>قيمة حقل الإدخال المخصص يجب أن تبدأ بالقيمة المطلوبة.</value>
   </data>
   <data name="CreateAnonymousTemplate_NameEn_Required" xml:space="preserve">
     <value>اسم قالب Anonymous باللغة الإنجليزية مطلوب.</value>
@@ -1793,6 +1814,15 @@
   </data>
   <data name="CreateAnonymousTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
     <value>حقول الأرقام لا تقبل MinLength أو MaxLength.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_StartWith_NotAllowed" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص مسموحة فقط للحقول النصية.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_StartWith_MaxLength" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص يجب ألا تزيد عن 100 حرف.</value>
+  </data>
+  <data name="CreateAnonymousTemplate_CustomInput_StartWith_Empty" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص لا يمكن أن تكون فارغة.</value>
   </data>
   <data name="CreateAnonymousTemplate_CustomInput_LengthRange_Invalid" xml:space="preserve">
     <value>MaxLength يجب أن يكون أكبر من أو يساوي MinLength.</value>
@@ -1874,6 +1904,15 @@
   </data>
   <data name="UpdateAnonymousTemplate_CustomInput_IntegerValidation_Invalid" xml:space="preserve">
     <value>حقول الأرقام لا تقبل MinLength أو MaxLength.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_StartWith_NotAllowed" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص مسموحة فقط للحقول النصية.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_StartWith_MaxLength" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص يجب ألا تزيد عن 100 حرف.</value>
+  </data>
+  <data name="UpdateAnonymousTemplate_CustomInput_StartWith_Empty" xml:space="preserve">
+    <value>بادئة حقل الإدخال المخصص لا يمكن أن تكون فارغة.</value>
   </data>
   <data name="UpdateAnonymousTemplate_CustomInput_LengthRange_Invalid" xml:space="preserve">
     <value>MaxLength يجب أن يكون أكبر من أو يساوي MinLength.</value>
@@ -2114,6 +2153,9 @@
   </data>
   <data name="SubmitAnonymousTemplateResponse_CustomInput_MaxValue_Invalid" xml:space="preserve">
     <value>قيمة الحقل الرقمي أكبر من الحد الأقصى.</value>
+  </data>
+  <data name="SubmitAnonymousTemplateResponse_CustomInput_StartWith_Invalid" xml:space="preserve">
+    <value>قيمة حقل الإدخال المخصص يجب أن تبدأ بالقيمة المطلوبة.</value>
   </data>
   <data name="SubmitAnonymousTemplateResponse_Template_HasNoQuestions" xml:space="preserve">
     <value>قالب Anonymous لا يحتوي على أسئلة متاحة.</value>

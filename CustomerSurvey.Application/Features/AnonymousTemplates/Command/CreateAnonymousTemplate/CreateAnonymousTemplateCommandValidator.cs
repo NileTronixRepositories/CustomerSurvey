@@ -7,6 +7,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
     internal sealed class CreateAnonymousTemplateCommandValidator
         : AbstractValidator<CreateAnonymousTemplateCommand>
     {
+        private const int CustomInputStartWithMaxLength = 100;
+
         public CreateAnonymousTemplateCommandValidator()
         {
             RuleFor(x => x.NameEn)
@@ -69,6 +71,20 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
                     input.RuleFor(x => x.Order)
                         .GreaterThan(0)
                         .WithMessage(ErrorMessage.CreateAnonymousTemplate_CustomInput_Order_Invalid);
+
+                    input.RuleFor(x => x)
+                        .Must(x => x.Type == TemplateCustomInputType.String || x.StartWith is null)
+                        .WithMessage(ErrorMessage.CreateAnonymousTemplate_CustomInput_StartWith_NotAllowed);
+
+                    input.RuleFor(x => x.StartWith)
+                        .Must(x => !string.IsNullOrWhiteSpace(x))
+                        .WithMessage(ErrorMessage.CreateAnonymousTemplate_CustomInput_StartWith_Empty)
+                        .When(x => x.StartWith is not null);
+
+                    input.RuleFor(x => x.StartWith)
+                        .MaximumLength(CustomInputStartWithMaxLength)
+                        .WithMessage(ErrorMessage.CreateAnonymousTemplate_CustomInput_StartWith_MaxLength)
+                        .When(x => x.StartWith is not null);
 
                     input.RuleFor(x => x)
                         .Must(ValidateStringValidationShape)

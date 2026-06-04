@@ -470,6 +470,15 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     Type: ErrorType.Validation);
             }
 
+            if (!string.IsNullOrEmpty(templateCustomInput.StartWith) &&
+                !normalizedValue.StartsWith(templateCustomInput.StartWith, StringComparison.Ordinal))
+            {
+                return new Error(
+                    Code: "SurveyResponses.Submit.CustomInputStartWithInvalid",
+                    Message: ErrorMessage.SubmitTemplateResponse_CustomInput_StartWith_Invalid,
+                    Type: ErrorType.Validation);
+            }
+
             return null;
         }
 

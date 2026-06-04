@@ -146,6 +146,7 @@ namespace CustomerSurvey.Api.Controllers
                         MaxLength = customInput.MaxLength,
                         MinValue = customInput.MinValue,
                         MaxValue = customInput.MaxValue,
+                        StartWith = customInput.StartWith,
                         Order = customInput.Order
                     })
                     .ToArray()
@@ -199,6 +200,7 @@ namespace CustomerSurvey.Api.Controllers
                         MaxLength = customInput.MaxLength,
                         MinValue = customInput.MinValue,
                         MaxValue = customInput.MaxValue,
+                        StartWith = customInput.StartWith,
                         Order = customInput.Order
                     })
                     .ToArray()

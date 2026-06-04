@@ -33,6 +33,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 MaxLength = x.MaxLength,
                 MinValue = x.MinValue,
                 MaxValue = x.MaxValue,
+                StartWith = x.StartWith,
                 Order = x.Order
             });
         }

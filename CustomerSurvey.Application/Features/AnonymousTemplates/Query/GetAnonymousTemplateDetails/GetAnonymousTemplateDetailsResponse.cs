@@ -89,6 +89,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
         public int? MaxValue { get; init; }
 
+        public string? StartWith { get; init; }
+
         public int Order { get; init; }
 
         public bool IsActive { get; init; }

@@ -42,6 +42,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
 
         public int? MaxValue { get; init; }
 
+        public string? StartWith { get; init; }
+
         public int Order { get; init; }
     }
 }

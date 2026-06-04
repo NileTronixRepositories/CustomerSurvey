@@ -268,6 +268,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
                     maxLength: input.MaxLength,
                     minValue: input.MinValue,
                     maxValue: input.MaxValue,
+                    startWith: input.StartWith,
                     order: input.Order,
                     createdByApplicationUserId: currentApplicationUserId);
 
@@ -311,6 +312,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
                         MaxLength = x.MaxLength,
                         MinValue = x.MinValue,
                         MaxValue = x.MaxValue,
+                        StartWith = x.StartWith,
                         Order = x.Order,
                         IsActive = x.IsActive
                     })

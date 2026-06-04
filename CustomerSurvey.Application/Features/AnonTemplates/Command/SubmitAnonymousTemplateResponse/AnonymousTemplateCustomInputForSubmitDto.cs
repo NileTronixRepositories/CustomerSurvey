@@ -20,6 +20,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
 
         public int? MaxValue { get; init; }
 
+        public string? StartWith { get; init; }
+
         public bool IsActive { get; init; }
     }
 }

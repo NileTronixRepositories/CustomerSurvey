@@ -113,6 +113,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
                     maxLength: customInputRequest.MaxLength,
                     minValue: customInputRequest.MinValue,
                     maxValue: customInputRequest.MaxValue,
+                    startWith: customInputRequest.StartWith,
                     order: customInputRequest.Order,
                     createdByApplicationUserId: currentApplicationUserId);
 
@@ -148,6 +149,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
                         MaxLength = x.MaxLength,
                         MinValue = x.MinValue,
                         MaxValue = x.MaxValue,
+                        StartWith = x.StartWith,
                         Order = x.Order,
                         IsActive = x.IsActive
                     })

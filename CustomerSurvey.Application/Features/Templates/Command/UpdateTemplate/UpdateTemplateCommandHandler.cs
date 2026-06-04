@@ -182,6 +182,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
                         MaxLength = x.MaxLength,
                         MinValue = x.MinValue,
                         MaxValue = x.MaxValue,
+                        StartWith = x.StartWith,
                         Order = x.Order,
                         IsActive = x.IsActive
                     })
@@ -280,6 +281,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
                         maxLength: requestedCustomInput.MaxLength,
                         minValue: requestedCustomInput.MinValue,
                         maxValue: requestedCustomInput.MaxValue,
+                        startWith: requestedCustomInput.StartWith,
                         order: requestedCustomInput.Order);
 
                     customInput.Restore();
@@ -299,6 +301,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
                     maxLength: requestedCustomInput.MaxLength,
                     minValue: requestedCustomInput.MinValue,
                     maxValue: requestedCustomInput.MaxValue,
+                    startWith: requestedCustomInput.StartWith,
                     order: requestedCustomInput.Order,
                     createdByApplicationUserId: currentApplicationUserId);
 
