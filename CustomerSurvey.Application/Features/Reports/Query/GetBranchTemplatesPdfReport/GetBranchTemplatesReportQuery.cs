@@ -1,9 +1,9 @@
-﻿using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 
-public sealed record GetBranchTemplatesPdfReportQuery
-    : IQuery<GetBranchTemplatesPdfReportResponse>,
+public sealed record GetBranchTemplatesReportQuery
+    : IQuery<BranchTemplatesPdfReportModel>,
       IBranchTemplatesReportQueryParameters
 {
     public DateOnly FromDate { get; init; }

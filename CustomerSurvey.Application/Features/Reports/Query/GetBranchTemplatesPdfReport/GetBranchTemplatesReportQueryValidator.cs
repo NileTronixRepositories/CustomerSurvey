@@ -2,10 +2,10 @@ using FluentValidation;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 
-internal sealed class GetBranchTemplatesPdfReportQueryValidator
-    : AbstractValidator<GetBranchTemplatesPdfReportQuery>
+internal sealed class GetBranchTemplatesReportQueryValidator
+    : AbstractValidator<GetBranchTemplatesReportQuery>
 {
-    public GetBranchTemplatesPdfReportQueryValidator()
+    public GetBranchTemplatesReportQueryValidator()
     {
         BranchTemplatesReportQueryValidationRules.AddRules(this);
     }

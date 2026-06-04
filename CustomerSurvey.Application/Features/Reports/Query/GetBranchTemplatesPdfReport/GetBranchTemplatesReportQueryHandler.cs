@@ -7,13 +7,13 @@ using CustomerSurvey.Domain.Identity;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 
-internal sealed class GetBranchTemplatesPdfReportQueryHandler
+internal sealed class GetBranchTemplatesReportQueryHandler
     : BranchTemplatesReportQueryHandlerBase,
-      IQueryHandler<GetBranchTemplatesPdfReportQuery, GetBranchTemplatesPdfReportResponse>
+      IQueryHandler<GetBranchTemplatesReportQuery, BranchTemplatesPdfReportModel>
 {
     private readonly IBranchTemplatesPdfReportService _reportService;
 
-    public GetBranchTemplatesPdfReportQueryHandler(
+    public GetBranchTemplatesReportQueryHandler(
         ICurrentUser currentUser,
         IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
         IWriteReadRepository<BranchUser> branchUserReadRepository,
@@ -23,32 +23,19 @@ internal sealed class GetBranchTemplatesPdfReportQueryHandler
         _reportService = reportService ?? throw new ArgumentNullException(nameof(reportService));
     }
 
-    public async Task<Result<GetBranchTemplatesPdfReportResponse>> Handle(
-        GetBranchTemplatesPdfReportQuery request,
+    public async Task<Result<BranchTemplatesPdfReportModel>> Handle(
+        GetBranchTemplatesReportQuery request,
         CancellationToken cancellationToken)
     {
         var reportRequest = await BuildReportRequestAsync(request, cancellationToken);
 
         if (reportRequest.IsFailure)
         {
-            return Result<GetBranchTemplatesPdfReportResponse>.Fail(reportRequest.Errors);
+            return Result<BranchTemplatesPdfReportModel>.Fail(reportRequest.Errors);
         }
 
-        var file = await _reportService.GenerateAsync(
+        return await _reportService.BuildReportModelAsync(
             reportRequest.Value,
             cancellationToken);
-
-        if (file.IsFailure)
-        {
-            return Result<GetBranchTemplatesPdfReportResponse>.Fail(file.Errors);
-        }
-
-        return Result<GetBranchTemplatesPdfReportResponse>.Ok(
-            new GetBranchTemplatesPdfReportResponse
-            {
-                FileName = file.Value.FileName,
-                ContentType = file.Value.ContentType,
-                Content = file.Value.Content
-            });
     }
 }

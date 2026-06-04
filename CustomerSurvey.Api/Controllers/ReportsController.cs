@@ -211,16 +211,9 @@ namespace CustomerSurvey.Api.Controllers
      [FromQuery] GetBranchTemplatesPdfReportQuery query,
      CancellationToken cancellationToken)
         {
-            var language = Request.Headers.AcceptLanguage.ToString();
-
-            var normalizedLanguage =
-                language.StartsWith("ar", StringComparison.OrdinalIgnoreCase)
-                    ? "ar"
-                    : "en";
-
             query = query with
             {
-                Language = normalizedLanguage
+                Language = NormalizeTemplatesReportLanguage(Request.Headers.AcceptLanguage.ToString())
             };
 
             var result = await sender.Send(query, cancellationToken);
@@ -245,6 +238,30 @@ namespace CustomerSurvey.Api.Controllers
                 fileContents: result.Value.Content,
                 contentType: "application/pdf",
                 fileDownloadName: result.Value.FileName);
+        }
+
+        [HttpGet("templates")]
+        [Permission("Reports.ViewBranchReports")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetBranchTemplatesReport(
+     [FromQuery] GetBranchTemplatesReportQuery query,
+     CancellationToken cancellationToken)
+        {
+            query = query with
+            {
+                Language = NormalizeTemplatesReportLanguage(Request.Headers.AcceptLanguage.ToString())
+            };
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        private static string NormalizeTemplatesReportLanguage(string language)
+        {
+            return language.StartsWith("ar", StringComparison.OrdinalIgnoreCase)
+                ? "ar"
+                : "en";
         }
     }
 }
