@@ -16,6 +16,9 @@
     string PercentOrDash(decimal? value) =>
         value.HasValue ? $"{value.Value.ToString("0.##", CultureInfo.InvariantCulture)}%" : "N/A";
 
+    string PercentValue(decimal value) =>
+        value.ToString("0.##", CultureInfo.InvariantCulture);
+
     string DateOrDash(DateTime? value) =>
         value.HasValue ? value.Value.ToString("yyyy-MM-dd") : "-";
 
@@ -603,6 +606,14 @@
                     <div class="card-label">@T("Top / Worst Questions", "عدد أفضل وأسوأ الأسئلة")</div>
                     <div class="card-value">@Model.TopWorstQuestionsCount</div>
                 </div>
+                <div class="filter-card">
+                    <div class="card-label">@T("Worst Questions Score Range", "نطاق تقييم أسوأ الأسئلة")</div>
+                    <div class="card-value">0% - @PercentValue(Model.WorstQuestionsMaxScorePercentage)%</div>
+                </div>
+                <div class="filter-card">
+                    <div class="card-label">@T("Best Questions Score Range", "نطاق تقييم أفضل الأسئلة")</div>
+                    <div class="card-value">@PercentValue(Model.BestQuestionsMinScorePercentage)% - 100%</div>
+                </div>
             </div>
         </section>
 
@@ -756,6 +767,7 @@
 
         <section class="section">
             <h2 class="section-title">@T("Worst Questions Overall", "أسوأ الأسئلة إجمالًا")</h2>
+            <div class="section-subtitle">@T("Applied score range", "نطاق التقييم المطبق"): 0% - @PercentValue(Model.WorstQuestionsMaxScorePercentage)%</div>
             @if (!Model.WorstQuestions.Any())
             {
                 <div class="note warning">@T("No scored questions were found for the selected filters.", "لا توجد أسئلة محسوبة للتقييم ضمن الفلاتر المحددة.")</div>
@@ -798,6 +810,7 @@
 
         <section class="section">
             <h2 class="section-title">@T("Best Questions Overall", "أفضل الأسئلة إجمالًا")</h2>
+            <div class="section-subtitle">@T("Applied score range", "نطاق التقييم المطبق"): @PercentValue(Model.BestQuestionsMinScorePercentage)% - 100%</div>
             @if (!Model.BestQuestions.Any())
             {
                 <div class="note warning">@T("No scored questions were found for the selected filters.", "لا توجد أسئلة محسوبة للتقييم ضمن الفلاتر المحددة.")</div>

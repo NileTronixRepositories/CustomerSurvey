@@ -46,8 +46,30 @@ internal static class BranchTemplatesReportQueryValidationRules
         validator.RuleFor(x => x.TopWorstQuestionsCount)
             .Must(x => x is 5 or 10 or 20)
             .WithMessage(ErrorMessage.GetBranchTemplatesPdfReport_TopWorstQuestionsCount_Invalid);
+
+        validator.RuleFor(x => x.WorstQuestionsMaxScorePercentage)
+            .Must(BeNullOrValidPercentage)
+            .WithMessage(ErrorMessage.GetBranchTemplatesPdfReport_WorstQuestionsMaxScorePercentage_Invalid);
+
+        validator.RuleFor(x => x.BestQuestionsMinScorePercentage)
+            .Must(BeNullOrValidPercentage)
+            .WithMessage(ErrorMessage.GetBranchTemplatesPdfReport_BestQuestionsMinScorePercentage_Invalid);
+
+        validator.RuleFor(x => x)
+            .Must(x =>
+                BranchTemplatesReportQuestionRankThresholds.ResolveWorstQuestionsMaxScorePercentage(
+                    x.WorstQuestionsMaxScorePercentage) <=
+                BranchTemplatesReportQuestionRankThresholds.ResolveBestQuestionsMinScorePercentage(
+                    x.BestQuestionsMinScorePercentage))
+            .When(x =>
+                BeNullOrValidPercentage(x.WorstQuestionsMaxScorePercentage) &&
+                BeNullOrValidPercentage(x.BestQuestionsMinScorePercentage))
+            .WithMessage(ErrorMessage.GetBranchTemplatesPdfReport_QuestionRankThresholds_Invalid);
     }
 
     private static int GetInclusiveDays(DateOnly fromDate, DateOnly toDate)
         => toDate.DayNumber - fromDate.DayNumber + 1;
+
+    private static bool BeNullOrValidPercentage(decimal? value)
+        => !value.HasValue || (value.Value >= 0m && value.Value <= 100m);
 }

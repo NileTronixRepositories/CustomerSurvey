@@ -30,6 +30,12 @@ public sealed record BranchTemplatesPdfReportModel
 
     public int TopWorstQuestionsCount { get; init; } = 5;
 
+    public decimal WorstQuestionsMaxScorePercentage { get; init; }
+        = BranchTemplatesReportQuestionRankThresholds.DefaultWorstQuestionsMaxScorePercentage;
+
+    public decimal BestQuestionsMinScorePercentage { get; init; }
+        = BranchTemplatesReportQuestionRankThresholds.DefaultBestQuestionsMinScorePercentage;
+
     public BranchTemplatesPdfExecutiveSummary ExecutiveSummary { get; init; } = new();
 
     public IReadOnlyCollection<BranchTemplatesPdfTemplateSummary> Templates { get; init; }

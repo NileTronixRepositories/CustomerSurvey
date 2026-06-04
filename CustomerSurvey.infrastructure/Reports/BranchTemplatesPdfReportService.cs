@@ -206,6 +206,13 @@ namespace CustomerSurvey.infrastructure.Reports
                 allQuestions,
                 allFlowLines);
 
+            var worstQuestionsMaxScorePercentage =
+                BranchTemplatesReportQuestionRankThresholds.ResolveWorstQuestionsMaxScorePercentage(
+                    request.WorstQuestionsMaxScorePercentage);
+            var bestQuestionsMinScorePercentage =
+                BranchTemplatesReportQuestionRankThresholds.ResolveBestQuestionsMinScorePercentage(
+                    request.BestQuestionsMinScorePercentage);
+
             var model = new BranchTemplatesPdfReportModel
             {
                 Language = request.Language,
@@ -228,17 +235,23 @@ namespace CustomerSurvey.infrastructure.Reports
                     isArabic),
                 ScoreCalculationMode = request.ScoreCalculationMode,
                 TopWorstQuestionsCount = request.TopWorstQuestionsCount,
+                WorstQuestionsMaxScorePercentage = worstQuestionsMaxScorePercentage,
+                BestQuestionsMinScorePercentage = bestQuestionsMinScorePercentage,
                 ExecutiveSummary = executiveSummary,
                 Templates = templates,
                 Questions = allQuestions,
-                WorstQuestions = BuildQuestionRanks(
+                WorstQuestions = BranchTemplatesQuestionRankBuilder.Build(
                     allQuestions,
                     request.TopWorstQuestionsCount,
-                    worst: true),
-                BestQuestions = BuildQuestionRanks(
+                    worst: true,
+                    worstQuestionsMaxScorePercentage,
+                    bestQuestionsMinScorePercentage),
+                BestQuestions = BranchTemplatesQuestionRankBuilder.Build(
                     allQuestions,
                     request.TopWorstQuestionsCount,
-                    worst: false),
+                    worst: false,
+                    worstQuestionsMaxScorePercentage,
+                    bestQuestionsMinScorePercentage),
                 TemplateDetails = templateDetails
             };
 
@@ -1388,48 +1401,6 @@ namespace CustomerSurvey.infrastructure.Reports
                 MostAnsweredTemplateName = mostAnswered?.DisplayName(isArabic) ?? "-",
                 TemplatesWithoutResponses = templates.Count(x => x.TotalResponses == 0)
             };
-        }
-
-        private static IReadOnlyCollection<BranchTemplatesPdfQuestionRankItem> BuildQuestionRanks(
-            IReadOnlyCollection<BranchTemplatesPdfQuestionAnalytics> questions,
-            int count,
-            bool worst)
-        {
-            var scoredQuestions = questions
-                .Where(x => x.IsScoreIncluded && x.ScoreAverageValue.HasValue)
-                .ToArray();
-
-            var ordered = worst
-                ? scoredQuestions
-                    .OrderBy(x => x.ScoreAverageValue!.Value)
-                    .ThenByDescending(x => x.TotalAnswers)
-                    .ThenBy(x => x.QuestionTextEn)
-                : scoredQuestions
-                    .OrderByDescending(x => x.ScoreAverageValue!.Value)
-                    .ThenByDescending(x => x.TotalAnswers)
-                    .ThenBy(x => x.QuestionTextEn);
-
-            return ordered
-                .Take(count)
-                .Select((question, index) => new BranchTemplatesPdfQuestionRankItem
-                {
-                    Rank = index + 1,
-                    TemplateId = question.TemplateId,
-                    TemplateKind = question.TemplateKind,
-                    TemplateNameEn = question.TemplateNameEn,
-                    TemplateNameAr = question.TemplateNameAr,
-                    TemplateQuestionId = question.TemplateQuestionId,
-                    QuestionTextEn = question.QuestionTextEn,
-                    QuestionTextAr = question.QuestionTextAr,
-                    IsRootQuestion = question.IsRootQuestion,
-                    QuestionType = question.QuestionType,
-                    TotalAnswers = question.TotalAnswers,
-                    AverageScoreValue = question.ScoreAverageValue!.Value,
-                    SatisfactionPercentage = Math.Round(
-                        question.ScoreAverageValue!.Value * 100m / MaxScoreValue,
-                        2)
-                })
-                .ToArray();
         }
 
         private static IReadOnlyCollection<BranchTemplatesPdfTemplateDetail> BuildTemplateDetails(

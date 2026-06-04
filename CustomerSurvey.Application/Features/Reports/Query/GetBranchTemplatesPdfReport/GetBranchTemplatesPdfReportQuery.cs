@@ -19,6 +19,10 @@ public sealed record GetBranchTemplatesPdfReportQuery
 
     public int TopWorstQuestionsCount { get; init; } = 5;
 
+    public decimal? WorstQuestionsMaxScorePercentage { get; init; }
+
+    public decimal? BestQuestionsMinScorePercentage { get; init; }
+
     /// <summary>
     /// Comes from Accept-Language header inside controller.
     /// Supported values: ar, en.

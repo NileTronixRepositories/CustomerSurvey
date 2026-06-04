@@ -3200,6 +3200,15 @@ namespace CustomerSurvey.Domain.Resources {
                 return ResourceManager.GetString("GetBranchTemplatesPdfReport_CurrentActor_NotFound", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Best questions min score percentage must be between 0 and 100..
+        /// </summary>
+        public static string GetBranchTemplatesPdfReport_BestQuestionsMinScorePercentage_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchTemplatesPdfReport_BestQuestionsMinScorePercentage_Invalid", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to From date must be before or equal to to date..
@@ -3243,6 +3252,15 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetBranchTemplatesPdfReport_MinDuration_Invalid {
             get {
                 return ResourceManager.GetString("GetBranchTemplatesPdfReport_MinDuration_Invalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Worst questions threshold must be less than or equal to best questions threshold..
+        /// </summary>
+        public static string GetBranchTemplatesPdfReport_QuestionRankThresholds_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchTemplatesPdfReport_QuestionRankThresholds_Invalid", resourceCulture);
             }
         }
         
@@ -3297,6 +3315,15 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetBranchTemplatesPdfReport_ToDate_Required {
             get {
                 return ResourceManager.GetString("GetBranchTemplatesPdfReport_ToDate_Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Worst questions max score percentage must be between 0 and 100..
+        /// </summary>
+        public static string GetBranchTemplatesPdfReport_WorstQuestionsMaxScorePercentage_Invalid {
+            get {
+                return ResourceManager.GetString("GetBranchTemplatesPdfReport_WorstQuestionsMaxScorePercentage_Invalid", resourceCulture);
             }
         }
         

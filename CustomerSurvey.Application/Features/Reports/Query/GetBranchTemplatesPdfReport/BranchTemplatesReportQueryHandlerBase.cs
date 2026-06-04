@@ -62,6 +62,8 @@ internal abstract class BranchTemplatesReportQueryHandlerBase
                 TemplateKind = request.TemplateKind,
                 ScoreCalculationMode = request.ScoreCalculationMode,
                 TopWorstQuestionsCount = request.TopWorstQuestionsCount,
+                WorstQuestionsMaxScorePercentage = request.WorstQuestionsMaxScorePercentage,
+                BestQuestionsMinScorePercentage = request.BestQuestionsMinScorePercentage,
                 Language = request.Language.ToLowerInvariant()
             });
     }

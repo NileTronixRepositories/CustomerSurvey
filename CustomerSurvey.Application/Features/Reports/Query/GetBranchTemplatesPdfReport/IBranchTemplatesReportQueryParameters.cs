@@ -14,5 +14,9 @@ public interface IBranchTemplatesReportQueryParameters
 
     int TopWorstQuestionsCount { get; }
 
+    decimal? WorstQuestionsMaxScorePercentage { get; }
+
+    decimal? BestQuestionsMinScorePercentage { get; }
+
     string Language { get; }
 }
