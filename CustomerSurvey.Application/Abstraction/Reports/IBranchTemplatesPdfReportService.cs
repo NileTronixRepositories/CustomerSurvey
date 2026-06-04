@@ -5,6 +5,10 @@ namespace CustomerSurvey.Application.Abstraction.Reports;
 
 public interface IBranchTemplatesPdfReportService
 {
+    Task<Result<BranchTemplatesPdfReportModel>> BuildReportModelAsync(
+        BranchTemplatesPdfReportRequest request,
+        CancellationToken cancellationToken);
+
     Task<Result<BranchTemplatesPdfReportFile>> GenerateAsync(
         BranchTemplatesPdfReportRequest request,
         CancellationToken cancellationToken);

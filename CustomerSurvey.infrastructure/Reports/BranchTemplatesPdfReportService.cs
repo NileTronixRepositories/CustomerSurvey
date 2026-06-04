@@ -105,7 +105,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 });
         }
 
-        private async Task<Result<BranchTemplatesPdfReportModel>> BuildReportModelAsync(
+        public async Task<Result<BranchTemplatesPdfReportModel>> BuildReportModelAsync(
             BranchTemplatesPdfReportRequest request,
             CancellationToken cancellationToken)
         {
