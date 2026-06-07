@@ -20,6 +20,8 @@ namespace CustomerSurvey.Domain.Identity
         public string PasswordHash { get; private set; } = string.Empty;
         public UserType UserType { get; private set; }
         public bool IsActive { get; private set; }
+        public bool IsFirstLogin { get; private set; }
+        public DateTime PasswordChangedOnUtc { get; private set; }
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
@@ -54,6 +56,8 @@ namespace CustomerSurvey.Domain.Identity
                 PasswordHash = passwordHash,
                 UserType = userType,
                 IsActive = true,
+                IsFirstLogin = true,
+                PasswordChangedOnUtc = DateTime.UtcNow,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
         }
@@ -73,13 +77,50 @@ namespace CustomerSurvey.Domain.Identity
                 PhoneNumber = null,
                 UserType = UserType.SuperAdmin,
                 IsActive = true,
+                IsFirstLogin = true,
+                PasswordChangedOnUtc = DateTime.UtcNow,
                 CreatedByApplicationUserId = id
             };
         }
 
         public void SetPasswordHash(string passwordHash)
         {
+            ResetPassword(passwordHash);
+        }
+
+        public void ChangePassword(string passwordHash)
+        {
+            ChangePassword(passwordHash, DateTime.UtcNow);
+        }
+
+        public void ChangePassword(string passwordHash, DateTime changedOnUtc)
+        {
+            SetPassword(passwordHash, changedOnUtc, isFirstLogin: false);
+        }
+
+        public void ResetPassword(string passwordHash)
+        {
+            ResetPassword(passwordHash, DateTime.UtcNow);
+        }
+
+        public void ResetPassword(string passwordHash, DateTime changedOnUtc)
+        {
+            SetPassword(passwordHash, changedOnUtc, isFirstLogin: true);
+        }
+
+        private void SetPassword(
+            string passwordHash,
+            DateTime changedOnUtc,
+            bool isFirstLogin)
+        {
+            if (string.IsNullOrWhiteSpace(passwordHash))
+            {
+                throw new ArgumentException("Password hash cannot be empty.", nameof(passwordHash));
+            }
+
             PasswordHash = passwordHash;
+            PasswordChangedOnUtc = changedOnUtc;
+            IsFirstLogin = isFirstLogin;
         }
 
         public void Activate()

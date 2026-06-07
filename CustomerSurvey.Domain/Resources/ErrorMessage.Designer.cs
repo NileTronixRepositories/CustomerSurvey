@@ -421,6 +421,78 @@ namespace CustomerSurvey.Domain.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Confirm password does not match the new password..
+        /// </summary>
+        public static string ChangePassword_ConfirmNewPassword_NotMatched {
+            get {
+                return ResourceManager.GetString("ChangePassword_ConfirmNewPassword_NotMatched", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm new password is required..
+        /// </summary>
+        public static string ChangePassword_ConfirmNewPassword_Required {
+            get {
+                return ResourceManager.GetString("ChangePassword_ConfirmNewPassword_Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Password must not exceed 200 characters..
+        /// </summary>
+        public static string ChangePassword_NewPassword_MaxLength {
+            get {
+                return ResourceManager.GetString("ChangePassword_NewPassword_MaxLength", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Password must be at least 8 characters..
+        /// </summary>
+        public static string ChangePassword_NewPassword_MinLength {
+            get {
+                return ResourceManager.GetString("ChangePassword_NewPassword_MinLength", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to New password is required..
+        /// </summary>
+        public static string ChangePassword_NewPassword_Required {
+            get {
+                return ResourceManager.GetString("ChangePassword_NewPassword_Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to User account is inactive..
+        /// </summary>
+        public static string ChangePassword_UserInactive {
+            get {
+                return ResourceManager.GetString("ChangePassword_UserInactive", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot change another user's password..
+        /// </summary>
+        public static string ChangePassword_UserIdMismatch {
+            get {
+                return ResourceManager.GetString("ChangePassword_UserIdMismatch", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to User was not found..
+        /// </summary>
+        public static string ChangePassword_UserNotFound {
+            get {
+                return ResourceManager.GetString("ChangePassword_UserNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Anonymous template active from date is required..
         /// </summary>
         public static string CreateAnonymousTemplate_ActiveFrom_Required {

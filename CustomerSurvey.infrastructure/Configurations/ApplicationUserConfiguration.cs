@@ -46,6 +46,12 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.IsActive)
                 .IsRequired();
 
+            builder.Property(x => x.IsFirstLogin)
+                .IsRequired();
+
+            builder.Property(x => x.PasswordChangedOnUtc)
+                .IsRequired();
+
             builder.Property(x => x.CreatedByApplicationUserId)
                 .IsRequired();
 

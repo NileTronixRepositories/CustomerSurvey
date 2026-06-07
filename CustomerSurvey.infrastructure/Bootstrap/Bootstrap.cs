@@ -10,6 +10,7 @@ using CustomerSurvey.Application.Abstraction.Reports;
 using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Abstraction.Seeding;
 using CustomerSurvey.Application.Abstraction.Services;
+using CustomerSurvey.Application.Options;
 using CustomerSurvey.infrastructure.Authorization;
 using CustomerSurvey.infrastructure.BackgroundJobs.Templates;
 using CustomerSurvey.infrastructure.Options;
@@ -41,6 +42,10 @@ namespace CustomerSurvey.infrastructure.Bootstrap
             // Options
             services.Configure<EncryptionOptions>(configuration.GetSection("EncryptionOptions"));
             services.Configure<JwtOption>(configuration.GetSection(JwtOption.SectionName));
+            services.AddOptions<PasswordPolicyOptions>()
+                .Bind(configuration.GetSection(PasswordPolicyOptions.SectionName))
+                .Validate(o => o.ExpiryDays > 0, "PasswordPolicy:ExpiryDays must be greater than zero.")
+                .ValidateOnStart();
             services.AddOptions<OtpOptions>()
           .Bind(configuration.GetSection("Security:Otp"))
           .Validate(o => !string.IsNullOrWhiteSpace(o.Secret),
