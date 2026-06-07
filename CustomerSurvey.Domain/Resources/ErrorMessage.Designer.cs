@@ -3022,6 +3022,60 @@ namespace CustomerSurvey.Domain.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Branch id is required when viewing survey dashboard templates as Super Admin..
+        /// </summary>
+        public static string SurveyDashboardTemplatesSelection_BranchId_Required_ForSuperAdmin {
+            get {
+                return ResourceManager.GetString("SurveyDashboardTemplatesSelection_BranchId_Required_ForSuperAdmin", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch scope was not found..
+        /// </summary>
+        public static string SurveyDashboardTemplatesSelection_CurrentBranchScope_NotFound {
+            get {
+                return ResourceManager.GetString("SurveyDashboardTemplatesSelection_CurrentBranchScope_NotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The selected template kind is invalid..
+        /// </summary>
+        public static string SurveyDashboardTemplatesSelection_TemplateKind_Invalid {
+            get {
+                return ResourceManager.GetString("SurveyDashboardTemplatesSelection_TemplateKind_Invalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to templateId and anonymousTemplateId cannot be sent together in the same request..
+        /// </summary>
+        public static string SurveyDashboard_TemplateFilter_Ambiguous {
+            get {
+                return ResourceManager.GetString("SurveyDashboard_TemplateFilter_Ambiguous", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The selected template was not found within the current branch scope..
+        /// </summary>
+        public static string SurveyDashboard_TemplateFilter_NotFound {
+            get {
+                return ResourceManager.GetString("SurveyDashboard_TemplateFilter_NotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The selected template type does not match the requested dashboard source..
+        /// </summary>
+        public static string SurveyDashboard_TemplateFilter_SourceMismatch {
+            get {
+                return ResourceManager.GetString("SurveyDashboard_TemplateFilter_SourceMismatch", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Branch was not found..
         /// </summary>
         public static string GetBranchDetails_Branch_NotFound {

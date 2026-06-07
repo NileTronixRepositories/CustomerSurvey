@@ -122,8 +122,27 @@ internal sealed class GetSurveyDashboardQueryHandler
         var fromUtc = period.From.ToDateTime(TimeOnly.MinValue);
         var toExclusiveUtc = period.To.AddDays(1).ToDateTime(TimeOnly.MinValue);
 
-        var includeInternal = request.Source is SurveyDashboardSource.All or SurveyDashboardSource.Internal;
-        var includeAnonymous = request.Source is SurveyDashboardSource.All or SurveyDashboardSource.Anonymous;
+        var templateFilterResult = await ResolveTemplateFilterAsync(
+            request,
+            scope,
+            cancellationToken);
+
+        if (templateFilterResult.Error is not null)
+        {
+            return Result<SurveyDashboardResponse>.Fail(templateFilterResult.Error);
+        }
+
+        var templateFilter = templateFilterResult.TemplateFilter;
+        var appliedSource = templateFilter?.DashboardSource ?? request.Source;
+        var internalTemplateId = templateFilter?.TemplateKind == SurveyDashboardTemplateKind.Authorized
+            ? templateFilter.TemplateId
+            : (Guid?)null;
+        var anonymousTemplateId = templateFilter?.TemplateKind == SurveyDashboardTemplateKind.Anonymous
+            ? templateFilter.TemplateId
+            : (Guid?)null;
+
+        var includeInternal = appliedSource is SurveyDashboardSource.All or SurveyDashboardSource.Internal;
+        var includeAnonymous = appliedSource is SurveyDashboardSource.All or SurveyDashboardSource.Anonymous;
 
         var templates = Array.Empty<SurveyDashboardTemplateRow>() as IReadOnlyCollection<SurveyDashboardTemplateRow>;
         var anonymousTemplates = Array.Empty<SurveyDashboardTemplateRow>() as IReadOnlyCollection<SurveyDashboardTemplateRow>;
@@ -134,24 +153,17 @@ internal sealed class GetSurveyDashboardQueryHandler
         if (includeInternal)
         {
             templates = await _templateReadRepository.ListAsync(
-                new GetSurveyDashboardTemplatesSpec(scope.BranchId),
+                new GetSurveyDashboardTemplatesSpec(
+                    scope.BranchId,
+                    internalTemplateId),
                 cancellationToken);
-
-            if (request.TemplateId.HasValue &&
-                !templates.Any(x => x.TemplateId == request.TemplateId.Value))
-            {
-                return Result<SurveyDashboardResponse>.Fail(new Error(
-                    Code: "Reports.SurveyDashboard.TemplateNotFound",
-                    Message: ErrorMessage.GetSurveyDashboard_Template_NotFound,
-                    Type: ErrorType.NotFound));
-            }
 
             responses.AddRange(await _surveyResponseReadRepository.ListAsync(
                 new GetSurveyDashboardInternalResponsesSpec(
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.TemplateId),
+                    internalTemplateId),
                 cancellationToken));
 
             answers.AddRange(await _surveyAnswerReadRepository.ListAsync(
@@ -159,7 +171,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.TemplateId),
+                    internalTemplateId),
                 cancellationToken));
 
             customInputValues.AddRange(await _surveyCustomInputValueReadRepository.ListAsync(
@@ -167,31 +179,24 @@ internal sealed class GetSurveyDashboardQueryHandler
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.TemplateId),
+                    internalTemplateId),
                 cancellationToken));
         }
 
         if (includeAnonymous)
         {
             anonymousTemplates = await _anonymousTemplateReadRepository.ListAsync(
-                new GetSurveyDashboardAnonymousTemplatesSpec(scope.BranchId),
+                new GetSurveyDashboardAnonymousTemplatesSpec(
+                    scope.BranchId,
+                    anonymousTemplateId),
                 cancellationToken);
-
-            if (request.AnonymousTemplateId.HasValue &&
-                !anonymousTemplates.Any(x => x.TemplateId == request.AnonymousTemplateId.Value))
-            {
-                return Result<SurveyDashboardResponse>.Fail(new Error(
-                    Code: "Reports.SurveyDashboard.AnonymousTemplateNotFound",
-                    Message: ErrorMessage.GetSurveyDashboard_AnonymousTemplate_NotFound,
-                    Type: ErrorType.NotFound));
-            }
 
             responses.AddRange(await _anonymousSurveyResponseReadRepository.ListAsync(
                 new GetSurveyDashboardAnonymousResponsesSpec(
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.AnonymousTemplateId),
+                    anonymousTemplateId),
                 cancellationToken));
 
             answers.AddRange(await _anonymousSurveyAnswerReadRepository.ListAsync(
@@ -199,7 +204,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.AnonymousTemplateId),
+                    anonymousTemplateId),
                 cancellationToken));
 
             customInputValues.AddRange(await _anonymousCustomInputValueReadRepository.ListAsync(
@@ -207,7 +212,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.AnonymousTemplateId),
+                    anonymousTemplateId),
                 cancellationToken));
         }
 
@@ -216,6 +221,8 @@ internal sealed class GetSurveyDashboardQueryHandler
             actor,
             scope,
             period,
+            appliedSource,
+            templateFilter,
             templates,
             anonymousTemplates,
             responses,
@@ -322,46 +329,109 @@ internal sealed class GetSurveyDashboardQueryHandler
             Branches: branches));
     }
 
-    private static Error? ValidateSourceFilters(GetSurveyDashboardQuery request)
+    private async Task<TemplateFilterResolveResult> ResolveTemplateFilterAsync(
+        GetSurveyDashboardQuery request,
+        ResolvedSurveyDashboardScope scope,
+        CancellationToken cancellationToken)
     {
-        if (request.Source == SurveyDashboardSource.All)
+        if (request.TemplateId.HasValue)
         {
-            if (request.TemplateId.HasValue)
+            var authorizedTemplate = await _templateReadRepository.FirstOrDefaultAsync(
+                new GetAuthorizedTemplateForSurveyDashboardFilterSpec(
+                    request.TemplateId.Value,
+                    scope.BranchId),
+                cancellationToken);
+
+            if (authorizedTemplate is not null)
             {
-                return new Error(
-                    Code: "Reports.SurveyDashboard.TemplateIdNotAllowed",
-                    Message: ErrorMessage.GetSurveyDashboard_TemplateId_NotAllowed,
-                    Type: ErrorType.Validation);
+                var sourceMismatch = ValidateResolvedTemplateSource(
+                    request.Source,
+                    authorizedTemplate);
+
+                return sourceMismatch is not null
+                    ? TemplateFilterResolveResult.Fail(sourceMismatch)
+                    : TemplateFilterResolveResult.Ok(authorizedTemplate);
             }
 
-            if (request.AnonymousTemplateId.HasValue)
+            var anonymousTemplate = await _anonymousTemplateReadRepository.FirstOrDefaultAsync(
+                new GetAnonymousTemplateForSurveyDashboardFilterSpec(
+                    request.TemplateId.Value,
+                    scope.BranchId),
+                cancellationToken);
+
+            if (anonymousTemplate is not null)
             {
-                return new Error(
-                    Code: "Reports.SurveyDashboard.AnonymousTemplateIdNotAllowed",
-                    Message: ErrorMessage.GetSurveyDashboard_AnonymousTemplateId_NotAllowed,
-                    Type: ErrorType.Validation);
+                var sourceMismatch = ValidateResolvedTemplateSource(
+                    request.Source,
+                    anonymousTemplate);
+
+                return sourceMismatch is not null
+                    ? TemplateFilterResolveResult.Fail(sourceMismatch)
+                    : TemplateFilterResolveResult.Ok(anonymousTemplate);
             }
+
+            return TemplateFilterResolveResult.Fail(new Error(
+                Code: "Reports.SurveyDashboard.TemplateFilterNotFound",
+                Message: ErrorMessage.SurveyDashboard_TemplateFilter_NotFound,
+                Type: ErrorType.NotFound));
         }
 
-        if (request.Source == SurveyDashboardSource.Internal &&
+        if (request.AnonymousTemplateId.HasValue)
+        {
+            var anonymousTemplate = await _anonymousTemplateReadRepository.FirstOrDefaultAsync(
+                new GetAnonymousTemplateForSurveyDashboardFilterSpec(
+                    request.AnonymousTemplateId.Value,
+                    scope.BranchId),
+                cancellationToken);
+
+            if (anonymousTemplate is null)
+            {
+                return TemplateFilterResolveResult.Fail(new Error(
+                    Code: "Reports.SurveyDashboard.TemplateFilterNotFound",
+                    Message: ErrorMessage.SurveyDashboard_TemplateFilter_NotFound,
+                    Type: ErrorType.NotFound));
+            }
+
+            var sourceMismatch = ValidateResolvedTemplateSource(
+                request.Source,
+                anonymousTemplate);
+
+            return sourceMismatch is not null
+                ? TemplateFilterResolveResult.Fail(sourceMismatch)
+                : TemplateFilterResolveResult.Ok(anonymousTemplate);
+        }
+
+        return TemplateFilterResolveResult.Ok(null);
+    }
+
+    private static Error? ValidateSourceFilters(GetSurveyDashboardQuery request)
+    {
+        if (request.TemplateId.HasValue &&
             request.AnonymousTemplateId.HasValue)
         {
             return new Error(
-                Code: "Reports.SurveyDashboard.AnonymousTemplateIdNotAllowed",
-                Message: ErrorMessage.GetSurveyDashboard_AnonymousTemplateId_NotAllowed,
-                Type: ErrorType.Validation);
-        }
-
-        if (request.Source == SurveyDashboardSource.Anonymous &&
-            request.TemplateId.HasValue)
-        {
-            return new Error(
-                Code: "Reports.SurveyDashboard.TemplateIdNotAllowed",
-                Message: ErrorMessage.GetSurveyDashboard_TemplateId_NotAllowed,
+                Code: "Reports.SurveyDashboard.TemplateFilterAmbiguous",
+                Message: ErrorMessage.SurveyDashboard_TemplateFilter_Ambiguous,
                 Type: ErrorType.Validation);
         }
 
         return null;
+    }
+
+    private static Error? ValidateResolvedTemplateSource(
+        SurveyDashboardSource requestedSource,
+        ResolvedSurveyDashboardTemplateFilter templateFilter)
+    {
+        if (requestedSource == SurveyDashboardSource.All ||
+            requestedSource == templateFilter.DashboardSource)
+        {
+            return null;
+        }
+
+        return new Error(
+            Code: "Reports.SurveyDashboard.TemplateFilterSourceMismatch",
+            Message: ErrorMessage.SurveyDashboard_TemplateFilter_SourceMismatch,
+            Type: ErrorType.Validation);
     }
 
     private static PeriodResolveResult ResolvePeriod(GetSurveyDashboardQuery request)
@@ -394,6 +464,8 @@ internal sealed class GetSurveyDashboardQueryHandler
         CurrentSurveyDashboardActor actor,
         ResolvedSurveyDashboardScope scope,
         ResolvedSurveyDashboardPeriod period,
+        SurveyDashboardSource appliedSource,
+        ResolvedSurveyDashboardTemplateFilter? templateFilter,
         IReadOnlyCollection<SurveyDashboardTemplateRow> internalTemplates,
         IReadOnlyCollection<SurveyDashboardTemplateRow> anonymousTemplates,
         IReadOnlyCollection<SurveyDashboardResponseRow> responses,
@@ -443,6 +515,17 @@ internal sealed class GetSurveyDashboardQueryHandler
                 TopQuestionsCount = request.TopQuestionsCount,
                 CriticalResponsesCount = request.CriticalResponsesCount,
                 CriticalScoreThreshold = request.CriticalScoreThreshold
+            },
+
+            AppliedFilters = new SurveyDashboardAppliedFiltersResponse
+            {
+                BranchId = scope.BranchId,
+                Source = appliedSource,
+                TemplateId = templateFilter?.TemplateId,
+                TemplateKind = templateFilter?.TemplateKind,
+                From = period.From,
+                To = period.To,
+                GroupBy = request.GroupBy
             },
 
             Summary = new SurveyDashboardSummaryResponse
@@ -503,7 +586,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                 request.TopQuestionsCount),
 
             CustomInputSegments = BuildCustomInputSegments(
-                request.Source,
+                appliedSource,
                 customInputValues),
 
             CriticalResponses = BuildCriticalResponses(
@@ -1072,6 +1155,22 @@ internal sealed class GetSurveyDashboardQueryHandler
         public static PeriodResolveResult Fail(Error error)
         {
             return new PeriodResolveResult(null, error);
+        }
+    }
+
+    private sealed record TemplateFilterResolveResult(
+        ResolvedSurveyDashboardTemplateFilter? TemplateFilter,
+        Error? Error)
+    {
+        public static TemplateFilterResolveResult Ok(
+            ResolvedSurveyDashboardTemplateFilter? templateFilter)
+        {
+            return new TemplateFilterResolveResult(templateFilter, null);
+        }
+
+        public static TemplateFilterResolveResult Fail(Error error)
+        {
+            return new TemplateFilterResolveResult(null, error);
         }
     }
 

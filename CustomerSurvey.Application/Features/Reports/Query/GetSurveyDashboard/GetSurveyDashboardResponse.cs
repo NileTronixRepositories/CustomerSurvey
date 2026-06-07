@@ -10,6 +10,8 @@ public sealed record SurveyDashboardResponse
 
     public SurveyDashboardFiltersResponse Filters { get; init; } = new();
 
+    public SurveyDashboardAppliedFiltersResponse AppliedFilters { get; init; } = new();
+
     public SurveyDashboardSummaryResponse Summary { get; init; } = new();
 
     public SurveyDashboardSourceBreakdownResponse SourceBreakdown { get; init; } = new();
@@ -72,6 +74,23 @@ public sealed record SurveyDashboardFiltersResponse
     public int CriticalResponsesCount { get; init; }
 
     public decimal CriticalScoreThreshold { get; init; }
+}
+
+public sealed record SurveyDashboardAppliedFiltersResponse
+{
+    public Guid? BranchId { get; init; }
+
+    public SurveyDashboardSource Source { get; init; }
+
+    public Guid? TemplateId { get; init; }
+
+    public SurveyDashboardTemplateKind? TemplateKind { get; init; }
+
+    public DateOnly From { get; init; }
+
+    public DateOnly To { get; init; }
+
+    public DashboardGroupBy GroupBy { get; init; }
 }
 
 public sealed record SurveyDashboardSummaryResponse
@@ -463,4 +482,19 @@ internal sealed record SurveyDashboardCustomInputValueRow
     public decimal ScorePercentage { get; init; }
 
     public int MaxScore { get; init; }
+}
+
+internal sealed record ResolvedSurveyDashboardTemplateFilter
+{
+    public Guid TemplateId { get; init; }
+
+    public SurveyDashboardTemplateKind TemplateKind { get; init; }
+
+    public SurveyDashboardSource DashboardSource { get; init; }
+
+    public Guid BranchId { get; init; }
+
+    public string NameEn { get; init; } = string.Empty;
+
+    public string? NameAr { get; init; }
 }
