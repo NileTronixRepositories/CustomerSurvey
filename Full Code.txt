@@ -10649,6 +10649,9 @@ namespace CustomerSurvey.Api.Attribute
 
 ----- E:\Customer Servey\CustomerSurvey.Api\bin\Release\net8.0\appsettings.Development.json -----
 {
+  "PasswordPolicy": {
+    "ExpiryDays": 30
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
@@ -10684,6 +10687,9 @@ namespace CustomerSurvey.Api.Attribute
     "Issuer": "CustomerSurvey",
     "Audience": "CustomerSurvey",
     "ExpiryMinutes": 3000
+  },
+  "PasswordPolicy": {
+    "ExpiryDays": 30
   },
   "Smtp": {
     "Host": "smtp.gmail.com",
@@ -10809,6 +10815,7 @@ namespace CustomerSurvey.Api.Attribute
     ]
   }
 }
+
 ----- E:\Customer Servey\CustomerSurvey.Api\bin\Release\net8.0\CustomerSurvey.Api.deps.json -----
 {
   "runtimeTarget": {
@@ -21630,6 +21637,7 @@ using CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponsesPagination;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
+using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardTemplatesSelection;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21772,6 +21780,19 @@ namespace CustomerSurvey.Api.Controllers
     CancellationToken cancellationToken)
         {
             query ??= new GetSurveyDashboardQuery();
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("survey-dashboard/templates-selection")]
+        [Permission("Reports.ViewBranchReports")]
+        public async Task<IActionResult> GetSurveyDashboardTemplatesSelection(
+    [FromQuery] GetSurveyDashboardTemplatesSelectionQuery query,
+    CancellationToken cancellationToken)
+        {
+            query ??= new GetSurveyDashboardTemplatesSelectionQuery();
 
             var result = await sender.Send(query, cancellationToken);
 
@@ -25930,7 +25951,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CustomerSurvey.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e49588974ee0950cc468c6a4aed73349878e09e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc83172d0604128125aa77e01c786f6870a7eea4")]
 [assembly: System.Reflection.AssemblyProductAttribute("CustomerSurvey.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CustomerSurvey.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -26538,15 +26559,15 @@ using System.Reflection;
 
 
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Debug\net8.0\CustomerSurvey.Api.sourcelink.json -----
-{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/2e49588974ee0950cc468c6a4aed73349878e09e/*"}}
+{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/bc83172d0604128125aa77e01c786f6870a7eea4/*"}}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Debug\net8.0\rjimswa.dswa.cache.json -----
 {"GlobalPropertiesHash":"wbVD3bwA2KSxIFhTUwv9RWprq8Hn2miDf+qXDV3hb4c=","FingerprintPatternsHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","PropertyOverridesHash":"R7Rea/YQmcweqCbKffD9oUelggfpJQX85r65aYZsas0=","InputHashes":["Be0aLiaAG48\u002BQu2JY6G52OTT6IeqMVbvb3UsGbXsTpk="],"CachedAssets":{},"CachedCopyCandidates":{}}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json -----
-{"GlobalPropertiesHash":"vE5aCT4qPsJcjsMkMHklzaVSUKoFK6tbsjYpgnA8gVc=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["48V\u002BPn/mBZNm3Nq8o0jGrOw6JISeuBWwz87/NwTEmHo=","Zptp2LYsiqweYKuHR8O7TUH\u002BS2Ol4ghizNklKwMAdYM=","IhxEqLmdGffOvNdAChVvx8yg/R0Wup\u002BM5/\u002BR8ba9riI=","JEyP9hkH\u002BTSevUBfzvXXDH0NE9XhgUX6Ehx6Z/nD56Q=","zYRF/qdJ883g/N9eL9nl3DrFN7cnzcqvCyN1\u002Bqm9920=","qYROMg9Q6Xuf7qudH/mDc0cCZj/XJMeRXCNy7QMqUHE=","EszbAwI//9szwK8mBmhRhCF\u002B2IhkpdBtwAPoQkNu5rs=","tQnjq/xf1UK\u002BValqyVFGiQX\u002BMPF250XtwvEg6Zkl4dA=","VyvrUr73o\u002B9GS\u002BENzh7r9B6yxtajk5bTCJErh5g3qDg=","dmgdOE2KNUzxk8tQdg4Olt7nKzRzQnNou/edW\u002BMNP54=","aknpjyzkUMojDVk2XcrK189ai4R2n7NkKcqF1a3XeOA=","xObUunjeHCo2oLRBF2EdX312TZ20zx15VXwaLaUrJb0=","Ah1z\u002BGXwdWHvtN4dzn05XsbrH9U4qLQdctHezQpS3H8=","T18ZBdD3jdoVTFEQw8bDJBo4Yt/x87XbUzf96NhEMQ8=","gaXJsVbd1G26JkjJ8ZhFc8h2\u002BbAhbv7TNK1kw580QqA=","mry6FXht/rx/O3Bh5lZJqc7ag//rHYZIMu2gphOYCFs=","TQzIh0KzpXJaNMkHDUgzB5\u002Bg33VkdbemV9vOkI6708E=","ylvOV4l/zWcMvoDuF7JGPFKf0CZG5uOvpHNImrZNrg4=","hEzEcB\u002Bco\u002B9W0HfdzRfN/32lEfvo65WiPDrzyl2OE5M=","w9tuUNTwjtBc5RzO0oZsTw3mmxPu2oHoyWgkQY6DXAU="],"CachedAssets":{},"CachedCopyCandidates":{}}
+{"GlobalPropertiesHash":"vE5aCT4qPsJcjsMkMHklzaVSUKoFK6tbsjYpgnA8gVc=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["48V\u002BPn/mBZNm3Nq8o0jGrOw6JISeuBWwz87/NwTEmHo=","EjNQscXXoM6zKPtTtbNojwD4O5zoZB0KADdR3D5/Ajs=","9/p7FjQRCCpQwATbnJB/kxtIBy6dpLilzoaq7/f/lsU=","JEyP9hkH\u002BTSevUBfzvXXDH0NE9XhgUX6Ehx6Z/nD56Q=","zYRF/qdJ883g/N9eL9nl3DrFN7cnzcqvCyN1\u002Bqm9920=","qYROMg9Q6Xuf7qudH/mDc0cCZj/XJMeRXCNy7QMqUHE=","EszbAwI//9szwK8mBmhRhCF\u002B2IhkpdBtwAPoQkNu5rs=","tQnjq/xf1UK\u002BValqyVFGiQX\u002BMPF250XtwvEg6Zkl4dA=","VyvrUr73o\u002B9GS\u002BENzh7r9B6yxtajk5bTCJErh5g3qDg=","dmgdOE2KNUzxk8tQdg4Olt7nKzRzQnNou/edW\u002BMNP54=","aknpjyzkUMojDVk2XcrK189ai4R2n7NkKcqF1a3XeOA=","OxYjBzwUQVaqWKac3aZbGUSt9ASRJ58Gp7y6DsF78N0=","Ah1z\u002BGXwdWHvtN4dzn05XsbrH9U4qLQdctHezQpS3H8=","\u002B7xN\u002BAUFd34ac8Q6UXuKIHax414zUYb2UZRg9GerQY8=","mqfpShA1yLgvAHhPVB/AuoO6gd3A\u002BoKTZsvnQ\u002BEB4C4=","mry6FXht/rx/O3Bh5lZJqc7ag//rHYZIMu2gphOYCFs=","TQzIh0KzpXJaNMkHDUgzB5\u002Bg33VkdbemV9vOkI6708E=","ylvOV4l/zWcMvoDuF7JGPFKf0CZG5uOvpHNImrZNrg4=","hEzEcB\u002Bco\u002B9W0HfdzRfN/32lEfvo65WiPDrzyl2OE5M=","AHRqmMV1zmN/90mBvjjHvSufdyvFNo5uwKjlD3hPO/E="],"CachedAssets":{},"CachedCopyCandidates":{}}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Debug\net8.0\rjsmrazor.dswa.cache.json -----
-{"GlobalPropertiesHash":"2DYTVYft3uCbZqMqjmDUjKgDjDSPNSiK8OAj1ECvHKE=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["48V\u002BPn/mBZNm3Nq8o0jGrOw6JISeuBWwz87/NwTEmHo=","Zptp2LYsiqweYKuHR8O7TUH\u002BS2Ol4ghizNklKwMAdYM=","IhxEqLmdGffOvNdAChVvx8yg/R0Wup\u002BM5/\u002BR8ba9riI=","JEyP9hkH\u002BTSevUBfzvXXDH0NE9XhgUX6Ehx6Z/nD56Q=","zYRF/qdJ883g/N9eL9nl3DrFN7cnzcqvCyN1\u002Bqm9920=","qYROMg9Q6Xuf7qudH/mDc0cCZj/XJMeRXCNy7QMqUHE=","EszbAwI//9szwK8mBmhRhCF\u002B2IhkpdBtwAPoQkNu5rs=","tQnjq/xf1UK\u002BValqyVFGiQX\u002BMPF250XtwvEg6Zkl4dA=","VyvrUr73o\u002B9GS\u002BENzh7r9B6yxtajk5bTCJErh5g3qDg=","dmgdOE2KNUzxk8tQdg4Olt7nKzRzQnNou/edW\u002BMNP54=","aknpjyzkUMojDVk2XcrK189ai4R2n7NkKcqF1a3XeOA=","xObUunjeHCo2oLRBF2EdX312TZ20zx15VXwaLaUrJb0=","Ah1z\u002BGXwdWHvtN4dzn05XsbrH9U4qLQdctHezQpS3H8=","T18ZBdD3jdoVTFEQw8bDJBo4Yt/x87XbUzf96NhEMQ8=","gaXJsVbd1G26JkjJ8ZhFc8h2\u002BbAhbv7TNK1kw580QqA=","mry6FXht/rx/O3Bh5lZJqc7ag//rHYZIMu2gphOYCFs=","TQzIh0KzpXJaNMkHDUgzB5\u002Bg33VkdbemV9vOkI6708E=","ylvOV4l/zWcMvoDuF7JGPFKf0CZG5uOvpHNImrZNrg4=","hEzEcB\u002Bco\u002B9W0HfdzRfN/32lEfvo65WiPDrzyl2OE5M=","w9tuUNTwjtBc5RzO0oZsTw3mmxPu2oHoyWgkQY6DXAU="],"CachedAssets":{},"CachedCopyCandidates":{}}
+{"GlobalPropertiesHash":"2DYTVYft3uCbZqMqjmDUjKgDjDSPNSiK8OAj1ECvHKE=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["48V\u002BPn/mBZNm3Nq8o0jGrOw6JISeuBWwz87/NwTEmHo=","EjNQscXXoM6zKPtTtbNojwD4O5zoZB0KADdR3D5/Ajs=","9/p7FjQRCCpQwATbnJB/kxtIBy6dpLilzoaq7/f/lsU=","JEyP9hkH\u002BTSevUBfzvXXDH0NE9XhgUX6Ehx6Z/nD56Q=","zYRF/qdJ883g/N9eL9nl3DrFN7cnzcqvCyN1\u002Bqm9920=","qYROMg9Q6Xuf7qudH/mDc0cCZj/XJMeRXCNy7QMqUHE=","EszbAwI//9szwK8mBmhRhCF\u002B2IhkpdBtwAPoQkNu5rs=","tQnjq/xf1UK\u002BValqyVFGiQX\u002BMPF250XtwvEg6Zkl4dA=","VyvrUr73o\u002B9GS\u002BENzh7r9B6yxtajk5bTCJErh5g3qDg=","dmgdOE2KNUzxk8tQdg4Olt7nKzRzQnNou/edW\u002BMNP54=","aknpjyzkUMojDVk2XcrK189ai4R2n7NkKcqF1a3XeOA=","OxYjBzwUQVaqWKac3aZbGUSt9ASRJ58Gp7y6DsF78N0=","Ah1z\u002BGXwdWHvtN4dzn05XsbrH9U4qLQdctHezQpS3H8=","\u002B7xN\u002BAUFd34ac8Q6UXuKIHax414zUYb2UZRg9GerQY8=","mqfpShA1yLgvAHhPVB/AuoO6gd3A\u002BoKTZsvnQ\u002BEB4C4=","mry6FXht/rx/O3Bh5lZJqc7ag//rHYZIMu2gphOYCFs=","TQzIh0KzpXJaNMkHDUgzB5\u002Bg33VkdbemV9vOkI6708E=","ylvOV4l/zWcMvoDuF7JGPFKf0CZG5uOvpHNImrZNrg4=","hEzEcB\u002Bco\u002B9W0HfdzRfN/32lEfvo65WiPDrzyl2OE5M=","AHRqmMV1zmN/90mBvjjHvSufdyvFNo5uwKjlD3hPO/E="],"CachedAssets":{},"CachedCopyCandidates":{}}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Debug\net8.0\rpswa.dswa.cache.json -----
-{"GlobalPropertiesHash":"v08lqzmpBuQFK4f5f98crk+W8WYZm95arTmGnx6O8MY=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["48V\u002BPn/mBZNm3Nq8o0jGrOw6JISeuBWwz87/NwTEmHo=","Zptp2LYsiqweYKuHR8O7TUH\u002BS2Ol4ghizNklKwMAdYM=","IhxEqLmdGffOvNdAChVvx8yg/R0Wup\u002BM5/\u002BR8ba9riI="],"CachedAssets":{"48V\u002BPn/mBZNm3Nq8o0jGrOw6JISeuBWwz87/NwTEmHo=":{"Identity":"E:\\Customer Servey\\CustomerSurvey.Api\\wwwroot\\images\\NiletronixLogo.png","SourceId":"CustomerSurvey.Api","SourceType":"Discovered","ContentRoot":"E:\\Customer Servey\\CustomerSurvey.Api\\wwwroot\\","BasePath":"/","RelativePath":"images/NiletronixLogo#[.{fingerprint}]?.png","AssetKind":"All","AssetMode":"All","AssetRole":"Primary","AssetMergeBehavior":null,"AssetMergeSource":"","RelatedAsset":null,"AssetTraitName":null,"AssetTraitValue":null,"Fingerprint":"y8itzgpo5q","Integrity":"XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo=","CopyToOutputDirectory":"Never","CopyToPublishDirectory":"PreserveNewest","OriginalItemSpec":"wwwroot\\images\\NiletronixLogo.png","FileLength":133726,"LastWriteTime":"2026-06-03T16:35:52.434164+00:00"}},"CachedCopyCandidates":{}}
+{"GlobalPropertiesHash":"v08lqzmpBuQFK4f5f98crk+W8WYZm95arTmGnx6O8MY=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["48V\u002BPn/mBZNm3Nq8o0jGrOw6JISeuBWwz87/NwTEmHo=","EjNQscXXoM6zKPtTtbNojwD4O5zoZB0KADdR3D5/Ajs=","9/p7FjQRCCpQwATbnJB/kxtIBy6dpLilzoaq7/f/lsU="],"CachedAssets":{"48V\u002BPn/mBZNm3Nq8o0jGrOw6JISeuBWwz87/NwTEmHo=":{"Identity":"E:\\Customer Servey\\CustomerSurvey.Api\\wwwroot\\images\\NiletronixLogo.png","SourceId":"CustomerSurvey.Api","SourceType":"Discovered","ContentRoot":"E:\\Customer Servey\\CustomerSurvey.Api\\wwwroot\\","BasePath":"/","RelativePath":"images/NiletronixLogo#[.{fingerprint}]?.png","AssetKind":"All","AssetMode":"All","AssetRole":"Primary","AssetMergeBehavior":null,"AssetMergeSource":"","RelatedAsset":null,"AssetTraitName":null,"AssetTraitValue":null,"Fingerprint":"y8itzgpo5q","Integrity":"XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo=","CopyToOutputDirectory":"Never","CopyToPublishDirectory":"PreserveNewest","OriginalItemSpec":"wwwroot\\images\\NiletronixLogo.png","FileLength":133726,"LastWriteTime":"2026-06-03T16:35:52.434164+00:00"}},"CachedCopyCandidates":{}}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Debug\net8.0\staticwebassets.build.endpoints.json -----
 {"Version":1,"ManifestType":"Build","Endpoints":[{"Route":"images/NiletronixLogo.png","AssetFile":"images/NiletronixLogo.png","Selectors":[],"ResponseHeaders":[{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"133726"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\"XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo=\""},{"Name":"Last-Modified","Value":"Wed, 03 Jun 2026 16:35:52 GMT"}],"EndpointProperties":[{"Name":"integrity","Value":"sha256-XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo="}]},{"Route":"images/NiletronixLogo.y8itzgpo5q.png","AssetFile":"images/NiletronixLogo.png","Selectors":[],"ResponseHeaders":[{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"133726"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\"XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo=\""},{"Name":"Last-Modified","Value":"Wed, 03 Jun 2026 16:35:52 GMT"}],"EndpointProperties":[{"Name":"fingerprint","Value":"y8itzgpo5q"},{"Name":"integrity","Value":"sha256-XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo="},{"Name":"label","Value":"images/NiletronixLogo.png"}]}]}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Debug\net8.0\staticwebassets.build.json -----
@@ -27403,6 +27424,61 @@ using System.Reflection;
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/SelectBranchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/users/{applicationUserId}/change-password": {
+      "put": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "applicationUserId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Response language. Use ar for Arabic, en for English.",
+            "schema": {
+              "enum": [
+                "ar",
+                "en"
+              ],
+              "type": "string",
+              "default": "en"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
               }
             }
           }
@@ -32102,6 +32178,20 @@ using System.Reflection;
         ],
         "type": "string"
       },
+      "ChangePasswordRequest": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "confirmNewPassword": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "CopyTemplateToBranchRequest": {
         "type": "object",
         "properties": {
@@ -34444,6 +34534,9 @@ using System.Reflection;
 
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\PubTmp\Out\appsettings.Development.json -----
 {
+  "PasswordPolicy": {
+    "ExpiryDays": 30
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
@@ -34479,6 +34572,9 @@ using System.Reflection;
     "Issuer": "CustomerSurvey",
     "Audience": "CustomerSurvey",
     "ExpiryMinutes": 3000
+  },
+  "PasswordPolicy": {
+    "ExpiryDays": 30
   },
   "Smtp": {
     "Host": "smtp.gmail.com",
@@ -34604,6 +34700,7 @@ using System.Reflection;
     ]
   }
 }
+
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\PubTmp\Out\CustomerSurvey.Api.deps.json -----
 {
   "runtimeTarget": {
@@ -43063,6 +43160,27 @@ using System.Reflection;
     "ReturnTypes": []
   },
   {
+    "ContainingType": "CustomerSurvey.Api.Controllers.AuthController",
+    "Method": "ChangePassword",
+    "RelativePath": "api/auth/users/{applicationUserId}/change-password",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "applicationUserId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "CustomerSurvey.Api.Contracts.Auth.ChangePasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "CustomerSurvey.Api.Controllers.BranchAreasController",
     "Method": "GetPaginated",
     "RelativePath": "api/branch-areas",
@@ -45251,7 +45369,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CustomerSurvey.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e49588974ee0950cc468c6a4aed73349878e09e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc83172d0604128125aa77e01c786f6870a7eea4")]
 [assembly: System.Reflection.AssemblyProductAttribute("CustomerSurvey.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CustomerSurvey.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -53904,7 +54022,7 @@ using System.Reflection;
 
 
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\CustomerSurvey.Api.sourcelink.json -----
-{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/684a575a78ea9fbcdde401898c9844d9108ccd9a/*"}}
+{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/bc83172d0604128125aa77e01c786f6870a7eea4/*"}}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\PublishOutputs.bc2d7d5624.txt -----
 E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\PubTmp\Out\CustomerSurvey.Api.exe
 E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\PubTmp\Out\appsettings.Development.json
@@ -54388,11 +54506,11 @@ E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\PubTmp\Out\CustomerSurv
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\rjimswa.dswa.cache.json -----
 {"GlobalPropertiesHash":"wbVD3bwA2KSxIFhTUwv9RWprq8Hn2miDf+qXDV3hb4c=","FingerprintPatternsHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","PropertyOverridesHash":"R7Rea/YQmcweqCbKffD9oUelggfpJQX85r65aYZsas0=","InputHashes":["Be0aLiaAG48\u002BQu2JY6G52OTT6IeqMVbvb3UsGbXsTpk="],"CachedAssets":{},"CachedCopyCandidates":{}}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\rjsmcshtml.dswa.cache.json -----
-{"GlobalPropertiesHash":"vE5aCT4qPsJcjsMkMHklzaVSUKoFK6tbsjYpgnA8gVc=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["ztn5BO39Tx7nEQQX1UG8XY9l0t9yh6jFDFz\u002BvuCQA0k=","h225s3YpPfTFSRKZdtIAM\u002BrjALhU7PPIhSs7PsfD/Aw=","X/k24nIf2dYtEvSd2y9\u002B13pe\u002BU\u002Bfi2Ivj\u002BMpnCN2Hxg=","Fz/uVq5MD6m9jbV8pgBqZ6o1Vdn0P8XTMrAfWlHQZaM=","9K1KFTgRVFx34GGxGZC\u002BjoPxLPEaXISLakBeWdm4p88=","qP3CoxUIT4\u002BX1tS0sMY68N\u002BXNWgDddBg1qIjaWzTQyc=","mxsttblI9gb40yIpvLk\u002BQ\u002Be0OOO2zYrHUVsqB6RYWNg=","NCaHderryWHwBY\u002BPcCE7jZ1MXQB12\u002BscyBJKp1pN500=","nZQg2WP37QXCFgGKXMNfPBijxn3VVOLHsioDIEq\u002BhZI=","kPIGP0ZJXhZZl1wjhckmtFse7h6hine7eGBltwQHuUI=","NEE\u002BpdYJrERvrdZpRq5XwZJRN0aXcqFSal4gnExXM2g=","hHV6NumVOtxdBIG1ro26HEWm5rJuonNSBQJQCZuLicw=","0/N4X8sWqsu0uq6dI\u002Bc01oyw/QhQrt9lw5tT/z9ixyI=","C389gacCufkf7obs7ZjwLV1H6Rzj3utMsHRKLY9Zq50=","D681s\u002BshDXtA0\u002BNhqLjgNf4XAWQB33q5e5xMCD2eNsc=","P1KGhsfD/7Bm13mWjrtE/xfKl4tQJRUY0/vLwqhFMzk=","TQzIh0KzpXJaNMkHDUgzB5\u002Bg33VkdbemV9vOkI6708E=","ylvOV4l/zWcMvoDuF7JGPFKf0CZG5uOvpHNImrZNrg4=","hEzEcB\u002Bco\u002B9W0HfdzRfN/32lEfvo65WiPDrzyl2OE5M=","8kVkdBro\u002Bhr1zCVJ4cuPk8zKBfi8l2NOTn\u002BbUZdRDKI="],"CachedAssets":{},"CachedCopyCandidates":{}}
+{"GlobalPropertiesHash":"vE5aCT4qPsJcjsMkMHklzaVSUKoFK6tbsjYpgnA8gVc=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["ztn5BO39Tx7nEQQX1UG8XY9l0t9yh6jFDFz\u002BvuCQA0k=","EjNQscXXoM6zKPtTtbNojwD4O5zoZB0KADdR3D5/Ajs=","9/p7FjQRCCpQwATbnJB/kxtIBy6dpLilzoaq7/f/lsU=","Fz/uVq5MD6m9jbV8pgBqZ6o1Vdn0P8XTMrAfWlHQZaM=","9K1KFTgRVFx34GGxGZC\u002BjoPxLPEaXISLakBeWdm4p88=","mxsttblI9gb40yIpvLk\u002BQ\u002Be0OOO2zYrHUVsqB6RYWNg=","NCaHderryWHwBY\u002BPcCE7jZ1MXQB12\u002BscyBJKp1pN500=","nZQg2WP37QXCFgGKXMNfPBijxn3VVOLHsioDIEq\u002BhZI=","kPIGP0ZJXhZZl1wjhckmtFse7h6hine7eGBltwQHuUI=","NEE\u002BpdYJrERvrdZpRq5XwZJRN0aXcqFSal4gnExXM2g=","hHV6NumVOtxdBIG1ro26HEWm5rJuonNSBQJQCZuLicw=","amSScsCzWJrlQmwL9gJZ30AU2MFH2prADUWNmR/zXxc=","C389gacCufkf7obs7ZjwLV1H6Rzj3utMsHRKLY9Zq50=","ds3UvW9jyh04VUZg2cVE/aihtrjpCXmTXcQ0YebNftM=","U2UmOyljQ\u002B7pdnB5jaypdz4ERKV1MsdgZlQixsMZcfY=","jVIPzTLG/pLmMJlU3raNwtyjZteMZ9pxhlBrnvDri6Y=","TQzIh0KzpXJaNMkHDUgzB5\u002Bg33VkdbemV9vOkI6708E=","ylvOV4l/zWcMvoDuF7JGPFKf0CZG5uOvpHNImrZNrg4=","hEzEcB\u002Bco\u002B9W0HfdzRfN/32lEfvo65WiPDrzyl2OE5M=","mCxUFm\u002Bdqp7wd5duNGJYfjs3SoyiUSLiHPC4Zky788Y="],"CachedAssets":{},"CachedCopyCandidates":{}}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\rjsmrazor.dswa.cache.json -----
-{"GlobalPropertiesHash":"2DYTVYft3uCbZqMqjmDUjKgDjDSPNSiK8OAj1ECvHKE=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["ztn5BO39Tx7nEQQX1UG8XY9l0t9yh6jFDFz\u002BvuCQA0k=","h225s3YpPfTFSRKZdtIAM\u002BrjALhU7PPIhSs7PsfD/Aw=","X/k24nIf2dYtEvSd2y9\u002B13pe\u002BU\u002Bfi2Ivj\u002BMpnCN2Hxg=","Fz/uVq5MD6m9jbV8pgBqZ6o1Vdn0P8XTMrAfWlHQZaM=","9K1KFTgRVFx34GGxGZC\u002BjoPxLPEaXISLakBeWdm4p88=","qP3CoxUIT4\u002BX1tS0sMY68N\u002BXNWgDddBg1qIjaWzTQyc=","mxsttblI9gb40yIpvLk\u002BQ\u002Be0OOO2zYrHUVsqB6RYWNg=","NCaHderryWHwBY\u002BPcCE7jZ1MXQB12\u002BscyBJKp1pN500=","nZQg2WP37QXCFgGKXMNfPBijxn3VVOLHsioDIEq\u002BhZI=","kPIGP0ZJXhZZl1wjhckmtFse7h6hine7eGBltwQHuUI=","NEE\u002BpdYJrERvrdZpRq5XwZJRN0aXcqFSal4gnExXM2g=","hHV6NumVOtxdBIG1ro26HEWm5rJuonNSBQJQCZuLicw=","0/N4X8sWqsu0uq6dI\u002Bc01oyw/QhQrt9lw5tT/z9ixyI=","C389gacCufkf7obs7ZjwLV1H6Rzj3utMsHRKLY9Zq50=","D681s\u002BshDXtA0\u002BNhqLjgNf4XAWQB33q5e5xMCD2eNsc=","P1KGhsfD/7Bm13mWjrtE/xfKl4tQJRUY0/vLwqhFMzk=","TQzIh0KzpXJaNMkHDUgzB5\u002Bg33VkdbemV9vOkI6708E=","ylvOV4l/zWcMvoDuF7JGPFKf0CZG5uOvpHNImrZNrg4=","hEzEcB\u002Bco\u002B9W0HfdzRfN/32lEfvo65WiPDrzyl2OE5M=","8kVkdBro\u002Bhr1zCVJ4cuPk8zKBfi8l2NOTn\u002BbUZdRDKI="],"CachedAssets":{},"CachedCopyCandidates":{}}
+{"GlobalPropertiesHash":"2DYTVYft3uCbZqMqjmDUjKgDjDSPNSiK8OAj1ECvHKE=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["ztn5BO39Tx7nEQQX1UG8XY9l0t9yh6jFDFz\u002BvuCQA0k=","EjNQscXXoM6zKPtTtbNojwD4O5zoZB0KADdR3D5/Ajs=","9/p7FjQRCCpQwATbnJB/kxtIBy6dpLilzoaq7/f/lsU=","Fz/uVq5MD6m9jbV8pgBqZ6o1Vdn0P8XTMrAfWlHQZaM=","9K1KFTgRVFx34GGxGZC\u002BjoPxLPEaXISLakBeWdm4p88=","mxsttblI9gb40yIpvLk\u002BQ\u002Be0OOO2zYrHUVsqB6RYWNg=","NCaHderryWHwBY\u002BPcCE7jZ1MXQB12\u002BscyBJKp1pN500=","nZQg2WP37QXCFgGKXMNfPBijxn3VVOLHsioDIEq\u002BhZI=","kPIGP0ZJXhZZl1wjhckmtFse7h6hine7eGBltwQHuUI=","NEE\u002BpdYJrERvrdZpRq5XwZJRN0aXcqFSal4gnExXM2g=","hHV6NumVOtxdBIG1ro26HEWm5rJuonNSBQJQCZuLicw=","amSScsCzWJrlQmwL9gJZ30AU2MFH2prADUWNmR/zXxc=","C389gacCufkf7obs7ZjwLV1H6Rzj3utMsHRKLY9Zq50=","ds3UvW9jyh04VUZg2cVE/aihtrjpCXmTXcQ0YebNftM=","U2UmOyljQ\u002B7pdnB5jaypdz4ERKV1MsdgZlQixsMZcfY=","jVIPzTLG/pLmMJlU3raNwtyjZteMZ9pxhlBrnvDri6Y=","TQzIh0KzpXJaNMkHDUgzB5\u002Bg33VkdbemV9vOkI6708E=","ylvOV4l/zWcMvoDuF7JGPFKf0CZG5uOvpHNImrZNrg4=","hEzEcB\u002Bco\u002B9W0HfdzRfN/32lEfvo65WiPDrzyl2OE5M=","mCxUFm\u002Bdqp7wd5duNGJYfjs3SoyiUSLiHPC4Zky788Y="],"CachedAssets":{},"CachedCopyCandidates":{}}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\rpswa.dswa.cache.json -----
-{"GlobalPropertiesHash":"v08lqzmpBuQFK4f5f98crk+W8WYZm95arTmGnx6O8MY=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["ztn5BO39Tx7nEQQX1UG8XY9l0t9yh6jFDFz\u002BvuCQA0k=","Zptp2LYsiqweYKuHR8O7TUH\u002BS2Ol4ghizNklKwMAdYM=","IhxEqLmdGffOvNdAChVvx8yg/R0Wup\u002BM5/\u002BR8ba9riI="],"CachedAssets":{"ztn5BO39Tx7nEQQX1UG8XY9l0t9yh6jFDFz\u002BvuCQA0k=":{"Identity":"E:\\Customer Servey\\CustomerSurvey.Api\\wwwroot\\images\\NiletronixLogo.png","SourceId":"CustomerSurvey.Api","SourceType":"Discovered","ContentRoot":"E:\\Customer Servey\\CustomerSurvey.Api\\wwwroot\\","BasePath":"/","RelativePath":"images/NiletronixLogo#[.{fingerprint}]?.png","AssetKind":"All","AssetMode":"All","AssetRole":"Primary","AssetMergeBehavior":null,"AssetMergeSource":"","RelatedAsset":null,"AssetTraitName":null,"AssetTraitValue":null,"Fingerprint":"y8itzgpo5q","Integrity":"XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo=","CopyToOutputDirectory":"Never","CopyToPublishDirectory":"PreserveNewest","OriginalItemSpec":"wwwroot\\images\\NiletronixLogo.png","FileLength":133726,"LastWriteTime":"2026-06-03T16:35:52.434164+00:00"}},"CachedCopyCandidates":{}}
+{"GlobalPropertiesHash":"v08lqzmpBuQFK4f5f98crk+W8WYZm95arTmGnx6O8MY=","FingerprintPatternsHash":"gq3WsqcKBUGTSNle7RKKyXRIwh7M8ccEqOqYvIzoM04=","PropertyOverridesHash":"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=","InputHashes":["ztn5BO39Tx7nEQQX1UG8XY9l0t9yh6jFDFz\u002BvuCQA0k=","EjNQscXXoM6zKPtTtbNojwD4O5zoZB0KADdR3D5/Ajs=","9/p7FjQRCCpQwATbnJB/kxtIBy6dpLilzoaq7/f/lsU="],"CachedAssets":{"ztn5BO39Tx7nEQQX1UG8XY9l0t9yh6jFDFz\u002BvuCQA0k=":{"Identity":"E:\\Customer Servey\\CustomerSurvey.Api\\wwwroot\\images\\NiletronixLogo.png","SourceId":"CustomerSurvey.Api","SourceType":"Discovered","ContentRoot":"E:\\Customer Servey\\CustomerSurvey.Api\\wwwroot\\","BasePath":"/","RelativePath":"images/NiletronixLogo#[.{fingerprint}]?.png","AssetKind":"All","AssetMode":"All","AssetRole":"Primary","AssetMergeBehavior":null,"AssetMergeSource":"","RelatedAsset":null,"AssetTraitName":null,"AssetTraitValue":null,"Fingerprint":"y8itzgpo5q","Integrity":"XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo=","CopyToOutputDirectory":"Never","CopyToPublishDirectory":"PreserveNewest","OriginalItemSpec":"wwwroot\\images\\NiletronixLogo.png","FileLength":133726,"LastWriteTime":"2026-06-03T16:35:52.434164+00:00"}},"CachedCopyCandidates":{}}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\staticwebassets.build.endpoints.json -----
 {"Version":1,"ManifestType":"Build","Endpoints":[{"Route":"images/NiletronixLogo.png","AssetFile":"images/NiletronixLogo.png","Selectors":[],"ResponseHeaders":[{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"133726"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\"XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo=\""},{"Name":"Last-Modified","Value":"Wed, 03 Jun 2026 16:35:52 GMT"}],"EndpointProperties":[{"Name":"integrity","Value":"sha256-XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo="}]},{"Route":"images/NiletronixLogo.y8itzgpo5q.png","AssetFile":"images/NiletronixLogo.png","Selectors":[],"ResponseHeaders":[{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"133726"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\"XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo=\""},{"Name":"Last-Modified","Value":"Wed, 03 Jun 2026 16:35:52 GMT"}],"EndpointProperties":[{"Name":"fingerprint","Value":"y8itzgpo5q"},{"Name":"integrity","Value":"sha256-XisEVBCfRIu8xPKuA41c0Ld3iwrIakbCHi93mjgCDCo="},{"Name":"label","Value":"images/NiletronixLogo.png"}]}]}
 ----- E:\Customer Servey\CustomerSurvey.Api\obj\Release\net8.0\staticwebassets.build.json -----
@@ -102129,7 +102247,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CustomerSurvey.infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e49588974ee0950cc468c6a4aed73349878e09e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc83172d0604128125aa77e01c786f6870a7eea4")]
 [assembly: System.Reflection.AssemblyProductAttribute("CustomerSurvey.infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CustomerSurvey.infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -102177,7 +102295,7 @@ global using System.Threading;
 global using System.Threading.Tasks;
 
 ----- E:\Customer Servey\CustomerSurvey.infrastructure\obj\Debug\net8.0\CustomerSurvey.infrastructure.sourcelink.json -----
-{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/2e49588974ee0950cc468c6a4aed73349878e09e/*"}}
+{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/bc83172d0604128125aa77e01c786f6870a7eea4/*"}}
 ----- E:\Customer Servey\CustomerSurvey.infrastructure\obj\Release\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs -----
 // <autogenerated />
 using System;
@@ -102201,7 +102319,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CustomerSurvey.infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e49588974ee0950cc468c6a4aed73349878e09e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc83172d0604128125aa77e01c786f6870a7eea4")]
 [assembly: System.Reflection.AssemblyProductAttribute("CustomerSurvey.infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CustomerSurvey.infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -102249,7 +102367,7 @@ global using System.Threading;
 global using System.Threading.Tasks;
 
 ----- E:\Customer Servey\CustomerSurvey.infrastructure\obj\Release\net8.0\CustomerSurvey.infrastructure.sourcelink.json -----
-{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/684a575a78ea9fbcdde401898c9844d9108ccd9a/*"}}
+{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/bc83172d0604128125aa77e01c786f6870a7eea4/*"}}
 ----- E:\Customer Servey\CustomerSurvey.infrastructure\obj\CustomerSurvey.infrastructure.csproj.nuget.dgspec.json -----
 {
   "format": 1,
@@ -122343,7 +122461,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CustomerSurvey.Domain")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute(" ")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e49588974ee0950cc468c6a4aed73349878e09e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc83172d0604128125aa77e01c786f6870a7eea4")]
 [assembly: System.Reflection.AssemblyProductAttribute("CustomerSurvey.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CustomerSurvey.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -122374,7 +122492,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CustomerSurvey.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e49588974ee0950cc468c6a4aed73349878e09e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc83172d0604128125aa77e01c786f6870a7eea4")]
 [assembly: System.Reflection.AssemblyProductAttribute("CustomerSurvey.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CustomerSurvey.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -122417,7 +122535,7 @@ global using System.Threading;
 global using System.Threading.Tasks;
 
 ----- E:\Customer Servey\CustomerSurvey.Domain\obj\Debug\net8.0\CustomerSurvey.Domain.sourcelink.json -----
-{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/2e49588974ee0950cc468c6a4aed73349878e09e/*"}}
+{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/bc83172d0604128125aa77e01c786f6870a7eea4/*"}}
 ----- E:\Customer Servey\CustomerSurvey.Domain\obj\Release\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs -----
 // <autogenerated />
 using System;
@@ -122441,7 +122559,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CustomerSurvey.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e49588974ee0950cc468c6a4aed73349878e09e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc83172d0604128125aa77e01c786f6870a7eea4")]
 [assembly: System.Reflection.AssemblyProductAttribute("CustomerSurvey.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CustomerSurvey.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -122483,7 +122601,7 @@ global using System.Threading;
 global using System.Threading.Tasks;
 
 ----- E:\Customer Servey\CustomerSurvey.Domain\obj\Release\net8.0\CustomerSurvey.Domain.sourcelink.json -----
-{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/684a575a78ea9fbcdde401898c9844d9108ccd9a/*"}}
+{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/bc83172d0604128125aa77e01c786f6870a7eea4/*"}}
 ----- E:\Customer Servey\CustomerSurvey.Domain\obj\CustomerSurvey.Domain.csproj.nuget.dgspec.json -----
 {
   "format": 1,
@@ -127439,6 +127557,24 @@ global using System.Threading.Tasks;
   <data name="GetSurveyDashboard_CriticalScoreThreshold_Invalid" xml:space="preserve">
     <value>حد التقييم الحرج يجب أن يكون بين 0 و 100.</value>
   </data>
+  <data name="SurveyDashboardTemplatesSelection_BranchId_Required_ForSuperAdmin" xml:space="preserve">
+    <value>يجب تحديد الفرع عند عرض قوالب الداشبورد بواسطة مدير النظام.</value>
+  </data>
+  <data name="SurveyDashboard_TemplateFilter_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القالب المحدد داخل نطاق الفرع الحالي.</value>
+  </data>
+  <data name="SurveyDashboard_TemplateFilter_Ambiguous" xml:space="preserve">
+    <value>لا يمكن إرسال templateId و anonymousTemplateId معًا في نفس الطلب.</value>
+  </data>
+  <data name="SurveyDashboard_TemplateFilter_SourceMismatch" xml:space="preserve">
+    <value>نوع القالب المحدد لا يتوافق مع مصدر بيانات الداشبورد المطلوب.</value>
+  </data>
+  <data name="SurveyDashboardTemplatesSelection_TemplateKind_Invalid" xml:space="preserve">
+    <value>نوع القالب المحدد غير صحيح.</value>
+  </data>
+  <data name="SurveyDashboardTemplatesSelection_CurrentBranchScope_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على نطاق الفرع الحالي.</value>
+  </data>
   <data name="GetDepartmentDashboard_CurrentDepartmentAdmin_NotFound" xml:space="preserve">
     <value>لم يتم العثور على حساب مدير القسم الحالي.</value>
   </data>
@@ -130759,6 +130895,60 @@ namespace CustomerSurvey.Domain.Resources {
         public static string GetSurveyDashboard_Unauthenticated {
             get {
                 return ResourceManager.GetString("GetSurveyDashboard_Unauthenticated", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Branch id is required when viewing survey dashboard templates as Super Admin..
+        /// </summary>
+        public static string SurveyDashboardTemplatesSelection_BranchId_Required_ForSuperAdmin {
+            get {
+                return ResourceManager.GetString("SurveyDashboardTemplatesSelection_BranchId_Required_ForSuperAdmin", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Current branch scope was not found..
+        /// </summary>
+        public static string SurveyDashboardTemplatesSelection_CurrentBranchScope_NotFound {
+            get {
+                return ResourceManager.GetString("SurveyDashboardTemplatesSelection_CurrentBranchScope_NotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The selected template kind is invalid..
+        /// </summary>
+        public static string SurveyDashboardTemplatesSelection_TemplateKind_Invalid {
+            get {
+                return ResourceManager.GetString("SurveyDashboardTemplatesSelection_TemplateKind_Invalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to templateId and anonymousTemplateId cannot be sent together in the same request..
+        /// </summary>
+        public static string SurveyDashboard_TemplateFilter_Ambiguous {
+            get {
+                return ResourceManager.GetString("SurveyDashboard_TemplateFilter_Ambiguous", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The selected template was not found within the current branch scope..
+        /// </summary>
+        public static string SurveyDashboard_TemplateFilter_NotFound {
+            get {
+                return ResourceManager.GetString("SurveyDashboard_TemplateFilter_NotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The selected template type does not match the requested dashboard source..
+        /// </summary>
+        public static string SurveyDashboard_TemplateFilter_SourceMismatch {
+            get {
+                return ResourceManager.GetString("SurveyDashboard_TemplateFilter_SourceMismatch", resourceCulture);
             }
         }
 
@@ -137716,6 +137906,24 @@ namespace CustomerSurvey.Domain.Resources {
   </data>
   <data name="GetSurveyDashboard_CriticalScoreThreshold_Invalid" xml:space="preserve">
     <value>Critical score threshold must be between 0 and 100.</value>
+  </data>
+  <data name="SurveyDashboardTemplatesSelection_BranchId_Required_ForSuperAdmin" xml:space="preserve">
+    <value>Branch id is required when viewing survey dashboard templates as Super Admin.</value>
+  </data>
+  <data name="SurveyDashboard_TemplateFilter_NotFound" xml:space="preserve">
+    <value>The selected template was not found within the current branch scope.</value>
+  </data>
+  <data name="SurveyDashboard_TemplateFilter_Ambiguous" xml:space="preserve">
+    <value>templateId and anonymousTemplateId cannot be sent together in the same request.</value>
+  </data>
+  <data name="SurveyDashboard_TemplateFilter_SourceMismatch" xml:space="preserve">
+    <value>The selected template type does not match the requested dashboard source.</value>
+  </data>
+  <data name="SurveyDashboardTemplatesSelection_TemplateKind_Invalid" xml:space="preserve">
+    <value>The selected template kind is invalid.</value>
+  </data>
+  <data name="SurveyDashboardTemplatesSelection_CurrentBranchScope_NotFound" xml:space="preserve">
+    <value>Current branch scope was not found.</value>
   </data>
   <data name="GetDepartmentDashboard_CurrentDepartmentAdmin_NotFound" xml:space="preserve">
     <value>Current Department Admin profile was not found.</value>
@@ -178111,7 +178319,9 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 internal sealed class GetSurveyDashboardAnonymousTemplatesSpec
     : Specification<AnonymousTemplate, SurveyDashboardTemplateRow>
 {
-    public GetSurveyDashboardAnonymousTemplatesSpec(Guid? branchId)
+    public GetSurveyDashboardAnonymousTemplatesSpec(
+        Guid? branchId,
+        Guid? anonymousTemplateId = null)
     {
         UseNoTracking();
 
@@ -178124,6 +178334,11 @@ internal sealed class GetSurveyDashboardAnonymousTemplatesSpec
             AddCriteria(x => x.BranchId == branchId.Value);
         }
 
+        if (anonymousTemplateId.HasValue)
+        {
+            AddCriteria(x => x.Id == anonymousTemplateId.Value);
+        }
+
         Select(x => new SurveyDashboardTemplateRow
         {
             Source = SurveyDashboardSource.Anonymous,
@@ -178134,6 +178349,37 @@ internal sealed class GetSurveyDashboardAnonymousTemplatesSpec
             BranchNameEn = x.Branch!.NameEn,
             BranchNameAr = x.Branch.NameAr,
             IsActive = x.IsActive
+        });
+    }
+}
+
+internal sealed class GetAnonymousTemplateForSurveyDashboardFilterSpec
+    : Specification<AnonymousTemplate, ResolvedSurveyDashboardTemplateFilter>
+{
+    public GetAnonymousTemplateForSurveyDashboardFilterSpec(
+        Guid anonymousTemplateId,
+        Guid? branchId)
+    {
+        UseNoTracking();
+
+        AddCriteria(x =>
+            x.Id == anonymousTemplateId &&
+            x.Scope == AnonymousTemplateScope.Branch &&
+            x.BranchId != null);
+
+        if (branchId.HasValue)
+        {
+            AddCriteria(x => x.BranchId == branchId.Value);
+        }
+
+        Select(x => new ResolvedSurveyDashboardTemplateFilter
+        {
+            TemplateId = x.Id,
+            TemplateKind = SurveyDashboardTemplateKind.Anonymous,
+            DashboardSource = SurveyDashboardSource.Anonymous,
+            BranchId = x.BranchId!.Value,
+            NameEn = x.NameEn,
+            NameAr = x.NameAr
         });
     }
 }
@@ -178327,6 +178573,12 @@ public enum SurveyDashboardSource
     Anonymous = 3
 }
 
+public enum SurveyDashboardTemplateKind
+{
+    Authorized = 1,
+    Anonymous = 2
+}
+
 public enum DashboardGroupBy
 {
     Day = 1,
@@ -178458,8 +178710,27 @@ internal sealed class GetSurveyDashboardQueryHandler
         var fromUtc = period.From.ToDateTime(TimeOnly.MinValue);
         var toExclusiveUtc = period.To.AddDays(1).ToDateTime(TimeOnly.MinValue);
 
-        var includeInternal = request.Source is SurveyDashboardSource.All or SurveyDashboardSource.Internal;
-        var includeAnonymous = request.Source is SurveyDashboardSource.All or SurveyDashboardSource.Anonymous;
+        var templateFilterResult = await ResolveTemplateFilterAsync(
+            request,
+            scope,
+            cancellationToken);
+
+        if (templateFilterResult.Error is not null)
+        {
+            return Result<SurveyDashboardResponse>.Fail(templateFilterResult.Error);
+        }
+
+        var templateFilter = templateFilterResult.TemplateFilter;
+        var appliedSource = templateFilter?.DashboardSource ?? request.Source;
+        var internalTemplateId = templateFilter?.TemplateKind == SurveyDashboardTemplateKind.Authorized
+            ? templateFilter.TemplateId
+            : (Guid?)null;
+        var anonymousTemplateId = templateFilter?.TemplateKind == SurveyDashboardTemplateKind.Anonymous
+            ? templateFilter.TemplateId
+            : (Guid?)null;
+
+        var includeInternal = appliedSource is SurveyDashboardSource.All or SurveyDashboardSource.Internal;
+        var includeAnonymous = appliedSource is SurveyDashboardSource.All or SurveyDashboardSource.Anonymous;
 
         var templates = Array.Empty<SurveyDashboardTemplateRow>() as IReadOnlyCollection<SurveyDashboardTemplateRow>;
         var anonymousTemplates = Array.Empty<SurveyDashboardTemplateRow>() as IReadOnlyCollection<SurveyDashboardTemplateRow>;
@@ -178470,24 +178741,17 @@ internal sealed class GetSurveyDashboardQueryHandler
         if (includeInternal)
         {
             templates = await _templateReadRepository.ListAsync(
-                new GetSurveyDashboardTemplatesSpec(scope.BranchId),
+                new GetSurveyDashboardTemplatesSpec(
+                    scope.BranchId,
+                    internalTemplateId),
                 cancellationToken);
-
-            if (request.TemplateId.HasValue &&
-                !templates.Any(x => x.TemplateId == request.TemplateId.Value))
-            {
-                return Result<SurveyDashboardResponse>.Fail(new Error(
-                    Code: "Reports.SurveyDashboard.TemplateNotFound",
-                    Message: ErrorMessage.GetSurveyDashboard_Template_NotFound,
-                    Type: ErrorType.NotFound));
-            }
 
             responses.AddRange(await _surveyResponseReadRepository.ListAsync(
                 new GetSurveyDashboardInternalResponsesSpec(
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.TemplateId),
+                    internalTemplateId),
                 cancellationToken));
 
             answers.AddRange(await _surveyAnswerReadRepository.ListAsync(
@@ -178495,7 +178759,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.TemplateId),
+                    internalTemplateId),
                 cancellationToken));
 
             customInputValues.AddRange(await _surveyCustomInputValueReadRepository.ListAsync(
@@ -178503,31 +178767,24 @@ internal sealed class GetSurveyDashboardQueryHandler
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.TemplateId),
+                    internalTemplateId),
                 cancellationToken));
         }
 
         if (includeAnonymous)
         {
             anonymousTemplates = await _anonymousTemplateReadRepository.ListAsync(
-                new GetSurveyDashboardAnonymousTemplatesSpec(scope.BranchId),
+                new GetSurveyDashboardAnonymousTemplatesSpec(
+                    scope.BranchId,
+                    anonymousTemplateId),
                 cancellationToken);
-
-            if (request.AnonymousTemplateId.HasValue &&
-                !anonymousTemplates.Any(x => x.TemplateId == request.AnonymousTemplateId.Value))
-            {
-                return Result<SurveyDashboardResponse>.Fail(new Error(
-                    Code: "Reports.SurveyDashboard.AnonymousTemplateNotFound",
-                    Message: ErrorMessage.GetSurveyDashboard_AnonymousTemplate_NotFound,
-                    Type: ErrorType.NotFound));
-            }
 
             responses.AddRange(await _anonymousSurveyResponseReadRepository.ListAsync(
                 new GetSurveyDashboardAnonymousResponsesSpec(
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.AnonymousTemplateId),
+                    anonymousTemplateId),
                 cancellationToken));
 
             answers.AddRange(await _anonymousSurveyAnswerReadRepository.ListAsync(
@@ -178535,7 +178792,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.AnonymousTemplateId),
+                    anonymousTemplateId),
                 cancellationToken));
 
             customInputValues.AddRange(await _anonymousCustomInputValueReadRepository.ListAsync(
@@ -178543,7 +178800,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                     scope.BranchId,
                     fromUtc,
                     toExclusiveUtc,
-                    request.AnonymousTemplateId),
+                    anonymousTemplateId),
                 cancellationToken));
         }
 
@@ -178552,6 +178809,8 @@ internal sealed class GetSurveyDashboardQueryHandler
             actor,
             scope,
             period,
+            appliedSource,
+            templateFilter,
             templates,
             anonymousTemplates,
             responses,
@@ -178658,46 +178917,109 @@ internal sealed class GetSurveyDashboardQueryHandler
             Branches: branches));
     }
 
-    private static Error? ValidateSourceFilters(GetSurveyDashboardQuery request)
+    private async Task<TemplateFilterResolveResult> ResolveTemplateFilterAsync(
+        GetSurveyDashboardQuery request,
+        ResolvedSurveyDashboardScope scope,
+        CancellationToken cancellationToken)
     {
-        if (request.Source == SurveyDashboardSource.All)
+        if (request.TemplateId.HasValue)
         {
-            if (request.TemplateId.HasValue)
+            var authorizedTemplate = await _templateReadRepository.FirstOrDefaultAsync(
+                new GetAuthorizedTemplateForSurveyDashboardFilterSpec(
+                    request.TemplateId.Value,
+                    scope.BranchId),
+                cancellationToken);
+
+            if (authorizedTemplate is not null)
             {
-                return new Error(
-                    Code: "Reports.SurveyDashboard.TemplateIdNotAllowed",
-                    Message: ErrorMessage.GetSurveyDashboard_TemplateId_NotAllowed,
-                    Type: ErrorType.Validation);
+                var sourceMismatch = ValidateResolvedTemplateSource(
+                    request.Source,
+                    authorizedTemplate);
+
+                return sourceMismatch is not null
+                    ? TemplateFilterResolveResult.Fail(sourceMismatch)
+                    : TemplateFilterResolveResult.Ok(authorizedTemplate);
             }
 
-            if (request.AnonymousTemplateId.HasValue)
+            var anonymousTemplate = await _anonymousTemplateReadRepository.FirstOrDefaultAsync(
+                new GetAnonymousTemplateForSurveyDashboardFilterSpec(
+                    request.TemplateId.Value,
+                    scope.BranchId),
+                cancellationToken);
+
+            if (anonymousTemplate is not null)
             {
-                return new Error(
-                    Code: "Reports.SurveyDashboard.AnonymousTemplateIdNotAllowed",
-                    Message: ErrorMessage.GetSurveyDashboard_AnonymousTemplateId_NotAllowed,
-                    Type: ErrorType.Validation);
+                var sourceMismatch = ValidateResolvedTemplateSource(
+                    request.Source,
+                    anonymousTemplate);
+
+                return sourceMismatch is not null
+                    ? TemplateFilterResolveResult.Fail(sourceMismatch)
+                    : TemplateFilterResolveResult.Ok(anonymousTemplate);
             }
+
+            return TemplateFilterResolveResult.Fail(new Error(
+                Code: "Reports.SurveyDashboard.TemplateFilterNotFound",
+                Message: ErrorMessage.SurveyDashboard_TemplateFilter_NotFound,
+                Type: ErrorType.NotFound));
         }
 
-        if (request.Source == SurveyDashboardSource.Internal &&
+        if (request.AnonymousTemplateId.HasValue)
+        {
+            var anonymousTemplate = await _anonymousTemplateReadRepository.FirstOrDefaultAsync(
+                new GetAnonymousTemplateForSurveyDashboardFilterSpec(
+                    request.AnonymousTemplateId.Value,
+                    scope.BranchId),
+                cancellationToken);
+
+            if (anonymousTemplate is null)
+            {
+                return TemplateFilterResolveResult.Fail(new Error(
+                    Code: "Reports.SurveyDashboard.TemplateFilterNotFound",
+                    Message: ErrorMessage.SurveyDashboard_TemplateFilter_NotFound,
+                    Type: ErrorType.NotFound));
+            }
+
+            var sourceMismatch = ValidateResolvedTemplateSource(
+                request.Source,
+                anonymousTemplate);
+
+            return sourceMismatch is not null
+                ? TemplateFilterResolveResult.Fail(sourceMismatch)
+                : TemplateFilterResolveResult.Ok(anonymousTemplate);
+        }
+
+        return TemplateFilterResolveResult.Ok(null);
+    }
+
+    private static Error? ValidateSourceFilters(GetSurveyDashboardQuery request)
+    {
+        if (request.TemplateId.HasValue &&
             request.AnonymousTemplateId.HasValue)
         {
             return new Error(
-                Code: "Reports.SurveyDashboard.AnonymousTemplateIdNotAllowed",
-                Message: ErrorMessage.GetSurveyDashboard_AnonymousTemplateId_NotAllowed,
-                Type: ErrorType.Validation);
-        }
-
-        if (request.Source == SurveyDashboardSource.Anonymous &&
-            request.TemplateId.HasValue)
-        {
-            return new Error(
-                Code: "Reports.SurveyDashboard.TemplateIdNotAllowed",
-                Message: ErrorMessage.GetSurveyDashboard_TemplateId_NotAllowed,
+                Code: "Reports.SurveyDashboard.TemplateFilterAmbiguous",
+                Message: ErrorMessage.SurveyDashboard_TemplateFilter_Ambiguous,
                 Type: ErrorType.Validation);
         }
 
         return null;
+    }
+
+    private static Error? ValidateResolvedTemplateSource(
+        SurveyDashboardSource requestedSource,
+        ResolvedSurveyDashboardTemplateFilter templateFilter)
+    {
+        if (requestedSource == SurveyDashboardSource.All ||
+            requestedSource == templateFilter.DashboardSource)
+        {
+            return null;
+        }
+
+        return new Error(
+            Code: "Reports.SurveyDashboard.TemplateFilterSourceMismatch",
+            Message: ErrorMessage.SurveyDashboard_TemplateFilter_SourceMismatch,
+            Type: ErrorType.Validation);
     }
 
     private static PeriodResolveResult ResolvePeriod(GetSurveyDashboardQuery request)
@@ -178730,6 +179052,8 @@ internal sealed class GetSurveyDashboardQueryHandler
         CurrentSurveyDashboardActor actor,
         ResolvedSurveyDashboardScope scope,
         ResolvedSurveyDashboardPeriod period,
+        SurveyDashboardSource appliedSource,
+        ResolvedSurveyDashboardTemplateFilter? templateFilter,
         IReadOnlyCollection<SurveyDashboardTemplateRow> internalTemplates,
         IReadOnlyCollection<SurveyDashboardTemplateRow> anonymousTemplates,
         IReadOnlyCollection<SurveyDashboardResponseRow> responses,
@@ -178779,6 +179103,17 @@ internal sealed class GetSurveyDashboardQueryHandler
                 TopQuestionsCount = request.TopQuestionsCount,
                 CriticalResponsesCount = request.CriticalResponsesCount,
                 CriticalScoreThreshold = request.CriticalScoreThreshold
+            },
+
+            AppliedFilters = new SurveyDashboardAppliedFiltersResponse
+            {
+                BranchId = scope.BranchId,
+                Source = appliedSource,
+                TemplateId = templateFilter?.TemplateId,
+                TemplateKind = templateFilter?.TemplateKind,
+                From = period.From,
+                To = period.To,
+                GroupBy = request.GroupBy
             },
 
             Summary = new SurveyDashboardSummaryResponse
@@ -178839,7 +179174,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                 request.TopQuestionsCount),
 
             CustomInputSegments = BuildCustomInputSegments(
-                request.Source,
+                appliedSource,
                 customInputValues),
 
             CriticalResponses = BuildCriticalResponses(
@@ -179411,6 +179746,22 @@ internal sealed class GetSurveyDashboardQueryHandler
         }
     }
 
+    private sealed record TemplateFilterResolveResult(
+        ResolvedSurveyDashboardTemplateFilter? TemplateFilter,
+        Error? Error)
+    {
+        public static TemplateFilterResolveResult Ok(
+            ResolvedSurveyDashboardTemplateFilter? templateFilter)
+        {
+            return new TemplateFilterResolveResult(templateFilter, null);
+        }
+
+        public static TemplateFilterResolveResult Fail(Error error)
+        {
+            return new TemplateFilterResolveResult(null, error);
+        }
+    }
+
     private sealed record ScopeResolveResult(
         ResolvedSurveyDashboardScope? Scope,
         Error? Error)
@@ -179472,6 +179823,8 @@ public sealed record SurveyDashboardResponse
     public SurveyDashboardScopeResponse Scope { get; init; } = new();
 
     public SurveyDashboardFiltersResponse Filters { get; init; } = new();
+
+    public SurveyDashboardAppliedFiltersResponse AppliedFilters { get; init; } = new();
 
     public SurveyDashboardSummaryResponse Summary { get; init; } = new();
 
@@ -179535,6 +179888,23 @@ public sealed record SurveyDashboardFiltersResponse
     public int CriticalResponsesCount { get; init; }
 
     public decimal CriticalScoreThreshold { get; init; }
+}
+
+public sealed record SurveyDashboardAppliedFiltersResponse
+{
+    public Guid? BranchId { get; init; }
+
+    public SurveyDashboardSource Source { get; init; }
+
+    public Guid? TemplateId { get; init; }
+
+    public SurveyDashboardTemplateKind? TemplateKind { get; init; }
+
+    public DateOnly From { get; init; }
+
+    public DateOnly To { get; init; }
+
+    public DashboardGroupBy GroupBy { get; init; }
 }
 
 public sealed record SurveyDashboardSummaryResponse
@@ -179928,6 +180298,21 @@ internal sealed record SurveyDashboardCustomInputValueRow
     public int MaxScore { get; init; }
 }
 
+internal sealed record ResolvedSurveyDashboardTemplateFilter
+{
+    public Guid TemplateId { get; init; }
+
+    public SurveyDashboardTemplateKind TemplateKind { get; init; }
+
+    public SurveyDashboardSource DashboardSource { get; init; }
+
+    public Guid BranchId { get; init; }
+
+    public string NameEn { get; init; } = string.Empty;
+
+    public string? NameAr { get; init; }
+}
+
 ----- E:\Customer Servey\CustomerSurvey.Application\Features\Reports\Query\GetSurveyDashboard\GetSurveyDashboardTemplatesSpec.cs -----
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
@@ -179937,13 +180322,20 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 internal sealed class GetSurveyDashboardTemplatesSpec
     : Specification<Template, SurveyDashboardTemplateRow>
 {
-    public GetSurveyDashboardTemplatesSpec(Guid? branchId)
+    public GetSurveyDashboardTemplatesSpec(
+        Guid? branchId,
+        Guid? templateId = null)
     {
         UseNoTracking();
 
         if (branchId.HasValue)
         {
             AddCriteria(x => x.BranchId == branchId.Value);
+        }
+
+        if (templateId.HasValue)
+        {
+            AddCriteria(x => x.Id == templateId.Value);
         }
 
         Select(x => new SurveyDashboardTemplateRow
@@ -179956,6 +180348,34 @@ internal sealed class GetSurveyDashboardTemplatesSpec
             BranchNameEn = x.Branch.NameEn,
             BranchNameAr = x.Branch.NameAr,
             IsActive = x.IsActive
+        });
+    }
+}
+
+internal sealed class GetAuthorizedTemplateForSurveyDashboardFilterSpec
+    : Specification<Template, ResolvedSurveyDashboardTemplateFilter>
+{
+    public GetAuthorizedTemplateForSurveyDashboardFilterSpec(
+        Guid templateId,
+        Guid? branchId)
+    {
+        UseNoTracking();
+
+        AddCriteria(x => x.Id == templateId);
+
+        if (branchId.HasValue)
+        {
+            AddCriteria(x => x.BranchId == branchId.Value);
+        }
+
+        Select(x => new ResolvedSurveyDashboardTemplateFilter
+        {
+            TemplateId = x.Id,
+            TemplateKind = SurveyDashboardTemplateKind.Authorized,
+            DashboardSource = SurveyDashboardSource.Internal,
+            BranchId = x.BranchId,
+            NameEn = x.NameEn,
+            NameAr = x.NameAr
         });
     }
 }
@@ -179980,6 +180400,346 @@ internal sealed class GetSurveyDashboardBranchesSpec
             IsActive = x.IsActive
         });
     }
+}
+
+----- E:\Customer Servey\CustomerSurvey.Application\Features\Reports\Query\GetSurveyDashboardTemplatesSelection\GetSurveyDashboardTemplatesSelectionQuery.cs -----
+using BuildingBlock.Application.Abstraction;
+using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
+
+namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardTemplatesSelection;
+
+public sealed class GetSurveyDashboardTemplatesSelectionQuery
+    : IQuery<IReadOnlyCollection<SurveyDashboardTemplateSelectionResponse>>
+{
+    public Guid? BranchId { get; init; }
+
+    public string? SearchText { get; init; }
+
+    public SurveyDashboardTemplateKind? TemplateKind { get; init; }
+}
+
+----- E:\Customer Servey\CustomerSurvey.Application\Features\Reports\Query\GetSurveyDashboardTemplatesSelection\GetSurveyDashboardTemplatesSelectionQueryHandler.cs -----
+using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction.Security;
+using BuildingBlock.Domain.Results;
+using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
+using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
+using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Identity;
+using CustomerSurvey.Domain.Resources;
+using System.Globalization;
+
+namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardTemplatesSelection;
+
+internal sealed class GetSurveyDashboardTemplatesSelectionQueryHandler
+    : IQueryHandler<GetSurveyDashboardTemplatesSelectionQuery, IReadOnlyCollection<SurveyDashboardTemplateSelectionResponse>>
+{
+    private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
+    private readonly IWriteReadRepository<Branch> _branchReadRepository;
+    private readonly IWriteReadRepository<Template> _templateReadRepository;
+    private readonly IWriteReadRepository<AnonymousTemplate> _anonymousTemplateReadRepository;
+    private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
+    private readonly ICurrentUser _currentUser;
+
+    public GetSurveyDashboardTemplatesSelectionQueryHandler(
+        IWriteReadRepository<SuperAdmin> superAdminReadRepository,
+        IWriteReadRepository<Branch> branchReadRepository,
+        IWriteReadRepository<Template> templateReadRepository,
+        IWriteReadRepository<AnonymousTemplate> anonymousTemplateReadRepository,
+        ICurrentBranchScopeResolver currentBranchScopeResolver,
+        ICurrentUser currentUser)
+    {
+        _superAdminReadRepository = superAdminReadRepository
+            ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
+        _branchReadRepository = branchReadRepository
+            ?? throw new ArgumentNullException(nameof(branchReadRepository));
+        _templateReadRepository = templateReadRepository
+            ?? throw new ArgumentNullException(nameof(templateReadRepository));
+        _anonymousTemplateReadRepository = anonymousTemplateReadRepository
+            ?? throw new ArgumentNullException(nameof(anonymousTemplateReadRepository));
+        _currentBranchScopeResolver = currentBranchScopeResolver
+            ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
+        _currentUser = currentUser
+            ?? throw new ArgumentNullException(nameof(currentUser));
+    }
+
+    public async Task<Result<IReadOnlyCollection<SurveyDashboardTemplateSelectionResponse>>> Handle(
+        GetSurveyDashboardTemplatesSelectionQuery request,
+        CancellationToken cancellationToken)
+    {
+        if (!_currentUser.IsAuthenticated || !_currentUser.UserId.HasValue)
+        {
+            return Result<IReadOnlyCollection<SurveyDashboardTemplateSelectionResponse>>.Fail(new Error(
+                Code: "Reports.SurveyDashboardTemplatesSelection.Unauthenticated",
+                Message: ErrorMessage.GetSurveyDashboard_Unauthenticated,
+                Type: ErrorType.Security));
+        }
+
+        var branchScopeResult = await ResolveBranchScopeAsync(
+            request,
+            _currentUser.UserId.Value,
+            cancellationToken);
+
+        if (branchScopeResult.IsFailure)
+        {
+            return Result<IReadOnlyCollection<SurveyDashboardTemplateSelectionResponse>>.Fail(
+                branchScopeResult.Errors);
+        }
+
+        var branchExists = await _branchReadRepository.FirstOrDefaultAsync(
+            new GetSurveyDashboardTemplatesSelectionBranchSpec(branchScopeResult.Value),
+            cancellationToken);
+
+        if (branchExists is null)
+        {
+            return Result<IReadOnlyCollection<SurveyDashboardTemplateSelectionResponse>>.Fail(new Error(
+                Code: "Reports.SurveyDashboardTemplatesSelection.CurrentBranchScopeNotFound",
+                Message: ErrorMessage.SurveyDashboardTemplatesSelection_CurrentBranchScope_NotFound,
+                Type: ErrorType.NotFound));
+        }
+
+        var useArabicDisplayName = string.Equals(
+            CultureInfo.CurrentUICulture.TwoLetterISOLanguageName,
+            "ar",
+            StringComparison.OrdinalIgnoreCase);
+
+        var includeAuthorized = request.TemplateKind is null or SurveyDashboardTemplateKind.Authorized;
+        var includeAnonymous = request.TemplateKind is null or SurveyDashboardTemplateKind.Anonymous;
+
+        var items = new List<SurveyDashboardTemplateSelectionResponse>();
+
+        if (includeAuthorized)
+        {
+            items.AddRange(await _templateReadRepository.ListAsync(
+                new GetAuthorizedTemplatesForSurveyDashboardSelectionSpec(
+                    branchScopeResult.Value,
+                    request.SearchText,
+                    useArabicDisplayName),
+                cancellationToken));
+        }
+
+        if (includeAnonymous)
+        {
+            items.AddRange(await _anonymousTemplateReadRepository.ListAsync(
+                new GetAnonymousTemplatesForSurveyDashboardSelectionSpec(
+                    branchScopeResult.Value,
+                    request.SearchText,
+                    useArabicDisplayName),
+                cancellationToken));
+        }
+
+        return Result<IReadOnlyCollection<SurveyDashboardTemplateSelectionResponse>>.Ok(
+            items
+                .OrderBy(x => x.DisplayName)
+                .ThenBy(x => x.TemplateKind)
+                .ThenBy(x => x.NameEn)
+                .ToArray());
+    }
+
+    private async Task<Result<Guid>> ResolveBranchScopeAsync(
+        GetSurveyDashboardTemplatesSelectionQuery request,
+        Guid applicationUserId,
+        CancellationToken cancellationToken)
+    {
+        var isSuperAdmin = await _superAdminReadRepository.AnyAsync(
+            x => x.ApplicationUserId == applicationUserId,
+            cancellationToken);
+
+        if (isSuperAdmin)
+        {
+            if (!request.BranchId.HasValue)
+            {
+                return Result<Guid>.Fail(new Error(
+                    Code: "Reports.SurveyDashboardTemplatesSelection.BranchIdRequiredForSuperAdmin",
+                    Message: ErrorMessage.SurveyDashboardTemplatesSelection_BranchId_Required_ForSuperAdmin,
+                    Type: ErrorType.Validation));
+            }
+
+            return Result<Guid>.Ok(request.BranchId.Value);
+        }
+
+        if (request.BranchId.HasValue)
+        {
+            return Result<Guid>.Fail(new Error(
+                Code: "Reports.SurveyDashboardTemplatesSelection.BranchIdNotAllowed",
+                Message: ErrorMessage.GetSurveyDashboard_BranchId_NotAllowed,
+                Type: ErrorType.Security));
+        }
+
+        var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
+            cancellationToken);
+
+        if (currentBranchScope.IsFailure)
+        {
+            return Result<Guid>.Fail(currentBranchScope.Errors);
+        }
+
+        return Result<Guid>.Ok(currentBranchScope.Value.BranchId);
+    }
+}
+
+----- E:\Customer Servey\CustomerSurvey.Application\Features\Reports\Query\GetSurveyDashboardTemplatesSelection\GetSurveyDashboardTemplatesSelectionQueryValidator.cs -----
+using CustomerSurvey.Domain.Resources;
+using FluentValidation;
+
+namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardTemplatesSelection;
+
+internal sealed class GetSurveyDashboardTemplatesSelectionQueryValidator
+    : AbstractValidator<GetSurveyDashboardTemplatesSelectionQuery>
+{
+    public GetSurveyDashboardTemplatesSelectionQueryValidator()
+    {
+        RuleFor(x => x.TemplateKind)
+            .IsInEnum()
+            .When(x => x.TemplateKind.HasValue)
+            .WithMessage(ErrorMessage.SurveyDashboardTemplatesSelection_TemplateKind_Invalid);
+    }
+}
+
+----- E:\Customer Servey\CustomerSurvey.Application\Features\Reports\Query\GetSurveyDashboardTemplatesSelection\GetSurveyDashboardTemplatesSelectionSpecs.cs -----
+using BuildingBlock.Domain.Specification;
+using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
+using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
+
+namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardTemplatesSelection;
+
+internal sealed class GetSurveyDashboardTemplatesSelectionBranchSpec
+    : Specification<Branch, SurveyDashboardTemplatesSelectionBranchRow>
+{
+    public GetSurveyDashboardTemplatesSelectionBranchSpec(Guid branchId)
+    {
+        UseNoTracking();
+
+        AddCriteria(x => x.Id == branchId);
+
+        Select(x => new SurveyDashboardTemplatesSelectionBranchRow
+        {
+            BranchId = x.Id
+        });
+    }
+}
+
+internal sealed class GetAuthorizedTemplatesForSurveyDashboardSelectionSpec
+    : Specification<Template, SurveyDashboardTemplateSelectionResponse>
+{
+    public GetAuthorizedTemplatesForSurveyDashboardSelectionSpec(
+        Guid branchId,
+        string? searchText,
+        bool useArabicDisplayName)
+    {
+        UseNoTracking();
+
+        AddCriteria(x => x.BranchId == branchId);
+
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            var value = searchText.Trim();
+
+            AddCriteria(x =>
+                x.NameEn.Contains(value) ||
+                (x.NameAr != null && x.NameAr.Contains(value)));
+        }
+
+        AddOrderBy(x => x.NameEn);
+
+        Select(x => new SurveyDashboardTemplateSelectionResponse
+        {
+            TemplateId = x.Id,
+            TemplateKind = SurveyDashboardTemplateKind.Authorized,
+            DashboardSource = SurveyDashboardSource.Internal,
+            NameEn = x.NameEn,
+            NameAr = x.NameAr,
+            DisplayName = useArabicDisplayName &&
+                          x.NameAr != null &&
+                          x.NameAr != string.Empty
+                ? x.NameAr
+                : x.NameEn,
+            BranchId = x.BranchId,
+            BranchNameEn = x.Branch.NameEn,
+            BranchNameAr = x.Branch.NameAr,
+            BranchCode = x.Branch.Code
+        });
+    }
+}
+
+internal sealed class GetAnonymousTemplatesForSurveyDashboardSelectionSpec
+    : Specification<AnonymousTemplate, SurveyDashboardTemplateSelectionResponse>
+{
+    public GetAnonymousTemplatesForSurveyDashboardSelectionSpec(
+        Guid branchId,
+        string? searchText,
+        bool useArabicDisplayName)
+    {
+        UseNoTracking();
+
+        AddCriteria(x =>
+            x.Scope == AnonymousTemplateScope.Branch &&
+            x.BranchId == branchId);
+
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            var value = searchText.Trim();
+
+            AddCriteria(x =>
+                x.NameEn.Contains(value) ||
+                (x.NameAr != null && x.NameAr.Contains(value)));
+        }
+
+        AddOrderBy(x => x.NameEn);
+
+        Select(x => new SurveyDashboardTemplateSelectionResponse
+        {
+            TemplateId = x.Id,
+            TemplateKind = SurveyDashboardTemplateKind.Anonymous,
+            DashboardSource = SurveyDashboardSource.Anonymous,
+            NameEn = x.NameEn,
+            NameAr = x.NameAr,
+            DisplayName = useArabicDisplayName &&
+                          x.NameAr != null &&
+                          x.NameAr != string.Empty
+                ? x.NameAr
+                : x.NameEn,
+            BranchId = x.BranchId!.Value,
+            BranchNameEn = x.Branch!.NameEn,
+            BranchNameAr = x.Branch.NameAr,
+            BranchCode = x.Branch.Code
+        });
+    }
+}
+
+internal sealed record SurveyDashboardTemplatesSelectionBranchRow
+{
+    public Guid BranchId { get; init; }
+}
+
+----- E:\Customer Servey\CustomerSurvey.Application\Features\Reports\Query\GetSurveyDashboardTemplatesSelection\SurveyDashboardTemplateSelectionResponse.cs -----
+using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
+
+namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardTemplatesSelection;
+
+public sealed record SurveyDashboardTemplateSelectionResponse
+{
+    public Guid TemplateId { get; init; }
+
+    public SurveyDashboardTemplateKind TemplateKind { get; init; }
+
+    public SurveyDashboardSource DashboardSource { get; init; }
+
+    public string NameEn { get; init; } = string.Empty;
+
+    public string? NameAr { get; init; }
+
+    public string DisplayName { get; init; } = string.Empty;
+
+    public Guid BranchId { get; init; }
+
+    public string BranchNameEn { get; init; } = string.Empty;
+
+    public string? BranchNameAr { get; init; }
+
+    public string BranchCode { get; init; } = string.Empty;
 }
 
 ----- E:\Customer Servey\CustomerSurvey.Application\Features\Reports\Query\GetSystemDashboard\GetSystemDashboardBranchesSpec.cs -----
@@ -191027,7 +191787,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CustomerSurvey.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e49588974ee0950cc468c6a4aed73349878e09e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc83172d0604128125aa77e01c786f6870a7eea4")]
 [assembly: System.Reflection.AssemblyProductAttribute("CustomerSurvey.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CustomerSurvey.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -191069,7 +191829,7 @@ global using System.Threading;
 global using System.Threading.Tasks;
 
 ----- E:\Customer Servey\CustomerSurvey.Application\obj\Debug\net8.0\CustomerSurvey.Application.sourcelink.json -----
-{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/2e49588974ee0950cc468c6a4aed73349878e09e/*"}}
+{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/bc83172d0604128125aa77e01c786f6870a7eea4/*"}}
 ----- E:\Customer Servey\CustomerSurvey.Application\obj\Release\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs -----
 // <autogenerated />
 using System;
@@ -191093,7 +191853,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CustomerSurvey.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e49588974ee0950cc468c6a4aed73349878e09e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc83172d0604128125aa77e01c786f6870a7eea4")]
 [assembly: System.Reflection.AssemblyProductAttribute("CustomerSurvey.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CustomerSurvey.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
@@ -191135,7 +191895,7 @@ global using System.Threading;
 global using System.Threading.Tasks;
 
 ----- E:\Customer Servey\CustomerSurvey.Application\obj\Release\net8.0\CustomerSurvey.Application.sourcelink.json -----
-{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/684a575a78ea9fbcdde401898c9844d9108ccd9a/*"}}
+{"documents":{"E:\\Customer Servey\\*":"https://raw.githubusercontent.com/NileTronixRepositories/CustomerSurvey/bc83172d0604128125aa77e01c786f6870a7eea4/*"}}
 ----- E:\Customer Servey\CustomerSurvey.Application\obj\CustomerSurvey.Application.csproj.nuget.dgspec.json -----
 {
   "format": 1,

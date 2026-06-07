@@ -13,6 +13,7 @@ using CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponsesPagination;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
+using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardTemplatesSelection;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -155,6 +156,19 @@ namespace CustomerSurvey.Api.Controllers
     CancellationToken cancellationToken)
         {
             query ??= new GetSurveyDashboardQuery();
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("survey-dashboard/templates-selection")]
+        [Permission("Reports.ViewBranchReports")]
+        public async Task<IActionResult> GetSurveyDashboardTemplatesSelection(
+    [FromQuery] GetSurveyDashboardTemplatesSelectionQuery query,
+    CancellationToken cancellationToken)
+        {
+            query ??= new GetSurveyDashboardTemplatesSelectionQuery();
 
             var result = await sender.Send(query, cancellationToken);
 

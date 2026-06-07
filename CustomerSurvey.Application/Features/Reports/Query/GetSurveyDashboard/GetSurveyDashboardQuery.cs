@@ -32,6 +32,12 @@ public enum SurveyDashboardSource
     Anonymous = 3
 }
 
+public enum SurveyDashboardTemplateKind
+{
+    Authorized = 1,
+    Anonymous = 2
+}
+
 public enum DashboardGroupBy
 {
     Day = 1,
