@@ -2,11 +2,13 @@
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Security;
+using CustomerSurvey.Application.Options;
 using CustomerSurvey.Application.Shared.Dto;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +33,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
         private readonly IWriteReadRepository<Operator> _operatorReadRepository;
 
         private readonly IJwtProvider _jwtProvider;
+        private readonly PasswordPolicyOptions _passwordPolicyOptions;
         private readonly PasswordHasher<ApplicationUser> _passwordHasher;
 
         public LoginCommandHandler(
@@ -44,7 +47,8 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
             IWriteReadRepository<BranchAreaBranch> branchAreaBranchReadRepository,
             IWriteReadRepository<DepartmentAdmin> departmentAdminReadRepository,
             IWriteReadRepository<Operator> operatorReadRepository,
-            IJwtProvider jwtProvider)
+            IJwtProvider jwtProvider,
+            IOptions<PasswordPolicyOptions> passwordPolicyOptions)
         {
             _applicationUserReadRepository = applicationUserReadRepository
                 ?? throw new ArgumentNullException(nameof(applicationUserReadRepository));
@@ -78,6 +82,9 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
 
             _jwtProvider = jwtProvider
                 ?? throw new ArgumentNullException(nameof(jwtProvider));
+
+            _passwordPolicyOptions = passwordPolicyOptions?.Value
+                ?? throw new ArgumentNullException(nameof(passwordPolicyOptions));
 
             _passwordHasher = new PasswordHasher<ApplicationUser>();
         }
@@ -161,6 +168,17 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
                 userType: user.UserType,
                 permissions: permissions,
                 cancellationToken: cancellationToken);
+
+            var passwordExpiresOnUtc = user.PasswordChangedOnUtc
+                .AddDays(_passwordPolicyOptions.ExpiryDays);
+
+            token = token with
+            {
+                FirstLoginFlag = user.IsFirstLogin,
+                PasswordChangedOnUtc = user.PasswordChangedOnUtc,
+                PasswordExpiresOnUtc = passwordExpiresOnUtc,
+                PasswordExpiredFlag = passwordExpiresOnUtc <= DateTime.UtcNow
+            };
 
             if (user.UserType == UserType.BranchArea)
             {

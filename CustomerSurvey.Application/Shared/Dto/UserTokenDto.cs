@@ -19,6 +19,14 @@ namespace CustomerSurvey.Application.Shared.Dto
 
         public IReadOnlyCollection<LoginBranchSelectionItemResponse> Branches { get; init; } =
             Array.Empty<LoginBranchSelectionItemResponse>();
+
+        public bool FirstLoginFlag { get; init; }
+
+        public bool PasswordExpiredFlag { get; init; }
+
+        public DateTime? PasswordChangedOnUtc { get; init; }
+
+        public DateTime? PasswordExpiresOnUtc { get; init; }
     }
 
     public sealed record LoginBranchSelectionItemResponse

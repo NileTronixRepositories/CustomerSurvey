@@ -120,6 +120,30 @@
   <data name="Auth_Token_Missing" xml:space="preserve">
     <value>Authentication token is missing.</value>
   </data>
+  <data name="ChangePassword_UserIdMismatch" xml:space="preserve">
+    <value>You cannot change another user's password.</value>
+  </data>
+  <data name="ChangePassword_UserNotFound" xml:space="preserve">
+    <value>User was not found.</value>
+  </data>
+  <data name="ChangePassword_UserInactive" xml:space="preserve">
+    <value>User account is inactive.</value>
+  </data>
+  <data name="ChangePassword_NewPassword_Required" xml:space="preserve">
+    <value>New password is required.</value>
+  </data>
+  <data name="ChangePassword_ConfirmNewPassword_Required" xml:space="preserve">
+    <value>Confirm new password is required.</value>
+  </data>
+  <data name="ChangePassword_ConfirmNewPassword_NotMatched" xml:space="preserve">
+    <value>Confirm password does not match the new password.</value>
+  </data>
+  <data name="ChangePassword_NewPassword_MinLength" xml:space="preserve">
+    <value>Password must be at least 8 characters.</value>
+  </data>
+  <data name="ChangePassword_NewPassword_MaxLength" xml:space="preserve">
+    <value>Password must not exceed 200 characters.</value>
+  </data>
   <data name="CreateBranchAdmin_BranchAdministratorRole_NotFound" xml:space="preserve">
     <value>Branch Administrator role was not found.</value>
   </data>

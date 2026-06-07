@@ -120,6 +120,30 @@
   <data name="Auth_Token_Missing" xml:space="preserve">
     <value>رمز الدخول غير موجود.</value>
   </data>
+  <data name="ChangePassword_UserIdMismatch" xml:space="preserve">
+    <value>لا يمكنك تغيير كلمة مرور مستخدم آخر.</value>
+  </data>
+  <data name="ChangePassword_UserNotFound" xml:space="preserve">
+    <value>لم يتم العثور على المستخدم.</value>
+  </data>
+  <data name="ChangePassword_UserInactive" xml:space="preserve">
+    <value>حساب المستخدم غير مفعل.</value>
+  </data>
+  <data name="ChangePassword_NewPassword_Required" xml:space="preserve">
+    <value>كلمة المرور الجديدة مطلوبة.</value>
+  </data>
+  <data name="ChangePassword_ConfirmNewPassword_Required" xml:space="preserve">
+    <value>تأكيد كلمة المرور الجديدة مطلوب.</value>
+  </data>
+  <data name="ChangePassword_ConfirmNewPassword_NotMatched" xml:space="preserve">
+    <value>تأكيد كلمة المرور غير مطابق لكلمة المرور الجديدة.</value>
+  </data>
+  <data name="ChangePassword_NewPassword_MinLength" xml:space="preserve">
+    <value>كلمة المرور يجب ألا تقل عن 8 أحرف.</value>
+  </data>
+  <data name="ChangePassword_NewPassword_MaxLength" xml:space="preserve">
+    <value>كلمة المرور يجب ألا تزيد عن 200 حرف.</value>
+  </data>
   <data name="CreateBranchAdmin_BranchAdministratorRole_NotFound" xml:space="preserve">
     <value>لم يتم العثور على Role مدير الفرع.</value>
   </data>

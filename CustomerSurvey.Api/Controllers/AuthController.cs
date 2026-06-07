@@ -1,5 +1,6 @@
 ﻿using BuildingBlock.Api;
 using CustomerSurvey.Api.Contracts.Auth;
+using CustomerSurvey.Application.Features.Auth.Command.ChangePassword;
 using CustomerSurvey.Application.Features.Auth.Command.Login;
 using CustomerSurvey.Application.Features.Auth.Command.SelectBranch;
 using MediatR;
@@ -43,6 +44,24 @@ namespace CustomerSurvey.Api.Controllers
             var command = new SelectBranchCommand
             {
                 BranchId = request.BranchId
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("users/{applicationUserId:guid}/change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(
+            Guid applicationUserId,
+            [FromBody] ChangePasswordRequest request,
+            CancellationToken cancellationToken)
+        {
+            var command = new ChangePasswordCommand
+            {
+                ApplicationUserId = applicationUserId,
+                NewPassword = request.NewPassword,
+                ConfirmNewPassword = request.ConfirmNewPassword
             };
 
             var result = await sender.Send(command, cancellationToken);

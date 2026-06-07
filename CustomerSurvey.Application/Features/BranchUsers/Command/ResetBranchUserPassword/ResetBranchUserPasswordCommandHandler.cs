@@ -119,7 +119,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.ResetBranchUse
                 applicationUser,
                 request.NewPassword);
 
-            applicationUser.SetPasswordHash(passwordHash);
+            applicationUser.ResetPassword(passwordHash);
 
             _applicationUserWriteRepository.Update(applicationUser);
 
