@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Features.BranchUsers;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
@@ -18,11 +19,13 @@ namespace CustomerSurvey.Application.Features.Roles.Query.GetRolesForSelection
     {
         private readonly IWriteReadRepository<Role> _roleReadRepository;
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
 
         public GetRolesForSelectionQueryHandler(
             IWriteReadRepository<Role> roleReadRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser)
         {
             _roleReadRepository = roleReadRepository
@@ -30,6 +33,9 @@ namespace CustomerSurvey.Application.Features.Roles.Query.GetRolesForSelection
 
             _branchAdminReadRepository = branchAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -47,18 +53,13 @@ namespace CustomerSurvey.Application.Features.Roles.Query.GetRolesForSelection
                     Type: ErrorType.Security));
             }
 
-            var currentApplicationUserId = _currentUser.UserId.Value;
-
-            var currentBranchAdminExists = await _branchAdminReadRepository.AnyAsync(
-                x => x.ApplicationUserId == currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (!currentBranchAdminExists)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<IReadOnlyCollection<RoleSelectionResponse>>.Fail(new Error(
-                    Code: "Roles.Selection.CurrentBranchAdminNotFound",
-                    Message: ErrorMessage.GetRolesSelection_CurrentBranchAdmin_NotFound,
-                    Type: ErrorType.NotFound));
+                return Result<IReadOnlyCollection<RoleSelectionResponse>>.Fail(
+                    currentBranchScope.Errors);
             }
 
             var roles = await _roleReadRepository.ListAsync(

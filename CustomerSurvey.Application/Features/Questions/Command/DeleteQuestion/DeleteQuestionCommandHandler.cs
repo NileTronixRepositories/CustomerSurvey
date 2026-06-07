@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -14,16 +15,14 @@ namespace CustomerSurvey.Application.Features.Questions.Command.DeleteQuestion
     {
         private readonly IWriteReadRepository<Question> _questionReadRepository;
         private readonly IWriteRepository<Question> _questionWriteRepository;
-        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
         public DeleteQuestionCommandHandler(
             IWriteReadRepository<Question> questionReadRepository,
             IWriteRepository<Question> questionWriteRepository,
-            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-            IWriteReadRepository<BranchUser> branchUserReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -33,11 +32,8 @@ namespace CustomerSurvey.Application.Features.Questions.Command.DeleteQuestion
             _questionWriteRepository = questionWriteRepository
                 ?? throw new ArgumentNullException(nameof(questionWriteRepository));
 
-            _branchAdminReadRepository = branchAdminReadRepository
-                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-            _branchUserReadRepository = branchUserReadRepository
-                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -60,19 +56,15 @@ namespace CustomerSurvey.Application.Features.Questions.Command.DeleteQuestion
 
             var currentApplicationUserId = _currentUser.UserId.Value;
 
-            var actorBranchId = await ResolveActorBranchIdAsync(
-                currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (!actorBranchId.HasValue)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<DeleteQuestionResponse>.Fail(new Error(
-                    Code: "Questions.Delete.CurrentBranchActorNotFound",
-                    Message: ErrorMessage.DeleteQuestion_CurrentBranchActor_NotFound,
-                    Type: ErrorType.Security));
+                return Result<DeleteQuestionResponse>.Fail(currentBranchScope.Errors);
             }
 
-            var branchId = actorBranchId.Value;
+            var branchId = currentBranchScope.Value.BranchId;
 
             var question = await _questionReadRepository.FirstOrDefaultAsync(
                 new GetQuestionForDeleteSpec(
@@ -120,24 +112,5 @@ namespace CustomerSurvey.Application.Features.Questions.Command.DeleteQuestion
             return Result<DeleteQuestionResponse>.Ok(response);
         }
 
-        private async Task<Guid?> ResolveActorBranchIdAsync(
-            Guid applicationUserId,
-            CancellationToken cancellationToken)
-        {
-            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForDeleteQuestionSpec(applicationUserId),
-                cancellationToken);
-
-            if (branchAdmin is not null)
-            {
-                return branchAdmin.BranchId;
-            }
-
-            var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForDeleteQuestionSpec(applicationUserId),
-                cancellationToken);
-
-            return branchUser?.BranchId;
-        }
     }
 }

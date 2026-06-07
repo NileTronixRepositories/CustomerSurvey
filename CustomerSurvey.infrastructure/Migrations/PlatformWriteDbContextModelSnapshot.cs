@@ -1167,6 +1167,65 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.ToTable("BranchAdmin");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Identity.BranchArea", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId")
+                        .IsUnique();
+
+                    b.ToTable("BranchAreas");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Identity.BranchAreaBranch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BranchAreaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BranchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchAreaId");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("BranchAreaId", "BranchId")
+                        .IsUnique();
+
+                    b.ToTable("BranchAreaBranches");
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Identity.BranchUser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1767,6 +1826,36 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Navigation("Branch");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Identity.BranchArea", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Identity.ApplicationUser", "ApplicationUser")
+                        .WithOne()
+                        .HasForeignKey("CustomerSurvey.Domain.Identity.BranchArea", "ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Identity.BranchAreaBranch", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Identity.BranchArea", "BranchArea")
+                        .WithMany("Branches")
+                        .HasForeignKey("BranchAreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("BranchArea");
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Identity.BranchUser", b =>
                 {
                     b.HasOne("CustomerSurvey.Domain.Identity.ApplicationUser", "ApplicationUser")
@@ -1928,6 +2017,11 @@ namespace CustomerSurvey.infrastructure.Migrations
             modelBuilder.Entity("CustomerSurvey.Domain.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Identity.BranchArea", b =>
+                {
+                    b.Navigation("Branches");
                 });
 
             modelBuilder.Entity("CustomerSurvey.Domain.Identity.Operator", b =>

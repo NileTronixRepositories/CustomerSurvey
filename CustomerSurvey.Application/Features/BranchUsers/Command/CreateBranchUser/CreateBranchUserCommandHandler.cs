@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +23,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.CreateBranchUs
         private readonly IWriteRepository<BranchUser> _branchUserWriteRepository;
         private readonly IWriteReadRepository<Role> _roleReadRepository;
         private readonly IWriteRepository<UserRole> _userRoleWriteRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
         private readonly PasswordHasher<ApplicationUser> _passwordHasher;
@@ -33,6 +35,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.CreateBranchUs
             IWriteRepository<BranchUser> branchUserWriteRepository,
             IWriteReadRepository<Role> roleReadRepository,
             IWriteRepository<UserRole> userRoleWriteRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -53,6 +56,9 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.CreateBranchUs
 
             _userRoleWriteRepository = userRoleWriteRepository
                 ?? throw new ArgumentNullException(nameof(userRoleWriteRepository));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -77,16 +83,12 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.CreateBranchUs
 
             var currentApplicationUserId = _currentUser.UserId.Value;
 
-            var currentBranchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForCreateBranchUserSpec(currentApplicationUserId),
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (currentBranchAdmin is null)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<CreateBranchUserResponse>.Fail(new Error(
-                    Code: "BranchUsers.Create.CurrentBranchAdminNotFound",
-                    Message: ErrorMessage.CreateBranchUser_CurrentBranchAdmin_NotFound,
-                    Type: ErrorType.NotFound));
+                return Result<CreateBranchUserResponse>.Fail(currentBranchScope.Errors);
             }
 
             var normalizedUserName = request.UserName.Trim();
@@ -158,7 +160,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.CreateBranchUs
 
             var branchUser = BranchUser.Create(
                 applicationUserId: applicationUser.Id,
-                branchId: currentBranchAdmin.BranchId,
+                branchId: currentBranchScope.Value.BranchId,
                 createdByApplicationUserId: currentApplicationUserId);
 
             await _applicationUserWriteRepository.AddAsync(applicationUser, cancellationToken);

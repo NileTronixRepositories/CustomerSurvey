@@ -3,6 +3,7 @@ using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -19,8 +20,6 @@ internal sealed class GetSurveyDashboardQueryHandler
     private const int CriticalCustomInputsPreviewCount = 5;
 
     private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
-    private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-    private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
     private readonly IWriteReadRepository<Branch> _branchReadRepository;
     private readonly IWriteReadRepository<Template> _templateReadRepository;
     private readonly IWriteReadRepository<AnonymousTemplate> _anonymousTemplateReadRepository;
@@ -30,12 +29,11 @@ internal sealed class GetSurveyDashboardQueryHandler
     private readonly IWriteReadRepository<AnonymousSurveyResponse> _anonymousSurveyResponseReadRepository;
     private readonly IWriteReadRepository<AnonymousSurveyAnswer> _anonymousSurveyAnswerReadRepository;
     private readonly IWriteReadRepository<AnonymousSurveyResponseCustomInputValue> _anonymousCustomInputValueReadRepository;
+    private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
     private readonly ICurrentUser _currentUser;
 
     public GetSurveyDashboardQueryHandler(
         IWriteReadRepository<SuperAdmin> superAdminReadRepository,
-        IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-        IWriteReadRepository<BranchUser> branchUserReadRepository,
         IWriteReadRepository<Branch> branchReadRepository,
         IWriteReadRepository<Template> templateReadRepository,
         IWriteReadRepository<AnonymousTemplate> anonymousTemplateReadRepository,
@@ -45,14 +43,11 @@ internal sealed class GetSurveyDashboardQueryHandler
         IWriteReadRepository<AnonymousSurveyResponse> anonymousSurveyResponseReadRepository,
         IWriteReadRepository<AnonymousSurveyAnswer> anonymousSurveyAnswerReadRepository,
         IWriteReadRepository<AnonymousSurveyResponseCustomInputValue> anonymousCustomInputValueReadRepository,
+        ICurrentBranchScopeResolver currentBranchScopeResolver,
         ICurrentUser currentUser)
     {
         _superAdminReadRepository = superAdminReadRepository
             ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
-        _branchAdminReadRepository = branchAdminReadRepository
-            ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-        _branchUserReadRepository = branchUserReadRepository
-            ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
         _branchReadRepository = branchReadRepository
             ?? throw new ArgumentNullException(nameof(branchReadRepository));
         _templateReadRepository = templateReadRepository
@@ -71,6 +66,8 @@ internal sealed class GetSurveyDashboardQueryHandler
             ?? throw new ArgumentNullException(nameof(anonymousSurveyAnswerReadRepository));
         _anonymousCustomInputValueReadRepository = anonymousCustomInputValueReadRepository
             ?? throw new ArgumentNullException(nameof(anonymousCustomInputValueReadRepository));
+        _currentBranchScopeResolver = currentBranchScopeResolver
+            ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
         _currentUser = currentUser
             ?? throw new ArgumentNullException(nameof(currentUser));
     }
@@ -87,17 +84,16 @@ internal sealed class GetSurveyDashboardQueryHandler
                 Type: ErrorType.Security));
         }
 
-        var actor = await ResolveActorAsync(
+        var actorResult = await ResolveActorAsync(
             _currentUser.UserId.Value,
             cancellationToken);
 
-        if (actor is null)
+        if (actorResult.IsFailure)
         {
-            return Result<SurveyDashboardResponse>.Fail(new Error(
-                Code: "Reports.SurveyDashboard.CurrentActorNotFound",
-                Message: ErrorMessage.GetSurveyDashboard_CurrentActor_NotFound,
-                Type: ErrorType.NotFound));
+            return Result<SurveyDashboardResponse>.Fail(actorResult.Errors);
         }
+
+        var actor = actorResult.Value;
 
         var sourceValidationError = ValidateSourceFilters(request);
         if (sourceValidationError is not null)
@@ -229,7 +225,7 @@ internal sealed class GetSurveyDashboardQueryHandler
         return Result<SurveyDashboardResponse>.Ok(response);
     }
 
-    private async Task<CurrentSurveyDashboardActor?> ResolveActorAsync(
+    private async Task<Result<CurrentSurveyDashboardActor>> ResolveActorAsync(
         Guid applicationUserId,
         CancellationToken cancellationToken)
     {
@@ -239,25 +235,36 @@ internal sealed class GetSurveyDashboardQueryHandler
 
         if (isSuperAdmin)
         {
-            return CurrentSurveyDashboardActor.SuperAdmin();
+            return Result<CurrentSurveyDashboardActor>.Ok(
+                CurrentSurveyDashboardActor.SuperAdmin());
         }
 
-        var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchAdminForSurveyDashboardSpec(applicationUserId),
+        var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
             cancellationToken);
 
-        if (branchAdmin is not null)
+        if (currentBranchScope.IsFailure)
         {
-            return CurrentSurveyDashboardActor.BranchAdmin(branchAdmin);
+            return Result<CurrentSurveyDashboardActor>.Fail(currentBranchScope.Errors);
         }
 
-        var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchUserForSurveyDashboardSpec(applicationUserId),
+        var branches = await _branchReadRepository.ListAsync(
+            new GetSurveyDashboardBranchesSpec(currentBranchScope.Value.BranchId),
             cancellationToken);
 
-        return branchUser is null
-            ? null
-            : CurrentSurveyDashboardActor.BranchUser(branchUser);
+        var branch = branches.FirstOrDefault();
+
+        if (branch is null)
+        {
+            return Result<CurrentSurveyDashboardActor>.Fail(new Error(
+                Code: "Reports.SurveyDashboard.CurrentActorNotFound",
+                Message: ErrorMessage.GetSurveyDashboard_CurrentActor_NotFound,
+                Type: ErrorType.NotFound));
+        }
+
+        return Result<CurrentSurveyDashboardActor>.Ok(
+            CurrentSurveyDashboardActor.BranchScoped(
+                currentBranchScope.Value.ActorType.ToString(),
+                branch));
     }
 
     private async Task<ScopeResolveResult> ResolveScopeAsync(
@@ -1028,34 +1035,17 @@ internal sealed class GetSurveyDashboardQueryHandler
             return new CurrentSurveyDashboardActor(true, "SuperAdmin", null, null, null);
         }
 
-        public static CurrentSurveyDashboardActor BranchAdmin(CurrentBranchActorForSurveyDashboardDto actor)
+        public static CurrentSurveyDashboardActor BranchScoped(
+            string actorScope,
+            SurveyDashboardBranchRow branch)
         {
             return new CurrentSurveyDashboardActor(
                 false,
-                "BranchAdmin",
-                actor.BranchId,
-                actor.BranchNameEn,
-                actor.BranchNameAr);
+                actorScope,
+                branch.BranchId,
+                branch.BranchNameEn,
+                branch.BranchNameAr);
         }
-
-        public static CurrentSurveyDashboardActor BranchUser(CurrentBranchActorForSurveyDashboardDto actor)
-        {
-            return new CurrentSurveyDashboardActor(
-                false,
-                "BranchUser",
-                actor.BranchId,
-                actor.BranchNameEn,
-                actor.BranchNameAr);
-        }
-    }
-
-    private sealed record CurrentBranchActorForSurveyDashboardDto
-    {
-        public Guid BranchId { get; init; }
-
-        public string BranchNameEn { get; init; } = string.Empty;
-
-        public string? BranchNameAr { get; init; }
     }
 
     private sealed record ResolvedSurveyDashboardScope(
@@ -1100,39 +1090,4 @@ internal sealed class GetSurveyDashboardQueryHandler
         }
     }
 
-    private sealed class GetCurrentBranchAdminForSurveyDashboardSpec
-        : Specification<BranchAdmin, CurrentBranchActorForSurveyDashboardDto>
-    {
-        public GetCurrentBranchAdminForSurveyDashboardSpec(Guid applicationUserId)
-        {
-            UseNoTracking();
-
-            AddCriteria(x => x.ApplicationUserId == applicationUserId);
-
-            Select(x => new CurrentBranchActorForSurveyDashboardDto
-            {
-                BranchId = x.BranchId,
-                BranchNameEn = x.Branch.NameEn,
-                BranchNameAr = x.Branch.NameAr
-            });
-        }
-    }
-
-    private sealed class GetCurrentBranchUserForSurveyDashboardSpec
-        : Specification<BranchUser, CurrentBranchActorForSurveyDashboardDto>
-    {
-        public GetCurrentBranchUserForSurveyDashboardSpec(Guid applicationUserId)
-        {
-            UseNoTracking();
-
-            AddCriteria(x => x.ApplicationUserId == applicationUserId);
-
-            Select(x => new CurrentBranchActorForSurveyDashboardDto
-            {
-                BranchId = x.BranchId,
-                BranchNameEn = x.Branch.NameEn,
-                BranchNameAr = x.Branch.NameAr
-            });
-        }
-    }
 }

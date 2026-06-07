@@ -2565,4 +2565,55 @@
   <data name="GetBranchTemplatesPdfReport_ScoreCalculationMode_Invalid" xml:space="preserve">
     <value>Score calculation mode is invalid.</value>
   </data>
+  <data name="CurrentBranchScope_CurrentBranchActor_NotFound" xml:space="preserve">
+    <value>Current branch actor profile was not found.</value>
+  </data>
+  <data name="BranchArea_CurrentProfile_NotFound" xml:space="preserve">
+    <value>Current Branch Area profile was not found.</value>
+  </data>
+  <data name="BranchArea_NoBranches_Assigned" xml:space="preserve">
+    <value>No branches are assigned to the current Branch Area.</value>
+  </data>
+  <data name="BranchArea_SelectedBranch_Required" xml:space="preserve">
+    <value>A branch must be selected before performing this operation.</value>
+  </data>
+  <data name="BranchArea_SelectedBranch_NotAllowed" xml:space="preserve">
+    <value>Selected branch is not assigned to the current Branch Area.</value>
+  </data>
+  <data name="SelectBranch_BranchId_Required" xml:space="preserve">
+    <value>Branch id is required.</value>
+  </data>
+  <data name="SelectBranch_Branch_NotFound" xml:space="preserve">
+    <value>Selected branch was not found.</value>
+  </data>
+  <data name="SelectBranch_CurrentUser_NotBranchArea" xml:space="preserve">
+    <value>This operation is available only for Branch Area users.</value>
+  </data>
+  <data name="CreateBranchArea_Branches_Required" xml:space="preserve">
+    <value>Branch Area must be assigned to at least one branch.</value>
+  </data>
+  <data name="CreateBranchArea_BranchIds_Invalid" xml:space="preserve">
+    <value>Branch ids list is invalid.</value>
+  </data>
+  <data name="CreateBranchArea_BranchIds_Duplicated" xml:space="preserve">
+    <value>The same branch cannot be assigned more than once.</value>
+  </data>
+  <data name="CreateBranchArea_Branches_NotFound" xml:space="preserve">
+    <value>Some selected branches were not found.</value>
+  </data>
+  <data name="CreateBranchArea_UserName_AlreadyExists" xml:space="preserve">
+    <value>User name already exists.</value>
+  </data>
+  <data name="CreateBranchArea_Email_AlreadyExists" xml:space="preserve">
+    <value>Email already exists.</value>
+  </data>
+  <data name="AssignBranchAreaBranches_BranchArea_NotFound" xml:space="preserve">
+    <value>Branch Area was not found.</value>
+  </data>
+  <data name="AssignBranchAreaBranches_Branches_Required" xml:space="preserve">
+    <value>At least one branch must be selected.</value>
+  </data>
+  <data name="AssignBranchAreaBranches_Branches_NotFound" xml:space="preserve">
+    <value>Some selected branches were not found.</value>
+  </data>
 </root>

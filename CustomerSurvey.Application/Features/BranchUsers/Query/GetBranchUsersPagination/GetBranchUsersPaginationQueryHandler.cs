@@ -3,6 +3,7 @@ using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
 
@@ -15,6 +16,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<UserRole> _userRoleReadRepository;
         private readonly IWriteReadRepository<ApplicationUser> _applicationUserReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
 
         public GetBranchUsersPaginationQueryHandler(
@@ -22,6 +24,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<UserRole> userRoleReadRepository,
             IWriteReadRepository<ApplicationUser> applicationUserReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser)
         {
             _branchAdminReadRepository = branchAdminReadRepository
@@ -35,6 +38,9 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
 
             _applicationUserReadRepository = applicationUserReadRepository
                 ?? throw new ArgumentNullException(nameof(applicationUserReadRepository));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -52,22 +58,19 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Query.GetBranchUsersPa
                     Type: ErrorType.Security));
             }
 
-            var currentBranchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForBranchUsersPaginationSpec(_currentUser.UserId.Value),
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (currentBranchAdmin is null)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<Pagination<BranchUserPaginationItemResponse>>.Fail(new Error(
-                    Code: "BranchUsers.Pagination.CurrentBranchAdminNotFound",
-                    Message: ErrorMessage.GetBranchUsersPagination_CurrentBranchAdmin_NotFound,
-                    Type: ErrorType.NotFound));
+                return Result<Pagination<BranchUserPaginationItemResponse>>.Fail(
+                    currentBranchScope.Errors);
             }
 
             request.SearchText ??= string.Empty;
 
             var spec = new GetBranchUsersPaginationSpec(
-                currentBranchAdmin.BranchId,
+                currentBranchScope.Value.BranchId,
                 request);
 
             var (users, totalCount) = await _branchUserReadRepository.ListWithCountAsync(

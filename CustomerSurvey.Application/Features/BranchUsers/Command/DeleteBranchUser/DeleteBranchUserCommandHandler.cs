@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
 using System;
@@ -19,6 +20,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.DeleteBranchUs
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<ApplicationUser> _applicationUserReadRepository;
         private readonly IWriteRepository<ApplicationUser> _applicationUserWriteRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -27,6 +29,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.DeleteBranchUs
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<ApplicationUser> applicationUserReadRepository,
             IWriteRepository<ApplicationUser> applicationUserWriteRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -38,6 +41,8 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.DeleteBranchUs
                 ?? throw new ArgumentNullException(nameof(applicationUserReadRepository));
             _applicationUserWriteRepository = applicationUserWriteRepository
                 ?? throw new ArgumentNullException(nameof(applicationUserWriteRepository));
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
             _unitOfWork = unitOfWork
@@ -58,16 +63,12 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.DeleteBranchUs
 
             var currentApplicationUserId = _currentUser.UserId.Value;
 
-            var currentBranchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForDeleteBranchUserSpec(currentApplicationUserId),
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (currentBranchAdmin is null)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<DeleteBranchUserResponse>.Fail(new Error(
-                    Code: "BranchUsers.Delete.CurrentBranchAdminNotFound",
-                    Message: ErrorMessage.DeleteBranchUser_CurrentBranchAdmin_NotFound,
-                    Type: ErrorType.NotFound));
+                return Result<DeleteBranchUserResponse>.Fail(currentBranchScope.Errors);
             }
 
             var targetBranchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
@@ -82,7 +83,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.DeleteBranchUs
                     Type: ErrorType.NotFound));
             }
 
-            if (targetBranchUser.BranchId != currentBranchAdmin.BranchId)
+            if (targetBranchUser.BranchId != currentBranchScope.Value.BranchId)
             {
                 return Result<DeleteBranchUserResponse>.Fail(new Error(
                     Code: "BranchUsers.Delete.BranchScopeMismatch",

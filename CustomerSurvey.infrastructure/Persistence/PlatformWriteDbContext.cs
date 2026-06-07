@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using BuildingBlock.Infrastracture.Extensions;
 using BuildingBlock.Infrastracture.MultiTenancy;
 using BuildingBlock.Infrastracture.Presistence;
+using CustomerSurvey.Domain.Identity;
 
 namespace CustomerSurvey.infrastructure.Persistence
 {
@@ -15,6 +16,9 @@ namespace CustomerSurvey.infrastructure.Persistence
         public Guid? CurrentAccountId => _tenantContext.AccountId;
 
         public bool IsPlatformAdmin => _tenantContext.IsPlatformAdmin;
+
+        public DbSet<BranchArea> BranchAreas => Set<BranchArea>();
+        public DbSet<BranchAreaBranch> BranchAreaBranches => Set<BranchAreaBranch>();
 
         public PlatformWriteDbContext(
             DbContextOptions<PlatformWriteDbContext> options,

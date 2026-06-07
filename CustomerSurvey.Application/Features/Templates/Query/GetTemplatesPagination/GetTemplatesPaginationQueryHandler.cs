@@ -3,6 +3,7 @@ using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
@@ -13,29 +14,24 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
         : IQueryHandler<GetTemplatesPaginationQuery, Pagination<TemplatePaginationItemResponse>>
     {
         private readonly IWriteReadRepository<Template> _templateReadRepository;
-        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<ApplicationUser> _applicationUserReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
 
         public GetTemplatesPaginationQueryHandler(
             IWriteReadRepository<Template> templateReadRepository,
-            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-            IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<ApplicationUser> applicationUserReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser)
         {
             _templateReadRepository = templateReadRepository
                 ?? throw new ArgumentNullException(nameof(templateReadRepository));
 
-            _branchAdminReadRepository = branchAdminReadRepository
-                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-            _branchUserReadRepository = branchUserReadRepository
-                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
-
             _applicationUserReadRepository = applicationUserReadRepository
                 ?? throw new ArgumentNullException(nameof(applicationUserReadRepository));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -55,19 +51,16 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
 
             request.SearchText ??= string.Empty;
 
-            var currentApplicationUserId = _currentUser.UserId.Value;
-
-            var actorBranchIdResult = await ResolveCurrentActorBranchIdAsync(
-                currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (actorBranchIdResult.IsFailure)
+            if (currentBranchScope.IsFailure)
             {
                 return Result<Pagination<TemplatePaginationItemResponse>>.Fail(
-                    actorBranchIdResult.Errors);
+                    currentBranchScope.Errors);
             }
 
-            var branchId = actorBranchIdResult.Value;
+            var branchId = currentBranchScope.Value.BranchId;
 
             var spec = new GetTemplatesPaginationSpec(
                 branchId,
@@ -141,32 +134,5 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
             return Result<Pagination<TemplatePaginationItemResponse>>.Ok(response);
         }
 
-        private async Task<Result<Guid>> ResolveCurrentActorBranchIdAsync(
-            Guid currentApplicationUserId,
-            CancellationToken cancellationToken)
-        {
-            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForTemplatesPaginationSpec(currentApplicationUserId),
-                cancellationToken);
-
-            if (branchAdmin is not null)
-            {
-                return Result<Guid>.Ok(branchAdmin.BranchId);
-            }
-
-            var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForTemplatesPaginationSpec(currentApplicationUserId),
-                cancellationToken);
-
-            if (branchUser is not null)
-            {
-                return Result<Guid>.Ok(branchUser.BranchId);
-            }
-
-            return Result<Guid>.Fail(new Error(
-                Code: "Templates.Pagination.CurrentBranchActorNotFound",
-                Message: ErrorMessage.GetTemplatesPagination_CurrentBranchActor_NotFound,
-                Type: ErrorType.Security));
-        }
     }
 }

@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Features.Templates.Shared;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
@@ -18,31 +19,25 @@ namespace CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQu
     internal sealed class ManageTemplateQuestionConditionsCommandHandler
           : ICommandHandler<ManageTemplateQuestionConditionsCommand, ManageTemplateQuestionConditionsResponse>
     {
-        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<Template> _templateReadRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
         private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
         private readonly IWriteReadRepository<TemplateQuestionCondition> _conditionReadRepository;
         private readonly IWriteRepository<TemplateQuestionCondition> _conditionWriteRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
         public ManageTemplateQuestionConditionsCommandHandler(
-            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-            IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<Template> templateReadRepository,
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
             IWriteReadRepository<QuestionOption> questionOptionReadRepository,
             IWriteReadRepository<TemplateQuestionCondition> conditionReadRepository,
             IWriteRepository<TemplateQuestionCondition> conditionWriteRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
-            _branchAdminReadRepository = branchAdminReadRepository
-                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-            _branchUserReadRepository = branchUserReadRepository
-                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
             _templateReadRepository = templateReadRepository
                 ?? throw new ArgumentNullException(nameof(templateReadRepository));
             _templateQuestionReadRepository = templateQuestionReadRepository
@@ -53,6 +48,8 @@ namespace CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQu
                 ?? throw new ArgumentNullException(nameof(conditionReadRepository));
             _conditionWriteRepository = conditionWriteRepository
                 ?? throw new ArgumentNullException(nameof(conditionWriteRepository));
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
             _unitOfWork = unitOfWork
@@ -73,22 +70,19 @@ namespace CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQu
 
             var currentApplicationUserId = _currentUser.UserId.Value;
 
-            var currentActor = await ResolveCurrentBranchActorAsync(
-                currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (currentActor is null)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<ManageTemplateQuestionConditionsResponse>.Fail(new Error(
-                    Code: "Templates.ManageQuestionConditions.CurrentBranchActorNotFound",
-                    Message: ErrorMessage.ManageTemplateQuestionConditions_CurrentBranchActor_NotFound,
-                    Type: ErrorType.Security));
+                return Result<ManageTemplateQuestionConditionsResponse>.Fail(
+                    currentBranchScope.Errors);
             }
 
             var template = await _templateReadRepository.FirstOrDefaultAsync(
                 new GetTemplateForManageTemplateQuestionConditionsSpec(
                     templateId: request.TemplateId,
-                    branchId: currentActor.BranchId),
+                    branchId: currentBranchScope.Value.BranchId),
                 cancellationToken);
 
             if (template is null)
@@ -511,24 +505,5 @@ namespace CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQu
             };
         }
 
-        private async Task<CurrentBranchActorForManageTemplateQuestionConditionsDto?> ResolveCurrentBranchActorAsync(
-            Guid applicationUserId,
-            CancellationToken cancellationToken)
-        {
-            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForManageTemplateQuestionConditionsSpec(applicationUserId),
-                cancellationToken);
-
-            if (branchAdmin is not null)
-            {
-                return branchAdmin;
-            }
-
-            var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForManageTemplateQuestionConditionsSpec(applicationUserId),
-                cancellationToken);
-
-            return branchUser;
-        }
     }
 }

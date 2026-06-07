@@ -56,6 +56,9 @@ namespace BuildingBlock.Infrastracture.Service
             dto.AccountId =
                 TryGetGuid(principal, JwtClaimTypesCustom.AccountId);
 
+            dto.ActiveBranchId =
+                TryGetGuid(principal, JwtClaimTypesCustom.ActiveBranchId);
+
             dto.Email =
                 TryGetString(principal, JwtClaimTypesCustom.Email)
                 ?? TryGetString(principal, ClaimTypes.Email);
@@ -69,6 +72,9 @@ namespace BuildingBlock.Infrastracture.Service
 
             dto.UserType =
                 TryGetUserType(principal, JwtClaimTypesCustom.UserType);
+
+            dto.UserTypeValue =
+                TryGetInt(principal, JwtClaimTypesCustom.UserType);
 
             dto.Permissions =
                 GetDistinctClaimValues(principal, JwtClaimTypesCustom.Permission);
@@ -165,6 +171,15 @@ namespace BuildingBlock.Infrastracture.Service
             var raw = GetClaimValueAny(principal, claimType);
             if (Guid.TryParse(raw, out var g) && g != Guid.Empty)
                 return g;
+
+            return null;
+        }
+
+        private static int? TryGetInt(ClaimsPrincipal principal, string claimType)
+        {
+            var raw = GetClaimValueAny(principal, claimType);
+            if (int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value))
+                return value;
 
             return null;
         }

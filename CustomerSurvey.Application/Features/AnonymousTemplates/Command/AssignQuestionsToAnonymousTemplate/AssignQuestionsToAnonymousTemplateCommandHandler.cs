@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -19,8 +20,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignQ
         private readonly IWriteRepository<AnonymousTemplateQuestionCondition> _conditionWriteRepository;
         private readonly IWriteReadRepository<Question> _questionReadRepository;
         private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
-        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -32,8 +32,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignQ
             IWriteRepository<AnonymousTemplateQuestionCondition> conditionWriteRepository,
             IWriteReadRepository<Question> questionReadRepository,
             IWriteReadRepository<SuperAdmin> superAdminReadRepository,
-            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-            IWriteReadRepository<BranchUser> branchUserReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -58,11 +57,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignQ
             _superAdminReadRepository = superAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
 
-            _branchAdminReadRepository = branchAdminReadRepository
-                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-            _branchUserReadRepository = branchUserReadRepository
-                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -93,19 +89,15 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignQ
 
             if (!isSuperAdmin)
             {
-                var branchActor = await ResolveBranchActorAsync(
-                    currentApplicationUserId,
+                var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                     cancellationToken);
 
-                if (branchActor is null)
+                if (currentBranchScope.IsFailure)
                 {
-                    return Result<AssignQuestionsToAnonymousTemplateResponse>.Fail(new Error(
-                        Code: "AnonymousTemplates.AssignQuestions.CurrentActorNotFound",
-                        Message: ErrorMessage.AssignQuestionsToAnonymousTemplate_CurrentActor_NotFound,
-                        Type: ErrorType.Security));
+                    return Result<AssignQuestionsToAnonymousTemplateResponse>.Fail(currentBranchScope.Errors);
                 }
 
-                currentBranchId = branchActor.BranchId;
+                currentBranchId = currentBranchScope.Value.BranchId;
             }
 
             var anonymousTemplate = await _anonymousTemplateReadRepository.FirstOrDefaultAsync(
@@ -266,26 +258,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignQ
                     AssignedQuestionsCount = responseQuestions.Length,
                     Questions = responseQuestions
                 });
-        }
-
-        private async Task<CurrentBranchActorForAssignQuestionsToAnonymousTemplateDto?> ResolveBranchActorAsync(
-            Guid applicationUserId,
-            CancellationToken cancellationToken)
-        {
-            var currentBranchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForAssignQuestionsToAnonymousTemplateSpec(applicationUserId),
-                cancellationToken);
-
-            if (currentBranchAdmin is not null)
-            {
-                return currentBranchAdmin;
-            }
-
-            var currentBranchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForAssignQuestionsToAnonymousTemplateSpec(applicationUserId),
-                cancellationToken);
-
-            return currentBranchUser;
         }
 
         private async Task<QuestionValidationResult> ValidateRequestedQuestionsAsync(

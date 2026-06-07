@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Features.QuestionGroups.Shared.Specs;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
@@ -15,16 +16,14 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Command.CreateQuest
     {
         private readonly IWriteReadRepository<QuestionGroup> _questionGroupReadRepository;
         private readonly IWriteRepository<QuestionGroup> _questionGroupWriteRepository;
-        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
         public CreateQuestionGroupCommandHandler(
             IWriteReadRepository<QuestionGroup> questionGroupReadRepository,
             IWriteRepository<QuestionGroup> questionGroupWriteRepository,
-            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-            IWriteReadRepository<BranchUser> branchUserReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -34,11 +33,8 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Command.CreateQuest
             _questionGroupWriteRepository = questionGroupWriteRepository
                 ?? throw new ArgumentNullException(nameof(questionGroupWriteRepository));
 
-            _branchAdminReadRepository = branchAdminReadRepository
-                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-            _branchUserReadRepository = branchUserReadRepository
-                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -61,19 +57,15 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Command.CreateQuest
 
             var currentApplicationUserId = _currentUser.UserId.Value;
 
-            var actorBranchId = await ResolveActorBranchIdAsync(
-                currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (!actorBranchId.HasValue)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<CreateQuestionGroupResponse>.Fail(new Error(
-                    Code: "QuestionGroups.Create.CurrentBranchActorNotFound",
-                    Message: ErrorMessage.CreateQuestionGroup_CurrentBranchActor_NotFound,
-                    Type: ErrorType.Security));
+                return Result<CreateQuestionGroupResponse>.Fail(currentBranchScope.Errors);
             }
 
-            var branchId = actorBranchId.Value;
+            var branchId = currentBranchScope.Value.BranchId;
             var normalizedNameEn = request.NameEn.Trim();
 
             var nameEnExists = await _questionGroupReadRepository.AnyAsync(
@@ -117,24 +109,5 @@ namespace CustomerSurvey.Application.Features.QuestionGroups.Command.CreateQuest
             return Result<CreateQuestionGroupResponse>.Ok(response);
         }
 
-        private async Task<Guid?> ResolveActorBranchIdAsync(
-            Guid applicationUserId,
-            CancellationToken cancellationToken)
-        {
-            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForQuestionGroupSpec(applicationUserId),
-                cancellationToken);
-
-            if (branchAdmin is not null)
-            {
-                return branchAdmin.BranchId;
-            }
-
-            var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForQuestionGroupSpec(applicationUserId),
-                cancellationToken);
-
-            return branchUser?.BranchId;
-        }
     }
 }

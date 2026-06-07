@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Abstraction.Services;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
@@ -16,10 +17,9 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
         private readonly IWriteReadRepository<AnonymousTemplate> _anonymousTemplateReadRepository;
         private readonly IWriteRepository<AnonymousTemplate> _anonymousTemplateWriteRepository;
         private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
-        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IPublicSurveyUrlBuilder _publicSurveyUrlBuilder;
         private readonly IQrCodeGenerator _qrCodeGenerator;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -27,10 +27,9 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
             IWriteReadRepository<AnonymousTemplate> anonymousTemplateReadRepository,
             IWriteRepository<AnonymousTemplate> anonymousTemplateWriteRepository,
             IWriteReadRepository<SuperAdmin> superAdminReadRepository,
-            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-            IWriteReadRepository<BranchUser> branchUserReadRepository,
             IPublicSurveyUrlBuilder publicSurveyUrlBuilder,
             IQrCodeGenerator qrCodeGenerator,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -43,17 +42,14 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
             _superAdminReadRepository = superAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
 
-            _branchAdminReadRepository = branchAdminReadRepository
-                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-            _branchUserReadRepository = branchUserReadRepository
-                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
-
             _publicSurveyUrlBuilder = publicSurveyUrlBuilder
                 ?? throw new ArgumentNullException(nameof(publicSurveyUrlBuilder));
 
             _qrCodeGenerator = qrCodeGenerator
                 ?? throw new ArgumentNullException(nameof(qrCodeGenerator));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -88,21 +84,17 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
                     cancellationToken);
             }
 
-            var currentBranchActor = await ResolveBranchActorAsync(
-                currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (currentBranchActor is null)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<CreateAnonymousTemplateResponse>.Fail(new Error(
-                    Code: "AnonymousTemplates.Create.CurrentActorNotFound",
-                    Message: ErrorMessage.CreateAnonymousTemplate_CurrentActor_NotFound,
-                    Type: ErrorType.Security));
+                return Result<CreateAnonymousTemplateResponse>.Fail(currentBranchScope.Errors);
             }
 
             return await CreateBranchAnonymousTemplateAsync(
                 request,
-                currentBranchActor.BranchId,
+                currentBranchScope.Value.BranchId,
                 currentApplicationUserId,
                 cancellationToken);
         }
@@ -216,26 +208,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
 
             return Result<CreateAnonymousTemplateResponse>.Ok(
                 MapToResponse(anonymousTemplate));
-        }
-
-        private async Task<CurrentBranchActorForCreateAnonymousTemplateDto?> ResolveBranchActorAsync(
-            Guid applicationUserId,
-            CancellationToken cancellationToken)
-        {
-            var currentBranchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForCreateAnonymousTemplateSpec(applicationUserId),
-                cancellationToken);
-
-            if (currentBranchAdmin is not null)
-            {
-                return currentBranchAdmin;
-            }
-
-            var currentBranchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForCreateAnonymousTemplateSpec(applicationUserId),
-                cancellationToken);
-
-            return currentBranchUser;
         }
 
         private void SetPublicAccess(AnonymousTemplate anonymousTemplate)

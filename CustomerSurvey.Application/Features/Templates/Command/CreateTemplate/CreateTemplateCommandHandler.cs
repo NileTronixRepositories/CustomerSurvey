@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
@@ -19,17 +20,14 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
         private readonly IWriteReadRepository<Template> _templateReadRepository;
         private readonly IWriteRepository<Template> _templateWriteRepository;
 
-        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
-
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
         public CreateTemplateCommandHandler(
             IWriteReadRepository<Template> templateReadRepository,
             IWriteRepository<Template> templateWriteRepository,
-            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-            IWriteReadRepository<BranchUser> branchUserReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -39,11 +37,8 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
             _templateWriteRepository = templateWriteRepository
                 ?? throw new ArgumentNullException(nameof(templateWriteRepository));
 
-            _branchAdminReadRepository = branchAdminReadRepository
-                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-            _branchUserReadRepository = branchUserReadRepository
-                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -66,16 +61,15 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
 
             var currentApplicationUserId = _currentUser.UserId.Value;
 
-            var actorBranchIdResult = await ResolveCurrentActorBranchIdAsync(
-                currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (actorBranchIdResult.IsFailure)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<CreateTemplateResponse>.Fail(actorBranchIdResult.Errors);
+                return Result<CreateTemplateResponse>.Fail(currentBranchScope.Errors);
             }
 
-            var branchId = actorBranchIdResult.Value;
+            var branchId = currentBranchScope.Value.BranchId;
 
             var normalizedNameEn = request.NameEn.Trim();
 
@@ -159,32 +153,5 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
             return Result<CreateTemplateResponse>.Ok(response);
         }
 
-        private async Task<Result<Guid>> ResolveCurrentActorBranchIdAsync(
-            Guid currentApplicationUserId,
-            CancellationToken cancellationToken)
-        {
-            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForCreateTemplateSpec(currentApplicationUserId),
-                cancellationToken);
-
-            if (branchAdmin is not null)
-            {
-                return Result<Guid>.Ok(branchAdmin.BranchId);
-            }
-
-            var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForCreateTemplateSpec(currentApplicationUserId),
-                cancellationToken);
-
-            if (branchUser is not null)
-            {
-                return Result<Guid>.Ok(branchUser.BranchId);
-            }
-
-            return Result<Guid>.Fail(new Error(
-                Code: "Templates.Create.CurrentBranchActorNotFound",
-                Message: ErrorMessage.CreateTemplate_CurrentBranchActor_NotFound,
-                Type: ErrorType.Security));
-        }
     }
 }

@@ -6,10 +6,12 @@
 
         Guid? UserId { get; }
         Guid? AccountId { get; }
+        Guid? ActiveBranchId { get; }
 
         string? Role { get; }
 
         // مصدر الحقيقة بدل IsPlatformAdmin
         UserType UserType { get; }
+        int? UserTypeValue { get; }
     }
 }

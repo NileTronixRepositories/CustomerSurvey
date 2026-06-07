@@ -25,6 +25,8 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
         private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly IWriteReadRepository<BranchArea> _branchAreaReadRepository;
+        private readonly IWriteReadRepository<BranchAreaBranch> _branchAreaBranchReadRepository;
         private readonly IWriteReadRepository<DepartmentAdmin> _departmentAdminReadRepository;
         private readonly IWriteReadRepository<Operator> _operatorReadRepository;
 
@@ -38,6 +40,8 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
             IWriteReadRepository<SuperAdmin> superAdminReadRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
+            IWriteReadRepository<BranchArea> branchAreaReadRepository,
+            IWriteReadRepository<BranchAreaBranch> branchAreaBranchReadRepository,
             IWriteReadRepository<DepartmentAdmin> departmentAdminReadRepository,
             IWriteReadRepository<Operator> operatorReadRepository,
             IJwtProvider jwtProvider)
@@ -59,6 +63,12 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
 
             _branchUserReadRepository = branchUserReadRepository
                 ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+
+            _branchAreaReadRepository = branchAreaReadRepository
+                ?? throw new ArgumentNullException(nameof(branchAreaReadRepository));
+
+            _branchAreaBranchReadRepository = branchAreaBranchReadRepository
+                ?? throw new ArgumentNullException(nameof(branchAreaBranchReadRepository));
 
             _departmentAdminReadRepository = departmentAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(departmentAdminReadRepository));
@@ -152,6 +162,40 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
                 permissions: permissions,
                 cancellationToken: cancellationToken);
 
+            if (user.UserType == UserType.BranchArea)
+            {
+                var branchArea = await _branchAreaReadRepository.FirstOrDefaultAsync(
+                    new GetBranchAreaForLoginSpec(user.Id),
+                    cancellationToken);
+
+                if (branchArea is null)
+                {
+                    return Result<UserTokenDto>.Fail(new Error(
+                        Code: "Auth.Login.BranchAreaProfileNotFound",
+                        Message: ErrorMessage.BranchArea_CurrentProfile_NotFound,
+                        Type: ErrorType.NotFound));
+                }
+
+                var assignedBranches = await _branchAreaBranchReadRepository.ListAsync(
+                    new GetBranchAreaBranchesForLoginSpec(branchArea.BranchAreaId),
+                    cancellationToken);
+
+                if (assignedBranches.Count == 0)
+                {
+                    return Result<UserTokenDto>.Fail(new Error(
+                        Code: "Auth.Login.BranchAreaNoBranchesAssigned",
+                        Message: ErrorMessage.BranchArea_NoBranches_Assigned,
+                        Type: ErrorType.Security));
+                }
+
+                token = token with
+                {
+                    RequiresBranchSelection = true,
+                    ActiveBranchId = null,
+                    Branches = assignedBranches
+                };
+            }
+
             return Result<UserTokenDto>.Ok(token);
         }
 
@@ -171,6 +215,10 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
                     cancellationToken),
 
                 UserType.BranchUser => await _branchUserReadRepository.AnyAsync(
+                    x => x.ApplicationUserId == applicationUserId,
+                    cancellationToken),
+
+                UserType.BranchArea => await _branchAreaReadRepository.AnyAsync(
                     x => x.ApplicationUserId == applicationUserId,
                     cancellationToken),
 

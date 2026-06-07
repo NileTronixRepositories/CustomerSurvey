@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Features.Branches.Query.GetBranchDetails;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Identity;
@@ -24,6 +25,7 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetMyBranchDetails
         private readonly IWriteReadRepository<Template> _templateReadRepository;
         private readonly IWriteReadRepository<QuestionGroup> _questionGroupReadRepository;
         private readonly IWriteReadRepository<Question> _questionReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
 
         public GetMyBranchDetailsQueryHandler(
@@ -34,6 +36,7 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetMyBranchDetails
             IWriteReadRepository<Template> templateReadRepository,
             IWriteReadRepository<QuestionGroup> questionGroupReadRepository,
             IWriteReadRepository<Question> questionReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser)
         {
             _branchReadRepository = branchReadRepository
@@ -57,6 +60,9 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetMyBranchDetails
             _questionReadRepository = questionReadRepository
                 ?? throw new ArgumentNullException(nameof(questionReadRepository));
 
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
+
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
         }
@@ -73,21 +79,15 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetMyBranchDetails
                     Type: ErrorType.Security));
             }
 
-            var currentApplicationUserId = _currentUser.UserId.Value;
-
-            var currentBranchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForMyBranchDetailsSpec(currentApplicationUserId),
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (currentBranchAdmin is null)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<GetBranchDetailsResponse>.Fail(new Error(
-                    Code: "Branches.MyBranch.CurrentBranchAdminNotFound",
-                    Message: ErrorMessage.GetMyBranchDetails_CurrentBranchAdmin_NotFound,
-                    Type: ErrorType.NotFound));
+                return Result<GetBranchDetailsResponse>.Fail(currentBranchScope.Errors);
             }
 
-            var branchId = currentBranchAdmin.BranchId;
+            var branchId = currentBranchScope.Value.BranchId;
 
             var branch = await _branchReadRepository.FirstOrDefaultAsync(
                 new GetBranchBasicDetailsSpec(branchId),

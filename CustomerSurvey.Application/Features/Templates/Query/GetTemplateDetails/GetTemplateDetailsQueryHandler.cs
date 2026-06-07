@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Features.Questions.Shared;
 using CustomerSurvey.Application.Features.Questions.Shared.Specs;
 using CustomerSurvey.Application.Features.Templates.Shared;
@@ -18,20 +19,18 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
         private readonly IWriteReadRepository<Template> _templateReadRepository;
         private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
         private readonly IWriteReadRepository<TemplateCustomInput> _templateCustomInputReadRepository;
-        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<TemplateQuestionCondition> _conditionReadRepository;
         private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
 
         public GetTemplateDetailsQueryHandler(
             IWriteReadRepository<Template> templateReadRepository,
             IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
             IWriteReadRepository<TemplateCustomInput> templateCustomInputReadRepository,
-            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-            IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<TemplateQuestionCondition> conditionReadRepository,
             IWriteReadRepository<QuestionOption> questionOptionReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser)
         {
             _templateReadRepository = templateReadRepository
@@ -43,17 +42,14 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
             _templateCustomInputReadRepository = templateCustomInputReadRepository
                 ?? throw new ArgumentNullException(nameof(templateCustomInputReadRepository));
 
-            _branchAdminReadRepository = branchAdminReadRepository
-                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-            _branchUserReadRepository = branchUserReadRepository
-                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
-
             _conditionReadRepository = conditionReadRepository
                 ?? throw new ArgumentNullException(nameof(conditionReadRepository));
 
             _questionOptionReadRepository = questionOptionReadRepository
                 ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -71,18 +67,15 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                     Type: ErrorType.Security));
             }
 
-            var currentApplicationUserId = _currentUser.UserId.Value;
-
-            var actorBranchIdResult = await ResolveCurrentActorBranchIdAsync(
-                currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (actorBranchIdResult.IsFailure)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<GetTemplateDetailsResponse>.Fail(actorBranchIdResult.Errors);
+                return Result<GetTemplateDetailsResponse>.Fail(currentBranchScope.Errors);
             }
 
-            var branchId = actorBranchIdResult.Value;
+            var branchId = currentBranchScope.Value.BranchId;
 
             var template = await _templateReadRepository.FirstOrDefaultAsync(
                 new GetTemplateBasicDetailsSpec(
@@ -243,34 +236,6 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
             };
 
             return Result<GetTemplateDetailsResponse>.Ok(response);
-        }
-
-        private async Task<Result<Guid>> ResolveCurrentActorBranchIdAsync(
-            Guid currentApplicationUserId,
-            CancellationToken cancellationToken)
-        {
-            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForTemplateDetailsSpec(currentApplicationUserId),
-                cancellationToken);
-
-            if (branchAdmin is not null)
-            {
-                return Result<Guid>.Ok(branchAdmin.BranchId);
-            }
-
-            var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForTemplateDetailsSpec(currentApplicationUserId),
-                cancellationToken);
-
-            if (branchUser is not null)
-            {
-                return Result<Guid>.Ok(branchUser.BranchId);
-            }
-
-            return Result<Guid>.Fail(new Error(
-                Code: "Templates.Details.CurrentBranchActorNotFound",
-                Message: ErrorMessage.GetTemplateDetails_CurrentBranchActor_NotFound,
-                Type: ErrorType.Security));
         }
 
         private static TemplateQuestionConditionForReadDto[] FilterValidConditions(

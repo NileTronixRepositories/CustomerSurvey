@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
@@ -20,6 +21,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.RestoreTemplate
         private readonly IWriteRepository<Template> _templateWriteRepository;
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -28,6 +30,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.RestoreTemplate
             IWriteRepository<Template> templateWriteRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -42,6 +45,9 @@ namespace CustomerSurvey.Application.Features.Templates.Command.RestoreTemplate
 
             _branchUserReadRepository = branchUserReadRepository
                 ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -64,40 +70,18 @@ namespace CustomerSurvey.Application.Features.Templates.Command.RestoreTemplate
 
             var currentApplicationUserId = _currentUser.UserId.Value;
 
-            Guid? actorBranchId = null;
-
-            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForRestoreTemplateSpec(currentApplicationUserId),
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (branchAdmin is not null)
+            if (currentBranchScope.IsFailure)
             {
-                actorBranchId = branchAdmin.BranchId;
-            }
-            else
-            {
-                var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                    new GetCurrentBranchUserForRestoreTemplateSpec(currentApplicationUserId),
-                    cancellationToken);
-
-                if (branchUser is not null)
-                {
-                    actorBranchId = branchUser.BranchId;
-                }
-            }
-
-            if (!actorBranchId.HasValue)
-            {
-                return Result<RestoreTemplateResponse>.Fail(new Error(
-                    Code: "Templates.Restore.CurrentBranchActorNotFound",
-                    Message: ErrorMessage.RestoreTemplate_CurrentBranchActor_NotFound,
-                    Type: ErrorType.Security));
+                return Result<RestoreTemplateResponse>.Fail(currentBranchScope.Errors);
             }
 
             var template = await _templateReadRepository.FirstOrDefaultAsync(
                 new GetTemplateForRestoreSpec(
                     templateId: request.TemplateId,
-                    branchId: actorBranchId.Value),
+                    branchId: currentBranchScope.Value.BranchId),
                 cancellationToken);
 
             if (template is null)

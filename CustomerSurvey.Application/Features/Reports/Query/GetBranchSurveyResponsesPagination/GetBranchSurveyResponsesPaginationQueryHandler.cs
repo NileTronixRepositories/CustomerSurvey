@@ -3,6 +3,7 @@ using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -18,34 +19,29 @@ internal sealed class GetBranchSurveyResponsesPaginationQueryHandler
     private const int CustomInputsPreviewCount = 3;
 
     private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
-    private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-    private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
     private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
     private readonly IWriteReadRepository<SurveyResponseCustomInputValue> _customInputValueReadRepository;
+    private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
     private readonly ICurrentUser _currentUser;
 
     public GetBranchSurveyResponsesPaginationQueryHandler(
         IWriteReadRepository<SuperAdmin> superAdminReadRepository,
-        IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-        IWriteReadRepository<BranchUser> branchUserReadRepository,
         IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
         IWriteReadRepository<SurveyResponseCustomInputValue> customInputValueReadRepository,
+        ICurrentBranchScopeResolver currentBranchScopeResolver,
         ICurrentUser currentUser)
     {
         _superAdminReadRepository = superAdminReadRepository
             ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
-
-        _branchAdminReadRepository = branchAdminReadRepository
-            ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-        _branchUserReadRepository = branchUserReadRepository
-            ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
 
         _surveyResponseReadRepository = surveyResponseReadRepository
             ?? throw new ArgumentNullException(nameof(surveyResponseReadRepository));
 
         _customInputValueReadRepository = customInputValueReadRepository
             ?? throw new ArgumentNullException(nameof(customInputValueReadRepository));
+
+        _currentBranchScopeResolver = currentBranchScopeResolver
+            ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
         _currentUser = currentUser
             ?? throw new ArgumentNullException(nameof(currentUser));
@@ -73,19 +69,16 @@ internal sealed class GetBranchSurveyResponsesPaginationQueryHandler
 
         if (!currentSuperAdminExists)
         {
-            var currentActor = await ResolveCurrentBranchActorAsync(
-                currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (currentActor is null)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<Pagination<BranchSurveyResponsePaginationItemResponse>>.Fail(new Error(
-                    Code: "Reports.BranchResponsesPagination.CurrentBranchActorNotFound",
-                    Message: ErrorMessage.GetBranchSurveyResponsesPagination_CurrentBranchActor_NotFound,
-                    Type: ErrorType.NotFound));
+                return Result<Pagination<BranchSurveyResponsePaginationItemResponse>>.Fail(
+                    currentBranchScope.Errors);
             }
 
-            currentBranchId = currentActor.BranchId;
+            currentBranchId = currentBranchScope.Value.BranchId;
         }
 
         var periodResult = ResolvePeriod(request);
@@ -124,24 +117,6 @@ internal sealed class GetBranchSurveyResponsesPaginationQueryHandler
             data: responseItems);
 
         return Result<Pagination<BranchSurveyResponsePaginationItemResponse>>.Ok(response);
-    }
-
-    private async Task<CurrentBranchActorForSurveyResponsesPaginationDto?> ResolveCurrentBranchActorAsync(
-        Guid applicationUserId,
-        CancellationToken cancellationToken)
-    {
-        var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchAdminForSurveyResponsesPaginationSpec(applicationUserId),
-            cancellationToken);
-
-        if (branchAdmin is not null)
-        {
-            return branchAdmin;
-        }
-
-        return await _branchUserReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchUserForSurveyResponsesPaginationSpec(applicationUserId),
-            cancellationToken);
     }
 
     private static PeriodResolveResult ResolvePeriod(

@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -15,8 +16,7 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
     private const string SurveyVoiceAnswersBasePath = "Media/SurveyVoiceAnswers";
 
     private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
-    private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-    private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+    private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
     private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
     private readonly IWriteReadRepository<SurveyAnswer> _surveyAnswerReadRepository;
     private readonly IWriteReadRepository<SurveyResponseCustomInputValue> _customInputValueReadRepository;
@@ -25,8 +25,7 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
 
     public GetBranchSurveyResponseDetailsQueryHandler(
         IWriteReadRepository<SuperAdmin> superAdminReadRepository,
-        IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-        IWriteReadRepository<BranchUser> branchUserReadRepository,
+        ICurrentBranchScopeResolver currentBranchScopeResolver,
         IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
         IWriteReadRepository<SurveyAnswer> surveyAnswerReadRepository,
         IWriteReadRepository<SurveyResponseCustomInputValue> customInputValueReadRepository,
@@ -36,11 +35,8 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
         _superAdminReadRepository = superAdminReadRepository
             ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
 
-        _branchAdminReadRepository = branchAdminReadRepository
-            ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-        _branchUserReadRepository = branchUserReadRepository
-            ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+        _currentBranchScopeResolver = currentBranchScopeResolver
+            ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
         _surveyResponseReadRepository = surveyResponseReadRepository
             ?? throw new ArgumentNullException(nameof(surveyResponseReadRepository));
@@ -80,19 +76,16 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
 
         if (!currentSuperAdminExists)
         {
-            var currentActor = await ResolveCurrentBranchActorAsync(
-                currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (currentActor is null)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<GetBranchSurveyResponseDetailsResponse>.Fail(new Error(
-                    Code: "Reports.BranchResponseDetails.CurrentBranchActorNotFound",
-                    Message: ErrorMessage.GetBranchSurveyResponseDetails_CurrentBranchActor_NotFound,
-                    Type: ErrorType.NotFound));
+                return Result<GetBranchSurveyResponseDetailsResponse>.Fail(
+                    currentBranchScope.Errors);
             }
 
-            currentBranchId = currentActor.BranchId;
+            currentBranchId = currentBranchScope.Value.BranchId;
         }
 
         var surveyResponse = await _surveyResponseReadRepository.FirstOrDefaultAsync(
@@ -173,24 +166,6 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
         };
 
         return Result<GetBranchSurveyResponseDetailsResponse>.Ok(response);
-    }
-
-    private async Task<CurrentBranchActorForSurveyResponseDetailsDto?> ResolveCurrentBranchActorAsync(
-        Guid applicationUserId,
-        CancellationToken cancellationToken)
-    {
-        var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchAdminForSurveyResponseDetailsSpec(applicationUserId),
-            cancellationToken);
-
-        if (branchAdmin is not null)
-        {
-            return branchAdmin;
-        }
-
-        return await _branchUserReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchUserForSurveyResponseDetailsSpec(applicationUserId),
-            cancellationToken);
     }
 
     private static BranchSurveyResponseCustomInputResponse MapCustomInput(

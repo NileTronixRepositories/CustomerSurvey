@@ -3,6 +3,7 @@ using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Features.Questions.Shared;
 using CustomerSurvey.Application.Features.Questions.Shared.Specs;
 using CustomerSurvey.Domain.Entities;
@@ -15,34 +16,29 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
         : IQueryHandler<GetQuestionsPaginationQuery, Pagination<QuestionPaginationItemResponse>>
     {
         private readonly IWriteReadRepository<Question> _questionReadRepository;
-        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
-        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<ApplicationUser> _applicationUserReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
 
         public GetQuestionsPaginationQueryHandler(
             IWriteReadRepository<Question> questionReadRepository,
-            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-            IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<QuestionOption> questionOptionReadRepository,
             IWriteReadRepository<ApplicationUser> applicationUserReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser)
         {
             _questionReadRepository = questionReadRepository
                 ?? throw new ArgumentNullException(nameof(questionReadRepository));
-
-            _branchAdminReadRepository = branchAdminReadRepository
-                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-            _branchUserReadRepository = branchUserReadRepository
-                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
 
             _questionOptionReadRepository = questionOptionReadRepository
                 ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
 
             _applicationUserReadRepository = applicationUserReadRepository
                 ?? throw new ArgumentNullException(nameof(applicationUserReadRepository));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -60,24 +56,19 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
                     Type: ErrorType.Security));
             }
 
-            var currentApplicationUserId = _currentUser.UserId.Value;
-
-            var actorBranchId = await ResolveActorBranchIdAsync(
-                currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (!actorBranchId.HasValue)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<Pagination<QuestionPaginationItemResponse>>.Fail(new Error(
-                    Code: "Questions.Pagination.CurrentBranchActorNotFound",
-                    Message: ErrorMessage.GetQuestionsPagination_CurrentBranchActor_NotFound,
-                    Type: ErrorType.Security));
+                return Result<Pagination<QuestionPaginationItemResponse>>.Fail(
+                    currentBranchScope.Errors);
             }
 
             request.SearchText ??= string.Empty;
 
             var spec = new GetQuestionsPaginationSpec(
-                branchId: actorBranchId.Value,
+                branchId: currentBranchScope.Value.BranchId,
                 searchParameters: request);
 
             var (items, totalCount) = await _questionReadRepository.ListWithCountAsync(
@@ -177,24 +168,5 @@ namespace CustomerSurvey.Application.Features.Questions.Query.GetQuestionsPagina
             return Result<Pagination<QuestionPaginationItemResponse>>.Ok(response);
         }
 
-        private async Task<Guid?> ResolveActorBranchIdAsync(
-            Guid applicationUserId,
-            CancellationToken cancellationToken)
-        {
-            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForQuestionPaginationSpec(applicationUserId),
-                cancellationToken);
-
-            if (branchAdmin is not null)
-            {
-                return branchAdmin.BranchId;
-            }
-
-            var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForQuestionPaginationSpec(applicationUserId),
-                cancellationToken);
-
-            return branchUser?.BranchId;
-        }
     }
 }

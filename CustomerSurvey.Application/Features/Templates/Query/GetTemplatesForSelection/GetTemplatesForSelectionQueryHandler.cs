@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
@@ -20,6 +21,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesForSel
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<DepartmentAdmin> _departmentAdminReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
 
         public GetTemplatesForSelectionQueryHandler(
@@ -27,6 +29,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesForSel
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<DepartmentAdmin> departmentAdminReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser)
         {
             _templateReadRepository = templateReadRepository
@@ -40,6 +43,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesForSel
 
             _departmentAdminReadRepository = departmentAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(departmentAdminReadRepository));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -82,24 +88,13 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesForSel
             Guid currentApplicationUserId,
             CancellationToken cancellationToken)
         {
-            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForTemplatesSelectionSpec(currentApplicationUserId),
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (branchAdmin is not null)
+            if (currentBranchScope.IsSuccess)
             {
                 return Result<TemplatesSelectionScope>.Ok(
-                    TemplatesSelectionScope.ForBranch(branchAdmin.BranchId));
-            }
-
-            var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForTemplatesSelectionSpec(currentApplicationUserId),
-                cancellationToken);
-
-            if (branchUser is not null)
-            {
-                return Result<TemplatesSelectionScope>.Ok(
-                    TemplatesSelectionScope.ForBranch(branchUser.BranchId));
+                    TemplatesSelectionScope.ForBranch(currentBranchScope.Value.BranchId));
             }
 
             var departmentAdmin = await _departmentAdminReadRepository.FirstOrDefaultAsync(
@@ -112,10 +107,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesForSel
                     TemplatesSelectionScope.ForAllBranches());
             }
 
-            return Result<TemplatesSelectionScope>.Fail(new Error(
-                Code: "Templates.Selection.CurrentActorNotFound",
-                Message: ErrorMessage.GetTemplatesSelection_CurrentActor_NotFound,
-                Type: ErrorType.Security));
+            return Result<TemplatesSelectionScope>.Fail(currentBranchScope.Errors);
         }
 
         private sealed record TemplatesSelectionScope

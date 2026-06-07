@@ -12,6 +12,7 @@
 
         // Source of truth for high-level auth
         public const string UserType = "userType";
+        public const string ActiveBranchId = "activeBranchId";
 
         public const string Role = "role"; // optional if you still issue role claim
     }

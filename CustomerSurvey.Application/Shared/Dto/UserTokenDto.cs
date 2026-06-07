@@ -12,5 +12,23 @@ namespace CustomerSurvey.Application.Shared.Dto
 
 
         public string UserType { get; init; } = string.Empty;
+
+        public bool RequiresBranchSelection { get; init; }
+
+        public Guid? ActiveBranchId { get; init; }
+
+        public IReadOnlyCollection<LoginBranchSelectionItemResponse> Branches { get; init; } =
+            Array.Empty<LoginBranchSelectionItemResponse>();
+    }
+
+    public sealed record LoginBranchSelectionItemResponse
+    {
+        public Guid Id { get; init; }
+
+        public string NameEn { get; init; } = string.Empty;
+
+        public string? NameAr { get; init; }
+
+        public string Code { get; init; } = string.Empty;
     }
 }

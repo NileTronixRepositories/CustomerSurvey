@@ -4,6 +4,7 @@ using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.SharedDto;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -16,15 +17,13 @@ internal sealed class GetBranchAnonymousResponsesPaginationQueryHandler
 {
     private readonly IWriteReadRepository<AnonymousTemplate> _anonymousTemplateReadRepository;
     private readonly IWriteReadRepository<AnonymousSurveyResponse> _anonymousSurveyResponseReadRepository;
-    private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-    private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
+    private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
     private readonly ICurrentUser _currentUser;
 
     public GetBranchAnonymousResponsesPaginationQueryHandler(
         IWriteReadRepository<AnonymousTemplate> anonymousTemplateReadRepository,
         IWriteReadRepository<AnonymousSurveyResponse> anonymousSurveyResponseReadRepository,
-        IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-        IWriteReadRepository<BranchUser> branchUserReadRepository,
+        ICurrentBranchScopeResolver currentBranchScopeResolver,
         ICurrentUser currentUser)
     {
         _anonymousTemplateReadRepository = anonymousTemplateReadRepository
@@ -33,11 +32,8 @@ internal sealed class GetBranchAnonymousResponsesPaginationQueryHandler
         _anonymousSurveyResponseReadRepository = anonymousSurveyResponseReadRepository
             ?? throw new ArgumentNullException(nameof(anonymousSurveyResponseReadRepository));
 
-        _branchAdminReadRepository = branchAdminReadRepository
-            ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-        _branchUserReadRepository = branchUserReadRepository
-            ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
+        _currentBranchScopeResolver = currentBranchScopeResolver
+            ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
         _currentUser = currentUser
             ?? throw new ArgumentNullException(nameof(currentUser));
@@ -57,24 +53,23 @@ internal sealed class GetBranchAnonymousResponsesPaginationQueryHandler
 
         request.SearchText ??= string.Empty;
 
-        var currentActor = await ResolveCurrentBranchActorAsync(
-            _currentUser.UserId.Value,
+        var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
             cancellationToken);
 
-        if (currentActor is null)
+        if (currentBranchScope.IsFailure)
         {
-            return Result<Pagination<BranchAnonymousResponsePaginationItemResponse>>.Fail(new Error(
-                Code: "Reports.BranchAnonymousResponsesPagination.CurrentBranchActorNotFound",
-                Message: ErrorMessage.GetBranchAnonymousResponses_CurrentBranchActor_NotFound,
-                Type: ErrorType.NotFound));
+            return Result<Pagination<BranchAnonymousResponsePaginationItemResponse>>.Fail(
+                currentBranchScope.Errors);
         }
+
+        var branchId = currentBranchScope.Value.BranchId;
 
         if (request.AnonymousTemplateId.HasValue)
         {
             var anonymousTemplate = await _anonymousTemplateReadRepository.FirstOrDefaultAsync(
                 new GetAnonymousTemplateForBranchAnonymousResponsesPaginationSpec(
                     request.AnonymousTemplateId.Value,
-                    currentActor.BranchId),
+                    branchId),
                 cancellationToken);
 
             if (anonymousTemplate is null)
@@ -89,7 +84,7 @@ internal sealed class GetBranchAnonymousResponsesPaginationQueryHandler
         var period = ResolvePeriod(request);
 
         var spec = new GetBranchAnonymousResponsesPaginationSpec(
-            currentActor.BranchId,
+            branchId,
             period.FromUtc,
             period.ToExclusiveUtc,
             request);
@@ -107,24 +102,6 @@ internal sealed class GetBranchAnonymousResponsesPaginationQueryHandler
         return Result<Pagination<BranchAnonymousResponsePaginationItemResponse>>.Ok(response);
     }
 
-    private async Task<CurrentBranchActorForBranchAnonymousResponsesPaginationDto?> ResolveCurrentBranchActorAsync(
-        Guid applicationUserId,
-        CancellationToken cancellationToken)
-    {
-        var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchAdminForBranchAnonymousResponsesPaginationSpec(applicationUserId),
-            cancellationToken);
-
-        if (branchAdmin is not null)
-        {
-            return branchAdmin;
-        }
-
-        return await _branchUserReadRepository.FirstOrDefaultAsync(
-            new GetCurrentBranchUserForBranchAnonymousResponsesPaginationSpec(applicationUserId),
-            cancellationToken);
-    }
-
     private static ResolvedPaginationPeriod ResolvePeriod(
         GetBranchAnonymousResponsesPaginationQuery request)
     {
@@ -140,42 +117,9 @@ internal sealed class GetBranchAnonymousResponsesPaginationQueryHandler
         DateTime? FromUtc,
         DateTime? ToExclusiveUtc);
 
-    private sealed record CurrentBranchActorForBranchAnonymousResponsesPaginationDto
-    {
-        public Guid BranchId { get; init; }
-    }
-
     private sealed record AnonymousTemplateForBranchAnonymousResponsesPaginationDto
     {
         public Guid AnonymousTemplateId { get; init; }
-    }
-
-    private sealed class GetCurrentBranchAdminForBranchAnonymousResponsesPaginationSpec
-        : Specification<BranchAdmin, CurrentBranchActorForBranchAnonymousResponsesPaginationDto>
-    {
-        public GetCurrentBranchAdminForBranchAnonymousResponsesPaginationSpec(Guid applicationUserId)
-        {
-            AddCriteria(x => x.ApplicationUserId == applicationUserId);
-
-            Select(x => new CurrentBranchActorForBranchAnonymousResponsesPaginationDto
-            {
-                BranchId = x.BranchId
-            });
-        }
-    }
-
-    private sealed class GetCurrentBranchUserForBranchAnonymousResponsesPaginationSpec
-        : Specification<BranchUser, CurrentBranchActorForBranchAnonymousResponsesPaginationDto>
-    {
-        public GetCurrentBranchUserForBranchAnonymousResponsesPaginationSpec(Guid applicationUserId)
-        {
-            AddCriteria(x => x.ApplicationUserId == applicationUserId);
-
-            Select(x => new CurrentBranchActorForBranchAnonymousResponsesPaginationDto
-            {
-                BranchId = x.BranchId
-            });
-        }
     }
 
     private sealed class GetAnonymousTemplateForBranchAnonymousResponsesPaginationSpec

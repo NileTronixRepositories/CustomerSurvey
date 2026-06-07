@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
 using System;
@@ -20,6 +21,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.AssignRolesToB
         private readonly IWriteReadRepository<Role> _roleReadRepository;
         private readonly IWriteReadRepository<UserRole> _userRoleReadRepository;
         private readonly IWriteRepository<UserRole> _userRoleWriteRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -29,6 +31,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.AssignRolesToB
             IWriteReadRepository<Role> roleReadRepository,
             IWriteReadRepository<UserRole> userRoleReadRepository,
             IWriteRepository<UserRole> userRoleWriteRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -46,6 +49,9 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.AssignRolesToB
 
             _userRoleWriteRepository = userRoleWriteRepository
                 ?? throw new ArgumentNullException(nameof(userRoleWriteRepository));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -68,16 +74,12 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.AssignRolesToB
 
             var currentApplicationUserId = _currentUser.UserId.Value;
 
-            var currentBranchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForAssignRolesSpec(currentApplicationUserId),
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (currentBranchAdmin is null)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<AssignRolesToBranchUserResponse>.Fail(new Error(
-                    Code: "BranchUsers.AssignRoles.CurrentBranchAdminNotFound",
-                    Message: ErrorMessage.AssignRolesToBranchUser_CurrentBranchAdmin_NotFound,
-                    Type: ErrorType.NotFound));
+                return Result<AssignRolesToBranchUserResponse>.Fail(currentBranchScope.Errors);
             }
 
             var targetBranchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
@@ -92,7 +94,7 @@ namespace CustomerSurvey.Application.Features.BranchUsers.Command.AssignRolesToB
                     Type: ErrorType.NotFound));
             }
 
-            if (targetBranchUser.BranchId != currentBranchAdmin.BranchId)
+            if (targetBranchUser.BranchId != currentBranchScope.Value.BranchId)
             {
                 return Result<AssignRolesToBranchUserResponse>.Fail(new Error(
                     Code: "BranchUsers.AssignRoles.BranchScopeMismatch",

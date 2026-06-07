@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -18,27 +19,19 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
         private const string PeriodSourceLastSixMonths = "LastSixMonths";
         private const string PeriodSourceTemplateCreatedOn = "TemplateCreatedOn";
 
-        private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
-        private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<Template> _templateReadRepository;
         private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
         private readonly IWriteReadRepository<SurveyAnswer> _surveyAnswerReadRepository;
+        private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
 
         public GetBranchSatisfactionReportQueryHandler(
-            IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
-            IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<Template> templateReadRepository,
             IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
             IWriteReadRepository<SurveyAnswer> surveyAnswerReadRepository,
+            ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser)
         {
-            _branchAdminReadRepository = branchAdminReadRepository
-                ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
-
-            _branchUserReadRepository = branchUserReadRepository
-                ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
-
             _templateReadRepository = templateReadRepository
                 ?? throw new ArgumentNullException(nameof(templateReadRepository));
 
@@ -47,6 +40,9 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 
             _surveyAnswerReadRepository = surveyAnswerReadRepository
                 ?? throw new ArgumentNullException(nameof(surveyAnswerReadRepository));
+
+            _currentBranchScopeResolver = currentBranchScopeResolver
+                ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
 
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
@@ -64,19 +60,15 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                     Type: ErrorType.Security));
             }
 
-            var currentApplicationUserId = _currentUser.UserId.Value;
-
-            var currentActor = await ResolveCurrentBranchActorAsync(
-                currentApplicationUserId,
+            var currentBranchScope = await _currentBranchScopeResolver.ResolveAsync(
                 cancellationToken);
 
-            if (currentActor is null)
+            if (currentBranchScope.IsFailure)
             {
-                return Result<GetBranchSatisfactionReportResponse>.Fail(new Error(
-                    Code: "Reports.BranchSatisfaction.CurrentBranchActorNotFound",
-                    Message: ErrorMessage.GetBranchSatisfactionReport_CurrentBranchActor_NotFound,
-                    Type: ErrorType.NotFound));
+                return Result<GetBranchSatisfactionReportResponse>.Fail(currentBranchScope.Errors);
             }
+
+            var branchId = currentBranchScope.Value.BranchId;
 
             TemplateForBranchSatisfactionReportDto? template = null;
 
@@ -85,7 +77,7 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                 template = await _templateReadRepository.FirstOrDefaultAsync(
                     new GetTemplateForBranchSatisfactionReportSpec(
                         request.TemplateId.Value,
-                        currentActor.BranchId),
+                        branchId),
                     cancellationToken);
 
                 if (template is null)
@@ -111,7 +103,7 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 
             var responses = await _surveyResponseReadRepository.ListAsync(
                 new GetSatisfactionSurveyResponsesForBranchReportSpec(
-                    branchId: currentActor.BranchId,
+                    branchId: branchId,
                     fromUtc: fromUtc,
                     toExclusiveUtc: toExclusiveUtc,
                     templateId: request.TemplateId),
@@ -119,7 +111,7 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 
             var answers = await _surveyAnswerReadRepository.ListAsync(
                 new GetSatisfactionAnswersForBranchReportSpec(
-                    branchId: currentActor.BranchId,
+                    branchId: branchId,
                     fromUtc: fromUtc,
                     toExclusiveUtc: toExclusiveUtc,
                     templateId: request.TemplateId),
@@ -131,26 +123,6 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                 answers: answers);
 
             return Result<GetBranchSatisfactionReportResponse>.Ok(response);
-        }
-
-        private async Task<CurrentBranchActorForBranchSatisfactionReportDto?> ResolveCurrentBranchActorAsync(
-            Guid applicationUserId,
-            CancellationToken cancellationToken)
-        {
-            var branchAdmin = await _branchAdminReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchAdminForBranchSatisfactionReportSpec(applicationUserId),
-                cancellationToken);
-
-            if (branchAdmin is not null)
-            {
-                return branchAdmin;
-            }
-
-            var branchUser = await _branchUserReadRepository.FirstOrDefaultAsync(
-                new GetCurrentBranchUserForBranchSatisfactionReportSpec(applicationUserId),
-                cancellationToken);
-
-            return branchUser;
         }
 
         private static Result<ResolvedSatisfactionPeriod> ResolvePeriod(

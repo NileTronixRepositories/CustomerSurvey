@@ -107,11 +107,15 @@ namespace CustomerSurvey.infrastructure.Services.Token
 
                 UserId = GuidOrNull(principal.FindFirstValue(JwtClaimTypesCustom.UserId)),
                 AccountId = GuidOrNull(principal.FindFirstValue(JwtClaimTypesCustom.AccountId)),
+                ActiveBranchId = GuidOrNull(principal.FindFirstValue(JwtClaimTypesCustom.ActiveBranchId)),
 
                 Email = principal.FindFirstValue(JwtClaimTypesCustom.Email),
                 PhoneNumber = principal.FindFirstValue(JwtClaimTypesCustom.PhoneNumber),
 
                 Role = principal.FindFirstValue(ClaimTypes.Role),
+                UserTypeValue = int.TryParse(principal.FindFirstValue(JwtClaimTypesCustom.UserType), out var userTypeValue)
+                    ? userTypeValue
+                    : null,
                 Permissions = permissions,
 
                 Issuer = jwt?.Issuer,
