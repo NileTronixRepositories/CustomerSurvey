@@ -33,5 +33,16 @@ namespace CustomerSurvey.Domain.Identity
                 CreatedByApplicationUserId = applicationUserId
             };
         }
+
+        public static SuperAdmin Create(
+            Guid applicationUserId,
+            Guid createdByApplicationUserId)
+        {
+            return new SuperAdmin(Guid.NewGuid())
+            {
+                ApplicationUserId = applicationUserId,
+                CreatedByApplicationUserId = createdByApplicationUserId
+            };
+        }
     }
 }

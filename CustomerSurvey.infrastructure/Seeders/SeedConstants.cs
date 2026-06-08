@@ -36,6 +36,8 @@ internal static class SeedConstants
 
     public static class PermissionNames
     {
+        public const string SuperAdminsCreate = "SuperAdmins.Create";
+
         public const string BranchesCreate = "Branches.Create";
         public const string BranchesViewAll = "Branches.ViewAll";
         public const string BranchesViewDetails = "Branches.ViewDetails";
@@ -43,6 +45,8 @@ internal static class SeedConstants
 
         public const string BranchAdminsCreate = "BranchAdmins.Create";
         public const string BranchAdminsViewAll = "BranchAdmins.ViewAll";
+        public const string BranchAdminsDeactivate = "BranchAdmins.Deactivate";
+        public const string BranchAdminsRestore = "BranchAdmins.Restore";
 
         public const string BranchAreasCreate = "BranchAreas.Create";
         public const string BranchAreasUpdate = "BranchAreas.Update";
@@ -57,9 +61,12 @@ internal static class SeedConstants
         public const string DepartmentsViewSelection = "Departments.ViewSelection";
         public const string DepartmentsUpdate = "Departments.Update";
         public const string DepartmentsDelete = "Departments.Delete";
+        public const string DepartmentsRestore = "Departments.Restore";
 
         public const string DepartmentAdminsCreate = "DepartmentAdmins.Create";
         public const string DepartmentAdminsViewAll = "DepartmentAdmins.ViewAll";
+        public const string DepartmentAdminsDeactivate = "DepartmentAdmins.Deactivate";
+        public const string DepartmentAdminsRestore = "DepartmentAdmins.Restore";
 
         public const string BranchUsersCreate = "BranchUsers.Create";
         public const string BranchUsersViewAll = "BranchUsers.ViewAll";
@@ -96,6 +103,8 @@ internal static class SeedConstants
         public const string OperatorsViewAll = "Operators.ViewAll";
         public const string OperatorsAssignTemplates = "Operators.AssignTemplates";
         public const string OperatorsUpdate = "Operators.Update";
+        public const string OperatorsDeactivate = "Operators.Deactivate";
+        public const string OperatorsRestore = "Operators.Restore";
 
         public const string OperatorTemplatesViewMine = "OperatorTemplates.ViewMine";
         public const string OperatorTemplatesSubmitResponse = "OperatorTemplates.SubmitResponse";
@@ -376,6 +385,30 @@ internal static class SeedConstants
 
             public static readonly Guid UsersResetPassword =
                 Guid.Parse("12000000-0000-0000-0000-000000000079");
+
+            public static readonly Guid SuperAdminsCreate =
+                Guid.Parse("12000000-0000-0000-0000-000000000080");
+
+            public static readonly Guid DepartmentsRestore =
+                Guid.Parse("12000000-0000-0000-0000-000000000081");
+
+            public static readonly Guid BranchAdminsDeactivate =
+                Guid.Parse("12000000-0000-0000-0000-000000000082");
+
+            public static readonly Guid BranchAdminsRestore =
+                Guid.Parse("12000000-0000-0000-0000-000000000083");
+
+            public static readonly Guid DepartmentAdminsDeactivate =
+                Guid.Parse("12000000-0000-0000-0000-000000000084");
+
+            public static readonly Guid DepartmentAdminsRestore =
+                Guid.Parse("12000000-0000-0000-0000-000000000085");
+
+            public static readonly Guid OperatorsDeactivate =
+                Guid.Parse("12000000-0000-0000-0000-000000000086");
+
+            public static readonly Guid OperatorsRestore =
+                Guid.Parse("12000000-0000-0000-0000-000000000087");
         }
     }
 
@@ -387,8 +420,8 @@ internal static class SeedConstants
 
     public static class SeedCatalog
     {
-        public static readonly IReadOnlyCollection<RoleSeedItem> Roles =
-        [
+        public static readonly IReadOnlyCollection<RoleSeedItem> Roles = new[]
+        {
             new RoleSeedItem(SeedIds.Roles.SystemAdministrator, RoleNames.SystemAdministrator),
             new RoleSeedItem(SeedIds.Roles.BranchAdministrator, RoleNames.BranchAdministrator),
             new RoleSeedItem(SeedIds.Roles.BranchAreaAdministrator, RoleNames.BranchAreaAdministrator),
@@ -397,10 +430,12 @@ internal static class SeedConstants
             new RoleSeedItem(SeedIds.Roles.ReportViewer, RoleNames.ReportViewer),
             new RoleSeedItem(SeedIds.Roles.QuestionEditor, RoleNames.QuestionEditor),
             new RoleSeedItem(SeedIds.Roles.Operator, RoleNames.Operator)
-        ];
+        };
 
         public static readonly IReadOnlyCollection<PermissionSeedItem> Permissions =
         [
+            new PermissionSeedItem(SeedIds.Permissions.SuperAdminsCreate, PermissionNames.SuperAdminsCreate),
+
             new PermissionSeedItem(SeedIds.Permissions.BranchesCreate, PermissionNames.BranchesCreate),
             new PermissionSeedItem(SeedIds.Permissions.BranchesViewAll, PermissionNames.BranchesViewAll),
             new PermissionSeedItem(SeedIds.Permissions.BranchesViewDetails, PermissionNames.BranchesViewDetails),
@@ -408,6 +443,8 @@ internal static class SeedConstants
 
             new PermissionSeedItem(SeedIds.Permissions.BranchAdminsCreate, PermissionNames.BranchAdminsCreate),
             new PermissionSeedItem(SeedIds.Permissions.BranchAdminsViewAll, PermissionNames.BranchAdminsViewAll),
+            new PermissionSeedItem(SeedIds.Permissions.BranchAdminsDeactivate, PermissionNames.BranchAdminsDeactivate),
+            new PermissionSeedItem(SeedIds.Permissions.BranchAdminsRestore, PermissionNames.BranchAdminsRestore),
 
             new PermissionSeedItem(SeedIds.Permissions.BranchAreasCreate, PermissionNames.BranchAreasCreate),
             new PermissionSeedItem(SeedIds.Permissions.BranchAreasUpdate, PermissionNames.BranchAreasUpdate),
@@ -422,9 +459,12 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.DepartmentsViewSelection, PermissionNames.DepartmentsViewSelection),
             new PermissionSeedItem(SeedIds.Permissions.DepartmentsUpdate, PermissionNames.DepartmentsUpdate),
             new PermissionSeedItem(SeedIds.Permissions.DepartmentsDelete, PermissionNames.DepartmentsDelete),
+            new PermissionSeedItem(SeedIds.Permissions.DepartmentsRestore, PermissionNames.DepartmentsRestore),
 
             new PermissionSeedItem(SeedIds.Permissions.DepartmentAdminsCreate, PermissionNames.DepartmentAdminsCreate),
             new PermissionSeedItem(SeedIds.Permissions.DepartmentAdminsViewAll, PermissionNames.DepartmentAdminsViewAll),
+            new PermissionSeedItem(SeedIds.Permissions.DepartmentAdminsDeactivate, PermissionNames.DepartmentAdminsDeactivate),
+            new PermissionSeedItem(SeedIds.Permissions.DepartmentAdminsRestore, PermissionNames.DepartmentAdminsRestore),
 
             new PermissionSeedItem(SeedIds.Permissions.BranchUsersCreate, PermissionNames.BranchUsersCreate),
             new PermissionSeedItem(SeedIds.Permissions.BranchUsersViewAll, PermissionNames.BranchUsersViewAll),
@@ -460,6 +500,8 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.OperatorsViewAll, PermissionNames.OperatorsViewAll),
             new PermissionSeedItem(SeedIds.Permissions.OperatorsAssignTemplates, PermissionNames.OperatorsAssignTemplates),
             new PermissionSeedItem(SeedIds.Permissions.OperatorsUpdate, PermissionNames.OperatorsUpdate),
+            new PermissionSeedItem(SeedIds.Permissions.OperatorsDeactivate, PermissionNames.OperatorsDeactivate),
+            new PermissionSeedItem(SeedIds.Permissions.OperatorsRestore, PermissionNames.OperatorsRestore),
 
             new PermissionSeedItem(SeedIds.Permissions.OperatorTemplatesViewMine, PermissionNames.OperatorTemplatesViewMine),
             new PermissionSeedItem(SeedIds.Permissions.OperatorTemplatesSubmitResponse, PermissionNames.OperatorTemplatesSubmitResponse),
@@ -643,8 +685,9 @@ internal static class SeedConstants
                 SeedIds.Permissions.OperatorsViewAll,
                 SeedIds.Permissions.OperatorsAssignTemplates,
                 SeedIds.Permissions.OperatorsUpdate,
+                SeedIds.Permissions.OperatorsDeactivate,
+                SeedIds.Permissions.OperatorsRestore,
                 SeedIds.Permissions.TemplatesViewSelection,
-                SeedIds.Permissions.UsersResetPassword,
                 SeedIds.Permissions.ReportsViewDepartmentReports
             ];
 

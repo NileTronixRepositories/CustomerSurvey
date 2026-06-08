@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CustomerSurvey.Api\CustomerSurvey.Api.csproj" />
     <ProjectReference Include="..\CustomerSurvey.Application\CustomerSurvey.Application.csproj" />
     <ProjectReference Include="..\CustomerSurvey.infrastructure\CustomerSurvey.infrastructure.csproj" />
   </ItemGroup>

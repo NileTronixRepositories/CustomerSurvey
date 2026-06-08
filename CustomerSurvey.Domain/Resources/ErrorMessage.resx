@@ -2733,4 +2733,157 @@
   <data name="QuestionType_Image_NotScored" xml:space="preserve">
     <value>Image question is not included in scoring.</value>
   </data>
+  <data name="CreateSuperAdmin_NameEn_Required" xml:space="preserve">
+    <value>Name in English is required.</value>
+  </data>
+  <data name="CreateSuperAdmin_NameEn_MaxLength" xml:space="preserve">
+    <value>Name in English must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateSuperAdmin_NameAr_MaxLength" xml:space="preserve">
+    <value>Name in Arabic must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateSuperAdmin_UserName_Required" xml:space="preserve">
+    <value>User name is required.</value>
+  </data>
+  <data name="CreateSuperAdmin_UserName_MaxLength" xml:space="preserve">
+    <value>User name must not exceed 100 characters.</value>
+  </data>
+  <data name="CreateSuperAdmin_Email_Required" xml:space="preserve">
+    <value>Email is required.</value>
+  </data>
+  <data name="CreateSuperAdmin_Email_MaxLength" xml:space="preserve">
+    <value>Email must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateSuperAdmin_Email_Invalid" xml:space="preserve">
+    <value>Email is invalid.</value>
+  </data>
+  <data name="CreateSuperAdmin_PhoneNumber_MaxLength" xml:space="preserve">
+    <value>Phone number must not exceed 50 characters.</value>
+  </data>
+  <data name="CreateSuperAdmin_Password_Required" xml:space="preserve">
+    <value>Password is required.</value>
+  </data>
+  <data name="CreateSuperAdmin_Password_MaxLength" xml:space="preserve">
+    <value>Password must not exceed 200 characters.</value>
+  </data>
+  <data name="CreateSuperAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current SuperAdmin profile was not found.</value>
+  </data>
+  <data name="CreateSuperAdmin_UserName_AlreadyExists" xml:space="preserve">
+    <value>User name already exists.</value>
+  </data>
+  <data name="CreateSuperAdmin_Email_AlreadyExists" xml:space="preserve">
+    <value>Email already exists.</value>
+  </data>
+  <data name="CreateSuperAdmin_Password_Invalid" xml:space="preserve">
+    <value>Password must be at least 8 characters and contain uppercase, lowercase, and number characters.</value>
+  </data>
+  <data name="CreateSuperAdmin_SystemAdministratorRole_NotFound" xml:space="preserve">
+    <value>System Administrator role was not found.</value>
+  </data>
+  <data name="RestoreDepartment_DepartmentId_Required" xml:space="preserve">
+    <value>Department id is required.</value>
+  </data>
+  <data name="RestoreDepartment_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current SuperAdmin profile was not found.</value>
+  </data>
+  <data name="RestoreDepartment_Department_NotFound" xml:space="preserve">
+    <value>Department was not found.</value>
+  </data>
+  <data name="DeactivateBranchAdmin_BranchAdminId_Required" xml:space="preserve">
+    <value>Branch admin id is required.</value>
+  </data>
+  <data name="DeactivateBranchAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current SuperAdmin profile was not found.</value>
+  </data>
+  <data name="DeactivateBranchAdmin_BranchAdmin_NotFound" xml:space="preserve">
+    <value>Branch admin was not found.</value>
+  </data>
+  <data name="DeactivateBranchAdmin_ApplicationUser_NotFound" xml:space="preserve">
+    <value>Linked application user was not found.</value>
+  </data>
+  <data name="DeactivateBranchAdmin_AlreadyInactive" xml:space="preserve">
+    <value>Branch admin is already inactive.</value>
+  </data>
+  <data name="RestoreBranchAdmin_BranchAdminId_Required" xml:space="preserve">
+    <value>Branch admin id is required.</value>
+  </data>
+  <data name="RestoreBranchAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current SuperAdmin profile was not found.</value>
+  </data>
+  <data name="RestoreBranchAdmin_BranchAdmin_NotFound" xml:space="preserve">
+    <value>Branch admin was not found.</value>
+  </data>
+  <data name="RestoreBranchAdmin_ApplicationUser_NotFound" xml:space="preserve">
+    <value>Linked application user was not found.</value>
+  </data>
+  <data name="RestoreBranchAdmin_AlreadyActive" xml:space="preserve">
+    <value>Branch admin is already active.</value>
+  </data>
+  <data name="DeactivateDepartmentAdmin_DepartmentAdminId_Required" xml:space="preserve">
+    <value>Department admin id is required.</value>
+  </data>
+  <data name="DeactivateDepartmentAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current SuperAdmin profile was not found.</value>
+  </data>
+  <data name="DeactivateDepartmentAdmin_DepartmentAdmin_NotFound" xml:space="preserve">
+    <value>Department admin was not found.</value>
+  </data>
+  <data name="DeactivateDepartmentAdmin_ApplicationUser_NotFound" xml:space="preserve">
+    <value>Linked application user was not found.</value>
+  </data>
+  <data name="DeactivateDepartmentAdmin_AlreadyInactive" xml:space="preserve">
+    <value>Department admin is already inactive.</value>
+  </data>
+  <data name="RestoreDepartmentAdmin_DepartmentAdminId_Required" xml:space="preserve">
+    <value>Department admin id is required.</value>
+  </data>
+  <data name="RestoreDepartmentAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>Current SuperAdmin profile was not found.</value>
+  </data>
+  <data name="RestoreDepartmentAdmin_DepartmentAdmin_NotFound" xml:space="preserve">
+    <value>Department admin was not found.</value>
+  </data>
+  <data name="RestoreDepartmentAdmin_ApplicationUser_NotFound" xml:space="preserve">
+    <value>Linked application user was not found.</value>
+  </data>
+  <data name="RestoreDepartmentAdmin_AlreadyActive" xml:space="preserve">
+    <value>Department admin is already active.</value>
+  </data>
+  <data name="DeactivateOperator_OperatorId_Required" xml:space="preserve">
+    <value>Operator id is required.</value>
+  </data>
+  <data name="DeactivateOperator_CurrentDepartmentAdmin_NotFound" xml:space="preserve">
+    <value>Current DepartmentAdmin profile was not found.</value>
+  </data>
+  <data name="DeactivateOperator_Operator_NotFound" xml:space="preserve">
+    <value>Operator was not found.</value>
+  </data>
+  <data name="DeactivateOperator_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>Operator is outside your department scope.</value>
+  </data>
+  <data name="DeactivateOperator_ApplicationUser_NotFound" xml:space="preserve">
+    <value>Linked application user was not found.</value>
+  </data>
+  <data name="DeactivateOperator_AlreadyInactive" xml:space="preserve">
+    <value>Operator is already inactive.</value>
+  </data>
+  <data name="RestoreOperator_OperatorId_Required" xml:space="preserve">
+    <value>Operator id is required.</value>
+  </data>
+  <data name="RestoreOperator_CurrentDepartmentAdmin_NotFound" xml:space="preserve">
+    <value>Current DepartmentAdmin profile was not found.</value>
+  </data>
+  <data name="RestoreOperator_Operator_NotFound" xml:space="preserve">
+    <value>Operator was not found.</value>
+  </data>
+  <data name="RestoreOperator_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>Operator is outside your department scope.</value>
+  </data>
+  <data name="RestoreOperator_ApplicationUser_NotFound" xml:space="preserve">
+    <value>Linked application user was not found.</value>
+  </data>
+  <data name="RestoreOperator_AlreadyActive" xml:space="preserve">
+    <value>Operator is already active.</value>
+  </data>
 </root>
