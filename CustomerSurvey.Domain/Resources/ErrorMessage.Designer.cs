@@ -7681,5 +7681,140 @@ namespace CustomerSurvey.Domain.Resources {
                 return ResourceManager.GetString("AssignBranchAreaBranches_Branches_NotFound", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Application user id is required..
+        /// </summary>
+        public static string ResetUserPassword_ApplicationUserId_Required {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_ApplicationUserId_Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to New password is required..
+        /// </summary>
+        public static string ResetUserPassword_NewPassword_Required {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_NewPassword_Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to New password must be at least 8 characters..
+        /// </summary>
+        public static string ResetUserPassword_NewPassword_MinLength {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_NewPassword_MinLength", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to New password must not exceed 200 characters..
+        /// </summary>
+        public static string ResetUserPassword_NewPassword_MaxLength {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_NewPassword_MaxLength", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm new password is required..
+        /// </summary>
+        public static string ResetUserPassword_ConfirmNewPassword_Required {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_ConfirmNewPassword_Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Password and confirmation password do not match..
+        /// </summary>
+        public static string ResetUserPassword_Passwords_NotMatch {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_Passwords_NotMatch", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Current actor profile was not found..
+        /// </summary>
+        public static string ResetUserPassword_CurrentActor_NotFound {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_CurrentActor_NotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Target user was not found..
+        /// </summary>
+        public static string ResetUserPassword_TargetUser_NotFound {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_TargetUser_NotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot reset password for an inactive user..
+        /// </summary>
+        public static string ResetUserPassword_TargetUser_Inactive {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_TargetUser_Inactive", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Target user profile is not supported for password reset..
+        /// </summary>
+        public static string ResetUserPassword_TargetProfile_NotSupported {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_TargetProfile_NotSupported", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You are not allowed to reset password for this user type..
+        /// </summary>
+        public static string ResetUserPassword_Forbidden_TargetType {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_Forbidden_TargetType", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Target user is outside your allowed scope..
+        /// </summary>
+        public static string ResetUserPassword_ScopeViolation {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_ScopeViolation", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot reset your own password from this endpoint..
+        /// </summary>
+        public static string ResetUserPassword_SelfReset_NotAllowed {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_SelfReset_NotAllowed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to reset user password..
+        /// </summary>
+        public static string ResetUserPassword_Failed {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_Failed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to User password has been reset successfully..
+        /// </summary>
+        public static string ResetUserPassword_Success {
+            get {
+                return ResourceManager.GetString("ResetUserPassword_Success", resourceCulture);
+            }
+        }
     }
 }

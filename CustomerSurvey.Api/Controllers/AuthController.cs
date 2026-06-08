@@ -1,7 +1,9 @@
-﻿using BuildingBlock.Api;
+using BuildingBlock.Api;
+using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Api.Contracts.Auth;
 using CustomerSurvey.Application.Features.Auth.Command.ChangePassword;
 using CustomerSurvey.Application.Features.Auth.Command.Login;
+using CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword;
 using CustomerSurvey.Application.Features.Auth.Command.SelectBranch;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -58,6 +60,25 @@ namespace CustomerSurvey.Api.Controllers
             CancellationToken cancellationToken)
         {
             var command = new ChangePasswordCommand
+            {
+                ApplicationUserId = applicationUserId,
+                NewPassword = request.NewPassword,
+                ConfirmNewPassword = request.ConfirmNewPassword
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("users/{applicationUserId:guid}/reset-password")]
+        [Authorize]
+        [Permission("Users.ResetPassword")]
+        public async Task<IActionResult> ResetUserPassword(
+            Guid applicationUserId,
+            [FromBody] ResetUserPasswordRequest request,
+            CancellationToken cancellationToken)
+        {
+            var command = new ResetUserPasswordCommand
             {
                 ApplicationUserId = applicationUserId,
                 NewPassword = request.NewPassword,

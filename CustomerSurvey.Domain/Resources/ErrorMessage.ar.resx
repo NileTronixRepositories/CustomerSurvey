@@ -2658,4 +2658,49 @@
   <data name="AssignBranchAreaBranches_Branches_NotFound" xml:space="preserve">
     <value>بعض الفروع المحددة غير موجودة.</value>
   </data>
+  <data name="ResetUserPassword_ApplicationUserId_Required" xml:space="preserve">
+    <value>معرف المستخدم مطلوب.</value>
+  </data>
+  <data name="ResetUserPassword_NewPassword_Required" xml:space="preserve">
+    <value>كلمة المرور الجديدة مطلوبة.</value>
+  </data>
+  <data name="ResetUserPassword_NewPassword_MinLength" xml:space="preserve">
+    <value>كلمة المرور الجديدة يجب ألا تقل عن 8 أحرف.</value>
+  </data>
+  <data name="ResetUserPassword_NewPassword_MaxLength" xml:space="preserve">
+    <value>كلمة المرور الجديدة يجب ألا تزيد عن 200 حرف.</value>
+  </data>
+  <data name="ResetUserPassword_ConfirmNewPassword_Required" xml:space="preserve">
+    <value>تأكيد كلمة المرور الجديدة مطلوب.</value>
+  </data>
+  <data name="ResetUserPassword_Passwords_NotMatch" xml:space="preserve">
+    <value>كلمة المرور وتأكيدها غير متطابقين.</value>
+  </data>
+  <data name="ResetUserPassword_CurrentActor_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب المستخدم الحالي.</value>
+  </data>
+  <data name="ResetUserPassword_TargetUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المستخدم المطلوب.</value>
+  </data>
+  <data name="ResetUserPassword_TargetUser_Inactive" xml:space="preserve">
+    <value>لا يمكن تغيير كلمة مرور مستخدم غير مفعل.</value>
+  </data>
+  <data name="ResetUserPassword_TargetProfile_NotSupported" xml:space="preserve">
+    <value>نوع المستخدم المطلوب غير مدعوم لإعادة تعيين كلمة المرور.</value>
+  </data>
+  <data name="ResetUserPassword_Forbidden_TargetType" xml:space="preserve">
+    <value>لا تملك صلاحية تغيير كلمة مرور هذا النوع من المستخدمين.</value>
+  </data>
+  <data name="ResetUserPassword_ScopeViolation" xml:space="preserve">
+    <value>المستخدم المطلوب خارج نطاق صلاحياتك.</value>
+  </data>
+  <data name="ResetUserPassword_SelfReset_NotAllowed" xml:space="preserve">
+    <value>لا يمكنك إعادة تعيين كلمة مرور حسابك من هذه النقطة.</value>
+  </data>
+  <data name="ResetUserPassword_Failed" xml:space="preserve">
+    <value>فشل تغيير كلمة المرور.</value>
+  </data>
+  <data name="ResetUserPassword_Success" xml:space="preserve">
+    <value>تم تغيير كلمة المرور بنجاح.</value>
+  </data>
 </root>

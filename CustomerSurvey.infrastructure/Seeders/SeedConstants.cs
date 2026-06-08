@@ -68,6 +68,8 @@ internal static class SeedConstants
         public const string BranchUsersDelete = "BranchUsers.Delete";
         public const string BranchUsersResetPassword = "BranchUsers.ResetPassword";
 
+        public const string UsersResetPassword = "Users.ResetPassword";
+
         public const string RolesViewSelection = "Roles.ViewSelection";
 
         public const string TemplatesCreate = "Templates.Create";
@@ -371,6 +373,9 @@ internal static class SeedConstants
 
             public static readonly Guid BranchAreasAssignBranches =
                 Guid.Parse("12000000-0000-0000-0000-000000000078");
+
+            public static readonly Guid UsersResetPassword =
+                Guid.Parse("12000000-0000-0000-0000-000000000079");
         }
     }
 
@@ -427,6 +432,7 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.BranchUsersUpdate, PermissionNames.BranchUsersUpdate),
             new PermissionSeedItem(SeedIds.Permissions.BranchUsersDelete, PermissionNames.BranchUsersDelete),
             new PermissionSeedItem(SeedIds.Permissions.BranchUsersResetPassword, PermissionNames.BranchUsersResetPassword),
+            new PermissionSeedItem(SeedIds.Permissions.UsersResetPassword, PermissionNames.UsersResetPassword),
 
             new PermissionSeedItem(SeedIds.Permissions.RolesViewSelection, PermissionNames.RolesViewSelection),
 
@@ -530,6 +536,7 @@ internal static class SeedConstants
                 SeedIds.Permissions.BranchUsersUpdate,
                 SeedIds.Permissions.BranchUsersDelete,
                 SeedIds.Permissions.BranchUsersResetPassword,
+                SeedIds.Permissions.UsersResetPassword,
 
                 SeedIds.Permissions.RolesViewSelection,
 
@@ -637,6 +644,7 @@ internal static class SeedConstants
                 SeedIds.Permissions.OperatorsAssignTemplates,
                 SeedIds.Permissions.OperatorsUpdate,
                 SeedIds.Permissions.TemplatesViewSelection,
+                SeedIds.Permissions.UsersResetPassword,
                 SeedIds.Permissions.ReportsViewDepartmentReports
             ];
 
