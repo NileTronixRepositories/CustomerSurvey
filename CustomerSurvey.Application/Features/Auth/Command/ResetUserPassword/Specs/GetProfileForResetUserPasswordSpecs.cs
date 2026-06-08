@@ -50,6 +50,28 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword.Spe
         }
     }
 
+    internal sealed record BranchAreaProfileForResetUserPasswordDto
+    {
+        public Guid BranchAreaId { get; init; }
+
+        public Guid ApplicationUserId { get; init; }
+    }
+
+    internal sealed class GetBranchAreaProfileForResetUserPasswordSpec
+        : Specification<BranchArea, BranchAreaProfileForResetUserPasswordDto>
+    {
+        public GetBranchAreaProfileForResetUserPasswordSpec(Guid applicationUserId)
+        {
+            AddCriteria(x => x.ApplicationUserId == applicationUserId);
+
+            Select(x => new BranchAreaProfileForResetUserPasswordDto
+            {
+                BranchAreaId = x.Id,
+                ApplicationUserId = x.ApplicationUserId
+            });
+        }
+    }
+
     internal sealed record DepartmentAdminProfileForResetUserPasswordDto
     {
         public Guid DepartmentAdminId { get; init; }
