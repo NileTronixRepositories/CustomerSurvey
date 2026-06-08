@@ -7816,5 +7816,95 @@ namespace CustomerSurvey.Domain.Resources {
                 return ResourceManager.GetString("ResetUserPassword_Success", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Image question does not allow options..
+        /// </summary>
+        public static string Question_Image_Options_NotAllowed {
+            get {
+                return ResourceManager.GetString("Question_Image_Options_NotAllowed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Image question cannot be used as a parent condition question..
+        /// </summary>
+        public static string Question_Image_ParentCondition_NotAllowed {
+            get {
+                return ResourceManager.GetString("Question_Image_ParentCondition_NotAllowed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Image file is required for this question..
+        /// </summary>
+        public static string SubmitResponse_ImageFile_Required {
+            get {
+                return ResourceManager.GetString("SubmitResponse_ImageFile_Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Image file must not be empty..
+        /// </summary>
+        public static string SubmitResponse_ImageFile_Empty {
+            get {
+                return ResourceManager.GetString("SubmitResponse_ImageFile_Empty", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Only image files are allowed..
+        /// </summary>
+        public static string SubmitResponse_ImageFile_InvalidType {
+            get {
+                return ResourceManager.GetString("SubmitResponse_ImageFile_InvalidType", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Image file extension is not supported..
+        /// </summary>
+        public static string SubmitResponse_ImageFile_InvalidExtension {
+            get {
+                return ResourceManager.GetString("SubmitResponse_ImageFile_InvalidExtension", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Image file size exceeds the allowed limit..
+        /// </summary>
+        public static string SubmitResponse_ImageFile_MaxSize {
+            get {
+                return ResourceManager.GetString("SubmitResponse_ImageFile_MaxSize", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Image question answer must contain image file only..
+        /// </summary>
+        public static string SubmitResponse_ImageAnswer_InvalidShape {
+            get {
+                return ResourceManager.GetString("SubmitResponse_ImageAnswer_InvalidShape", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to save answer image..
+        /// </summary>
+        public static string SubmitResponse_ImageFile_SaveFailed {
+            get {
+                return ResourceManager.GetString("SubmitResponse_ImageFile_SaveFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Image question is not included in scoring..
+        /// </summary>
+        public static string QuestionType_Image_NotScored {
+            get {
+                return ResourceManager.GetString("QuestionType_Image_NotScored", resourceCulture);
+            }
+        }
     }
 }

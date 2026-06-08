@@ -3,6 +3,7 @@ using BuildingBlock.Application.Abstraction.Media;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Shared.Validation;
 using CustomerSurvey.Domain.Common;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
@@ -306,6 +307,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             }
 
             var savedVoiceFileNames = new List<string>();
+            var savedImageFileNames = new List<string>();
 
             try
             {
@@ -318,6 +320,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                         answer,
                         question.Type,
                         savedVoiceFileNames,
+                        savedImageFileNames,
                         cancellationToken);
 
                     surveyResponse.AddAnswer(surveyAnswer);
@@ -332,6 +335,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             catch
             {
                 RemoveSavedVoiceFiles(savedVoiceFileNames);
+                RemoveSavedImageFiles(savedImageFileNames);
                 throw;
             }
 
@@ -729,6 +733,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             SubmitOperatorTemplateAnswerCommandItem answer,
             QuestionType questionType,
             List<string> savedVoiceFileNames,
+            List<string> savedImageFileNames,
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -760,6 +765,11 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     answer,
                     savedVoiceFileNames),
 
+                QuestionType.Image => await CreateImageAnswerAsync(
+                    surveyResponseId,
+                    answer,
+                    savedImageFileNames),
+
                 _ => throw new InvalidOperationException(
                     $"Unsupported question type '{questionType}'.")
             };
@@ -777,6 +787,23 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             savedVoiceFileNames.Add(fileName);
 
             return SurveyAnswer.CreateVoice(
+                surveyResponseId,
+                answer.QuestionId,
+                fileName);
+        }
+
+        private async Task<SurveyAnswer> CreateImageAnswerAsync(
+            Guid surveyResponseId,
+            SubmitOperatorTemplateAnswerCommandItem answer,
+            List<string> savedImageFileNames)
+        {
+            var fileName = await _mediaService.SaveAsync(
+                answer.ImageFile!,
+                FileNames.SurveyAnswerImages);
+
+            savedImageFileNames.Add(fileName);
+
+            return SurveyAnswer.CreateImage(
                 surveyResponseId,
                 answer.QuestionId,
                 fileName);
@@ -800,6 +827,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 QuestionType.Complain => ValidateComplain(answer),
 
                 QuestionType.Smiles => ValidateSmiles(answer),
+
+                QuestionType.Image => ValidateImage(answer),
 
                 _ => new Error(
                     Code: "SurveyResponses.Submit.QuestionTypeUnsupported",
@@ -830,6 +859,20 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             }
 
             return null;
+        }
+
+        private static Error? ValidateImage(
+            SubmitOperatorTemplateAnswerCommandItem answer)
+        {
+            if (!OnlyImageFieldsProvided(answer))
+            {
+                return new Error(
+                    Code: "SurveyResponses.Submit.ImageInvalidShape",
+                    Message: ErrorMessage.SubmitResponse_ImageAnswer_InvalidShape,
+                    Type: ErrorType.Validation);
+            }
+
+            return ImageAnswerFileValidator.Validate(answer.ImageFile);
         }
 
         private static Error? ValidateVoice(
@@ -929,7 +972,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                    !answer.StarRatingValue.HasValue &&
                    !answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
-                   answer.VoiceFile is null;
+                   answer.VoiceFile is null &&
+                   answer.ImageFile is null;
         }
 
         private static bool OnlyVoiceFieldsProvided(
@@ -939,7 +983,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                    !answer.StarRatingValue.HasValue &&
                    !answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
-                   answer.VoiceFile is not null;
+                   answer.VoiceFile is not null &&
+                   answer.ImageFile is null;
         }
 
         private static bool OnlyStarRatingFieldsProvided(
@@ -949,7 +994,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                    answer.StarRatingValue.HasValue &&
                    !answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
-                   answer.VoiceFile is null;
+                   answer.VoiceFile is null &&
+                   answer.ImageFile is null;
         }
 
         private static bool OnlyComplainFieldsProvided(
@@ -959,7 +1005,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                    !answer.StarRatingValue.HasValue &&
                    !answer.SmileValue.HasValue &&
                    !string.IsNullOrWhiteSpace(answer.TextAnswer) &&
-                   answer.VoiceFile is null;
+                   answer.VoiceFile is null &&
+                   answer.ImageFile is null;
         }
 
         private static bool OnlySmilesFieldsProvided(
@@ -968,6 +1015,17 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             return !answer.SelectedQuestionOptionId.HasValue &&
                    !answer.StarRatingValue.HasValue &&
                    answer.SmileValue.HasValue &&
+                   string.IsNullOrWhiteSpace(answer.TextAnswer) &&
+                   answer.VoiceFile is null &&
+                   answer.ImageFile is null;
+        }
+
+        private static bool OnlyImageFieldsProvided(
+            SubmitOperatorTemplateAnswerCommandItem answer)
+        {
+            return !answer.SelectedQuestionOptionId.HasValue &&
+                   !answer.StarRatingValue.HasValue &&
+                   !answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is null;
         }
@@ -979,6 +1037,18 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 .Select(fileName => Path.Combine(
                     "./wwwroot/Media",
                     FileNames.SurveyVoiceAnswers,
+                    fileName));
+
+            _mediaService.RemoveRange(filePaths);
+        }
+
+        private void RemoveSavedImageFiles(IEnumerable<string> savedImageFileNames)
+        {
+            var filePaths = savedImageFileNames
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(fileName => Path.Combine(
+                    "./wwwroot/Media",
+                    FileNames.SurveyAnswerImages,
                     fileName));
 
             _mediaService.RemoveRange(filePaths);
@@ -1066,6 +1136,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
 
                     case QuestionType.Voice:
                     case QuestionType.Complain:
+                    case QuestionType.Image:
                     default:
                         break;
                 }

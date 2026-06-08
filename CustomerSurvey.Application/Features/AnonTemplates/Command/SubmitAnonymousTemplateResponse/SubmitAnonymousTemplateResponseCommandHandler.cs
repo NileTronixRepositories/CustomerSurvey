@@ -1,6 +1,9 @@
 ﻿using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction.Media;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Shared.Validation;
+using CustomerSurvey.Domain.Common;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Resources;
@@ -16,6 +19,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
         private readonly IWriteReadRepository<AnonymousTemplateQuestionCondition> _conditionReadRepository;
         private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
         private readonly IWriteRepository<AnonymousSurveyResponse> _anonymousSurveyResponseWriteRepository;
+        private readonly IMediaService _mediaService;
         private readonly IUnitOfWork _unitOfWork;
 
         public SubmitAnonymousTemplateResponseCommandHandler(
@@ -25,6 +29,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
             IWriteReadRepository<AnonymousTemplateQuestionCondition> conditionReadRepository,
             IWriteReadRepository<QuestionOption> questionOptionReadRepository,
             IWriteRepository<AnonymousSurveyResponse> anonymousSurveyResponseWriteRepository,
+            IMediaService mediaService,
             IUnitOfWork unitOfWork)
         {
             _anonymousTemplateReadRepository = anonymousTemplateReadRepository
@@ -44,6 +49,9 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
 
             _anonymousSurveyResponseWriteRepository = anonymousSurveyResponseWriteRepository
                 ?? throw new ArgumentNullException(nameof(anonymousSurveyResponseWriteRepository));
+
+            _mediaService = mediaService
+                ?? throw new ArgumentNullException(nameof(mediaService));
 
             _unitOfWork = unitOfWork
                 ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -160,16 +168,28 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 customInputs,
                 request.CustomInputValues);
 
-            AddAnswersToResponse(
-                anonymousSurveyResponse,
-                activeTemplateQuestions,
-                request.Answers);
+            var savedImageFileNames = new List<string>();
 
-            await _anonymousSurveyResponseWriteRepository.AddAsync(
-                anonymousSurveyResponse,
-                cancellationToken);
+            try
+            {
+                await AddAnswersToResponseAsync(
+                    anonymousSurveyResponse,
+                    activeTemplateQuestions,
+                    request.Answers,
+                    savedImageFileNames,
+                    cancellationToken);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+                await _anonymousSurveyResponseWriteRepository.AddAsync(
+                    anonymousSurveyResponse,
+                    cancellationToken);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }
+            catch
+            {
+                RemoveSavedImageFiles(savedImageFileNames);
+                throw;
+            }
 
             return Result<SubmitAnonymousTemplateResponseResult>.Ok(
                 new SubmitAnonymousTemplateResponseResult
@@ -516,6 +536,9 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                     QuestionType.Voice =>
                         ValidateVoiceAnswer(answer),
 
+                    QuestionType.Image =>
+                        ValidateImageAnswer(answer),
+
                     _ => ValidationResult.Fail(new Error(
                         Code: "AnonTemplates.Submit.QuestionTypeUnsupported",
                         Message: ErrorMessage.SubmitAnonymousTemplateResponse_QuestionType_Unsupported,
@@ -541,7 +564,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 answer.StarRatingValue.HasValue ||
                 answer.SmileValue.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
-                !string.IsNullOrWhiteSpace(answer.VoiceFileName))
+                !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
+                answer.ImageFile is not null)
             {
                 return ValidationResult.Fail(new Error(
                     Code: "AnonTemplates.Submit.SingleChoiceAnswerInvalid",
@@ -585,7 +609,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 answer.SelectedQuestionOptionId.HasValue ||
                 answer.SmileValue.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
-                !string.IsNullOrWhiteSpace(answer.VoiceFileName))
+                !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
+                answer.ImageFile is not null)
             {
                 return ValidationResult.Fail(new Error(
                     Code: "AnonTemplates.Submit.StarRatingAnswerInvalid",
@@ -603,7 +628,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 answer.SelectedQuestionOptionId.HasValue ||
                 answer.StarRatingValue.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
-                !string.IsNullOrWhiteSpace(answer.VoiceFileName))
+                !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
+                answer.ImageFile is not null)
             {
                 return ValidationResult.Fail(new Error(
                     Code: "AnonTemplates.Submit.SmilesAnswerInvalid",
@@ -621,7 +647,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 answer.SelectedQuestionOptionId.HasValue ||
                 answer.StarRatingValue.HasValue ||
                 answer.SmileValue.HasValue ||
-                !string.IsNullOrWhiteSpace(answer.VoiceFileName))
+                !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
+                answer.ImageFile is not null)
             {
                 return ValidationResult.Fail(new Error(
                     Code: "AnonTemplates.Submit.ComplainAnswerInvalid",
@@ -639,7 +666,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 answer.SelectedQuestionOptionId.HasValue ||
                 answer.StarRatingValue.HasValue ||
                 answer.SmileValue.HasValue ||
-                !string.IsNullOrWhiteSpace(answer.TextAnswer))
+                !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
+                answer.ImageFile is not null)
             {
                 return ValidationResult.Fail(new Error(
                     Code: "AnonTemplates.Submit.VoiceAnswerInvalid",
@@ -648,6 +676,28 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
             }
 
             return ValidationResult.Ok();
+        }
+
+        private static ValidationResult ValidateImageAnswer(
+            SubmitAnonymousTemplateAnswerCommandItem answer)
+        {
+            if (answer.SelectedQuestionOptionId.HasValue ||
+                answer.StarRatingValue.HasValue ||
+                answer.SmileValue.HasValue ||
+                !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
+                !string.IsNullOrWhiteSpace(answer.VoiceFileName))
+            {
+                return ValidationResult.Fail(new Error(
+                    Code: "AnonTemplates.Submit.ImageAnswerInvalidShape",
+                    Message: ErrorMessage.SubmitResponse_ImageAnswer_InvalidShape,
+                    Type: ErrorType.Validation));
+            }
+
+            var fileValidationError = ImageAnswerFileValidator.Validate(answer.ImageFile);
+
+            return fileValidationError is null
+                ? ValidationResult.Ok()
+                : ValidationResult.Fail(fileValidationError);
         }
 
         private static IReadOnlyCollection<Guid> GetRootQuestionIds(
@@ -863,15 +913,19 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
             }
         }
 
-        private static void AddAnswersToResponse(
+        private async Task AddAnswersToResponseAsync(
             AnonymousSurveyResponse response,
             IReadOnlyCollection<AnonymousTemplateQuestionForSubmitDto> templateQuestions,
-            IReadOnlyCollection<SubmitAnonymousTemplateAnswerCommandItem> submittedAnswers)
+            IReadOnlyCollection<SubmitAnonymousTemplateAnswerCommandItem> submittedAnswers,
+            List<string> savedImageFileNames,
+            CancellationToken cancellationToken)
         {
             var questionsById = templateQuestions.ToDictionary(x => x.AnonymousTemplateQuestionId);
 
             foreach (var submittedAnswer in submittedAnswers)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var question = questionsById[submittedAnswer.AnonymousTemplateQuestionId];
 
                 var answer = question.QuestionType switch
@@ -911,11 +965,49 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                             questionId: question.QuestionId,
                             voiceFileName: submittedAnswer.VoiceFileName!),
 
+                    QuestionType.Image =>
+                        await CreateImageAnswerAsync(
+                            response.Id,
+                            question,
+                            submittedAnswer,
+                            savedImageFileNames),
+
                     _ => throw new InvalidOperationException("Unsupported anonymous answer type.")
                 };
 
                 response.AddAnswer(answer);
             }
+        }
+
+        private async Task<AnonymousSurveyAnswer> CreateImageAnswerAsync(
+            Guid anonymousSurveyResponseId,
+            AnonymousTemplateQuestionForSubmitDto question,
+            SubmitAnonymousTemplateAnswerCommandItem submittedAnswer,
+            List<string> savedImageFileNames)
+        {
+            var fileName = await _mediaService.SaveAsync(
+                submittedAnswer.ImageFile!,
+                FileNames.SurveyAnswerImages);
+
+            savedImageFileNames.Add(fileName);
+
+            return AnonymousSurveyAnswer.CreateImage(
+                anonymousSurveyResponseId,
+                question.AnonymousTemplateQuestionId,
+                question.QuestionId,
+                fileName);
+        }
+
+        private void RemoveSavedImageFiles(IEnumerable<string> savedImageFileNames)
+        {
+            var filePaths = savedImageFileNames
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(fileName => Path.Combine(
+                    "./wwwroot/Media",
+                    FileNames.SurveyAnswerImages,
+                    fileName));
+
+            _mediaService.RemoveRange(filePaths);
         }
 
         private sealed class ValidationResult

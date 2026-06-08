@@ -29,6 +29,8 @@ namespace CustomerSurvey.Domain.Entities
 
         public string? VoiceFileName { get; private set; }
 
+        public string? ImageFileName { get; private set; }
+
         private SurveyAnswer()
         {
         }
@@ -60,6 +62,21 @@ namespace CustomerSurvey.Domain.Entities
                 QuestionId = questionId,
                 QuestionType = QuestionType.Voice,
                 VoiceFileName = voiceFileName.Trim()
+            };
+        }
+
+        public static SurveyAnswer CreateImage(
+            Guid surveyResponseId,
+            Guid questionId,
+            string imageFileName)
+        {
+            return new SurveyAnswer
+            {
+                Id = Guid.NewGuid(),
+                SurveyResponseId = surveyResponseId,
+                QuestionId = questionId,
+                QuestionType = QuestionType.Image,
+                ImageFileName = imageFileName.Trim()
             };
         }
 

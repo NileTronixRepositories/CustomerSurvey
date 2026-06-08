@@ -13,6 +13,7 @@ internal sealed class GetSystemSurveyResponseDetailsQueryHandler
     : IQueryHandler<GetSystemSurveyResponseDetailsQuery, GetSystemSurveyResponseDetailsResponse>
 {
     private const string SurveyVoiceAnswersBasePath = "Media/SurveyVoiceAnswers";
+    private const string SurveyAnswerImagesBasePath = "Media/SurveyAnswerImages";
 
     private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
     private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
@@ -213,6 +214,10 @@ internal sealed class GetSystemSurveyResponseDetailsQueryHandler
             ? $"{SurveyVoiceAnswersBasePath}/{answer.VoiceFileName}"
             : null;
 
+        var imageFileUrl = !string.IsNullOrWhiteSpace(answer.ImageFileName)
+            ? $"{SurveyAnswerImagesBasePath}/{answer.ImageFileName}"
+            : null;
+
         return new SystemSurveyResponseAnswerResponse
         {
             QuestionId = answer.QuestionId,
@@ -231,18 +236,22 @@ internal sealed class GetSystemSurveyResponseDetailsQueryHandler
             TextAnswer = answer.TextAnswer,
             VoiceFileName = answer.VoiceFileName,
             VoiceFileUrl = voiceFileUrl,
+            ImageFileName = answer.ImageFileName,
+            ImageFileUrl = imageFileUrl,
 
             DisplayValue = ResolveDisplayValue(
                 answer,
                 selectedOption,
-                voiceFileUrl)
+                voiceFileUrl,
+                imageFileUrl)
         };
     }
 
     private static string ResolveDisplayValue(
         SystemSurveyAnswerDetailsDto answer,
         QuestionOptionForSystemSurveyResponseDetailsDto? selectedOption,
-        string? voiceFileUrl)
+        string? voiceFileUrl,
+        string? imageFileUrl)
     {
         return answer.QuestionType switch
         {
@@ -251,6 +260,7 @@ internal sealed class GetSystemSurveyResponseDetailsQueryHandler
             QuestionType.Smiles => answer.SmileValue?.ToString() ?? string.Empty,
             QuestionType.Complain => answer.TextAnswer ?? string.Empty,
             QuestionType.Voice => voiceFileUrl ?? answer.VoiceFileName ?? string.Empty,
+            QuestionType.Image => imageFileUrl ?? answer.ImageFileName ?? string.Empty,
             _ => string.Empty
         };
     }

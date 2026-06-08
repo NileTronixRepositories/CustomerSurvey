@@ -23,4 +23,6 @@ internal sealed record DepartmentOperatorSurveyAnswerDetailsDto
     public string? TextAnswer { get; init; }
 
     public string? VoiceFileName { get; init; }
+
+    public string? ImageFileName { get; init; }
 }

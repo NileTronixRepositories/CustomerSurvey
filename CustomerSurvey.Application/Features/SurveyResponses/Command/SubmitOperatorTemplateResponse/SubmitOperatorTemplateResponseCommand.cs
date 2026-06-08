@@ -40,5 +40,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         public string? TextAnswer { get; init; }
 
         public IFormFile? VoiceFile { get; init; }
+
+        public IFormFile? ImageFile { get; init; }
     }
 }

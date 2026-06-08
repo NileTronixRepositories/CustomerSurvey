@@ -1,12 +1,12 @@
-﻿namespace CustomerSurvey.Api.Contracts.AnonTemplates
+using Microsoft.AspNetCore.Http;
+
+namespace CustomerSurvey.Api.Contracts.AnonTemplates
 {
     public sealed record SubmitAnonymousTemplateResponseRequest
     {
-        public IReadOnlyCollection<SubmitAnonymousTemplateCustomInputValueRequest> CustomInputValues { get; init; }
-            = Array.Empty<SubmitAnonymousTemplateCustomInputValueRequest>();
+        public List<SubmitAnonymousTemplateCustomInputValueRequest> CustomInputValues { get; init; } = new();
 
-        public IReadOnlyCollection<SubmitAnonymousTemplateAnswerRequest> Answers { get; init; }
-            = Array.Empty<SubmitAnonymousTemplateAnswerRequest>();
+        public List<SubmitAnonymousTemplateAnswerRequest> Answers { get; init; } = new();
     }
 
     public sealed record SubmitAnonymousTemplateCustomInputValueRequest
@@ -31,5 +31,7 @@
         public string? TextAnswer { get; init; }
 
         public string? VoiceFileName { get; init; }
+
+        public IFormFile? ImageFile { get; init; }
     }
 }

@@ -28,5 +28,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public string? TextAnswer { get; init; }
 
         public string? VoiceFileName { get; init; }
+
+        public string? ImageFileName { get; init; }
     }
 }

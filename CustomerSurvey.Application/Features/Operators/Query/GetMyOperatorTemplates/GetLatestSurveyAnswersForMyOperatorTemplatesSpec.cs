@@ -31,7 +31,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 StarRatingValue = x.StarRatingValue,
                 SmileValue = x.SmileValue,
                 TextAnswer = x.TextAnswer,
-                VoiceFileName = x.VoiceFileName
+                VoiceFileName = x.VoiceFileName,
+                ImageFileName = x.ImageFileName
             });
         }
     }

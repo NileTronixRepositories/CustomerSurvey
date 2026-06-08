@@ -492,7 +492,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                                 TextAnswer = answer.TextAnswer,
 
                                 VoiceFileName = answer.VoiceFileName,
-                                VoiceFileUrl = BuildVoiceFileUrl(answer.VoiceFileName)
+                                VoiceFileUrl = BuildVoiceFileUrl(answer.VoiceFileName),
+                                ImageFileName = answer.ImageFileName,
+                                ImageFileUrl = BuildImageFileUrl(answer.ImageFileName)
                             };
                         })
                         .ToArray());
@@ -769,6 +771,16 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
             }
 
             return $"Media/{FileNames.SurveyVoiceAnswers}/{voiceFileName}";
+        }
+
+        private static string? BuildImageFileUrl(string? imageFileName)
+        {
+            if (string.IsNullOrWhiteSpace(imageFileName))
+            {
+                return null;
+            }
+
+            return $"Media/{FileNames.SurveyAnswerImages}/{imageFileName}";
         }
     }
 }

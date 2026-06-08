@@ -241,9 +241,13 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.ManageA
 
                 if (!parentTypeIsAllowed)
                 {
+                    var message = parentQuestion.QuestionType == QuestionType.Image
+                        ? ErrorMessage.Question_Image_ParentCondition_NotAllowed
+                        : ErrorMessage.ManageAnonymousTemplateQuestionConditions_ParentQuestionType_NotAllowed;
+
                     return ConditionsValidationResult.Fail(new Error(
                         Code: "AnonymousTemplates.ManageConditions.ParentQuestionTypeNotAllowed",
-                        Message: ErrorMessage.ManageAnonymousTemplateQuestionConditions_ParentQuestionType_NotAllowed,
+                        Message: message,
                         Type: ErrorType.Validation));
                 }
 

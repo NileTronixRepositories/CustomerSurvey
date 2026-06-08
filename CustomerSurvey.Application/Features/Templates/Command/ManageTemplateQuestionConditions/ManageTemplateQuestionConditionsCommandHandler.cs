@@ -310,6 +310,11 @@ namespace CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQu
 
                 QuestionType.Smiles => ValidateSmilesCondition(condition),
 
+                QuestionType.Image => Result.Fail(new Error(
+                    Code: "Templates.ManageQuestionConditions.ImageParentTypeNotAllowed",
+                    Message: ErrorMessage.Question_Image_ParentCondition_NotAllowed,
+                    Type: ErrorType.Validation)),
+
                 QuestionType.Voice or QuestionType.Complain => Result.Fail(new Error(
                     Code: "Templates.ManageQuestionConditions.ParentTypeNotAllowed",
                     Message: ErrorMessage.ManageTemplateQuestionConditions_ParentType_NotAllowed,

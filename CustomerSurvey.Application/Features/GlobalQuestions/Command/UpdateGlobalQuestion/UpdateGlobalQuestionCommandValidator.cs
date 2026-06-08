@@ -71,7 +71,9 @@ namespace CustomerSurvey.Application.Features.GlobalQuestions.Command.UpdateGlob
             {
                 RuleFor(x => x.Options)
                     .Must(x => x.Count == 0)
-                    .WithMessage(ErrorMessage.UpdateGlobalQuestion_Options_NotAllowed);
+                    .WithMessage(command => command.Type == QuestionType.Image
+                        ? ErrorMessage.Question_Image_Options_NotAllowed
+                        : ErrorMessage.UpdateGlobalQuestion_Options_NotAllowed);
             });
         }
     }

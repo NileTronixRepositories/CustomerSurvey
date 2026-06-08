@@ -79,5 +79,9 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
         public string? TextAnswer { get; init; }
 
         public string? VoiceFileName { get; init; }
+
+        public string? ImageFileName { get; init; }
+
+        public string? ImageFileUrl { get; init; }
     }
 }

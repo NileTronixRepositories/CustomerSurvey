@@ -160,7 +160,8 @@ namespace CustomerSurvey.Api.Controllers
                         StarRatingValue = x.StarRatingValue,
                         SmileValue = x.SmileValue,
                         TextAnswer = x.TextAnswer,
-                        VoiceFile = x.VoiceFile
+                        VoiceFile = x.VoiceFile,
+                        ImageFile = x.ImageFile
                     })
                     .ToArray()
             };

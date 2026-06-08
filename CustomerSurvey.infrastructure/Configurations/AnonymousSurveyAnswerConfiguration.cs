@@ -42,6 +42,10 @@ namespace CustomerSurvey.infrastructure.Configurations
                 .IsRequired(false)
                 .HasMaxLength(300);
 
+            builder.Property(x => x.ImageFileName)
+                .IsRequired(false)
+                .HasMaxLength(300);
+
             builder.HasIndex(x => new
             {
                 x.AnonymousSurveyResponseId,
