@@ -4,6 +4,8 @@ using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Security;
+using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
+using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -29,6 +31,12 @@ internal sealed class GetSurveyDashboardQueryHandler
     private readonly IWriteReadRepository<AnonymousSurveyResponse> _anonymousSurveyResponseReadRepository;
     private readonly IWriteReadRepository<AnonymousSurveyAnswer> _anonymousSurveyAnswerReadRepository;
     private readonly IWriteReadRepository<AnonymousSurveyResponseCustomInputValue> _anonymousCustomInputValueReadRepository;
+    private readonly IWriteReadRepository<TemplateQuestion> _templateQuestionReadRepository;
+    private readonly IWriteReadRepository<AnonymousTemplateQuestion> _anonymousTemplateQuestionReadRepository;
+    private readonly IWriteReadRepository<TemplateQuestionCondition> _templateQuestionConditionReadRepository;
+    private readonly IWriteReadRepository<AnonymousTemplateQuestionCondition> _anonymousTemplateQuestionConditionReadRepository;
+    private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
+    private readonly ISurveyReportScoringService _surveyReportScoringService;
     private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
     private readonly ICurrentUser _currentUser;
 
@@ -43,6 +51,12 @@ internal sealed class GetSurveyDashboardQueryHandler
         IWriteReadRepository<AnonymousSurveyResponse> anonymousSurveyResponseReadRepository,
         IWriteReadRepository<AnonymousSurveyAnswer> anonymousSurveyAnswerReadRepository,
         IWriteReadRepository<AnonymousSurveyResponseCustomInputValue> anonymousCustomInputValueReadRepository,
+        IWriteReadRepository<TemplateQuestion> templateQuestionReadRepository,
+        IWriteReadRepository<AnonymousTemplateQuestion> anonymousTemplateQuestionReadRepository,
+        IWriteReadRepository<TemplateQuestionCondition> templateQuestionConditionReadRepository,
+        IWriteReadRepository<AnonymousTemplateQuestionCondition> anonymousTemplateQuestionConditionReadRepository,
+        IWriteReadRepository<QuestionOption> questionOptionReadRepository,
+        ISurveyReportScoringService surveyReportScoringService,
         ICurrentBranchScopeResolver currentBranchScopeResolver,
         ICurrentUser currentUser)
     {
@@ -66,6 +80,18 @@ internal sealed class GetSurveyDashboardQueryHandler
             ?? throw new ArgumentNullException(nameof(anonymousSurveyAnswerReadRepository));
         _anonymousCustomInputValueReadRepository = anonymousCustomInputValueReadRepository
             ?? throw new ArgumentNullException(nameof(anonymousCustomInputValueReadRepository));
+        _templateQuestionReadRepository = templateQuestionReadRepository
+            ?? throw new ArgumentNullException(nameof(templateQuestionReadRepository));
+        _anonymousTemplateQuestionReadRepository = anonymousTemplateQuestionReadRepository
+            ?? throw new ArgumentNullException(nameof(anonymousTemplateQuestionReadRepository));
+        _templateQuestionConditionReadRepository = templateQuestionConditionReadRepository
+            ?? throw new ArgumentNullException(nameof(templateQuestionConditionReadRepository));
+        _anonymousTemplateQuestionConditionReadRepository = anonymousTemplateQuestionConditionReadRepository
+            ?? throw new ArgumentNullException(nameof(anonymousTemplateQuestionConditionReadRepository));
+        _questionOptionReadRepository = questionOptionReadRepository
+            ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
+        _surveyReportScoringService = surveyReportScoringService
+            ?? throw new ArgumentNullException(nameof(surveyReportScoringService));
         _currentBranchScopeResolver = currentBranchScopeResolver
             ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
         _currentUser = currentUser
@@ -149,6 +175,8 @@ internal sealed class GetSurveyDashboardQueryHandler
         var responses = new List<SurveyDashboardResponseRow>();
         var answers = new List<SurveyDashboardAnswerRow>();
         var customInputValues = new List<SurveyDashboardCustomInputValueRow>();
+        var templateQuestions = new List<TemplateQuestionFlatDto>();
+        var conditions = new List<ConditionFlatDto>();
 
         if (includeInternal)
         {
@@ -181,6 +209,21 @@ internal sealed class GetSurveyDashboardQueryHandler
                     toExclusiveUtc,
                     internalTemplateId),
                 cancellationToken));
+
+            var internalTemplateIds = templates
+                .Select(x => x.TemplateId)
+                .ToArray();
+
+            if (internalTemplateIds.Length > 0)
+            {
+                templateQuestions.AddRange(await _templateQuestionReadRepository.ListAsync(
+                    new GetSurveyDashboardTemplateQuestionsSpec(internalTemplateIds),
+                    cancellationToken));
+
+                conditions.AddRange(await _templateQuestionConditionReadRepository.ListAsync(
+                    new GetSurveyDashboardTemplateQuestionConditionsSpec(internalTemplateIds),
+                    cancellationToken));
+            }
         }
 
         if (includeAnonymous)
@@ -214,7 +257,70 @@ internal sealed class GetSurveyDashboardQueryHandler
                     toExclusiveUtc,
                     anonymousTemplateId),
                 cancellationToken));
+
+            var anonymousTemplateIds = anonymousTemplates
+                .Select(x => x.TemplateId)
+                .ToArray();
+
+            if (anonymousTemplateIds.Length > 0)
+            {
+                templateQuestions.AddRange(await _anonymousTemplateQuestionReadRepository.ListAsync(
+                    new GetSurveyDashboardAnonymousTemplateQuestionsSpec(anonymousTemplateIds),
+                    cancellationToken));
+
+                conditions.AddRange(await _anonymousTemplateQuestionConditionReadRepository.ListAsync(
+                    new GetSurveyDashboardAnonymousTemplateQuestionConditionsSpec(anonymousTemplateIds),
+                    cancellationToken));
+            }
         }
+
+        var questionIds = templateQuestions
+            .Select(x => x.QuestionId)
+            .Distinct()
+            .ToArray();
+
+        IReadOnlyCollection<QuestionOptionFlatDto> questionOptions = questionIds.Length == 0
+            ? Array.Empty<QuestionOptionFlatDto>()
+            : await _questionOptionReadRepository.ListAsync(
+                new GetSurveyDashboardQuestionOptionsSpec(questionIds),
+                cancellationToken);
+
+        var responseScoreInput = responses
+            .Select(MapResponseForScoring)
+            .ToArray();
+
+        var answerScoreInput = answers
+            .Select(MapAnswerForScoring)
+            .ToArray();
+
+        var calculatedResponseScores = _surveyReportScoringService.CalculateResponseScores(
+            responseScoreInput,
+            answerScoreInput,
+            templateQuestions,
+            conditions,
+            questionOptions,
+            request.ScoreCalculationMode);
+
+        var questionScoreTokens = _surveyReportScoringService.CalculateQuestionScoreTokens(
+            responseScoreInput,
+            answerScoreInput,
+            templateQuestions,
+            conditions,
+            questionOptions,
+            request.ScoreCalculationMode);
+
+        var calculatedScoresByResponse = calculatedResponseScores
+            .ToDictionary(
+                x => (Source: ToDashboardSource(x.TemplateKind), x.ResponseId),
+                x => x);
+
+        responses = ApplyCalculatedScores(
+            responses,
+            calculatedScoresByResponse);
+
+        customInputValues = ApplyCalculatedScores(
+            customInputValues,
+            calculatedScoresByResponse);
 
         var response = BuildResponse(
             request,
@@ -227,7 +333,9 @@ internal sealed class GetSurveyDashboardQueryHandler
             anonymousTemplates,
             responses,
             answers,
-            customInputValues);
+            customInputValues,
+            templateQuestions,
+            questionScoreTokens);
 
         return Result<SurveyDashboardResponse>.Ok(response);
     }
@@ -459,6 +567,97 @@ internal sealed class GetSurveyDashboardQueryHandler
             IsDefaultPeriod: !request.From.HasValue && !request.To.HasValue));
     }
 
+    private static ResponseFlatDto MapResponseForScoring(SurveyDashboardResponseRow response)
+    {
+        return new ResponseFlatDto
+        {
+            ResponseId = response.ResponseId,
+            TemplateId = response.TemplateId,
+            TemplateKind = ToReportTemplateKind(response.Source),
+            SubmittedOnUtc = response.SubmittedOnUtc
+        };
+    }
+
+    private static AnswerFlatDto MapAnswerForScoring(SurveyDashboardAnswerRow answer)
+    {
+        return new AnswerFlatDto
+        {
+            ResponseId = answer.ResponseId,
+            TemplateId = answer.TemplateId,
+            QuestionId = answer.QuestionId,
+            QuestionType = answer.QuestionType,
+            SelectedQuestionOptionId = answer.SelectedQuestionOptionId,
+            StarRatingValue = answer.StarRatingValue,
+            SmileValue = answer.SmileValue,
+            HasTextAnswer = !string.IsNullOrWhiteSpace(answer.TextAnswer),
+            HasVoiceAnswer = !string.IsNullOrWhiteSpace(answer.VoiceFileName)
+        };
+    }
+
+    private static List<SurveyDashboardResponseRow> ApplyCalculatedScores(
+        IEnumerable<SurveyDashboardResponseRow> responses,
+        IReadOnlyDictionary<(SurveyDashboardSource Source, Guid ResponseId), CalculatedResponseScore> scoresByResponse)
+    {
+        return responses
+            .Select(response =>
+            {
+                if (!scoresByResponse.TryGetValue(
+                        (response.Source, response.ResponseId),
+                        out var score))
+                {
+                    return response with
+                    {
+                        MaxScore = 0,
+                        ScorePercentage = 0m
+                    };
+                }
+
+                return response with
+                {
+                    MaxScore = score.ScoredItemsCount,
+                    ScorePercentage = score.ScorePercentage
+                };
+            })
+            .ToList();
+    }
+
+    private static List<SurveyDashboardCustomInputValueRow> ApplyCalculatedScores(
+        IEnumerable<SurveyDashboardCustomInputValueRow> customInputValues,
+        IReadOnlyDictionary<(SurveyDashboardSource Source, Guid ResponseId), CalculatedResponseScore> scoresByResponse)
+    {
+        return customInputValues
+            .Select(value =>
+            {
+                if (!scoresByResponse.TryGetValue(
+                        (value.Source, value.ResponseId),
+                        out var score))
+                {
+                    return value with
+                    {
+                        MaxScore = 0,
+                        ScorePercentage = 0m
+                    };
+                }
+
+                return value with
+                {
+                    MaxScore = score.ScoredItemsCount,
+                    ScorePercentage = score.ScorePercentage
+                };
+            })
+            .ToList();
+    }
+
+    private static ReportTemplateKind ToReportTemplateKind(SurveyDashboardSource source)
+        => source == SurveyDashboardSource.Anonymous
+            ? ReportTemplateKind.Anonymous
+            : ReportTemplateKind.Normal;
+
+    private static SurveyDashboardSource ToDashboardSource(ReportTemplateKind templateKind)
+        => templateKind == ReportTemplateKind.Anonymous
+            ? SurveyDashboardSource.Anonymous
+            : SurveyDashboardSource.Internal;
+
     private static SurveyDashboardResponse BuildResponse(
         GetSurveyDashboardQuery request,
         CurrentSurveyDashboardActor actor,
@@ -470,7 +669,9 @@ internal sealed class GetSurveyDashboardQueryHandler
         IReadOnlyCollection<SurveyDashboardTemplateRow> anonymousTemplates,
         IReadOnlyCollection<SurveyDashboardResponseRow> responses,
         IReadOnlyCollection<SurveyDashboardAnswerRow> answers,
-        IReadOnlyCollection<SurveyDashboardCustomInputValueRow> customInputValues)
+        IReadOnlyCollection<SurveyDashboardCustomInputValueRow> customInputValues,
+        IReadOnlyCollection<TemplateQuestionFlatDto> templateQuestions,
+        IReadOnlyCollection<QuestionScoreToken> questionScoreTokens)
     {
         var scoredResponses = responses
             .Where(x => x.MaxScore > 0)
@@ -512,6 +713,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                 BranchId = request.BranchId,
                 TemplateId = request.TemplateId,
                 AnonymousTemplateId = request.AnonymousTemplateId,
+                ScoreCalculationMode = request.ScoreCalculationMode,
                 TopQuestionsCount = request.TopQuestionsCount,
                 CriticalResponsesCount = request.CriticalResponsesCount,
                 CriticalScoreThreshold = request.CriticalScoreThreshold
@@ -525,7 +727,8 @@ internal sealed class GetSurveyDashboardQueryHandler
                 TemplateKind = templateFilter?.TemplateKind,
                 From = period.From,
                 To = period.To,
-                GroupBy = request.GroupBy
+                GroupBy = request.GroupBy,
+                ScoreCalculationMode = request.ScoreCalculationMode
             },
 
             Summary = new SurveyDashboardSummaryResponse
@@ -582,7 +785,9 @@ internal sealed class GetSurveyDashboardQueryHandler
                 answers),
 
             LowestRatedQuestions = BuildLowestRatedQuestions(
-                answers,
+                questionScoreTokens,
+                internalTemplates.Concat(anonymousTemplates).ToArray(),
+                templateQuestions,
                 request.TopQuestionsCount),
 
             CustomInputSegments = BuildCustomInputSegments(
@@ -758,54 +963,82 @@ internal sealed class GetSurveyDashboardQueryHandler
     }
 
     private static IReadOnlyCollection<SurveyDashboardLowestRatedQuestionItemResponse> BuildLowestRatedQuestions(
-        IReadOnlyCollection<SurveyDashboardAnswerRow> answers,
+        IReadOnlyCollection<QuestionScoreToken> scoreTokens,
+        IReadOnlyCollection<SurveyDashboardTemplateRow> templates,
+        IReadOnlyCollection<TemplateQuestionFlatDto> templateQuestions,
         int topQuestionsCount)
     {
-        return answers
-            .Select(x => new
-            {
-                Answer = x,
-                Value = GetQuestionScoreValue(x)
-            })
-            .Where(x => x.Value.HasValue)
+        var templatesByKey = templates
             .GroupBy(x => new
             {
-                x.Answer.Source,
-                x.Answer.TemplateId,
-                x.Answer.TemplateNameEn,
-                x.Answer.TemplateNameAr,
-                x.Answer.BranchId,
-                x.Answer.BranchNameEn,
-                x.Answer.BranchNameAr,
-                x.Answer.QuestionId,
-                x.Answer.QuestionTextEn,
-                x.Answer.QuestionTextAr,
-                x.Answer.QuestionType
+                x.Source,
+                x.TemplateId
             })
-            .Select(x =>
-            {
-                var averageValue = Round(x.Average(a => (decimal)a.Value!.Value));
+            .ToDictionary(
+                x => (x.Key.Source, x.Key.TemplateId),
+                x => x.First());
 
-                return new SurveyDashboardLowestRatedQuestionItemResponse
-                {
-                    Source = x.Key.Source,
-                    TemplateId = x.Key.TemplateId,
-                    TemplateNameEn = x.Key.TemplateNameEn,
-                    TemplateNameAr = x.Key.TemplateNameAr,
-                    BranchId = x.Key.BranchId,
-                    BranchNameEn = x.Key.BranchNameEn,
-                    BranchNameAr = x.Key.BranchNameAr,
-                    QuestionId = x.Key.QuestionId,
-                    QuestionTextEn = x.Key.QuestionTextEn,
-                    QuestionTextAr = x.Key.QuestionTextAr,
-                    QuestionType = x.Key.QuestionType,
-                    QuestionTypeName = x.Key.QuestionType.ToString(),
-                    AnswersCount = x.Count(),
-                    AverageValue = averageValue,
-                    AverageScorePercentage = Round(averageValue / 5m * 100m),
-                    DetailsNavigation = BuildQuestionContextNavigation(x.Key.Source, x.Key.TemplateId)
-                };
+        var questionsByKey = templateQuestions
+            .GroupBy(x => new
+            {
+                x.TemplateId,
+                x.TemplateQuestionId
             })
+            .ToDictionary(
+                x => (x.Key.TemplateId, x.Key.TemplateQuestionId),
+                x => x.First());
+
+        var result = new List<SurveyDashboardLowestRatedQuestionItemResponse>();
+
+        foreach (var scoreGroup in scoreTokens
+                     .GroupBy(x => new
+                     {
+                         Source = ToDashboardSource(x.TemplateKind),
+                         x.TemplateId,
+                         x.TemplateQuestionId,
+                         x.QuestionId
+                     }))
+        {
+            if (!templatesByKey.TryGetValue(
+                    (scoreGroup.Key.Source, scoreGroup.Key.TemplateId),
+                    out var template))
+            {
+                continue;
+            }
+
+            if (!questionsByKey.TryGetValue(
+                    (scoreGroup.Key.TemplateId, scoreGroup.Key.TemplateQuestionId),
+                    out var question))
+            {
+                continue;
+            }
+
+            var averageValue = Round(scoreGroup.Average(x => x.ScoreValue));
+
+            result.Add(new SurveyDashboardLowestRatedQuestionItemResponse
+            {
+                Source = scoreGroup.Key.Source,
+                TemplateId = scoreGroup.Key.TemplateId,
+                TemplateNameEn = template.TemplateNameEn,
+                TemplateNameAr = template.TemplateNameAr,
+                BranchId = template.BranchId,
+                BranchNameEn = template.BranchNameEn,
+                BranchNameAr = template.BranchNameAr,
+                QuestionId = scoreGroup.Key.QuestionId,
+                QuestionTextEn = question.QuestionTextEn,
+                QuestionTextAr = question.QuestionTextAr,
+                QuestionType = question.QuestionType,
+                QuestionTypeName = question.QuestionType.ToString(),
+                AnswersCount = scoreGroup.Count(),
+                AverageValue = averageValue,
+                AverageScorePercentage = Round(averageValue / 5m * 100m),
+                DetailsNavigation = BuildQuestionContextNavigation(
+                    scoreGroup.Key.Source,
+                    scoreGroup.Key.TemplateId)
+            });
+        }
+
+        return result
             .OrderBy(x => x.AverageScorePercentage)
             .ThenByDescending(x => x.AnswersCount)
             .Take(topQuestionsCount)

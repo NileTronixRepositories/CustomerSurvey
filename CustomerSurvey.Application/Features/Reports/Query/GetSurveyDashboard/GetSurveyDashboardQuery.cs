@@ -1,4 +1,5 @@
 using BuildingBlock.Application.Abstraction;
+using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 
@@ -17,6 +18,8 @@ public sealed class GetSurveyDashboardQuery : IQuery<SurveyDashboardResponse>
     public DateTime? To { get; init; }
 
     public DashboardGroupBy GroupBy { get; init; } = DashboardGroupBy.Day;
+
+    public ScoreCalculationMode ScoreCalculationMode { get; init; } = ScoreCalculationMode.RootQuestions;
 
     public int TopQuestionsCount { get; init; } = 5;
 
