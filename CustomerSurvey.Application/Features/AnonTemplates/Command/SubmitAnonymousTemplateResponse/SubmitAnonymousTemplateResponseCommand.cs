@@ -1,4 +1,5 @@
-﻿using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction;
+using Microsoft.AspNetCore.Http;
 
 namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonymousTemplateResponse
 {
@@ -36,5 +37,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
         public string? TextAnswer { get; init; }
 
         public string? VoiceFileName { get; init; }
+
+        public IFormFile? ImageFile { get; init; }
     }
 }

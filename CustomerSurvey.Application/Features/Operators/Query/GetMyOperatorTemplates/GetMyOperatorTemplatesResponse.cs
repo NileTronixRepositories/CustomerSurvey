@@ -201,5 +201,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public string? VoiceFileName { get; init; }
 
         public string? VoiceFileUrl { get; init; }
+
+        public string? ImageFileName { get; init; }
+
+        public string? ImageFileUrl { get; init; }
     }
 }

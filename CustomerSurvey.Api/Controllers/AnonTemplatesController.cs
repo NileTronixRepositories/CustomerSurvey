@@ -38,7 +38,7 @@ namespace CustomerSurvey.Api.Controllers
         [HttpPost("{anonymousTemplateId:guid}/responses")]
         public async Task<IActionResult> SubmitResponse(
     [FromRoute] Guid anonymousTemplateId,
-    [FromBody] SubmitAnonymousTemplateResponseRequest request,
+    [FromForm] SubmitAnonymousTemplateResponseRequest request,
     CancellationToken cancellationToken)
         {
             var command = new SubmitAnonymousTemplateResponseCommand
@@ -60,7 +60,8 @@ namespace CustomerSurvey.Api.Controllers
                         StarRatingValue = x.StarRatingValue,
                         SmileValue = x.SmileValue,
                         TextAnswer = x.TextAnswer,
-                        VoiceFileName = x.VoiceFileName
+                        VoiceFileName = x.VoiceFileName,
+                        ImageFile = x.ImageFile
                     })
                     .ToArray()
             };

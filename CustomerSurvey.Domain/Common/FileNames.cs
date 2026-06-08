@@ -9,5 +9,6 @@ namespace CustomerSurvey.Domain.Common
     public static class FileNames
     {
         public const string SurveyVoiceAnswers = "SurveyVoiceAnswers";
+        public const string SurveyAnswerImages = "SurveyAnswerImages";
     }
 }

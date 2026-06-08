@@ -2703,4 +2703,34 @@
   <data name="ResetUserPassword_Success" xml:space="preserve">
     <value>تم تغيير كلمة المرور بنجاح.</value>
   </data>
+  <data name="Question_Image_Options_NotAllowed" xml:space="preserve">
+    <value>سؤال الصورة لا يقبل اختيارات.</value>
+  </data>
+  <data name="Question_Image_ParentCondition_NotAllowed" xml:space="preserve">
+    <value>لا يمكن استخدام سؤال الصورة كسؤال رئيسي في الشرط.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_Required" xml:space="preserve">
+    <value>صورة الإجابة مطلوبة لهذا السؤال.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_Empty" xml:space="preserve">
+    <value>ملف الصورة لا يجب أن يكون فارغًا.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_InvalidType" xml:space="preserve">
+    <value>يجب رفع ملف صورة فقط.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_InvalidExtension" xml:space="preserve">
+    <value>امتداد الصورة غير مدعوم.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_MaxSize" xml:space="preserve">
+    <value>حجم الصورة أكبر من الحد المسموح.</value>
+  </data>
+  <data name="SubmitResponse_ImageAnswer_InvalidShape" xml:space="preserve">
+    <value>إجابة سؤال الصورة يجب أن تحتوي على صورة فقط.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_SaveFailed" xml:space="preserve">
+    <value>فشل حفظ صورة الإجابة.</value>
+  </data>
+  <data name="QuestionType_Image_NotScored" xml:space="preserve">
+    <value>سؤال الصورة لا يدخل في التقييم.</value>
+  </data>
 </root>

@@ -67,7 +67,9 @@ namespace CustomerSurvey.Application.Features.GlobalQuestions.Command.CreateGlob
             {
                 RuleFor(x => x.Options)
                     .Must(x => x.Count == 0)
-                    .WithMessage(ErrorMessage.CreateGlobalQuestion_Options_NotAllowed);
+                    .WithMessage(command => command.Type == QuestionType.Image
+                        ? ErrorMessage.Question_Image_Options_NotAllowed
+                        : ErrorMessage.CreateGlobalQuestion_Options_NotAllowed);
             });
         }
     }

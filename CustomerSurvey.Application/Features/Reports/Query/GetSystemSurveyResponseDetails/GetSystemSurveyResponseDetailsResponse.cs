@@ -125,5 +125,9 @@ public sealed record SystemSurveyResponseAnswerResponse
 
     public string? VoiceFileUrl { get; init; }
 
+    public string? ImageFileName { get; init; }
+
+    public string? ImageFileUrl { get; init; }
+
     public string DisplayValue { get; init; } = string.Empty;
 }

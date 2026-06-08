@@ -37,6 +37,10 @@ internal sealed class GetBranchSurveyResponseAnswersSpec
 
             VoiceFileName = x.QuestionType == QuestionType.Voice
                 ? x.VoiceFileName
+                : null,
+
+            ImageFileName = x.QuestionType == QuestionType.Image
+                ? x.ImageFileName
                 : null
         });
     }

@@ -2703,4 +2703,34 @@
   <data name="ResetUserPassword_Success" xml:space="preserve">
     <value>User password has been reset successfully.</value>
   </data>
+  <data name="Question_Image_Options_NotAllowed" xml:space="preserve">
+    <value>Image question does not allow options.</value>
+  </data>
+  <data name="Question_Image_ParentCondition_NotAllowed" xml:space="preserve">
+    <value>Image question cannot be used as a parent condition question.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_Required" xml:space="preserve">
+    <value>Image file is required for this question.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_Empty" xml:space="preserve">
+    <value>Image file must not be empty.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_InvalidType" xml:space="preserve">
+    <value>Only image files are allowed.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_InvalidExtension" xml:space="preserve">
+    <value>Image file extension is not supported.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_MaxSize" xml:space="preserve">
+    <value>Image file size exceeds the allowed limit.</value>
+  </data>
+  <data name="SubmitResponse_ImageAnswer_InvalidShape" xml:space="preserve">
+    <value>Image question answer must contain image file only.</value>
+  </data>
+  <data name="SubmitResponse_ImageFile_SaveFailed" xml:space="preserve">
+    <value>Failed to save answer image.</value>
+  </data>
+  <data name="QuestionType_Image_NotScored" xml:space="preserve">
+    <value>Image question is not included in scoring.</value>
+  </data>
 </root>

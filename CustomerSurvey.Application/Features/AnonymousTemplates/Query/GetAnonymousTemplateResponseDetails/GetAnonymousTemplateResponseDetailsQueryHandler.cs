@@ -12,6 +12,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
     internal sealed class GetAnonymousTemplateResponseDetailsQueryHandler
         : IQueryHandler<GetAnonymousTemplateResponseDetailsQuery, GetAnonymousTemplateResponseDetailsResponse>
     {
+        private const string SurveyAnswerImagesBasePath = "Media/SurveyAnswerImages";
+
         private readonly IWriteReadRepository<AnonymousTemplate> _anonymousTemplateReadRepository;
         private readonly IWriteReadRepository<AnonymousSurveyResponse> _anonymousSurveyResponseReadRepository;
         private readonly IWriteReadRepository<AnonymousSurveyResponseCustomInputValue> _customInputValueReadRepository;
@@ -202,7 +204,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
                         SelectedOptionTextEn = selectedOption?.TextEn,
                         SelectedOptionTextAr = selectedOption?.TextAr,
-                        SelectedOptionValue = selectedOption?.Value
+                        SelectedOptionValue = selectedOption?.Value,
+                        ImageFileUrl = !string.IsNullOrWhiteSpace(answer.ImageFileName)
+                            ? $"{SurveyAnswerImagesBasePath}/{answer.ImageFileName}"
+                            : null
                     };
                 })
                 .OrderBy(x => x.QuestionOrder)

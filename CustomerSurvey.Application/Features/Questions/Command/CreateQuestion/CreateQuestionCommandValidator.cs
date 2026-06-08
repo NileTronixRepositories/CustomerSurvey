@@ -30,7 +30,9 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
 
             RuleFor(x => x.Options)
                 .Must((command, options) => IsValidOptionsShape(command.Type, options))
-                .WithMessage(ErrorMessage.CreateQuestion_Options_InvalidForType);
+                .WithMessage(command => command.Type == QuestionType.Image
+                    ? ErrorMessage.Question_Image_Options_NotAllowed
+                    : ErrorMessage.CreateQuestion_Options_InvalidForType);
 
             RuleFor(x => x.Options)
                 .Must(options => options is not null && options.Count >= 2)
