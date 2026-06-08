@@ -2658,4 +2658,49 @@
   <data name="AssignBranchAreaBranches_Branches_NotFound" xml:space="preserve">
     <value>Some selected branches were not found.</value>
   </data>
+  <data name="ResetUserPassword_ApplicationUserId_Required" xml:space="preserve">
+    <value>Application user id is required.</value>
+  </data>
+  <data name="ResetUserPassword_NewPassword_Required" xml:space="preserve">
+    <value>New password is required.</value>
+  </data>
+  <data name="ResetUserPassword_NewPassword_MinLength" xml:space="preserve">
+    <value>New password must be at least 8 characters.</value>
+  </data>
+  <data name="ResetUserPassword_NewPassword_MaxLength" xml:space="preserve">
+    <value>New password must not exceed 200 characters.</value>
+  </data>
+  <data name="ResetUserPassword_ConfirmNewPassword_Required" xml:space="preserve">
+    <value>Confirm new password is required.</value>
+  </data>
+  <data name="ResetUserPassword_Passwords_NotMatch" xml:space="preserve">
+    <value>Password and confirmation password do not match.</value>
+  </data>
+  <data name="ResetUserPassword_CurrentActor_NotFound" xml:space="preserve">
+    <value>Current actor profile was not found.</value>
+  </data>
+  <data name="ResetUserPassword_TargetUser_NotFound" xml:space="preserve">
+    <value>Target user was not found.</value>
+  </data>
+  <data name="ResetUserPassword_TargetUser_Inactive" xml:space="preserve">
+    <value>Cannot reset password for an inactive user.</value>
+  </data>
+  <data name="ResetUserPassword_TargetProfile_NotSupported" xml:space="preserve">
+    <value>Target user profile is not supported for password reset.</value>
+  </data>
+  <data name="ResetUserPassword_Forbidden_TargetType" xml:space="preserve">
+    <value>You are not allowed to reset password for this user type.</value>
+  </data>
+  <data name="ResetUserPassword_ScopeViolation" xml:space="preserve">
+    <value>Target user is outside your allowed scope.</value>
+  </data>
+  <data name="ResetUserPassword_SelfReset_NotAllowed" xml:space="preserve">
+    <value>You cannot reset your own password from this endpoint.</value>
+  </data>
+  <data name="ResetUserPassword_Failed" xml:space="preserve">
+    <value>Failed to reset user password.</value>
+  </data>
+  <data name="ResetUserPassword_Success" xml:space="preserve">
+    <value>User password has been reset successfully.</value>
+  </data>
 </root>
