@@ -98,6 +98,7 @@ internal sealed class GetSurveyDashboardInternalAnswersSpec
             QuestionTextEn = x.Question.TextEn,
             QuestionTextAr = x.Question.TextAr,
             QuestionType = x.QuestionType,
+            SelectedQuestionOptionId = x.SelectedQuestionOptionId,
             StarRatingValue = x.StarRatingValue,
             SmileValue = x.SmileValue,
             SelectedQuestionOptionValue = x.SelectedQuestionOption == null

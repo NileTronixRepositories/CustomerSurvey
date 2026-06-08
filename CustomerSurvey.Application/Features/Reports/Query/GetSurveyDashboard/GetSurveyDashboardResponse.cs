@@ -1,4 +1,5 @@
 using CustomerSurvey.Domain.Enums;
+using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 
@@ -69,6 +70,8 @@ public sealed record SurveyDashboardFiltersResponse
 
     public Guid? AnonymousTemplateId { get; init; }
 
+    public ScoreCalculationMode ScoreCalculationMode { get; init; }
+
     public int TopQuestionsCount { get; init; }
 
     public int CriticalResponsesCount { get; init; }
@@ -91,6 +94,8 @@ public sealed record SurveyDashboardAppliedFiltersResponse
     public DateOnly To { get; init; }
 
     public DashboardGroupBy GroupBy { get; init; }
+
+    public ScoreCalculationMode ScoreCalculationMode { get; init; }
 }
 
 public sealed record SurveyDashboardSummaryResponse
@@ -447,6 +452,8 @@ internal sealed record SurveyDashboardAnswerRow
     public string? QuestionTextAr { get; init; }
 
     public QuestionType QuestionType { get; init; }
+
+    public Guid? SelectedQuestionOptionId { get; init; }
 
     public int? StarRatingValue { get; init; }
 

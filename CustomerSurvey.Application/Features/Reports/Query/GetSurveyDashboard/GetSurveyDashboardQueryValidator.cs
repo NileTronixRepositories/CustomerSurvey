@@ -26,5 +26,9 @@ internal sealed class GetSurveyDashboardQueryValidator
         RuleFor(x => x.CriticalScoreThreshold)
             .InclusiveBetween(0m, 100m)
             .WithMessage(ErrorMessage.GetSurveyDashboard_CriticalScoreThreshold_Invalid);
+
+        RuleFor(x => x.ScoreCalculationMode)
+            .IsInEnum()
+            .WithMessage(ErrorMessage.GetBranchTemplatesPdfReport_ScoreCalculationMode_Invalid);
     }
 }

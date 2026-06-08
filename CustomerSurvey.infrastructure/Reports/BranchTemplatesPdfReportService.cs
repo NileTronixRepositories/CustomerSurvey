@@ -2,6 +2,7 @@ using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Reports;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
+using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Resources;
@@ -25,6 +26,7 @@ namespace CustomerSurvey.infrastructure.Reports
         private readonly IWriteReadRepository<TemplateQuestionCondition> _templateQuestionConditionRepository;
         private readonly IWriteReadRepository<AnonymousTemplateQuestionCondition> _anonymousTemplateQuestionConditionRepository;
         private readonly IWriteReadRepository<QuestionOption> _questionOptionRepository;
+        private readonly ISurveyReportScoringService _surveyReportScoringService;
         private readonly IPdfService _pdfService;
 
         public BranchTemplatesPdfReportService(
@@ -40,6 +42,7 @@ namespace CustomerSurvey.infrastructure.Reports
             IWriteReadRepository<TemplateQuestionCondition> templateQuestionConditionRepository,
             IWriteReadRepository<AnonymousTemplateQuestionCondition> anonymousTemplateQuestionConditionRepository,
             IWriteReadRepository<QuestionOption> questionOptionRepository,
+            ISurveyReportScoringService surveyReportScoringService,
             IPdfService pdfService)
         {
             _branchRepository = branchRepository ?? throw new ArgumentNullException(nameof(branchRepository));
@@ -54,6 +57,7 @@ namespace CustomerSurvey.infrastructure.Reports
             _templateQuestionConditionRepository = templateQuestionConditionRepository ?? throw new ArgumentNullException(nameof(templateQuestionConditionRepository));
             _anonymousTemplateQuestionConditionRepository = anonymousTemplateQuestionConditionRepository ?? throw new ArgumentNullException(nameof(anonymousTemplateQuestionConditionRepository));
             _questionOptionRepository = questionOptionRepository ?? throw new ArgumentNullException(nameof(questionOptionRepository));
+            _surveyReportScoringService = surveyReportScoringService ?? throw new ArgumentNullException(nameof(surveyReportScoringService));
             _pdfService = pdfService ?? throw new ArgumentNullException(nameof(pdfService));
         }
 
@@ -118,6 +122,7 @@ namespace CustomerSurvey.infrastructure.Reports
             var toExclusiveUtc = request.ToDate.AddDays(1).ToDateTime(TimeOnly.MinValue);
 
             var branch = await _branchRepository.Query()
+                .AsNoTracking()
                 .Where(x => x.Id == request.BranchId)
                 .Select(x => new
                 {
@@ -175,7 +180,9 @@ namespace CustomerSurvey.infrastructure.Reports
                 normalQuestionBuild.Questions,
                 anonymousQuestionBuild.Questions,
                 normalQuestionBuild.ScoreTokens,
-                anonymousQuestionBuild.ScoreTokens);
+                anonymousQuestionBuild.ScoreTokens,
+                normalQuestionBuild.ResponseScores,
+                anonymousQuestionBuild.ResponseScores);
 
             var allQuestions = normalQuestionBuild.Questions
                 .Concat(anonymousQuestionBuild.Questions)
@@ -193,12 +200,17 @@ namespace CustomerSurvey.infrastructure.Reports
                 .Concat(anonymousQuestionBuild.ScoreTokens)
                 .ToArray();
 
+            var allResponseScores = normalQuestionBuild.ResponseScores
+                .Concat(anonymousQuestionBuild.ResponseScores)
+                .ToArray();
+
             var executiveSummary = BuildExecutiveSummary(
                 templates,
                 normalResponses,
                 anonymousResponses,
                 allQuestions,
                 allScoreTokens,
+                allResponseScores,
                 isArabic);
 
             var templateDetails = BuildTemplateDetails(
@@ -268,6 +280,7 @@ namespace CustomerSurvey.infrastructure.Reports
             }
 
             var query = _templateRepository.Query()
+                .AsNoTracking()
                 .Where(x => x.BranchId == request.BranchId);
 
             if (request.TemplateId.HasValue)
@@ -299,6 +312,7 @@ namespace CustomerSurvey.infrastructure.Reports
             }
 
             var query = _anonymousTemplateRepository.Query()
+                .AsNoTracking()
                 .Where(x =>
                     x.BranchId.HasValue &&
                     x.BranchId.Value == request.BranchId);
@@ -334,6 +348,7 @@ namespace CustomerSurvey.infrastructure.Reports
             }
 
             return await _surveyResponseRepository.Query()
+                .AsNoTracking()
                 .Where(x =>
                     templateIds.Contains(x.TemplateId) &&
                     x.SubmittedOnUtc >= fromUtc &&
@@ -360,6 +375,7 @@ namespace CustomerSurvey.infrastructure.Reports
             }
 
             return await _anonymousSurveyResponseRepository.Query()
+                .AsNoTracking()
                 .Where(x =>
                     templateIds.Contains(x.AnonymousTemplateId) &&
                     x.SubmittedOnUtc >= fromUtc &&
@@ -388,6 +404,7 @@ namespace CustomerSurvey.infrastructure.Reports
             }
 
             var templateQuestions = await _templateQuestionRepository.Query()
+                .AsNoTracking()
                 .Where(x => templateIds.Contains(x.TemplateId))
                 .Select(x => new TemplateQuestionFlatDto
                 {
@@ -402,6 +419,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 .ToArrayAsync(cancellationToken);
 
             var conditions = await _templateQuestionConditionRepository.Query()
+                .AsNoTracking()
                 .Where(x => templateIds.Contains(x.TemplateId) && x.IsActive)
                 .Select(x => new ConditionFlatDto
                 {
@@ -420,6 +438,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 ? Array.Empty<AnswerFlatDto>()
                 : AttachTemplateIds(
                     await _surveyAnswerRepository.Query()
+                        .AsNoTracking()
                         .Where(x => responseIds.Contains(x.SurveyResponseId))
                         .Select(x => new AnswerFlatDto
                         {
@@ -460,6 +479,7 @@ namespace CustomerSurvey.infrastructure.Reports
             }
 
             var templateQuestions = await _anonymousTemplateQuestionRepository.Query()
+                .AsNoTracking()
                 .Where(x => templateIds.Contains(x.AnonymousTemplateId))
                 .Select(x => new TemplateQuestionFlatDto
                 {
@@ -474,6 +494,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 .ToArrayAsync(cancellationToken);
 
             var conditions = await _anonymousTemplateQuestionConditionRepository.Query()
+                .AsNoTracking()
                 .Where(x => templateIds.Contains(x.AnonymousTemplateId) && x.IsActive)
                 .Select(x => new ConditionFlatDto
                 {
@@ -492,6 +513,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 ? Array.Empty<AnswerFlatDto>()
                 : AttachTemplateIds(
                     await _anonymousSurveyAnswerRepository.Query()
+                        .AsNoTracking()
                         .Where(x => responseIds.Contains(x.AnonymousSurveyResponseId))
                         .Select(x => new AnswerFlatDto
                         {
@@ -536,6 +558,7 @@ namespace CustomerSurvey.infrastructure.Reports
             var questionOptions = questionIds.Length == 0
                 ? Array.Empty<QuestionOptionFlatDto>()
                 : await _questionOptionRepository.Query()
+                    .AsNoTracking()
                     .Where(x => questionIds.Contains(x.QuestionId) && x.IsActive)
                     .Select(x => new QuestionOptionFlatDto
                     {
@@ -569,11 +592,19 @@ namespace CustomerSurvey.infrastructure.Reports
             var questionOptionsById = questionOptions
                 .ToDictionary(x => x.OptionId);
 
-            var scoreTokens = CalculateScoreTokens(
-                templateQuestions,
-                conditions,
+            var scoreTokens = _surveyReportScoringService.CalculateQuestionScoreTokens(
                 responses,
                 answers,
+                templateQuestions,
+                conditions,
+                questionOptions,
+                scoreCalculationMode);
+
+            var responseScores = _surveyReportScoringService.CalculateResponseScores(
+                responses,
+                answers,
+                templateQuestions,
+                conditions,
                 questionOptions,
                 scoreCalculationMode);
 
@@ -616,7 +647,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 scoreTokensByTemplateQuestion.TryGetValue(
                     templateQuestion.TemplateQuestionId,
                     out var questionScoreTokens);
-                questionScoreTokens ??= Array.Empty<ScoredAnswerTokenDto>();
+                questionScoreTokens ??= Array.Empty<QuestionScoreToken>();
 
                 var totalResponses = templateResponses.Length;
                 var totalAnswers = questionAnswers.Length;
@@ -642,7 +673,7 @@ namespace CustomerSurvey.infrastructure.Reports
 
                 var scoreAverageValue = questionScoreTokens.Length == 0
                     ? null
-                    : (decimal?)Math.Round(questionScoreTokens.Average(x => x.ScoreValue), 2);
+                    : (decimal?)ReportScoreRounding.Round(questionScoreTokens.Average(x => x.ScoreValue));
 
                 result.Add(new BranchTemplatesPdfQuestionAnalytics
                 {
@@ -676,259 +707,8 @@ namespace CustomerSurvey.infrastructure.Reports
             return new QuestionAnalyticsBuildResult(
                 result,
                 scoreTokens,
+                responseScores,
                 flowLines);
-        }
-
-        private static IReadOnlyCollection<ScoredAnswerTokenDto> CalculateScoreTokens(
-            IReadOnlyCollection<TemplateQuestionFlatDto> templateQuestions,
-            IReadOnlyCollection<ConditionFlatDto> conditions,
-            IReadOnlyCollection<ResponseFlatDto> responses,
-            IReadOnlyCollection<AnswerFlatDto> answers,
-            IReadOnlyCollection<QuestionOptionFlatDto> questionOptions,
-            ScoreCalculationMode scoreCalculationMode)
-        {
-            if (responses.Count == 0 || templateQuestions.Count == 0 || answers.Count == 0)
-            {
-                return Array.Empty<ScoredAnswerTokenDto>();
-            }
-
-            var templateQuestionsByTemplate = templateQuestions
-                .GroupBy(x => x.TemplateId)
-                .ToDictionary(x => x.Key, x => x.ToArray());
-
-            var templateQuestionsById = templateQuestions
-                .ToDictionary(x => x.TemplateQuestionId);
-
-            var childTemplateQuestionIdsByTemplate = conditions
-                .GroupBy(x => x.TemplateId)
-                .ToDictionary(
-                    x => x.Key,
-                    x => x.Select(c => c.ChildTemplateQuestionId).ToHashSet());
-
-            var childConditionsByParent = conditions
-                .GroupBy(x => x.ParentTemplateQuestionId)
-                .ToDictionary(
-                    x => x.Key,
-                    x => x.OrderBy(c => GetChildQuestionOrder(c, templateQuestionsById)).ToArray());
-
-            var answersByResponseAndQuestion = answers
-                .GroupBy(x => new
-                {
-                    x.ResponseId,
-                    x.QuestionId
-                })
-                .ToDictionary(
-                    x => (x.Key.ResponseId, x.Key.QuestionId),
-                    x => x.First());
-
-            var questionOptionsById = questionOptions
-                .ToDictionary(x => x.OptionId);
-
-            var result = new List<ScoredAnswerTokenDto>();
-
-            foreach (var response in responses)
-            {
-                if (!templateQuestionsByTemplate.TryGetValue(response.TemplateId, out var currentTemplateQuestions))
-                {
-                    continue;
-                }
-
-                if (!childTemplateQuestionIdsByTemplate.TryGetValue(response.TemplateId, out var childIds))
-                {
-                    childIds = new HashSet<Guid>();
-                }
-
-                var rootQuestions = currentTemplateQuestions
-                    .Where(x => !childIds.Contains(x.TemplateQuestionId))
-                    .OrderBy(x => x.Order)
-                    .ToArray();
-
-                foreach (var rootQuestion in rootQuestions)
-                {
-                    if (scoreCalculationMode == ScoreCalculationMode.RootQuestions)
-                    {
-                        AddRootScoreTokenIfPossible(
-                            response,
-                            rootQuestion,
-                            answersByResponseAndQuestion,
-                            questionOptionsById,
-                            result);
-
-                        continue;
-                    }
-
-                    AddLowestConditionLevelScoreTokenIfPossible(
-                        response,
-                        rootQuestion,
-                        templateQuestionsById,
-                        childConditionsByParent,
-                        answersByResponseAndQuestion,
-                        questionOptionsById,
-                        result);
-                }
-            }
-
-            return result;
-        }
-
-        private static void AddRootScoreTokenIfPossible(
-            ResponseFlatDto response,
-            TemplateQuestionFlatDto rootQuestion,
-            IReadOnlyDictionary<(Guid ResponseId, Guid QuestionId), AnswerFlatDto> answersByResponseAndQuestion,
-            IReadOnlyDictionary<Guid, QuestionOptionFlatDto> questionOptionsById,
-            List<ScoredAnswerTokenDto> result)
-        {
-            if (!answersByResponseAndQuestion.TryGetValue(
-                    (response.ResponseId, rootQuestion.QuestionId),
-                    out var answer))
-            {
-                return;
-            }
-
-            if (!TryGetScoreValue(rootQuestion.QuestionType, answer, questionOptionsById, out var scoreValue))
-            {
-                return;
-            }
-
-            result.Add(new ScoredAnswerTokenDto
-            {
-                ResponseId = response.ResponseId,
-                TemplateId = response.TemplateId,
-                TemplateQuestionId = rootQuestion.TemplateQuestionId,
-                QuestionId = rootQuestion.QuestionId,
-                ScoreValue = scoreValue
-            });
-        }
-
-        private static void AddLowestConditionLevelScoreTokenIfPossible(
-            ResponseFlatDto response,
-            TemplateQuestionFlatDto rootQuestion,
-            IReadOnlyDictionary<Guid, TemplateQuestionFlatDto> templateQuestionsById,
-            IReadOnlyDictionary<Guid, ConditionFlatDto[]> childConditionsByParent,
-            IReadOnlyDictionary<(Guid ResponseId, Guid QuestionId), AnswerFlatDto> answersByResponseAndQuestion,
-            IReadOnlyDictionary<Guid, QuestionOptionFlatDto> questionOptionsById,
-            List<ScoredAnswerTokenDto> result)
-        {
-            var current = rootQuestion;
-            var visited = new HashSet<Guid>();
-
-            ScoredAnswerTokenDto? lastScorableToken = null;
-
-            while (true)
-            {
-                if (!visited.Add(current.TemplateQuestionId))
-                {
-                    break;
-                }
-
-                if (!answersByResponseAndQuestion.TryGetValue(
-                        (response.ResponseId, current.QuestionId),
-                        out var currentAnswer))
-                {
-                    break;
-                }
-
-                if (TryGetScoreValue(
-                        current.QuestionType,
-                        currentAnswer,
-                        questionOptionsById,
-                        out var scoreValue))
-                {
-                    lastScorableToken = new ScoredAnswerTokenDto
-                    {
-                        ResponseId = response.ResponseId,
-                        TemplateId = response.TemplateId,
-                        TemplateQuestionId = current.TemplateQuestionId,
-                        QuestionId = current.QuestionId,
-                        ScoreValue = scoreValue
-                    };
-                }
-
-                if (!childConditionsByParent.TryGetValue(
-                        current.TemplateQuestionId,
-                        out var possibleConditions))
-                {
-                    break;
-                }
-
-                var matchedCondition = possibleConditions.FirstOrDefault(condition =>
-                    IsConditionMatched(condition, currentAnswer));
-
-                if (matchedCondition is null)
-                {
-                    break;
-                }
-
-                if (!templateQuestionsById.TryGetValue(
-                        matchedCondition.ChildTemplateQuestionId,
-                        out var childQuestion))
-                {
-                    break;
-                }
-
-                current = childQuestion;
-            }
-
-            if (lastScorableToken is not null)
-            {
-                result.Add(lastScorableToken);
-            }
-        }
-
-        private static bool IsConditionMatched(
-            ConditionFlatDto condition,
-            AnswerFlatDto answer)
-        {
-            return condition.TriggerType switch
-            {
-                QuestionConditionTriggerType.SingleChoiceOption =>
-                    condition.SelectedQuestionOptionId.HasValue &&
-                    answer.SelectedQuestionOptionId.HasValue &&
-                    condition.SelectedQuestionOptionId.Value == answer.SelectedQuestionOptionId.Value,
-
-                QuestionConditionTriggerType.StarRatingValue =>
-                    condition.TriggerValue.HasValue &&
-                    answer.StarRatingValue.HasValue &&
-                    condition.TriggerValue.Value == answer.StarRatingValue.Value,
-
-                QuestionConditionTriggerType.SmileValue =>
-                    condition.TriggerValue.HasValue &&
-                    answer.SmileValue.HasValue &&
-                    condition.TriggerValue.Value == answer.SmileValue.Value,
-
-                _ => false
-            };
-        }
-
-        private static bool TryGetScoreValue(
-            QuestionType questionType,
-            AnswerFlatDto answer,
-            IReadOnlyDictionary<Guid, QuestionOptionFlatDto> questionOptionsById,
-            out decimal scoreValue)
-        {
-            scoreValue = 0;
-
-            if (questionType == QuestionType.StarRating && answer.StarRatingValue.HasValue)
-            {
-                scoreValue = answer.StarRatingValue.Value;
-                return true;
-            }
-
-            if (questionType == QuestionType.Smiles && answer.SmileValue.HasValue)
-            {
-                scoreValue = answer.SmileValue.Value;
-                return true;
-            }
-
-            if (questionType == QuestionType.SingleChoice &&
-                answer.SelectedQuestionOptionId.HasValue &&
-                questionOptionsById.TryGetValue(answer.SelectedQuestionOptionId.Value, out var option))
-            {
-                scoreValue = option.Value;
-                return true;
-            }
-
-            return false;
         }
 
         private static IReadOnlyCollection<BranchTemplatesPdfFlowLine> BuildFlowLines(
@@ -1266,8 +1046,10 @@ namespace CustomerSurvey.infrastructure.Reports
             IReadOnlyCollection<ResponseFlatDto> anonymousResponses,
             IReadOnlyCollection<BranchTemplatesPdfQuestionAnalytics> normalQuestions,
             IReadOnlyCollection<BranchTemplatesPdfQuestionAnalytics> anonymousQuestions,
-            IReadOnlyCollection<ScoredAnswerTokenDto> normalScoreTokens,
-            IReadOnlyCollection<ScoredAnswerTokenDto> anonymousScoreTokens)
+            IReadOnlyCollection<QuestionScoreToken> normalScoreTokens,
+            IReadOnlyCollection<QuestionScoreToken> anonymousScoreTokens,
+            IReadOnlyCollection<CalculatedResponseScore> normalResponseScores,
+            IReadOnlyCollection<CalculatedResponseScore> anonymousResponseScores)
         {
             var summaries = new List<BranchTemplatesPdfTemplateSummary>();
 
@@ -1276,6 +1058,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 normalResponses,
                 normalQuestions,
                 normalScoreTokens,
+                normalResponseScores,
                 ReportTemplateKind.Normal));
 
             summaries.AddRange(BuildTemplateSummariesForKind(
@@ -1283,6 +1066,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 anonymousResponses,
                 anonymousQuestions,
                 anonymousScoreTokens,
+                anonymousResponseScores,
                 ReportTemplateKind.Anonymous));
 
             return summaries
@@ -1295,7 +1079,8 @@ namespace CustomerSurvey.infrastructure.Reports
             IReadOnlyCollection<TemplateHeaderDto> templates,
             IReadOnlyCollection<ResponseFlatDto> responses,
             IReadOnlyCollection<BranchTemplatesPdfQuestionAnalytics> questions,
-            IReadOnlyCollection<ScoredAnswerTokenDto> scoreTokens,
+            IReadOnlyCollection<QuestionScoreToken> scoreTokens,
+            IReadOnlyCollection<CalculatedResponseScore> responseScores,
             ReportTemplateKind templateKind)
         {
             var responsesByTemplate = responses
@@ -1310,6 +1095,10 @@ namespace CustomerSurvey.infrastructure.Reports
                 .GroupBy(x => x.TemplateId)
                 .ToDictionary(x => x.Key, x => x.ToArray());
 
+            var responseScoresByTemplate = responseScores
+                .GroupBy(x => x.TemplateId)
+                .ToDictionary(x => x.Key, x => x.ToArray());
+
             return templates.Select(template =>
             {
                 responsesByTemplate.TryGetValue(template.TemplateId, out var templateResponses);
@@ -1319,11 +1108,18 @@ namespace CustomerSurvey.infrastructure.Reports
                 templateQuestions ??= Array.Empty<BranchTemplatesPdfQuestionAnalytics>();
 
                 scoreTokensByTemplate.TryGetValue(template.TemplateId, out var templateScoreTokens);
-                templateScoreTokens ??= Array.Empty<ScoredAnswerTokenDto>();
+                templateScoreTokens ??= Array.Empty<QuestionScoreToken>();
 
-                var avgValue = templateScoreTokens.Length == 0
+                responseScoresByTemplate.TryGetValue(template.TemplateId, out var templateResponseScores);
+                templateResponseScores ??= Array.Empty<CalculatedResponseScore>();
+
+                var avgPercentage = templateResponseScores.Length == 0
                     ? null
-                    : (decimal?)Math.Round(templateScoreTokens.Average(x => x.ScoreValue), 2);
+                    : (decimal?)ReportScoreRounding.Round(templateResponseScores.Average(x => x.ScorePercentage));
+
+                var avgValue = avgPercentage.HasValue
+                    ? (decimal?)ReportScoreRounding.Round(avgPercentage.Value * MaxScoreValue / 100m)
+                    : null;
 
                 return new BranchTemplatesPdfTemplateSummary
                 {
@@ -1341,9 +1137,7 @@ namespace CustomerSurvey.infrastructure.Reports
                     TotalAnswers = templateQuestions.Sum(x => x.TotalAnswers),
                     TotalScoredAnswers = templateScoreTokens.Length,
                     AverageScoreValue = avgValue,
-                    AverageScorePercentage = avgValue.HasValue
-                        ? Math.Round(avgValue.Value * 100m / MaxScoreValue, 2)
-                        : null
+                    AverageScorePercentage = avgPercentage
                 };
             }).ToArray();
         }
@@ -1353,7 +1147,8 @@ namespace CustomerSurvey.infrastructure.Reports
             IReadOnlyCollection<ResponseFlatDto> normalResponses,
             IReadOnlyCollection<ResponseFlatDto> anonymousResponses,
             IReadOnlyCollection<BranchTemplatesPdfQuestionAnalytics> questions,
-            IReadOnlyCollection<ScoredAnswerTokenDto> scoreTokens,
+            IReadOnlyCollection<QuestionScoreToken> scoreTokens,
+            IReadOnlyCollection<CalculatedResponseScore> responseScores,
             bool isArabic)
         {
             var allResponses = normalResponses.Concat(anonymousResponses).ToArray();
@@ -1378,9 +1173,13 @@ namespace CustomerSurvey.infrastructure.Reports
 
             var totalAnswers = questions.Sum(x => x.TotalAnswers);
 
-            var avgValue = scoreTokens.Count == 0
+            var avgPercentage = responseScores.Count == 0
                 ? null
-                : (decimal?)Math.Round(scoreTokens.Average(x => x.ScoreValue), 2);
+                : (decimal?)ReportScoreRounding.Round(responseScores.Average(x => x.ScorePercentage));
+
+            var avgValue = avgPercentage.HasValue
+                ? (decimal?)ReportScoreRounding.Round(avgPercentage.Value * MaxScoreValue / 100m)
+                : null;
 
             return new BranchTemplatesPdfExecutiveSummary
             {
@@ -1393,9 +1192,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 TotalScoredAnswers = scoreTokens.Count,
                 TotalNonScoredAnswers = Math.Max(0, totalAnswers - scoreTokens.Count),
                 AverageScoreValue = avgValue,
-                AverageScorePercentage = avgValue.HasValue
-                    ? Math.Round(avgValue.Value * 100m / MaxScoreValue, 2)
-                    : null,
+                AverageScorePercentage = avgPercentage,
                 HighestRatedTemplateName = highest?.DisplayName(isArabic) ?? "-",
                 LowestRatedTemplateName = lowest?.DisplayName(isArabic) ?? "-",
                 MostAnsweredTemplateName = mostAnswered?.DisplayName(isArabic) ?? "-",
@@ -1610,13 +1407,15 @@ namespace CustomerSurvey.infrastructure.Reports
 
         private sealed record QuestionAnalyticsBuildResult(
             IReadOnlyCollection<BranchTemplatesPdfQuestionAnalytics> Questions,
-            IReadOnlyCollection<ScoredAnswerTokenDto> ScoreTokens,
+            IReadOnlyCollection<QuestionScoreToken> ScoreTokens,
+            IReadOnlyCollection<CalculatedResponseScore> ResponseScores,
             IReadOnlyCollection<BranchTemplatesPdfFlowLine> FlowLines)
         {
             public static QuestionAnalyticsBuildResult Empty()
                 => new(
                     Array.Empty<BranchTemplatesPdfQuestionAnalytics>(),
-                    Array.Empty<ScoredAnswerTokenDto>(),
+                    Array.Empty<QuestionScoreToken>(),
+                    Array.Empty<CalculatedResponseScore>(),
                     Array.Empty<BranchTemplatesPdfFlowLine>());
         }
 
@@ -1638,98 +1437,6 @@ namespace CustomerSurvey.infrastructure.Reports
             public DateTime? ActiveFrom { get; init; }
 
             public DateTime? ExpireTo { get; init; }
-        }
-
-        private sealed record ResponseFlatDto
-        {
-            public Guid ResponseId { get; init; }
-
-            public Guid TemplateId { get; init; }
-
-            public ReportTemplateKind TemplateKind { get; init; }
-
-            public DateTime SubmittedOnUtc { get; init; }
-        }
-
-        private sealed record TemplateQuestionFlatDto
-        {
-            public Guid TemplateQuestionId { get; init; }
-
-            public Guid TemplateId { get; init; }
-
-            public Guid QuestionId { get; init; }
-
-            public int Order { get; init; }
-
-            public string QuestionTextEn { get; init; } = string.Empty;
-
-            public string? QuestionTextAr { get; init; }
-
-            public QuestionType QuestionType { get; init; }
-        }
-
-        private sealed record ConditionFlatDto
-        {
-            public Guid TemplateId { get; init; }
-
-            public Guid ParentTemplateQuestionId { get; init; }
-
-            public Guid ChildTemplateQuestionId { get; init; }
-
-            public QuestionConditionTriggerType TriggerType { get; init; }
-
-            public Guid? SelectedQuestionOptionId { get; init; }
-
-            public int? TriggerValue { get; init; }
-        }
-
-        private sealed record AnswerFlatDto
-        {
-            public Guid ResponseId { get; init; }
-
-            public Guid TemplateId { get; init; }
-
-            public Guid QuestionId { get; init; }
-
-            public QuestionType QuestionType { get; init; }
-
-            public Guid? SelectedQuestionOptionId { get; init; }
-
-            public int? StarRatingValue { get; init; }
-
-            public int? SmileValue { get; init; }
-
-            public bool HasTextAnswer { get; init; }
-
-            public bool HasVoiceAnswer { get; init; }
-        }
-
-        private sealed record QuestionOptionFlatDto
-        {
-            public Guid OptionId { get; init; }
-
-            public Guid QuestionId { get; init; }
-
-            public string TextEn { get; init; } = string.Empty;
-
-            public string? TextAr { get; init; }
-
-            public int Value { get; init; }
-
-            public int Order { get; init; }
-        }
-
-        private sealed record ScoredAnswerTokenDto
-        {
-            public Guid ResponseId { get; init; }
-
-            public Guid TemplateId { get; init; }
-
-            public Guid TemplateQuestionId { get; init; }
-
-            public Guid QuestionId { get; init; }
-
-            public decimal ScoreValue { get; init; }
         }
 
         private sealed record ParentTriggerText(

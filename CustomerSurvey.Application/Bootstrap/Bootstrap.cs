@@ -1,6 +1,7 @@
 ﻿using BuildingBlock.Application.Abstraction.Caching;
 using BuildingBlock.Application.Behaviors;
 using CustomerSurvey.Application.Abstraction.Security;
+using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Application.Shared.BranchScope;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,6 +49,7 @@ namespace CustomerSurvey.Application.Bootstrap
         {
             services.AddFluentValidation();
             services.AddScoped<ICurrentBranchScopeResolver, CurrentBranchScopeResolver>();
+            services.AddScoped<ISurveyReportScoringService, SurveyReportScoringService>();
             services.AddMediatorInjection();
             return services;
         }
