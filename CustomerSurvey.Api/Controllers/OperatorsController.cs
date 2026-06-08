@@ -3,6 +3,8 @@ using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Api.Contracts.Operators;
 using CustomerSurvey.Application.Features.Operators.Command.AssignTemplatesToOperator;
 using CustomerSurvey.Application.Features.Operators.Command.CreateOperator;
+using CustomerSurvey.Application.Features.Operators.Command.DeactivateOperator;
+using CustomerSurvey.Application.Features.Operators.Command.RestoreOperator;
 using CustomerSurvey.Application.Features.Operators.Command.UpdateOperator;
 using CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTemplates;
 using CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagination;
@@ -96,6 +98,38 @@ namespace CustomerSurvey.Api.Controllers
                 NameAr = request.NameAr,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("{operatorId:guid}/deactivate")]
+        [Permission("Operators.Deactivate")]
+        public async Task<IActionResult> Deactivate(
+            Guid operatorId,
+            CancellationToken cancellationToken)
+        {
+            var command = new DeactivateOperatorCommand
+            {
+                OperatorId = operatorId
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("{operatorId:guid}/restore")]
+        [Permission("Operators.Restore")]
+        public async Task<IActionResult> Restore(
+            Guid operatorId,
+            CancellationToken cancellationToken)
+        {
+            var command = new RestoreOperatorCommand
+            {
+                OperatorId = operatorId
             };
 
             var result = await sender.Send(command, cancellationToken);

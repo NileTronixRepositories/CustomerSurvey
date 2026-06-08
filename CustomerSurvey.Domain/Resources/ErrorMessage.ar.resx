@@ -2733,4 +2733,157 @@
   <data name="QuestionType_Image_NotScored" xml:space="preserve">
     <value>سؤال الصورة لا يدخل في التقييم.</value>
   </data>
+  <data name="CreateSuperAdmin_NameEn_Required" xml:space="preserve">
+    <value>الاسم بالإنجليزية مطلوب.</value>
+  </data>
+  <data name="CreateSuperAdmin_NameEn_MaxLength" xml:space="preserve">
+    <value>الاسم بالإنجليزية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateSuperAdmin_NameAr_MaxLength" xml:space="preserve">
+    <value>الاسم بالعربية يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateSuperAdmin_UserName_Required" xml:space="preserve">
+    <value>اسم المستخدم مطلوب.</value>
+  </data>
+  <data name="CreateSuperAdmin_UserName_MaxLength" xml:space="preserve">
+    <value>اسم المستخدم يجب ألا يزيد عن 100 حرف.</value>
+  </data>
+  <data name="CreateSuperAdmin_Email_Required" xml:space="preserve">
+    <value>البريد الإلكتروني مطلوب.</value>
+  </data>
+  <data name="CreateSuperAdmin_Email_MaxLength" xml:space="preserve">
+    <value>البريد الإلكتروني يجب ألا يزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateSuperAdmin_Email_Invalid" xml:space="preserve">
+    <value>البريد الإلكتروني غير صحيح.</value>
+  </data>
+  <data name="CreateSuperAdmin_PhoneNumber_MaxLength" xml:space="preserve">
+    <value>رقم الهاتف يجب ألا يزيد عن 50 حرف.</value>
+  </data>
+  <data name="CreateSuperAdmin_Password_Required" xml:space="preserve">
+    <value>كلمة المرور مطلوبة.</value>
+  </data>
+  <data name="CreateSuperAdmin_Password_MaxLength" xml:space="preserve">
+    <value>كلمة المرور يجب ألا تزيد عن 200 حرف.</value>
+  </data>
+  <data name="CreateSuperAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير النظام الحالي.</value>
+  </data>
+  <data name="CreateSuperAdmin_UserName_AlreadyExists" xml:space="preserve">
+    <value>اسم المستخدم مستخدم من قبل.</value>
+  </data>
+  <data name="CreateSuperAdmin_Email_AlreadyExists" xml:space="preserve">
+    <value>البريد الإلكتروني مستخدم من قبل.</value>
+  </data>
+  <data name="CreateSuperAdmin_Password_Invalid" xml:space="preserve">
+    <value>كلمة المرور يجب ألا تقل عن 8 أحرف وتحتوي على حرف كبير وحرف صغير ورقم.</value>
+  </data>
+  <data name="CreateSuperAdmin_SystemAdministratorRole_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على دور مدير النظام.</value>
+  </data>
+  <data name="RestoreDepartment_DepartmentId_Required" xml:space="preserve">
+    <value>معرف القسم مطلوب.</value>
+  </data>
+  <data name="RestoreDepartment_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير النظام الحالي.</value>
+  </data>
+  <data name="RestoreDepartment_Department_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على القسم.</value>
+  </data>
+  <data name="DeactivateBranchAdmin_BranchAdminId_Required" xml:space="preserve">
+    <value>معرف مدير الفرع مطلوب.</value>
+  </data>
+  <data name="DeactivateBranchAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير النظام الحالي.</value>
+  </data>
+  <data name="DeactivateBranchAdmin_BranchAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مدير الفرع.</value>
+  </data>
+  <data name="DeactivateBranchAdmin_ApplicationUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المستخدم المرتبط.</value>
+  </data>
+  <data name="DeactivateBranchAdmin_AlreadyInactive" xml:space="preserve">
+    <value>مدير الفرع غير مفعل بالفعل.</value>
+  </data>
+  <data name="RestoreBranchAdmin_BranchAdminId_Required" xml:space="preserve">
+    <value>معرف مدير الفرع مطلوب.</value>
+  </data>
+  <data name="RestoreBranchAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير النظام الحالي.</value>
+  </data>
+  <data name="RestoreBranchAdmin_BranchAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مدير الفرع.</value>
+  </data>
+  <data name="RestoreBranchAdmin_ApplicationUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المستخدم المرتبط.</value>
+  </data>
+  <data name="RestoreBranchAdmin_AlreadyActive" xml:space="preserve">
+    <value>مدير الفرع مفعل بالفعل.</value>
+  </data>
+  <data name="DeactivateDepartmentAdmin_DepartmentAdminId_Required" xml:space="preserve">
+    <value>معرف مدير القسم مطلوب.</value>
+  </data>
+  <data name="DeactivateDepartmentAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير النظام الحالي.</value>
+  </data>
+  <data name="DeactivateDepartmentAdmin_DepartmentAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مدير القسم.</value>
+  </data>
+  <data name="DeactivateDepartmentAdmin_ApplicationUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المستخدم المرتبط.</value>
+  </data>
+  <data name="DeactivateDepartmentAdmin_AlreadyInactive" xml:space="preserve">
+    <value>مدير القسم غير مفعل بالفعل.</value>
+  </data>
+  <data name="RestoreDepartmentAdmin_DepartmentAdminId_Required" xml:space="preserve">
+    <value>معرف مدير القسم مطلوب.</value>
+  </data>
+  <data name="RestoreDepartmentAdmin_CurrentSuperAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير النظام الحالي.</value>
+  </data>
+  <data name="RestoreDepartmentAdmin_DepartmentAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على مدير القسم.</value>
+  </data>
+  <data name="RestoreDepartmentAdmin_ApplicationUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المستخدم المرتبط.</value>
+  </data>
+  <data name="RestoreDepartmentAdmin_AlreadyActive" xml:space="preserve">
+    <value>مدير القسم مفعل بالفعل.</value>
+  </data>
+  <data name="DeactivateOperator_OperatorId_Required" xml:space="preserve">
+    <value>معرف المشغل مطلوب.</value>
+  </data>
+  <data name="DeactivateOperator_CurrentDepartmentAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير القسم الحالي.</value>
+  </data>
+  <data name="DeactivateOperator_Operator_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المشغل.</value>
+  </data>
+  <data name="DeactivateOperator_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>المشغل خارج نطاق القسم المسموح لك.</value>
+  </data>
+  <data name="DeactivateOperator_ApplicationUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المستخدم المرتبط.</value>
+  </data>
+  <data name="DeactivateOperator_AlreadyInactive" xml:space="preserve">
+    <value>المشغل غير مفعل بالفعل.</value>
+  </data>
+  <data name="RestoreOperator_OperatorId_Required" xml:space="preserve">
+    <value>معرف المشغل مطلوب.</value>
+  </data>
+  <data name="RestoreOperator_CurrentDepartmentAdmin_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على حساب مدير القسم الحالي.</value>
+  </data>
+  <data name="RestoreOperator_Operator_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المشغل.</value>
+  </data>
+  <data name="RestoreOperator_DepartmentScope_Mismatch" xml:space="preserve">
+    <value>المشغل خارج نطاق القسم المسموح لك.</value>
+  </data>
+  <data name="RestoreOperator_ApplicationUser_NotFound" xml:space="preserve">
+    <value>لم يتم العثور على المستخدم المرتبط.</value>
+  </data>
+  <data name="RestoreOperator_AlreadyActive" xml:space="preserve">
+    <value>المشغل مفعل بالفعل.</value>
+  </data>
 </root>

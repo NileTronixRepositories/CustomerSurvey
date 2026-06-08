@@ -3,6 +3,7 @@ using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Api.Contracts.Departments;
 using CustomerSurvey.Application.Features.Departments.Command.CreateDepartment;
 using CustomerSurvey.Application.Features.Departments.Command.DeleteDepartment;
+using CustomerSurvey.Application.Features.Departments.Command.RestoreDepartment;
 using CustomerSurvey.Application.Features.Departments.Command.UpdateDepartment;
 using CustomerSurvey.Application.Features.Departments.Query.GetDepartmentDetails;
 using CustomerSurvey.Application.Features.Departments.Query.GetDepartmentsForSelection;
@@ -110,6 +111,22 @@ namespace CustomerSurvey.Api.Controllers
             CancellationToken cancellationToken)
         {
             var command = new DeleteDepartmentCommand
+            {
+                DepartmentId = departmentId
+            };
+
+            var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("{departmentId:guid}/restore")]
+        [Permission("Departments.Restore")]
+        public async Task<IActionResult> Restore(
+            Guid departmentId,
+            CancellationToken cancellationToken)
+        {
+            var command = new RestoreDepartmentCommand
             {
                 DepartmentId = departmentId
             };

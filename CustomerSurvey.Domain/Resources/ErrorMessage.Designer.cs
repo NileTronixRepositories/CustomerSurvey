@@ -7906,5 +7906,311 @@ namespace CustomerSurvey.Domain.Resources {
                 return ResourceManager.GetString("QuestionType_Image_NotScored", resourceCulture);
             }
         }
+
+        public static string CreateSuperAdmin_NameEn_Required {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_NameEn_Required", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_NameEn_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_NameEn_MaxLength", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_NameAr_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_NameAr_MaxLength", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_UserName_Required {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_UserName_Required", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_UserName_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_UserName_MaxLength", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_Email_Required {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_Email_Required", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_Email_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_Email_MaxLength", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_Email_Invalid {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_Email_Invalid", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_PhoneNumber_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_PhoneNumber_MaxLength", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_Password_Required {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_Password_Required", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_Password_MaxLength {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_Password_MaxLength", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_UserName_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_UserName_AlreadyExists", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_Email_AlreadyExists {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_Email_AlreadyExists", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_Password_Invalid {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_Password_Invalid", resourceCulture);
+            }
+        }
+
+        public static string CreateSuperAdmin_SystemAdministratorRole_NotFound {
+            get {
+                return ResourceManager.GetString("CreateSuperAdmin_SystemAdministratorRole_NotFound", resourceCulture);
+            }
+        }
+
+        public static string RestoreDepartment_DepartmentId_Required {
+            get {
+                return ResourceManager.GetString("RestoreDepartment_DepartmentId_Required", resourceCulture);
+            }
+        }
+
+        public static string RestoreDepartment_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreDepartment_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string RestoreDepartment_Department_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreDepartment_Department_NotFound", resourceCulture);
+            }
+        }
+
+        public static string DeactivateBranchAdmin_BranchAdminId_Required {
+            get {
+                return ResourceManager.GetString("DeactivateBranchAdmin_BranchAdminId_Required", resourceCulture);
+            }
+        }
+
+        public static string DeactivateBranchAdmin_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("DeactivateBranchAdmin_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string DeactivateBranchAdmin_BranchAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("DeactivateBranchAdmin_BranchAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string DeactivateBranchAdmin_ApplicationUser_NotFound {
+            get {
+                return ResourceManager.GetString("DeactivateBranchAdmin_ApplicationUser_NotFound", resourceCulture);
+            }
+        }
+
+        public static string DeactivateBranchAdmin_AlreadyInactive {
+            get {
+                return ResourceManager.GetString("DeactivateBranchAdmin_AlreadyInactive", resourceCulture);
+            }
+        }
+
+        public static string RestoreBranchAdmin_BranchAdminId_Required {
+            get {
+                return ResourceManager.GetString("RestoreBranchAdmin_BranchAdminId_Required", resourceCulture);
+            }
+        }
+
+        public static string RestoreBranchAdmin_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreBranchAdmin_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string RestoreBranchAdmin_BranchAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreBranchAdmin_BranchAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string RestoreBranchAdmin_ApplicationUser_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreBranchAdmin_ApplicationUser_NotFound", resourceCulture);
+            }
+        }
+
+        public static string RestoreBranchAdmin_AlreadyActive {
+            get {
+                return ResourceManager.GetString("RestoreBranchAdmin_AlreadyActive", resourceCulture);
+            }
+        }
+
+        public static string DeactivateDepartmentAdmin_DepartmentAdminId_Required {
+            get {
+                return ResourceManager.GetString("DeactivateDepartmentAdmin_DepartmentAdminId_Required", resourceCulture);
+            }
+        }
+
+        public static string DeactivateDepartmentAdmin_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("DeactivateDepartmentAdmin_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string DeactivateDepartmentAdmin_DepartmentAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("DeactivateDepartmentAdmin_DepartmentAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string DeactivateDepartmentAdmin_ApplicationUser_NotFound {
+            get {
+                return ResourceManager.GetString("DeactivateDepartmentAdmin_ApplicationUser_NotFound", resourceCulture);
+            }
+        }
+
+        public static string DeactivateDepartmentAdmin_AlreadyInactive {
+            get {
+                return ResourceManager.GetString("DeactivateDepartmentAdmin_AlreadyInactive", resourceCulture);
+            }
+        }
+
+        public static string RestoreDepartmentAdmin_DepartmentAdminId_Required {
+            get {
+                return ResourceManager.GetString("RestoreDepartmentAdmin_DepartmentAdminId_Required", resourceCulture);
+            }
+        }
+
+        public static string RestoreDepartmentAdmin_CurrentSuperAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreDepartmentAdmin_CurrentSuperAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string RestoreDepartmentAdmin_DepartmentAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreDepartmentAdmin_DepartmentAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string RestoreDepartmentAdmin_ApplicationUser_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreDepartmentAdmin_ApplicationUser_NotFound", resourceCulture);
+            }
+        }
+
+        public static string RestoreDepartmentAdmin_AlreadyActive {
+            get {
+                return ResourceManager.GetString("RestoreDepartmentAdmin_AlreadyActive", resourceCulture);
+            }
+        }
+
+        public static string DeactivateOperator_OperatorId_Required {
+            get {
+                return ResourceManager.GetString("DeactivateOperator_OperatorId_Required", resourceCulture);
+            }
+        }
+
+        public static string DeactivateOperator_CurrentDepartmentAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("DeactivateOperator_CurrentDepartmentAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string DeactivateOperator_Operator_NotFound {
+            get {
+                return ResourceManager.GetString("DeactivateOperator_Operator_NotFound", resourceCulture);
+            }
+        }
+
+        public static string DeactivateOperator_DepartmentScope_Mismatch {
+            get {
+                return ResourceManager.GetString("DeactivateOperator_DepartmentScope_Mismatch", resourceCulture);
+            }
+        }
+
+        public static string DeactivateOperator_ApplicationUser_NotFound {
+            get {
+                return ResourceManager.GetString("DeactivateOperator_ApplicationUser_NotFound", resourceCulture);
+            }
+        }
+
+        public static string DeactivateOperator_AlreadyInactive {
+            get {
+                return ResourceManager.GetString("DeactivateOperator_AlreadyInactive", resourceCulture);
+            }
+        }
+
+        public static string RestoreOperator_OperatorId_Required {
+            get {
+                return ResourceManager.GetString("RestoreOperator_OperatorId_Required", resourceCulture);
+            }
+        }
+
+        public static string RestoreOperator_CurrentDepartmentAdmin_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreOperator_CurrentDepartmentAdmin_NotFound", resourceCulture);
+            }
+        }
+
+        public static string RestoreOperator_Operator_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreOperator_Operator_NotFound", resourceCulture);
+            }
+        }
+
+        public static string RestoreOperator_DepartmentScope_Mismatch {
+            get {
+                return ResourceManager.GetString("RestoreOperator_DepartmentScope_Mismatch", resourceCulture);
+            }
+        }
+
+        public static string RestoreOperator_ApplicationUser_NotFound {
+            get {
+                return ResourceManager.GetString("RestoreOperator_ApplicationUser_NotFound", resourceCulture);
+            }
+        }
+
+        public static string RestoreOperator_AlreadyActive {
+            get {
+                return ResourceManager.GetString("RestoreOperator_AlreadyActive", resourceCulture);
+            }
+        }
     }
 }
