@@ -19,6 +19,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
         private readonly IWriteRepository<ApplicationUser> _applicationUserWriteRepository;
         private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
         private readonly IWriteReadRepository<BranchAdmin> _branchAdminReadRepository;
+        private readonly IWriteReadRepository<BranchArea> _branchAreaReadRepository;
         private readonly IWriteReadRepository<DepartmentAdmin> _departmentAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<DomainOperator> _operatorReadRepository;
@@ -31,6 +32,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
             IWriteRepository<ApplicationUser> applicationUserWriteRepository,
             IWriteReadRepository<SuperAdmin> superAdminReadRepository,
             IWriteReadRepository<BranchAdmin> branchAdminReadRepository,
+            IWriteReadRepository<BranchArea> branchAreaReadRepository,
             IWriteReadRepository<DepartmentAdmin> departmentAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<DomainOperator> operatorReadRepository,
@@ -45,6 +47,8 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
                 ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
             _branchAdminReadRepository = branchAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(branchAdminReadRepository));
+            _branchAreaReadRepository = branchAreaReadRepository
+                ?? throw new ArgumentNullException(nameof(branchAreaReadRepository));
             _departmentAdminReadRepository = departmentAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(departmentAdminReadRepository));
             _branchUserReadRepository = branchUserReadRepository
@@ -199,6 +203,15 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
                         ? UnsupportedTargetProfile()
                         : Result<TargetProfile>.Ok(TargetProfile.BranchAdmin());
 
+                case DomainUserType.BranchArea:
+                    var branchArea = await _branchAreaReadRepository.FirstOrDefaultAsync(
+                        new GetBranchAreaProfileForResetUserPasswordSpec(targetApplicationUser.Id),
+                        cancellationToken);
+
+                    return branchArea is null
+                        ? UnsupportedTargetProfile()
+                        : Result<TargetProfile>.Ok(TargetProfile.BranchArea());
+
                 case DomainUserType.DepartmentAdmin:
                     var departmentAdmin = await _departmentAdminReadRepository.FirstOrDefaultAsync(
                         new GetDepartmentAdminProfileForResetUserPasswordSpec(targetApplicationUser.Id),
@@ -241,6 +254,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
             if (actorProfile.Type == ActorType.SuperAdmin)
             {
                 return targetProfile.Type is TargetType.BranchAdmin
+                    or TargetType.BranchArea
                     or TargetType.DepartmentAdmin
                     or TargetType.Operator
                     or TargetType.BranchUser
@@ -310,6 +324,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
         {
             SuperAdmin,
             BranchAdmin,
+            BranchArea,
             DepartmentAdmin,
             Operator,
             BranchUser
@@ -340,6 +355,9 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
 
             public static TargetProfile BranchAdmin()
                 => new(TargetType.BranchAdmin);
+
+            public static TargetProfile BranchArea()
+                => new(TargetType.BranchArea);
 
             public static TargetProfile DepartmentAdmin()
                 => new(TargetType.DepartmentAdmin);
