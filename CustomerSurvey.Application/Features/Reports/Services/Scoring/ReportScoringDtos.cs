@@ -12,6 +12,12 @@ public sealed record ResponseFlatDto
     public ReportTemplateKind TemplateKind { get; init; }
 
     public DateTime SubmittedOnUtc { get; init; }
+
+    public Guid? OperatorId { get; init; }
+
+    public string? OperatorNameEn { get; init; }
+
+    public string? OperatorNameAr { get; init; }
 }
 
 public sealed record AnswerFlatDto
@@ -19,6 +25,8 @@ public sealed record AnswerFlatDto
     public Guid ResponseId { get; init; }
 
     public Guid TemplateId { get; init; }
+
+    public Guid? TemplateQuestionId { get; init; }
 
     public Guid QuestionId { get; init; }
 
@@ -33,6 +41,16 @@ public sealed record AnswerFlatDto
     public bool HasTextAnswer { get; init; }
 
     public bool HasVoiceAnswer { get; init; }
+
+    public string QuestionTextEn { get; init; } = string.Empty;
+
+    public string? QuestionTextAr { get; init; }
+
+    public string? TextAnswer { get; init; }
+
+    public string? VoiceFileName { get; init; }
+
+    public string? ImageFileName { get; init; }
 }
 
 public sealed record TemplateQuestionFlatDto

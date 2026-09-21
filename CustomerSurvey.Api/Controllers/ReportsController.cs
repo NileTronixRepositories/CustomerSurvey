@@ -5,6 +5,7 @@ using CustomerSurvey.Application.Features.Reports.Query.GetBranchAnonymousRespon
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactionReport;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchSurveyResponsesPagination;
+using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplateExcelReport;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperatorSurveyResponseDetails;
@@ -251,6 +252,42 @@ namespace CustomerSurvey.Api.Controllers
             return File(
                 fileContents: result.Value.Content,
                 contentType: "application/pdf",
+                fileDownloadName: result.Value.FileName);
+        }
+
+        [HttpGet("templates/excel")]
+        [Permission("Reports.ViewBranchReports")]
+        [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
+        public async Task<IActionResult> GetBranchTemplateExcelReport(
+            [FromQuery] GetBranchTemplateExcelReportQuery query,
+            CancellationToken cancellationToken)
+        {
+            query = query with
+            {
+                Language = NormalizeTemplatesReportLanguage(Request.Headers.AcceptLanguage.ToString())
+            };
+
+            var result = await sender.Send(query, cancellationToken);
+
+            if (result.IsFailure)
+            {
+                return result.ToIActionResult();
+            }
+
+            if (result.Value.Content is null || result.Value.Content.Length == 0)
+            {
+                return Problem(
+                    title: "Excel generation failed",
+                    detail: "Generated Excel content is empty.",
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+
+            Response.Headers.Append("X-Excel-File-Name", Uri.EscapeDataString(result.Value.FileName));
+            Response.Headers.Append("X-Excel-Size", result.Value.Content.Length.ToString());
+
+            return File(
+                fileContents: result.Value.Content,
+                contentType: result.Value.ContentType,
                 fileDownloadName: result.Value.FileName);
         }
 
