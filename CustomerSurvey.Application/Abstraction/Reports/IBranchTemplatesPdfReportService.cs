@@ -40,6 +40,8 @@ public sealed record BranchTemplatesPdfReportRequest
     public decimal? BestQuestionsMinScorePercentage { get; init; }
 
     public string Language { get; init; } = "en";
+
+    public bool IncludeResponseDetails { get; init; }
 }
 
 public sealed record BranchTemplatesPdfReportFile

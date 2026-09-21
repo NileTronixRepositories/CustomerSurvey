@@ -1,3 +1,6 @@
+using CustomerSurvey.Domain.Enums;
+using System.Text.Json.Serialization;
+
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 
 public sealed record BranchTemplatesPdfReportModel
@@ -52,6 +55,14 @@ public sealed record BranchTemplatesPdfReportModel
 
     public IReadOnlyCollection<BranchTemplatesPdfTemplateDetail> TemplateDetails { get; init; }
         = Array.Empty<BranchTemplatesPdfTemplateDetail>();
+
+    [JsonIgnore]
+    public IReadOnlyCollection<BranchTemplatesReportCustomInputDefinition> CustomInputDefinitions { get; init; }
+        = Array.Empty<BranchTemplatesReportCustomInputDefinition>();
+
+    [JsonIgnore]
+    public IReadOnlyCollection<BranchTemplatesReportResponse> Responses { get; init; }
+        = Array.Empty<BranchTemplatesReportResponse>();
 
     public IReadOnlyCollection<BranchTemplatesPdfTemplateSummary> TemplatesWithoutResponses =>
         Templates
@@ -148,6 +159,9 @@ public sealed record BranchTemplatesPdfQuestionAnalytics
     public Guid TemplateQuestionId { get; init; }
 
     public Guid QuestionId { get; init; }
+
+    [JsonIgnore]
+    public int QuestionOrder { get; init; }
 
     public string QuestionTextEn { get; init; } = string.Empty;
 
@@ -323,4 +337,191 @@ public enum BranchTemplatesPdfFlowLineKind
     ConditionalQuestion = 2,
 
     Trigger = 3
+}
+
+public sealed record BranchTemplatesReportCustomInputDefinition
+{
+    public Guid TemplateId { get; init; }
+
+    public ReportTemplateKind TemplateKind { get; init; }
+
+    public Guid CustomInputId { get; init; }
+
+    public string Name { get; init; } = string.Empty;
+
+    public string? LabelEn { get; init; }
+
+    public string? LabelAr { get; init; }
+
+    public TemplateCustomInputType Type { get; init; }
+
+    public int Order { get; init; }
+
+    public string DisplayName(bool isArabic)
+    {
+        if (isArabic && !string.IsNullOrWhiteSpace(LabelAr))
+        {
+            return LabelAr!;
+        }
+
+        if (!string.IsNullOrWhiteSpace(LabelEn))
+        {
+            return LabelEn!;
+        }
+
+        return Name;
+    }
+}
+
+public sealed record BranchTemplatesReportResponse
+{
+    public Guid ResponseId { get; init; }
+
+    public Guid TemplateId { get; init; }
+
+    public string TemplateNameEn { get; init; } = string.Empty;
+
+    public string? TemplateNameAr { get; init; }
+
+    public ReportTemplateKind TemplateKind { get; init; }
+
+    public DateTime SubmittedOnUtc { get; init; }
+
+    public Guid? OperatorId { get; init; }
+
+    public string? OperatorNameEn { get; init; }
+
+    public string? OperatorNameAr { get; init; }
+
+    public bool IsScored { get; init; }
+
+    public int ScoredItemsCount { get; init; }
+
+    public decimal? AverageScoreValue { get; init; }
+
+    public decimal MaxScore { get; init; } = 5m;
+
+    public decimal? ScorePercentage { get; init; }
+
+    public IReadOnlyCollection<BranchTemplatesReportCustomInputValue> CustomInputs { get; init; }
+        = Array.Empty<BranchTemplatesReportCustomInputValue>();
+
+    public IReadOnlyCollection<BranchTemplatesReportAnswer> Answers { get; init; }
+        = Array.Empty<BranchTemplatesReportAnswer>();
+
+    public string DisplayTemplateName(bool isArabic)
+        => isArabic && !string.IsNullOrWhiteSpace(TemplateNameAr)
+            ? TemplateNameAr!
+            : TemplateNameEn;
+
+    public string DisplayOperatorName(bool isArabic)
+        => isArabic && !string.IsNullOrWhiteSpace(OperatorNameAr)
+            ? OperatorNameAr!
+            : OperatorNameEn ?? string.Empty;
+}
+
+public sealed record BranchTemplatesReportCustomInputValue
+{
+    public Guid ResponseId { get; init; }
+
+    public Guid TemplateId { get; init; }
+
+    public ReportTemplateKind TemplateKind { get; init; }
+
+    public Guid CustomInputId { get; init; }
+
+    public string Name { get; init; } = string.Empty;
+
+    public TemplateCustomInputType Type { get; init; }
+
+    public int? Order { get; init; }
+
+    public string? StringValue { get; init; }
+
+    public int? IntegerValue { get; init; }
+
+    public string DisplayValue => Type switch
+    {
+        TemplateCustomInputType.String => StringValue ?? string.Empty,
+        TemplateCustomInputType.Integer => IntegerValue?.ToString() ?? string.Empty,
+        _ => string.Empty
+    };
+}
+
+public sealed record BranchTemplatesReportAnswer
+{
+    public Guid ResponseId { get; init; }
+
+    public Guid TemplateId { get; init; }
+
+    public ReportTemplateKind TemplateKind { get; init; }
+
+    public Guid? TemplateQuestionId { get; init; }
+
+    public Guid QuestionId { get; init; }
+
+    public int? QuestionOrder { get; init; }
+
+    public string QuestionTextEn { get; init; } = string.Empty;
+
+    public string? QuestionTextAr { get; init; }
+
+    public QuestionType QuestionType { get; init; }
+
+    public bool IsRootQuestion { get; init; }
+
+    public string? ParentTriggerTextEn { get; init; }
+
+    public string? ParentTriggerTextAr { get; init; }
+
+    public Guid? SelectedQuestionOptionId { get; init; }
+
+    public string? SelectedOptionTextEn { get; init; }
+
+    public string? SelectedOptionTextAr { get; init; }
+
+    public int? SelectedOptionValue { get; init; }
+
+    public int? StarRatingValue { get; init; }
+
+    public int? SmileValue { get; init; }
+
+    public string? TextAnswer { get; init; }
+
+    public string? VoiceFileName { get; init; }
+
+    public string? VoiceFilePath { get; init; }
+
+    public string? ImageFileName { get; init; }
+
+    public string? ImageFilePath { get; init; }
+
+    public string DisplayValue { get; init; } = string.Empty;
+
+    public bool IsScorable { get; init; }
+
+    public decimal? ScoreValue { get; init; }
+
+    public bool IncludedInScore { get; init; }
+
+    public string ScoreInclusionReason { get; init; } = string.Empty;
+
+    public string DisplayQuestionText(bool isArabic)
+        => isArabic && !string.IsNullOrWhiteSpace(QuestionTextAr)
+            ? QuestionTextAr!
+            : QuestionTextEn;
+
+    public string DisplaySelectedOption(bool isArabic)
+        => isArabic && !string.IsNullOrWhiteSpace(SelectedOptionTextAr)
+            ? SelectedOptionTextAr!
+            : SelectedOptionTextEn ?? string.Empty;
+
+    public string DisplayParentTrigger(bool isArabic)
+    {
+        var value = isArabic && !string.IsNullOrWhiteSpace(ParentTriggerTextAr)
+            ? ParentTriggerTextAr
+            : ParentTriggerTextEn;
+
+        return string.IsNullOrWhiteSpace(value) ? string.Empty : value!;
+    }
 }
