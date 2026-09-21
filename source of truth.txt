@@ -1,0 +1,2115 @@
+# CustomerSurvey — Source of Truth
+
+## 1. Project Identity
+
+اسم المشروع:
+
+`CustomerSurvey`
+
+نوع المشروع:
+
+`Enterprise Customer Survey & Customer Experience Management Platform`
+
+المشروع عبارة عن منصة لإدارة استبيانات رضا العملاء على مستوى مؤسسة تحتوي على عدة فروع ومستخدمين وأقسام وموظفين، مع دعم الاستبيانات الداخلية بواسطة `Operator` والاستبيانات العامة `Anonymous/Public Surveys`.
+
+المشروع Backend مبني باستخدام:
+
+* `.NET 8`
+* `ASP.NET Core Web API`
+* `Entity Framework Core`
+* `SQL Server`
+* `Clean Architecture`
+* `CQRS`
+* `Vertical Slice Architecture`
+* `MediatR`
+* `Specification Pattern`
+* `Repository Pattern`
+* `Unit of Work`
+* `FluentValidation`
+* `JWT Authentication`
+* `Permission-Based Authorization`
+* `xUnit`
+
+---
+
+# 2. Current Development Scope
+
+المرحلة الحالية والقادمة تركز فقط على:
+
+* إضافة Features جديدة.
+* تعديل Features موجودة.
+* إصلاح Business Logic متعلق مباشرة بالـ Feature.
+* إضافة Endpoints مرتبطة بالـ Feature.
+* تعديل Database Schema فقط إذا احتاجت الـ Feature ذلك.
+* إضافة Permissions أو Seeding إذا احتاجت الـ Feature ذلك.
+* إضافة Tests مرتبطة بالـ Feature.
+
+خارج الـ Scope الحالي:
+
+* تغيير `.NET Version`.
+* تغيير `EF Core Version`.
+* إعادة تسمية المشاريع.
+* إعادة هيكلة المشروع بالكامل.
+* Architecture migration.
+* استبدال `CQRS` أو `MediatR`.
+* تغيير الـ Building Blocks بدون ضرورة مرتبطة بالـ Feature.
+* Refactoring واسع لا علاقة له بالـ Feature.
+* CI/CD changes.
+* Deployment redesign.
+* Infrastructure modernization.
+
+القاعدة الأساسية:
+
+`Minimal Change + Maximum Consistency With Existing Project`
+
+---
+
+# 3. Solution Architecture
+
+المشروع مقسم إلى جزئين رئيسيين:
+
+## Building Blocks
+
+```text
+BuildingBlock.Api
+BuildingBlock.Application
+BuildingBlock.Domain
+BuildingBlock.Infrastracture
+```
+
+وهي Infrastructure مشتركة للمشروع.
+
+## CustomerSurvey
+
+```text
+CustomerSurvey.Api
+CustomerSurvey.Application
+CustomerSurvey.Domain
+CustomerSurvey.infrastructure
+CustomerSurvey.Tests
+```
+
+---
+
+# 4. Layer Responsibilities
+
+## CustomerSurvey.Domain
+
+يحتوي على:
+
+* Entities.
+* Aggregates.
+* Enums.
+* Domain behavior.
+* Identity models.
+* Business state.
+
+لا يجب وضع:
+
+* HTTP logic.
+* Controller logic.
+* Database implementation.
+* Infrastructure code.
+
+---
+
+## CustomerSurvey.Application
+
+يحتوي على:
+
+* Commands.
+* Queries.
+* Handlers.
+* Validators.
+* Specifications.
+* DTOs.
+* Application business rules.
+* Authorization-related application checks.
+* Scoring logic.
+* Branch scope resolution.
+
+كل Feature يجب قدر الإمكان أن تتبع أسلوب:
+
+```text
+Features/
+    FeatureName/
+        Command/
+        Query/
+        Shared/
+```
+
+وكل Use Case غالبًا يحتوي:
+
+```text
+Command / Query
+Handler
+Validator
+Specification
+Response / DTO
+```
+
+---
+
+## CustomerSurvey.infrastructure
+
+مسؤولة عن:
+
+* `EF Core`
+* Database contexts.
+* Entity configurations.
+* Migrations.
+* Repository implementations.
+* Authentication implementation.
+* JWT.
+* Authorization infrastructure.
+* Reports.
+* PDF generation.
+* QR Code.
+* Seeders.
+* External/infrastructure services.
+
+---
+
+## CustomerSurvey.Api
+
+مسؤولة عن:
+
+* Controllers.
+* HTTP Contracts.
+* Routing.
+* Authorization attributes.
+* Middleware configuration.
+* Swagger.
+* Application startup.
+
+الـ Controller يجب أن يكون خفيفًا.
+
+لا يوضع Business Logic داخل Controller.
+
+الـ Controller يرسل:
+
+```text
+Command / Query
+```
+
+باستخدام:
+
+`ISender`
+
+---
+
+## CustomerSurvey.Tests
+
+المشروع يستخدم:
+
+`xUnit`
+
+ويجب إضافة Tests لأي Business Rule جديدة مهمة.
+
+---
+
+# 5. Architectural Patterns
+
+المشروع يستخدم:
+
+## Clean Architecture
+
+Dependency flow:
+
+```text
+Api
+ ↓
+Infrastructure
+ ↓
+Application
+ ↓
+Domain
+```
+
+الـ Domain لا يعتمد على Application أو Infrastructure.
+
+---
+
+## CQRS
+
+الفصل بين:
+
+```text
+Commands
+Queries
+```
+
+مثال:
+
+```text
+CreateTemplateCommand
+UpdateTemplateCommand
+AssignQuestionsToTemplateCommand
+```
+
+و:
+
+```text
+GetTemplateDetailsQuery
+GetTemplatesPaginationQuery
+```
+
+---
+
+## Vertical Slice Architecture
+
+الـ Use Cases منظمة حسب الـ Feature وليس حسب نوع الملف فقط.
+
+مثال:
+
+```text
+Features/
+    Templates/
+        Command/
+            CreateTemplate/
+            UpdateTemplate/
+            DeleteTemplate/
+
+        Query/
+            GetTemplateDetails/
+            GetTemplatesPagination/
+```
+
+---
+
+## Specification Pattern
+
+يتم استخدام `Specification` من أجل:
+
+* Filtering.
+* Projection.
+* Includes.
+* Pagination.
+* Query logic.
+
+لا يفضل كتابة Query logic كبير مباشرة داخل Controllers.
+
+---
+
+## Result Pattern
+
+Handlers ترجع `Result<T>`.
+
+الأخطاء تحتوي عادة على:
+
+```text
+Code
+Message
+ErrorType
+```
+
+مثل:
+
+```text
+Validation
+NotFound
+Security
+Conflict
+```
+
+---
+
+# 6. Core User Model
+
+الـ Main Identity Entity:
+
+`ApplicationUser`
+
+وتحتوي على:
+
+```text
+UserName
+Email
+NameEn
+NameAr
+PhoneNumber
+PasswordHash
+UserType
+IsActive
+IsFirstLogin
+PasswordChangedOnUtc
+```
+
+---
+
+# 7. User Types
+
+القيم الحالية:
+
+```text
+SuperAdmin = 1
+BranchAdmin = 2
+BranchUser = 3
+DepartmentAdmin = 4
+Operator = 5
+BranchArea = 6
+```
+
+كل مستخدم لديه:
+
+`ApplicationUser`
+
+بالإضافة إلى Actor Profile خاص به.
+
+مثال:
+
+```text
+ApplicationUser
+      │
+      ├── SuperAdmin
+      ├── BranchAdmin
+      ├── BranchUser
+      ├── DepartmentAdmin
+      ├── Operator
+      └── BranchArea
+```
+
+وجود `ApplicationUser` فقط غير كافٍ.
+
+يجب وجود Actor Profile المناسب للـ `UserType`.
+
+---
+
+# 8. Authentication
+
+تسجيل الدخول:
+
+```text
+POST /api/auth/login
+```
+
+يسمح بتسجيل الدخول باستخدام:
+
+```text
+Username
+or
+Email
+```
+
+ثم:
+
+1. يتم تحميل `ApplicationUser`.
+2. يتم التحقق من Password.
+3. يتم التحقق من وجود Actor Profile.
+4. يتم تحميل Roles.
+5. يتم تحميل Permissions.
+6. يتم إنشاء JWT.
+
+الـ JWT يحتوي على معلومات المستخدم وصلاحياته.
+
+---
+
+# 9. Password Lifecycle
+
+يوجد Password Lifecycle.
+
+`ApplicationUser` يحتوي على:
+
+```text
+IsFirstLogin
+PasswordChangedOnUtc
+```
+
+والـ Login response يحتوي على:
+
+```text
+FirstLoginFlag
+PasswordChangedOnUtc
+PasswordExpiresOnUtc
+PasswordExpiredFlag
+```
+
+يوجد:
+
+```text
+Change Password
+Reset Password
+```
+
+عند Reset Password:
+
+```text
+IsFirstLogin = true
+```
+
+وعند Change Password:
+
+```text
+IsFirstLogin = false
+```
+
+---
+
+# 10. Authorization
+
+المشروع يستخدم:
+
+`Permission-Based Authorization`
+
+ولا يعتمد فقط على Roles.
+
+مثال:
+
+```csharp
+[Permission("Templates.Create")]
+```
+
+أو:
+
+```csharp
+[Permission("Reports.ViewSystemDashboard")]
+```
+
+العلاقة:
+
+```text
+ApplicationUser
+     ↓
+UserRole
+     ↓
+Role
+     ↓
+RolePermission
+     ↓
+Permission
+```
+
+الصلاحيات يتم تحميلها عند Login وتضمينها في JWT.
+
+أي Endpoint جديد يحتاج Authorization يجب أن يستخدم Permission مناسبة ومتوافقة مع نظام المشروع.
+
+---
+
+# 11. Main Organizational Model
+
+النظام يحتوي على:
+
+```text
+Branch
+Department
+Operator
+BranchArea
+```
+
+---
+
+# 12. Branch
+
+`Branch` تمثل فرع المؤسسة.
+
+أهم الخصائص:
+
+```text
+NameEn
+NameAr
+Code
+Address
+IsActive
+CreatedByApplicationUserId
+```
+
+الـ Branch يحتوي على:
+
+```text
+Templates
+QuestionGroups
+```
+
+---
+
+# 13. Department
+
+`Department` تمثل قسمًا وظيفيًا.
+
+مثل:
+
+```text
+Customer Service
+Reception
+Cashier
+Support
+Sales
+```
+
+الـ Department الحالية ليست مرتبطة مباشرة بـ Branch في الـ Domain Model الحالي.
+
+تحتوي على:
+
+```text
+DepartmentAdmins
+Operators
+```
+
+يجب عدم افتراض أن:
+
+`Department → Branch`
+
+إلا إذا تم تغيير الـ Business رسميًا لاحقًا.
+
+---
+
+# 14. Operator
+
+`Operator` هو المستخدم الذي يستخدم Templates لجمع Customer Feedback.
+
+الـ Operator مرتبط بـ:
+
+```text
+ApplicationUser
+Department
+```
+
+وله Templates مخصصة عن طريق:
+
+`OperatorTemplate`
+
+---
+
+# 15. BranchAdmin
+
+`BranchAdmin` مرتبط بفرع واحد.
+
+```text
+BranchAdmin
+   ↓
+Branch
+```
+
+ويعمل داخل Scope هذا الفرع.
+
+---
+
+# 16. BranchUser
+
+`BranchUser` مرتبط بفرع واحد.
+
+ويمكن إعطاؤه Roles وPermissions مختلفة داخل الفرع.
+
+---
+
+# 17. DepartmentAdmin
+
+`DepartmentAdmin` مرتبط بـ Department.
+
+```text
+DepartmentAdmin
+       ↓
+Department
+```
+
+---
+
+# 18. BranchArea
+
+`BranchArea` هو User Actor يستطيع إدارة أكثر من Branch.
+
+العلاقة:
+
+```text
+BranchArea
+    ↓
+BranchAreaBranch
+    ↓
+Branches
+```
+
+مثال:
+
+```text
+BranchArea User
+    ├── Cairo Branch
+    ├── Giza Branch
+    └── Alexandria Branch
+```
+
+---
+
+# 19. BranchArea Login Flow
+
+عند Login مستخدم `BranchArea`:
+
+```text
+Login
+ ↓
+Load Assigned Branches
+ ↓
+RequiresBranchSelection = true
+ ↓
+ActiveBranchId = null
+```
+
+بعد ذلك يجب اختيار Branch باستخدام:
+
+```text
+POST /api/auth/select-branch
+```
+
+بعد اختيار الفرع يتم إصدار Context يسمح للمستخدم بالعمل داخل الفرع المحدد.
+
+لا يجب السماح لـ `BranchArea` باستخدام Branch غير مخصص له.
+
+---
+
+# 20. Branch Scope Resolution
+
+يوجد:
+
+`CurrentBranchScopeResolver`
+
+ويحدد الفرع الحالي حسب نوع المستخدم.
+
+## BranchAdmin
+
+يتم أخذ:
+
+```text
+BranchAdmin.BranchId
+```
+
+## BranchUser
+
+يتم أخذ:
+
+```text
+BranchUser.BranchId
+```
+
+## BranchArea
+
+يتم أخذ:
+
+```text
+JWT.ActiveBranchId
+```
+
+ثم التحقق أنه Branch مخصص لهذا `BranchArea`.
+
+أي Feature Branch-Scoped جديدة يجب أن تستخدم نفس الـ Scope Logic ولا تثق مباشرة في `BranchId` المرسل من Client إلا عند وجود سبب Business واضح.
+
+---
+
+# 21. Survey Architecture
+
+يوجد مساران رئيسيان للاستبيانات:
+
+```text
+Operator Surveys
+Anonymous Surveys
+```
+
+---
+
+# 22. Operator Survey
+
+الـ Flow:
+
+```text
+Admin creates Template
+        ↓
+Questions assigned
+        ↓
+Conditions configured
+        ↓
+Custom Inputs configured
+        ↓
+Template activated
+        ↓
+Template assigned to Operator
+        ↓
+Operator opens My Templates
+        ↓
+Customer answers
+        ↓
+Operator submits response
+        ↓
+Score calculated
+        ↓
+Reports
+```
+
+---
+
+# 23. Anonymous Survey
+
+الـ Flow:
+
+```text
+Admin creates Anonymous Template
+        ↓
+Questions assigned
+        ↓
+Conditions configured
+        ↓
+Custom Inputs configured
+        ↓
+Template activated
+        ↓
+Public URL generated
+        ↓
+QR Code generated
+        ↓
+Customer opens survey directly
+        ↓
+Customer submits response
+        ↓
+Score calculated
+        ↓
+Reports
+```
+
+لا يحتاج المستخدم النهائي Login.
+
+---
+
+# 24. Template
+
+الـ `Template` العادية Branch-Scoped.
+
+أهم الخصائص:
+
+```text
+BranchId
+NameEn
+NameAr
+Description
+ActiveFrom
+ExpireTo
+Status
+IsActive
+```
+
+---
+
+# 25. Template Status
+
+الحالات:
+
+```text
+Draft
+Active
+Inactive
+```
+
+بالإضافة إلى:
+
+```text
+IsActive
+```
+
+وتاريخ:
+
+```text
+ActiveFrom
+ExpireTo
+```
+
+لكي يكون Template متاحًا:
+
+```text
+IsActive = true
+
+AND
+
+ActiveFrom <= Current Time
+
+AND
+
+ExpireTo is null
+OR
+ExpireTo > Current Time
+```
+
+---
+
+# 26. SuperAdmin Template Catalog
+
+يوجد SuperAdmin Template Catalog.
+
+الغرض منه إنشاء Templates مركزية ثم نسخها للفروع.
+
+Flow:
+
+```text
+SuperAdmin Template
+       ↓
+Central Catalog
+       ↓
+Copy To Branch
+       ↓
+Branch Template
+```
+
+Endpoint موجود للنسخ إلى Branch.
+
+نسخة الفرع تصبح Template مستقلة داخل Branch.
+
+---
+
+# 27. Anonymous Template
+
+`AnonymousTemplate` يمكن أن يكون:
+
+```text
+Branch
+Global
+```
+
+عن طريق:
+
+`AnonymousTemplateScope`
+
+القيم:
+
+```text
+Branch = 1
+Global = 2
+```
+
+إذا كان Branch Scoped:
+
+```text
+BranchId != null
+```
+
+إذا كان Global:
+
+```text
+BranchId = null
+```
+
+---
+
+# 28. Questions
+
+الـ `Question` يمكن أن تكون:
+
+```text
+Branch Question
+Global Question
+```
+
+عن طريق:
+
+`QuestionScope`
+
+الـ Branch Question مرتبطة بـ Branch.
+
+الـ Global Question غير مرتبطة بـ Branch.
+
+---
+
+# 29. Question Groups
+
+كل Question مرتبطة بـ:
+
+`QuestionGroup`
+
+والـ Groups نفسها يمكن أن تكون:
+
+```text
+Branch Scoped
+Global
+```
+
+ويجب الحفاظ على الـ Scope consistency.
+
+---
+
+# 30. Question Types
+
+الأنواع الحالية:
+
+```text
+SingleChoice
+Voice
+StarRating
+Complain
+Smiles
+Image
+```
+
+لا تتم إضافة Question Type جديد إلا إذا تطلبت الـ Business Feature ذلك بشكل صريح.
+
+---
+
+# 31. Single Choice
+
+يحتوي على:
+
+`QuestionOption`
+
+كل Option تحتوي:
+
+```text
+TextEn
+TextAr
+Order
+Value
+IsActive
+```
+
+`Value` تستخدم في Scoring.
+
+الـ Business range الحالي:
+
+```text
+1 → 5
+```
+
+---
+
+# 32. Scorable Questions
+
+الأنواع التي تدخل في Satisfaction Score:
+
+```text
+SingleChoice
+StarRating
+Smiles
+```
+
+الأنواع التالية لا تدخل في Numeric Score:
+
+```text
+Complain
+Voice
+Image
+```
+
+---
+
+# 33. Conditional Questions
+
+يمكن أن يظهر سؤال بناءً على إجابة سؤال آخر.
+
+Entity:
+
+`TemplateQuestionCondition`
+
+العلاقة:
+
+```text
+Parent Question
+      ↓
+Condition
+      ↓
+Child Question
+```
+
+Trigger Types:
+
+```text
+SingleChoiceOption
+StarRatingValue
+SmileValue
+```
+
+مثال:
+
+```text
+Q1: Rate Service
+
+If Rating = 1
+     ↓
+Q2: Why were you dissatisfied?
+```
+
+---
+
+# 34. Conditional Tree Rules
+
+عند Submit:
+
+* Hidden question لا يجوز إرسال Answer لها.
+* Visible question يجب أن يتم إرسال Answer لها.
+* Visibility تحسب اعتمادًا على Conditions.
+* يجب منع loops أو invalid condition structures قدر الإمكان.
+* Conditions يجب أن تشير إلى Questions داخل نفس Template.
+
+---
+
+# 35. TemplateQuestion
+
+يمثل ربط Question بالـ Template.
+
+يحتوي على:
+
+```text
+TemplateId
+QuestionId
+Order
+```
+
+الـ Question نفسها يمكن استخدامها في أكثر من Template.
+
+---
+
+# 36. Custom Inputs
+
+الـ Template يمكن أن يطلب بيانات إضافية.
+
+مثال:
+
+```text
+Customer Number
+Mobile Number
+Ticket Number
+National ID
+Visit Number
+```
+
+Entity:
+
+`TemplateCustomInput`
+
+الأنواع الحالية:
+
+```text
+String
+Integer
+```
+
+---
+
+# 37. Custom Input Rules
+
+يمكن تحديد:
+
+```text
+IsRequired
+MinLength
+MaxLength
+MinValue
+MaxValue
+StartWith
+Order
+```
+
+`String` تستخدم:
+
+```text
+MinLength
+MaxLength
+StartWith
+```
+
+`Integer` تستخدم:
+
+```text
+MinValue
+MaxValue
+```
+
+الحقول غير المناسبة لنوع الـ Custom Input يتم تجاهلها / Normalize.
+
+---
+
+# 38. Operator Template Assignment
+
+الـ Operator لا يرى كل Templates.
+
+يجب أن يتم Assignment أولًا.
+
+Entity:
+
+`OperatorTemplate`
+
+العلاقة:
+
+```text
+Operator
+   ↓
+OperatorTemplate
+   ↓
+Template
+```
+
+---
+
+# 39. Operator Survey APIs
+
+المسار الأساسي:
+
+```text
+GET /api/operators/my-templates
+```
+
+ثم:
+
+```text
+POST /api/operators/my-templates/{templateId}/responses
+```
+
+يجب التأكد أن Template مخصص للـ Operator قبل قبول Response.
+
+---
+
+# 40. Survey Submission Rules
+
+قبل قبول Operator Survey Response يجب التأكد من:
+
+1. Current user authenticated.
+2. Current user لديه Operator profile.
+3. Template assigned إلى Operator.
+4. Template active.
+5. Template بدأ بالفعل.
+6. Template لم تنتهِ صلاحيته.
+7. Template يحتوي Questions.
+8. Custom Inputs صحيحة.
+9. لا يوجد Duplicate Answers.
+10. كل Question موجودة داخل Template.
+11. Conditions يتم تقييمها.
+12. لا يتم الإجابة على Hidden Questions.
+13. كل Visible Questions تم الإجابة عليها.
+14. Answer structure يناسب QuestionType.
+15. SingleChoice Option يجب أن تنتمي للسؤال.
+16. Files يجب أن تمر من Media validation.
+17. Score يحسب قبل حفظ Response.
+
+---
+
+# 41. SurveyResponse
+
+يمثل استجابة Operator Survey.
+
+يحتوي على:
+
+```text
+OperatorId
+TemplateId
+SubmittedOnUtc
+ActualScore
+MaxScore
+ScorePercentage
+CreatedByApplicationUserId
+```
+
+ويحتوي على:
+
+```text
+Answers
+CustomInputValues
+```
+
+---
+
+# 42. SurveyAnswer
+
+كل Answer تحتفظ بنوع السؤال.
+
+حسب Question Type قد تحتوي على:
+
+```text
+SelectedQuestionOptionId
+StarRatingValue
+SmileValue
+TextAnswer
+VoiceFileName
+ImageFileName
+```
+
+---
+
+# 43. AnonymousSurveyResponse
+
+يمثل Public/Anonymous Response.
+
+يحتوي على:
+
+```text
+AnonymousTemplateId
+SubmittedOnUtc
+ActualScore
+MaxScore
+ScorePercentage
+```
+
+ويحتوي على:
+
+```text
+AnonymousSurveyAnswers
+AnonymousCustomInputValues
+```
+
+---
+
+# 44. Anonymous Public APIs
+
+Public endpoints:
+
+```text
+GET /api/anon-templates/{anonymousTemplateId}
+```
+
+و:
+
+```text
+POST /api/anon-templates/{anonymousTemplateId}/responses
+```
+
+هذه Endpoints لا تتطلب Authentication.
+
+لكن يجب أن تطبق Business Validation كاملة.
+
+---
+
+# 45. Public URL and QR Code
+
+`AnonymousTemplate` تحتوي على:
+
+```text
+PublicUrl
+QrCode
+```
+
+الغرض:
+
+```text
+Customer scans QR
+       ↓
+Public Survey Page
+       ↓
+Anonymous Submission
+```
+
+---
+
+# 46. Score Calculation
+
+الـ Score Scale الأساسية:
+
+```text
+1 → 5
+```
+
+والنسبة:
+
+```text
+ScorePercentage =
+Score / 5 × 100
+```
+
+مثال:
+
+```text
+4 / 5 × 100 = 80%
+```
+
+---
+
+# 47. Survey Scoring Engine
+
+يوجد:
+
+`SurveyReportScoringService`
+
+ويدعم Scoring modes مثل:
+
+```text
+RootQuestions
+LowestConditionLevel
+```
+
+---
+
+# 48. Root Question Scoring
+
+في هذا Mode يتم استخدام Score الخاص بالـ Root Question.
+
+مثال:
+
+```text
+Q1: Overall Satisfaction = 3
+      ↓
+Q2: Staff = 1
+```
+
+في `RootQuestions` يتم استخدام:
+
+```text
+Q1 = 3
+```
+
+---
+
+# 49. Lowest Condition Level Scoring
+
+يتم تتبع الـ Conditional Path.
+
+مثال:
+
+```text
+Q1
+ ↓
+Q2
+ ↓
+Q3
+```
+
+ويتم استخدام آخر Question قابلة للـ Scoring تم الوصول لها في المسار.
+
+---
+
+# 50. Reports
+
+النظام يحتوي على Reporting على عدة Levels.
+
+## Branch Reports
+
+```text
+Branch Satisfaction
+Branch Dashboard
+Branch Responses
+Anonymous Responses
+```
+
+## Department Reports
+
+```text
+Department Dashboard
+Operator Responses
+Operator Response Details
+```
+
+## Survey Reports
+
+```text
+Survey Dashboard
+Survey Template Selection
+```
+
+## System Reports
+
+```text
+System Dashboard
+System Responses
+System Response Details
+```
+
+---
+
+# 51. PDF Reports
+
+يوجد PDF Reporting infrastructure.
+
+من ضمنها:
+
+```text
+BranchTemplatesPdfReportService
+PdfService
+RazorViewRenderer
+BranchTemplatesQuestionRankBuilder
+```
+
+أي تعديل في Reporting يجب أن يحافظ على النتائج الحالية إلا إذا كانت Feature الجديدة تغير الـ Business Rule صراحة.
+
+---
+
+# 52. Media Answers
+
+النظام يدعم:
+
+```text
+Voice Answers
+Image Answers
+```
+
+---
+
+# 53. Voice Answers
+
+Allowed extensions حاليًا:
+
+```text
+.mp3
+.wav
+.m4a
+.aac
+.ogg
+```
+
+Maximum size الحالي:
+
+```text
+10 MB
+```
+
+---
+
+# 54. Image Answers
+
+يتم حفظ الصور عن طريق:
+
+`IMediaService`
+
+وتخزين File Name داخل Answer.
+
+---
+
+# 55. Media Compensation
+
+عند حفظ Media ثم حدوث Database Failure يجب حذف الملفات التي تم حفظها قبل فشل العملية.
+
+أي Feature Media جديدة يجب أن تحافظ على هذا السلوك.
+
+---
+
+# 56. Localization
+
+المشروع يدعم:
+
+```text
+Arabic
+English
+```
+
+Supported cultures:
+
+```text
+ar
+en
+```
+
+Default:
+
+```text
+en
+```
+
+مع دعم:
+
+`Accept-Language`
+
+الـ Business entities عادة تحتوي:
+
+```text
+NameEn
+NameAr
+```
+
+أو:
+
+```text
+TextEn
+TextAr
+```
+
+يجب الحفاظ على هذا الأسلوب عند إضافة Business Data جديدة تحتاج Localization.
+
+---
+
+# 57. Soft Delete / Activation
+
+المشروع غالبًا لا يستخدم Hard Delete للـ Business entities.
+
+الأسلوب المعتاد:
+
+```text
+Deactivate
+Restore
+```
+
+أو:
+
+```text
+IsActive
+```
+
+يجب اتباع نفس Pattern في Features الجديدة إلا إذا كان الـ Business Requirement يقول غير ذلك.
+
+---
+
+# 58. Database Rules
+
+يتم استخدام `EF Core Configurations`.
+
+Business constraints المهمة يجب أن تكون في أكثر من مستوى عندما يكون ذلك مناسبًا:
+
+```text
+Application Validation
++
+Domain Rules
++
+Database Constraints / Indexes
+```
+
+مثال:
+
+Global Question:
+
+```text
+Scope = Global
+BranchId = null
+```
+
+Branch Question:
+
+```text
+Scope = Branch
+BranchId != null
+```
+
+---
+
+# 59. Migration Rule
+
+لا يتم إنشاء Migration إلا إذا تغير Database Schema.
+
+أي Feature لا تحتاج Schema Change لا يجب أن ينتج عنها Migration.
+
+---
+
+# 60. Repository Rules
+
+يفضل استخدام:
+
+```text
+IWriteRepository<T>
+IWriteReadRepository<T>
+Specifications
+IUnitOfWork
+```
+
+ولا يفضل إدخال direct DbContext logic داخل Handlers إلا إذا كان المشروع الحالي يستخدم ذلك لنفس السيناريو بشكل واضح.
+
+---
+
+# 61. Unit Of Work
+
+أي عملية تعدل عدة Entities مرتبطة يجب أن تحفظ Transactional consistency عن طريق:
+
+`IUnitOfWork`
+
+ولا يتم تنفيذ `SaveChanges` عدة مرات بلا داعٍ داخل نفس Use Case.
+
+---
+
+# 62. Validation
+
+يتم استخدام:
+
+`FluentValidation`
+
+للـ Request Validation.
+
+أما Business Validation التي تحتاج Database state أو Actor Scope فتوضع داخل Handler أو Domain حسب طبيعتها.
+
+---
+
+# 63. Controller Rules
+
+Controller يجب أن:
+
+1. يستقبل HTTP request.
+2. يحول request إلى Command / Query.
+3. يرسل عن طريق `ISender`.
+4. يعيد Result باستخدام الـ existing result mapping.
+
+لا يجب وضع:
+
+* Business calculations.
+* EF Queries.
+* Domain decisions.
+
+داخل Controller.
+
+---
+
+# 64. Permission Rule For New Features
+
+عند إضافة Endpoint جديد:
+
+يتم أولًا تحديد هل يحتاج Permission.
+
+إذا احتاج:
+
+```text
+Create Permission
+↓
+Seed Permission
+↓
+Assign Permission to required roles
+↓
+Use [Permission(...)]
+```
+
+Permission naming يجب أن تتبع convention الحالي:
+
+```text
+Feature.Action
+```
+
+مثال:
+
+```text
+Templates.Create
+Templates.Update
+Templates.ViewAll
+Reports.ViewBranchReports
+```
+
+---
+
+# 65. Error Handling
+
+يجب استخدام Existing `Result Pattern`.
+
+مثال:
+
+```text
+Feature.Action.EntityNotFound
+Feature.Action.InvalidState
+Feature.Action.NotAllowed
+```
+
+ولا يتم رمي Exceptions من أجل Business Validation العادية.
+
+Exceptions تستخدم للأخطاء غير المتوقعة.
+
+---
+
+# 66. Testing Rules
+
+أي Feature جديدة مهمة يجب إضافة Tests لها.
+
+الأولوية:
+
+1. Business Rules.
+2. Validators.
+3. Complex Handlers.
+4. Permission Scope.
+5. Branch Scope.
+6. Conditional Questions.
+7. Score Calculation.
+8. Survey Submission.
+
+---
+
+# 67. Existing Important Test Areas
+
+المشروع يحتوي بالفعل على Tests حول:
+
+```text
+Actor Activation
+Password Reset
+BranchArea Validation
+Reports
+Survey Dashboard
+Survey Scoring
+Image Validation
+Custom Input Validation
+```
+
+أي Logic مشابه يجب أن يستخدم نفس أسلوب Testing الموجود.
+
+---
+
+# 68. Critical Business Invariants
+
+هذه القواعد لا يجب كسرها بدون Business Decision صريح.
+
+## Identity
+
+```text
+ApplicationUser must have correct Actor Profile.
+```
+
+## BranchAdmin
+
+```text
+One Branch Scope.
+```
+
+## BranchUser
+
+```text
+One Branch Scope.
+```
+
+## BranchArea
+
+```text
+Multiple assigned Branches.
+Must select Active Branch.
+Cannot select unassigned Branch.
+```
+
+## Operator
+
+```text
+Belongs to Department.
+Can submit only assigned Templates.
+```
+
+## Template
+
+```text
+Belongs to Branch.
+Must respect ActiveFrom / ExpireTo.
+```
+
+## AnonymousTemplate
+
+```text
+Can be Global or Branch Scoped.
+```
+
+## Question
+
+```text
+Can be Global or Branch Scoped.
+```
+
+## Conditions
+
+```text
+Only visible questions should be answered.
+All visible questions must be answered.
+```
+
+## Scoring
+
+```text
+SingleChoice / StarRating / Smiles are scorable.
+Scoring scale is based on 5.
+```
+
+---
+
+# 69. Existing Main API Areas
+
+```text
+/api/auth
+
+/api/super-admins
+
+/api/branches
+
+/api/branch-admins
+
+/api/branch-users
+
+/api/branch-areas
+
+/api/departments
+
+/api/department-admins
+
+/api/operators
+
+/api/roles
+
+/api/questions
+
+/api/question-groups
+
+/api/global-questions
+
+/api/global-question-groups
+
+/api/templates
+
+/api/anonymous-templates
+
+/api/anon-templates
+
+/api/reports
+```
+
+---
+
+# 70. Main Business Modules
+
+أي Feature جديدة غالبًا ستنتمي إلى أحد Modules التالية:
+
+```text
+Authentication
+
+Users & Identity
+
+Roles & Permissions
+
+Branches
+
+Branch Areas
+
+Departments
+
+Operators
+
+Question Catalog
+
+Global Questions
+
+Question Groups
+
+Templates
+
+Anonymous Templates
+
+Survey Responses
+
+Conditional Survey Engine
+
+Custom Inputs
+
+Scoring
+
+Dashboards
+
+Reports
+
+Media Answers
+```
+
+---
+
+# 71. Feature Development Process
+
+قبل تنفيذ أي Feature جديدة يجب تنفيذ هذه الخطوات ذهنيًا:
+
+```text
+Understand Business Requirement
+        ↓
+Identify Actor
+        ↓
+Identify Scope
+        ↓
+Find Existing Similar Feature
+        ↓
+Identify Domain Impact
+        ↓
+Identify Database Impact
+        ↓
+Define Command / Query
+        ↓
+Define Permissions
+        ↓
+Implement Handler
+        ↓
+Add Validator
+        ↓
+Add Specifications
+        ↓
+Expose API
+        ↓
+Add Migration if required
+        ↓
+Add Tests
+```
+
+---
+
+# 72. Feature Modification Rule
+
+عند تعديل Feature موجودة:
+
+يجب أولًا تحديد:
+
+```text
+Current Behavior
+```
+
+ثم:
+
+```text
+Requested New Behavior
+```
+
+ثم تحديد الفرق فقط.
+
+لا يتم إعادة كتابة Feature كاملة إذا كان التعديل محدودًا.
+
+---
+
+# 73. Backward Compatibility
+
+أي تعديل Feature يجب أن يأخذ في الاعتبار:
+
+* Existing Frontend.
+* Existing API contracts.
+* Existing permissions.
+* Existing records.
+* Existing reports.
+* Existing migrations/data.
+
+لا يتم تغيير Request/Response contracts الحالية بدون ضرورة Business واضحة.
+
+---
+
+# 74. Database Historical Rule
+
+المشروع مر بتغييرات Business سابقة.
+
+لذلك:
+
+`Old Migration ≠ Current Business Source of Truth`
+
+عند وجود تعارض بين Migration قديمة والكود الحالي، الأولوية في فهم Current Business تكون:
+
+```text
+Current Domain
+↓
+Current Application Handlers
+↓
+Current EF Configuration
+↓
+Current API
+↓
+Latest Migration / Snapshot
+↓
+Old Historical Migrations
+```
+
+---
+
+# 75. Important Example
+
+يوجد Migration قديم يشير إلى تصميم قديم للـ Department.
+
+لكن الـ current Domain Entity لا تحتوي `BranchId`.
+
+لذلك لا يجب افتراض أن Department حاليًا Branch-Scoped فقط بناءً على Migration قديمة.
+
+---
+
+# 76. Rules For AI / ChatGPT Work
+
+عند العمل على هذا المشروع يجب دائمًا:
+
+1. مراجعة Current Code قبل اقتراح Implementation.
+2. البحث عن Feature مشابهة داخل المشروع.
+3. الحفاظ على Conventions الحالية.
+4. عدم إدخال Architecture جديدة بلا داعٍ.
+5. عدم تحديث Versions.
+6. عدم تنفيذ Refactoring واسع.
+7. عدم تغيير Business Rule موجودة بدون طلب صريح.
+8. التفريق بين Business Requirement وTechnical Improvement.
+9. ذكر أي Technical Improvement خارج Scope كاقتراح منفصل فقط.
+10. إضافة Tests عند تعديل Business Logic مهم.
+
+---
+
+# 77. Definition Of Done For New Feature
+
+Feature تعتبر مكتملة عندما يكون ما ينطبق عليها من التالي موجودًا:
+
+```text
+Business Rule defined
+Domain updated if needed
+Command / Query created
+Handler implemented
+Validator implemented
+Specifications implemented
+Permission added if needed
+Controller endpoint added
+Database configuration updated if needed
+Migration added if needed
+Seeder updated if needed
+Tests added
+Existing behavior not broken
+```
+
+---
+
+# 78. Source Of Truth Priority
+
+في أي نقاش مستقبلي الأولوية تكون:
+
+```text
+1. Explicit new business decision from project owner
+2. This Source of Truth
+3. Current master branch implementation
+4. Existing tests
+5. Current database configuration
+6. Historical migrations
+7. Assumptions
+```
+
+إذا تعارض طلب جديد صريح مع هذا الملف، فالطلب الجديد يمثل Business Decision جديدة ويجب تحديث Source of Truth بعدها.
+
+---
+
+# 79. Current Project Philosophy
+
+المشروع لا يحتاج Architecture Rewrite.
+
+الهدف الحالي:
+
+```text
+Extend Existing System Safely
+```
+
+وليس:
+
+```text
+Rebuild Existing System
+```
+
+لذلك أي تنفيذ جديد يجب أن يكون:
+
+```text
+Business First
+Consistent
+Minimal
+Testable
+Backward-Aware
+Maintainable
+```
+
+---
+
+# 80. Core Summary
+
+`CustomerSurvey` هو نظام Enterprise لإدارة Customer Feedback عبر:
+
+```text
+Users
+Branches
+Departments
+Operators
+Permissions
+
+        ↓
+
+Question Catalog
+
+        ↓
+
+Survey Templates
+
+        ↓
+
+Conditional Questions
+Custom Inputs
+
+        ↓
+
+Operator Surveys
+Anonymous Surveys
+
+        ↓
+
+Survey Responses
+
+        ↓
+
+Scoring Engine
+
+        ↓
+
+Branch / Department / System Analytics
+
+        ↓
+
+Dashboards & PDF Reports
+```
+
+الـ Architecture الحالية هي الأساس الرسمي للمراحل القادمة.
+
+أي Feature جديدة يجب أن تمتد فوق النظام الحالي بدون تغيير Versions أو إعادة بناء Architecture إلا بقرار منفصل وصريح.
