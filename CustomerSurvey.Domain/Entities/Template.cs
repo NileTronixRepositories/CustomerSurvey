@@ -51,7 +51,7 @@ namespace CustomerSurvey.Domain.Entities
                 Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim(),
                 ActiveFrom = activeFrom,
                 ExpireTo = expireTo,
-                Status = TemplateStatus.Draft,
+                Status = TemplateStatus.Active,
                 IsActive = true,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };

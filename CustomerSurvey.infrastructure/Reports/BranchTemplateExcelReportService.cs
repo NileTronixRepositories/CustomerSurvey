@@ -136,7 +136,6 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
             title: T(isArabic, "Summary Metrics", "مؤشرات الملخص"),
             new (string Label, object? Value, string? NumberFormat)[]
             {
-                (T(isArabic, "Template Status", "حالة النموذج"), template.Status, null),
                 (T(isArabic, "Total Questions", "إجمالي الأسئلة"), template.TotalQuestions, "0"),
                 (T(isArabic, "Root Questions", "الأسئلة الرئيسية"), template.RootQuestions, "0"),
                 (T(isArabic, "Conditional Questions", "الأسئلة الشرطية"), template.ConditionalQuestions, "0"),
@@ -457,7 +456,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
                 ResolveBusinessAnswerValue(answer, isArabic),
                 answer.QuestionType == QuestionType.SingleChoice ? answer.SelectedOptionValue : null,
                 answer.ScoreValue,
-                answer.IncludedInScore,
+                DisplayYesNo(answer.IncludedInScore, isArabic),
                 DisplayScoreInclusionReason(answer.ScoreInclusionReason, isArabic),
                 ResolveMediaValue(answer, isArabic),
                 response.ResponseId.ToString()
@@ -553,7 +552,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
                 question.SkippedCount,
                 question.ScoreAverageValue,
                 ToExcelPercentage(question.ScoreAveragePercentage),
-                question.IsScoreIncluded
+                DisplayYesNo(question.IsScoreIncluded, isArabic)
             })
             .ToArray();
 
@@ -645,6 +644,15 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
 
         foreach (var detail in details)
         {
+            var matchingSegment = segments.FirstOrDefault(segment =>
+                string.Equals(segment.Label, detail.Label, StringComparison.Ordinal));
+
+            if (matchingSegment is not null)
+            {
+                worksheet.Cell(detailRow, startColumn + 4).Style.Fill.BackgroundColor =
+                    XLColor.FromHtml(matchingSegment.Color);
+            }
+
             worksheet.Cell(detailRow, startColumn + 5).Value = detail.Label;
             worksheet.Cell(detailRow, startColumn + 5).Style.Font.Bold = true;
             worksheet.Cell(detailRow, startColumn + 7).Value = detail.Value;
@@ -736,7 +744,13 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
 
             for (var column = 1; column <= headers.Count; column++)
             {
-                worksheet.Column(column).Width = ResolveColumnWidth(headers[column - 1]);
+                var columnWidth = ResolveColumnWidth(headers[column - 1]);
+                if (dateColumns?.Contains(column) == true)
+                {
+                    columnWidth = Math.Max(columnWidth, 22);
+                }
+
+                worksheet.Column(column).Width = columnWidth;
 
                 if (wrapColumns.Contains(column))
                 {
@@ -1147,6 +1161,11 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
 
     private static string T(bool isArabic, string english, string arabic)
         => isArabic ? arabic : english;
+
+    private static string DisplayYesNo(bool value, bool isArabic)
+        => value
+            ? T(isArabic, "Yes", "نعم")
+            : T(isArabic, "No", "لا");
 
     private static string DisplayTemplateKind(ReportTemplateKind templateKind, bool isArabic)
         => templateKind == ReportTemplateKind.Normal

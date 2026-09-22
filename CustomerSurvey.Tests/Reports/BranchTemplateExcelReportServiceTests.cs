@@ -52,6 +52,12 @@ public sealed class BranchTemplateExcelReportServiceTests
 
             var graphics = workbook.Worksheet("02 - Graphics");
             Assert.Equal(5, graphics.Pictures.Count);
+            Assert.Equal(
+                XLColor.FromHtml("#16A34A").Color.ToArgb(),
+                graphics.Cell(6, 14).Style.Fill.BackgroundColor.Color.ToArgb());
+            Assert.Equal(
+                XLColor.FromHtml("#94A3B8").Color.ToArgb(),
+                graphics.Cell(7, 14).Style.Fill.BackgroundColor.Color.ToArgb());
 
             var matrix = workbook.Worksheet("03 - Response Matrix");
             Assert.Equal("Response No", matrix.Cell(3, 1).GetString());
@@ -66,7 +72,8 @@ public sealed class BranchTemplateExcelReportServiceTests
             var customInputs = workbook.Worksheet("06 - Custom Inputs");
             Assert.Equal("Rate the service", answers.Cell(4, 4).GetString());
             Assert.True(answers.Cell(4, 7).IsEmpty());
-            Assert.True(answers.Cell(4, 11).GetBoolean());
+            Assert.Equal("Yes", answers.Cell(4, 11).GetString());
+            Assert.Equal("No", answers.Cell(5, 11).GetString());
             Assert.Equal("Root Question", answers.Cell(4, 12).GetString());
             Assert.Equal(matrix.Cell(4, 1).GetDouble(), responses.Cell(4, 1).GetDouble());
             Assert.Equal(matrix.Cell(4, 1).GetDouble(), answers.Cell(4, 1).GetDouble());
@@ -93,6 +100,16 @@ public sealed class BranchTemplateExcelReportServiceTests
             Assert.NotEmpty(matrix.Tables);
             Assert.NotEmpty(responses.Tables);
             Assert.NotEmpty(answers.Tables);
+
+            var questionAnalysis = workbook.Worksheet("07 - Question Analysis");
+            Assert.Equal("Yes", questionAnalysis.Cell(4, 10).GetString());
+            Assert.Equal("No", questionAnalysis.Cell(5, 10).GetString());
+
+            var summaryMetricLabels = workbook.Worksheet("01 - Summary")
+                .Range("A17:A27")
+                .Cells()
+                .Select(cell => cell.GetString());
+            Assert.DoesNotContain("Template Status", summaryMetricLabels);
         }
         finally
         {
@@ -200,24 +217,15 @@ public sealed class BranchTemplateExcelReportServiceTests
     [Fact]
     public async Task GenerateAsync_ArabicReportLocalizesVisibleWorkbookLabels()
     {
-        var templateId = Guid.NewGuid();
-        var model = CreateBaseModel(templateId) with
+        var model = CreatePopulatedModel() with
         {
-            Language = "ar",
-            Graphics = new BranchTemplatesReportGraphics
-            {
-                OverallSatisfactionPercentage = 80m,
-                AverageScoreValue = 4m,
-                TotalResponses = 1,
-                ScoredResponses = 1,
-                ExcellentResponses = 1,
-                RootQuestions = 1,
-                IncludedAnswers = 1
-            }
+            Language = "ar"
         };
         var sut = new BranchTemplateExcelReportService(new StubBranchTemplatesReportService(model));
 
-        var result = await sut.GenerateAsync(CreateRequest(templateId) with { Language = "ar" }, CancellationToken.None);
+        var result = await sut.GenerateAsync(
+            CreateRequest(model.SelectedTemplateId) with { Language = "ar" },
+            CancellationToken.None);
 
         using var stream = new MemoryStream(result.Value.Content);
         using var workbook = new XLWorkbook(stream);
@@ -226,6 +234,34 @@ public sealed class BranchTemplateExcelReportServiceTests
         Assert.Equal("التحليلات المرئية", workbook.Worksheet("02 - Graphics").Cell("A1").GetString());
         Assert.Equal("رقم الرد", workbook.Worksheet("03 - Response Matrix").Cell(3, 1).GetString());
         Assert.True(workbook.Worksheet("03 - Response Matrix").RightToLeft);
+
+        foreach (var sheetName in new[]
+                 {
+                     "03 - Response Matrix",
+                     "04 - Responses",
+                     "05 - Answers",
+                     "06 - Custom Inputs"
+                 })
+        {
+            var worksheet = workbook.Worksheet(sheetName);
+            Assert.Equal(XLDataType.DateTime, worksheet.Cell(4, 2).DataType);
+            Assert.Equal("yyyy-mm-dd hh:mm:ss", worksheet.Cell(4, 2).Style.DateFormat.Format);
+            Assert.True(worksheet.Column(2).Width >= 22);
+        }
+
+        var answers = workbook.Worksheet("05 - Answers");
+        Assert.Equal("نعم", answers.Cell(4, 11).GetString());
+        Assert.Equal("لا", answers.Cell(5, 11).GetString());
+
+        var questionAnalysis = workbook.Worksheet("07 - Question Analysis");
+        Assert.Equal("نعم", questionAnalysis.Cell(4, 10).GetString());
+        Assert.Equal("لا", questionAnalysis.Cell(5, 10).GetString());
+
+        var summaryMetricLabels = workbook.Worksheet("01 - Summary")
+            .Range("A17:A27")
+            .Cells()
+            .Select(cell => cell.GetString());
+        Assert.DoesNotContain("حالة النموذج", summaryMetricLabels);
     }
 
     private static BranchTemplatesPdfReportModel CreatePopulatedModel()
@@ -289,6 +325,40 @@ public sealed class BranchTemplateExcelReportServiceTests
             ScoreInclusionReason = "Root Question"
         };
 
+        var nonScoredQuestionId = Guid.NewGuid();
+        var nonScoredTemplateQuestionId = Guid.NewGuid();
+        var nonScoredQuestion = new BranchTemplatesPdfQuestionAnalytics
+        {
+            TemplateId = templateId,
+            TemplateKind = ReportTemplateKind.Normal,
+            TemplateNameEn = "Customer Satisfaction",
+            TemplateQuestionId = nonScoredTemplateQuestionId,
+            QuestionId = nonScoredQuestionId,
+            QuestionOrder = 2,
+            QuestionTextEn = "Additional feedback",
+            QuestionType = QuestionType.Complain.ToString(),
+            IsRootQuestion = true,
+            TotalAnswers = 1,
+            IsScoreIncluded = false
+        };
+
+        var nonScoredAnswer = new BranchTemplatesReportAnswer
+        {
+            ResponseId = unscoredResponseId,
+            TemplateId = templateId,
+            TemplateKind = ReportTemplateKind.Normal,
+            TemplateQuestionId = nonScoredTemplateQuestionId,
+            QuestionId = nonScoredQuestionId,
+            QuestionOrder = 2,
+            QuestionTextEn = "Additional feedback",
+            QuestionType = QuestionType.Complain,
+            IsRootQuestion = true,
+            TextAnswer = "No comment",
+            DisplayValue = "No comment",
+            IncludedInScore = false,
+            ScoreInclusionReason = "Non-Scorable Question"
+        };
+
         var phoneValue = new BranchTemplatesReportCustomInputValue
         {
             ResponseId = scoredResponseId,
@@ -337,7 +407,7 @@ public sealed class BranchTemplateExcelReportServiceTests
                     AverageScorePercentage = 100m
                 }
             },
-            Questions = new[] { question },
+            Questions = new[] { question, nonScoredQuestion },
             WorstQuestions = new[] { rank },
             BestQuestions = new[] { rank },
             CustomInputDefinitions = new[]
@@ -380,7 +450,8 @@ public sealed class BranchTemplateExcelReportServiceTests
                     SubmittedOnUtc = new DateTime(2026, 9, 11, 11, 0, 0, DateTimeKind.Utc),
                     OperatorId = Guid.NewGuid(),
                     OperatorNameEn = "Operator Two",
-                    IsScored = false
+                    IsScored = false,
+                    Answers = new[] { nonScoredAnswer }
                 }
             }
         };
