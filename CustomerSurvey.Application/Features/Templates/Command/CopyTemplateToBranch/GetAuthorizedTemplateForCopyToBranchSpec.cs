@@ -11,8 +11,14 @@ internal sealed class GetAuthorizedTemplateForCopyToBranchSpec
     {
         AddCriteria(x => x.Id == templateId);
 
+        AddInclude(x => x.Include(template => template.CustomInputs));
         AddInclude(x => x
-            .Include(template => template.CustomInputs)
-            .Include(template => template.TemplateQuestions));
+            .Include(template => template.TemplateQuestions)
+            .ThenInclude(templateQuestion => templateQuestion.Question)
+            .ThenInclude(question => question.Group));
+        AddInclude(x => x
+            .Include(template => template.TemplateQuestions)
+            .ThenInclude(templateQuestion => templateQuestion.Question)
+            .ThenInclude(question => question.Options));
     }
 }

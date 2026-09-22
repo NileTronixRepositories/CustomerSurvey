@@ -21,6 +21,7 @@ namespace CustomerSurvey.Domain.Entities
         public QuestionType Type { get; private set; }
 
         public bool IsActive { get; private set; }
+        public Guid? OriginQuestionId { get; private set; }
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
@@ -47,7 +48,8 @@ namespace CustomerSurvey.Domain.Entities
             string textEn,
             string? textAr,
             QuestionType type,
-            Guid createdByApplicationUserId)
+            Guid createdByApplicationUserId,
+            Guid? originQuestionId = null)
         {
             return new Question(Guid.NewGuid())
             {
@@ -58,6 +60,7 @@ namespace CustomerSurvey.Domain.Entities
                 TextAr = string.IsNullOrWhiteSpace(textAr) ? null : textAr.Trim(),
                 Type = type,
                 IsActive = true,
+                OriginQuestionId = originQuestionId,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
         }

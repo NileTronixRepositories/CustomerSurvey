@@ -19,6 +19,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
     {
         private readonly IWriteReadRepository<Template> _templateReadRepository;
         private readonly IWriteRepository<Template> _templateWriteRepository;
+        private readonly IWriteReadRepository<Branch> _branchReadRepository;
 
         private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
         private readonly ICurrentUser _currentUser;
@@ -27,6 +28,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
         public CreateTemplateCommandHandler(
             IWriteReadRepository<Template> templateReadRepository,
             IWriteRepository<Template> templateWriteRepository,
+            IWriteReadRepository<Branch> branchReadRepository,
             ICurrentBranchScopeResolver currentBranchScopeResolver,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
@@ -36,6 +38,9 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
 
             _templateWriteRepository = templateWriteRepository
                 ?? throw new ArgumentNullException(nameof(templateWriteRepository));
+
+            _branchReadRepository = branchReadRepository
+                ?? throw new ArgumentNullException(nameof(branchReadRepository));
 
             _currentBranchScopeResolver = currentBranchScopeResolver
                 ?? throw new ArgumentNullException(nameof(currentBranchScopeResolver));
@@ -118,17 +123,23 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+            var branch = await _branchReadRepository.GetByPropertyAsync(
+                x => x.Id == branchId,
+                cancellationToken);
+
             var response = new CreateTemplateResponse
             {
                 TemplateId = template.Id,
                 BranchId = template.BranchId,
+                BranchNameEn = branch?.NameEn ?? string.Empty,
+                BranchNameAr = branch?.NameAr,
                 NameEn = template.NameEn,
                 NameAr = template.NameAr,
                 Description = template.Description,
                 ActiveFrom = template.ActiveFrom,
                 ExpireTo = template.ExpireTo,
-                Status = template.Status.ToString(),
                 IsActive = template.IsActive,
+                LogoPath = template.LogoPath,
                 CustomInputs = template.CustomInputs
                     .OrderBy(x => x.Order)
                     .Select(x => new CreateTemplateCustomInputResponse

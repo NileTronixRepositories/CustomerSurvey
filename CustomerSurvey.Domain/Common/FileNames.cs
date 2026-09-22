@@ -10,5 +10,6 @@ namespace CustomerSurvey.Domain.Common
     {
         public const string SurveyVoiceAnswers = "SurveyVoiceAnswers";
         public const string SurveyAnswerImages = "SurveyAnswerImages";
+        public const string TemplateLogos = "TemplateLogos";
     }
 }

@@ -20,7 +20,6 @@ public sealed class BranchTemplatesPdfRazorReportTests
             TemplateId = templateId,
             TemplateKind = ReportTemplateKind.Normal,
             NameEn = "Service Survey",
-            Status = "Active",
             TotalQuestions = 1,
             RootQuestions = 1,
             TotalResponses = 1,

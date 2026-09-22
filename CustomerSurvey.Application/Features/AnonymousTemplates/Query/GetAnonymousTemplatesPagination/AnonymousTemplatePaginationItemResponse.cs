@@ -33,13 +33,13 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
         public DateTime? ExpireTo { get; init; }
 
-        public TemplateStatus Status { get; init; }
-
-        public string StatusName { get; init; } = string.Empty;
-
         public bool IsActive { get; init; }
 
-        public string PublicUrl { get; init; } = string.Empty;
+        public bool IsArchived { get; init; }
+
+        public string? LogoPath { get; init; }
+
+        public string? PublicUrl { get; init; }
 
         public string? QrCode { get; init; }
 

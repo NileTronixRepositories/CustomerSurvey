@@ -190,6 +190,9 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                 IsGlobal = anonymousTemplate.Scope == AnonymousTemplateScope.Global,
                 NameEn = anonymousTemplate.NameEn,
                 NameAr = anonymousTemplate.NameAr,
+                LogoPath = anonymousTemplate.LogoPath,
+                BranchNameEn = anonymousTemplate.BranchNameEn,
+                BranchNameAr = anonymousTemplate.BranchNameAr,
                 SelectedQuestionsCount = selectedQuestions.Count,
                 Questions = selectionItems
             };

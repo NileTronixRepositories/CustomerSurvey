@@ -16,6 +16,7 @@ namespace CustomerSurvey.Domain.Entities
         public string? NameAr { get; private set; }
 
         public bool IsActive { get; private set; }
+        public Guid? OriginQuestionGroupId { get; private set; }
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
@@ -40,7 +41,8 @@ namespace CustomerSurvey.Domain.Entities
             Guid branchId,
             string nameEn,
             string? nameAr,
-            Guid createdByApplicationUserId)
+            Guid createdByApplicationUserId,
+            Guid? originQuestionGroupId = null)
         {
             return new QuestionGroup(Guid.NewGuid())
             {
@@ -49,6 +51,7 @@ namespace CustomerSurvey.Domain.Entities
                 NameEn = nameEn.Trim(),
                 NameAr = string.IsNullOrWhiteSpace(nameAr) ? null : nameAr.Trim(),
                 IsActive = true,
+                OriginQuestionGroupId = originQuestionGroupId,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
         }

@@ -16,6 +16,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
     {
         private readonly IWriteReadRepository<AnonymousTemplate> _anonymousTemplateReadRepository;
         private readonly IWriteRepository<AnonymousTemplate> _anonymousTemplateWriteRepository;
+        private readonly IWriteReadRepository<Branch> _branchReadRepository;
         private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
         private readonly IPublicSurveyUrlBuilder _publicSurveyUrlBuilder;
         private readonly IQrCodeGenerator _qrCodeGenerator;
@@ -26,6 +27,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
         public CreateAnonymousTemplateCommandHandler(
             IWriteReadRepository<AnonymousTemplate> anonymousTemplateReadRepository,
             IWriteRepository<AnonymousTemplate> anonymousTemplateWriteRepository,
+            IWriteReadRepository<Branch> branchReadRepository,
             IWriteReadRepository<SuperAdmin> superAdminReadRepository,
             IPublicSurveyUrlBuilder publicSurveyUrlBuilder,
             IQrCodeGenerator qrCodeGenerator,
@@ -38,6 +40,9 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
 
             _anonymousTemplateWriteRepository = anonymousTemplateWriteRepository
                 ?? throw new ArgumentNullException(nameof(anonymousTemplateWriteRepository));
+
+            _branchReadRepository = branchReadRepository
+                ?? throw new ArgumentNullException(nameof(branchReadRepository));
 
             _superAdminReadRepository = superAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
@@ -141,8 +146,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
                 request.CustomInputs,
                 currentApplicationUserId);
 
-            SetPublicAccess(anonymousTemplate);
-
             await _anonymousTemplateWriteRepository.AddAsync(
                 anonymousTemplate,
                 cancellationToken);
@@ -150,7 +153,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result<CreateAnonymousTemplateResponse>.Ok(
-                MapToResponse(anonymousTemplate));
+                MapToResponse(anonymousTemplate, branch: null));
         }
 
         private async Task<Result<CreateAnonymousTemplateResponse>> CreateBranchAnonymousTemplateAsync(
@@ -206,8 +209,12 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+            var branch = await _branchReadRepository.GetByPropertyAsync(
+                x => x.Id == branchId,
+                cancellationToken);
+
             return Result<CreateAnonymousTemplateResponse>.Ok(
-                MapToResponse(anonymousTemplate));
+                MapToResponse(anonymousTemplate, branch));
         }
 
         private void SetPublicAccess(AnonymousTemplate anonymousTemplate)
@@ -249,12 +256,15 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
         }
 
         private static CreateAnonymousTemplateResponse MapToResponse(
-            AnonymousTemplate anonymousTemplate)
+            AnonymousTemplate anonymousTemplate,
+            Branch? branch)
         {
             return new CreateAnonymousTemplateResponse
             {
                 AnonymousTemplateId = anonymousTemplate.Id,
                 BranchId = anonymousTemplate.BranchId,
+                BranchNameEn = branch?.NameEn,
+                BranchNameAr = branch?.NameAr,
                 Scope = anonymousTemplate.Scope,
                 ScopeName = anonymousTemplate.Scope.ToString(),
                 IsGlobal = anonymousTemplate.Scope == AnonymousTemplateScope.Global,
@@ -263,9 +273,9 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
                 Description = anonymousTemplate.Description,
                 ActiveFrom = anonymousTemplate.ActiveFrom,
                 ExpireTo = anonymousTemplate.ExpireTo,
-                Status = anonymousTemplate.Status,
-                StatusName = anonymousTemplate.Status.ToString(),
                 IsActive = anonymousTemplate.IsActive,
+                IsArchived = anonymousTemplate.IsArchived,
+                LogoPath = anonymousTemplate.LogoPath,
                 PublicUrl = anonymousTemplate.PublicUrl,
                 QrCode = anonymousTemplate.QrCode,
                 CreatedByApplicationUserId = anonymousTemplate.CreatedByApplicationUserId,

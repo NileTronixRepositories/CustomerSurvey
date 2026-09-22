@@ -22,11 +22,9 @@ public sealed record SuperAdminTemplatePaginationItemResponse
 
     public string? Description { get; init; }
 
-    public TemplateStatus Status { get; init; }
-
-    public string StatusName => Status.ToString();
-
     public bool IsActive { get; init; }
+
+    public string? LogoPath { get; init; }
 
     public int QuestionsCount { get; init; }
 

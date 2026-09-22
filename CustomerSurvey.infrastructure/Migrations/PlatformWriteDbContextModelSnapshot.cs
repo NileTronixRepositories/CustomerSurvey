@@ -197,6 +197,15 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsArchived")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LogoPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
 
@@ -207,8 +216,10 @@ namespace CustomerSurvey.infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("OriginAnonymousTemplateId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PublicUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("QrCode")
@@ -217,12 +228,27 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<int>("Scope")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("SourceGlobalAnonymousTemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TemplateFamilyId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
+
+                    b.HasIndex("BranchId", "OriginAnonymousTemplateId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_AnonymousTemplate_Branch_OriginAnonymousTemplateId")
+                        .HasFilter("[OriginAnonymousTemplateId] IS NOT NULL AND [BranchId] IS NOT NULL");
+
+                    b.HasIndex("BranchId", "SourceGlobalAnonymousTemplateId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_AnonymousTemplate_Branch_GlobalSource")
+                        .HasFilter("[SourceGlobalAnonymousTemplateId] IS NOT NULL AND [BranchId] IS NOT NULL");
+
+                    b.HasIndex("BranchId", "TemplateFamilyId");
 
                     b.ToTable("AnonymousTemplate");
                 });
@@ -554,6 +580,9 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("OriginQuestionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Scope")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -580,6 +609,11 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.HasIndex("Scope");
 
                     b.HasIndex("BranchId", "IsActive");
+
+                    b.HasIndex("BranchId", "OriginQuestionId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Question_Branch_OriginQuestionId")
+                        .HasFilter("[OriginQuestionId] IS NOT NULL AND [BranchId] IS NOT NULL");
 
                     b.HasIndex("Scope", "IsActive");
 
@@ -619,6 +653,9 @@ namespace CustomerSurvey.infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<Guid?>("OriginQuestionGroupId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Scope")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -639,6 +676,11 @@ namespace CustomerSurvey.infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UX_QuestionGroup_Branch_NameEn")
                         .HasFilter("[Scope] = 1 AND [BranchId] IS NOT NULL");
+
+                    b.HasIndex("BranchId", "OriginQuestionGroupId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_QuestionGroup_Branch_OriginQuestionGroupId")
+                        .HasFilter("[OriginQuestionGroupId] IS NOT NULL AND [BranchId] IS NOT NULL");
 
                     b.HasIndex("Scope", "IsActive");
 
@@ -669,6 +711,9 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("OriginQuestionOptionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("QuestionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -690,6 +735,11 @@ namespace CustomerSurvey.infrastructure.Migrations
 
                     b.HasIndex("QuestionId", "Order")
                         .IsUnique();
+
+                    b.HasIndex("QuestionId", "OriginQuestionOptionId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_QuestionOption_Question_OriginQuestionOptionId")
+                        .HasFilter("[OriginQuestionOptionId] IS NOT NULL");
 
                     b.ToTable("QuestionOption");
                 });
@@ -874,6 +924,10 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<string>("LogoPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
 
@@ -884,12 +938,22 @@ namespace CustomerSurvey.infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("OriginTemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TemplateFamilyId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
+
+                    b.HasIndex("BranchId", "OriginTemplateId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Template_Branch_OriginTemplateId")
+                        .HasFilter("[OriginTemplateId] IS NOT NULL");
+
+                    b.HasIndex("BranchId", "TemplateFamilyId");
 
                     b.ToTable("Template");
                 });

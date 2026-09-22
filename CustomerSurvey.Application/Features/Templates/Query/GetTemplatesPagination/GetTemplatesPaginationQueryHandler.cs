@@ -104,11 +104,13 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
                     {
                         TemplateId = x.TemplateId,
                         BranchId = x.BranchId,
+                        BranchNameEn = x.BranchNameEn,
+                        BranchNameAr = x.BranchNameAr,
                         NameEn = x.NameEn,
                         NameAr = x.NameAr,
                         Description = x.Description,
-                        Status = x.Status.ToString(),
                         IsActive = x.IsActive,
+                        LogoPath = x.LogoPath,
                         QuestionsCount = x.QuestionsCount,
                         CustomInputsCount = x.CustomInputsCount,
                         CreatedBy = creator is null

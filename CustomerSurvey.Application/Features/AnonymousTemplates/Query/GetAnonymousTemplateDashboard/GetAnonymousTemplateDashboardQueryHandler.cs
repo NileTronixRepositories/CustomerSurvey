@@ -325,11 +325,14 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
             .GroupBy(x => new
             {
                 x.AnonymousTemplateId,
+                x.BranchId,
+                x.BranchNameEn,
+                x.BranchNameAr,
                 x.TemplateNameEn,
                 x.TemplateNameAr,
                 x.Scope,
-                x.Status,
                 x.IsActive,
+                x.LogoPath,
                 x.PublicUrl,
                 x.QrCode
             })
@@ -350,13 +353,15 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
                 return new AnonymousTemplateDashboardPerformanceResponse
                 {
                     AnonymousTemplateId = x.Key.AnonymousTemplateId,
+                    BranchId = x.Key.BranchId,
+                    BranchNameEn = x.Key.BranchNameEn,
+                    BranchNameAr = x.Key.BranchNameAr,
                     NameEn = x.Key.TemplateNameEn,
                     NameAr = x.Key.TemplateNameAr,
                     Scope = x.Key.Scope,
                     ScopeName = x.Key.Scope.ToString(),
-                    Status = x.Key.Status,
-                    StatusName = x.Key.Status.ToString(),
                     IsActive = x.Key.IsActive,
+                    LogoPath = x.Key.LogoPath,
                     PublicUrl = x.Key.PublicUrl,
                     QrCode = x.Key.QrCode,
                     ResponsesCount = x.Count(),

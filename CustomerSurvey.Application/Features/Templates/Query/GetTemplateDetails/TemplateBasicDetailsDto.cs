@@ -25,9 +25,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
         public string? Description { get; init; }
 
-        public TemplateStatus Status { get; init; }
-
         public bool IsActive { get; init; }
+
+        public string? LogoPath { get; init; }
 
         public DateTime CreatedOnUtc { get; init; }
 

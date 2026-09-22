@@ -20,11 +20,15 @@ namespace CustomerSurvey.Domain.Entities
         public DateTime ActiveFrom { get; private set; }
         public DateTime? ExpireTo { get; private set; }
 
-        public TemplateStatus Status { get; private set; }
         public bool IsActive { get; private set; }
+        public bool IsArchived { get; private set; }
 
-        public string PublicUrl { get; private set; } = string.Empty;
+        public string? PublicUrl { get; private set; }
         public string? QrCode { get; private set; }
+        public string? LogoPath { get; private set; }
+        public Guid? TemplateFamilyId { get; private set; }
+        public Guid? SourceGlobalAnonymousTemplateId { get; private set; }
+        public Guid? OriginAnonymousTemplateId { get; private set; }
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
@@ -49,7 +53,10 @@ namespace CustomerSurvey.Domain.Entities
             string? description,
             DateTime activeFrom,
             DateTime? expireTo,
-            Guid createdByApplicationUserId)
+            Guid createdByApplicationUserId,
+            Guid? templateFamilyId = null,
+            Guid? sourceGlobalAnonymousTemplateId = null,
+            Guid? originAnonymousTemplateId = null)
         {
             return new AnonymousTemplate
             {
@@ -61,8 +68,11 @@ namespace CustomerSurvey.Domain.Entities
                 Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim(),
                 ActiveFrom = activeFrom,
                 ExpireTo = expireTo,
-                Status = TemplateStatus.Active,
                 IsActive = true,
+                IsArchived = false,
+                TemplateFamilyId = templateFamilyId,
+                SourceGlobalAnonymousTemplateId = sourceGlobalAnonymousTemplateId,
+                OriginAnonymousTemplateId = originAnonymousTemplateId,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
         }
@@ -85,8 +95,11 @@ namespace CustomerSurvey.Domain.Entities
                 Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim(),
                 ActiveFrom = activeFrom,
                 ExpireTo = expireTo,
-                Status = TemplateStatus.Draft,
-                IsActive = true,
+                IsActive = false,
+                IsArchived = false,
+                PublicUrl = null,
+                QrCode = null,
+                LogoPath = null,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
         }
@@ -128,46 +141,41 @@ namespace CustomerSurvey.Domain.Entities
             _customInputs.Add(customInput);
         }
 
-        public void Activate()
+        public void SetLogoPath(string logoPath)
         {
-            if (!IsActive)
-            {
-                return;
-            }
-
-            Status = TemplateStatus.Active;
+            LogoPath = string.IsNullOrWhiteSpace(logoPath) ? null : logoPath.Trim();
         }
 
-        public void ReturnToDraft()
+        public void ClearLogo()
         {
-            if (!IsActive)
-            {
-                return;
-            }
+            LogoPath = null;
+        }
 
-            Status = TemplateStatus.Draft;
+        public void SetTemplateFamily(Guid templateFamilyId)
+        {
+            TemplateFamilyId = templateFamilyId;
         }
 
         public void Deactivate()
         {
-            if (!IsActive)
+            if (IsGlobal)
             {
+                IsArchived = true;
                 return;
             }
 
             IsActive = false;
-            Status = TemplateStatus.Inactive;
         }
 
         public void Restore()
         {
-            if (IsActive)
+            if (IsGlobal)
             {
+                IsArchived = false;
                 return;
             }
 
             IsActive = true;
-            Status = TemplateStatus.Draft;
         }
     }
 }

@@ -32,6 +32,9 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.IsActive)
                 .IsRequired();
 
+            builder.Property(x => x.OriginQuestionGroupId)
+                .IsRequired(false);
+
             builder.Property(x => x.CreatedByApplicationUserId)
                 .IsRequired();
 
@@ -48,6 +51,11 @@ namespace CustomerSurvey.infrastructure.Configurations
                 x.Scope,
                 x.IsActive
             });
+
+            builder.HasIndex(x => new { x.BranchId, x.OriginQuestionGroupId })
+                .IsUnique()
+                .HasDatabaseName("UX_QuestionGroup_Branch_OriginQuestionGroupId")
+                .HasFilter("[OriginQuestionGroupId] IS NOT NULL AND [BranchId] IS NOT NULL");
 
             // Branch groups:
             // Same NameEn is unique only inside same Branch.

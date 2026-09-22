@@ -24,6 +24,7 @@ namespace CustomerSurvey.Domain.Entities
         public int Value { get; private set; }
 
         public bool IsActive { get; private set; } = true;
+        public Guid? OriginQuestionOptionId { get; private set; }
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
@@ -37,7 +38,8 @@ namespace CustomerSurvey.Domain.Entities
            string? textAr,
            int order,
            int value,
-           Guid createdByApplicationUserId)
+           Guid createdByApplicationUserId,
+           Guid? originQuestionOptionId = null)
         {
             return new QuestionOption
             {
@@ -48,6 +50,7 @@ namespace CustomerSurvey.Domain.Entities
                 Order = order,
                 Value = value,
                 IsActive = true,
+                OriginQuestionOptionId = originQuestionOptionId,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
         }

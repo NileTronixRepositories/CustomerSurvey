@@ -16,6 +16,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
     {
         private readonly IWriteReadRepository<AnonymousTemplate> _anonymousTemplateReadRepository;
         private readonly IWriteRepository<AnonymousTemplate> _anonymousTemplateWriteRepository;
+        private readonly IWriteReadRepository<Branch> _branchReadRepository;
         private readonly IWriteReadRepository<AnonymousTemplateCustomInput> _customInputReadRepository;
         private readonly IWriteRepository<AnonymousTemplateCustomInput> _customInputWriteRepository;
         private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
@@ -28,6 +29,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
         public UpdateAnonymousTemplateCommandHandler(
             IWriteReadRepository<AnonymousTemplate> anonymousTemplateReadRepository,
             IWriteRepository<AnonymousTemplate> anonymousTemplateWriteRepository,
+            IWriteReadRepository<Branch> branchReadRepository,
             IWriteReadRepository<AnonymousTemplateCustomInput> customInputReadRepository,
             IWriteRepository<AnonymousTemplateCustomInput> customInputWriteRepository,
             IWriteReadRepository<SuperAdmin> superAdminReadRepository,
@@ -42,6 +44,9 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
 
             _anonymousTemplateWriteRepository = anonymousTemplateWriteRepository
                 ?? throw new ArgumentNullException(nameof(anonymousTemplateWriteRepository));
+
+            _branchReadRepository = branchReadRepository
+                ?? throw new ArgumentNullException(nameof(branchReadRepository));
 
             _customInputReadRepository = customInputReadRepository
                 ?? throw new ArgumentNullException(nameof(customInputReadRepository));
@@ -116,7 +121,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                     Type: ErrorType.NotFound));
             }
 
-            if (!anonymousTemplate.IsActive)
+            if (anonymousTemplate.IsArchived ||
+                (anonymousTemplate.IsBranchScoped &&
+                 !anonymousTemplate.IsActive &&
+                 !anonymousTemplate.SourceGlobalAnonymousTemplateId.HasValue))
             {
                 return Result<UpdateAnonymousTemplateResponse>.Fail(new Error(
                     Code: "AnonymousTemplates.Update.TemplateInactive",
@@ -145,6 +153,25 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                 new GetAnonymousTemplateCustomInputsForUpdateSpec(anonymousTemplate.Id),
                 cancellationToken);
 
+            if (anonymousTemplate.SourceGlobalAnonymousTemplateId.HasValue)
+            {
+                if (!isSuperAdmin)
+                {
+                    return Result<UpdateAnonymousTemplateResponse>.Fail(new Error(
+                        Code: "AnonymousTemplates.Update.ManagedCopyReadOnly",
+                        Message: "Branch actors cannot edit a managed global branch copy.",
+                        Type: ErrorType.Security));
+                }
+
+                if (!ManagedCopyContentMatches(anonymousTemplate, existingCustomInputs, request))
+                {
+                    return Result<UpdateAnonymousTemplateResponse>.Fail(new Error(
+                        Code: "AnonymousTemplates.Update.ManagedCopyProtectedFields",
+                        Message: "Only ActiveFrom and ExpireTo can be changed for a managed global branch copy.",
+                        Type: ErrorType.Validation));
+                }
+            }
+
             var customInputsUpdateResult = ApplyCustomInputsUpdate(
                 anonymousTemplateId: anonymousTemplate.Id,
                 existingCustomInputs: existingCustomInputs,
@@ -164,7 +191,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                 activeFrom: request.ActiveFrom,
                 expireTo: request.ExpireTo);
 
-            RefreshPublicAccess(anonymousTemplate);
+            if (anonymousTemplate.IsBranchScoped)
+            {
+                RefreshPublicAccess(anonymousTemplate);
+            }
 
             _anonymousTemplateWriteRepository.Update(anonymousTemplate);
 
@@ -189,8 +219,18 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                 .OrderBy(x => x.Order)
                 .ToArray();
 
+            Branch? branch = null;
+
+            if (anonymousTemplate.BranchId.HasValue)
+            {
+                var branchId = anonymousTemplate.BranchId.Value;
+                branch = await _branchReadRepository.GetByPropertyAsync(
+                    x => x.Id == branchId,
+                    cancellationToken);
+            }
+
             return Result<UpdateAnonymousTemplateResponse>.Ok(
-                MapToResponse(anonymousTemplate, activeCustomInputs));
+                MapToResponse(anonymousTemplate, activeCustomInputs, branch));
         }
 
         private void RefreshPublicAccess(AnonymousTemplate anonymousTemplate)
@@ -308,14 +348,52 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                 newCustomInputs: newCustomInputs);
         }
 
+        private static bool ManagedCopyContentMatches(
+            AnonymousTemplate template,
+            IReadOnlyCollection<AnonymousTemplateCustomInput> existingCustomInputs,
+            UpdateAnonymousTemplateCommand request)
+        {
+            static string? Normalize(string? value) =>
+                string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+            if (!string.Equals(template.NameEn, request.NameEn.Trim(), StringComparison.Ordinal) ||
+                !string.Equals(template.NameAr, Normalize(request.NameAr), StringComparison.Ordinal) ||
+                !string.Equals(template.Description, Normalize(request.Description), StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            var existing = existingCustomInputs.Where(x => x.IsActive).OrderBy(x => x.Order).ToArray();
+            var requested = (request.CustomInputs ?? Array.Empty<UpdateAnonymousTemplateCustomInputCommandItem>())
+                .OrderBy(x => x.Order)
+                .ToArray();
+
+            return existing.Length == requested.Length && existing.Zip(requested).All(pair =>
+                pair.First.Id == pair.Second.CustomInputId &&
+                pair.First.Name == pair.Second.Name.Trim() &&
+                pair.First.LabelEn == Normalize(pair.Second.LabelEn) &&
+                pair.First.LabelAr == Normalize(pair.Second.LabelAr) &&
+                pair.First.Type == pair.Second.Type &&
+                pair.First.IsRequired == pair.Second.IsRequired &&
+                pair.First.MinLength == pair.Second.MinLength &&
+                pair.First.MaxLength == pair.Second.MaxLength &&
+                pair.First.MinValue == pair.Second.MinValue &&
+                pair.First.MaxValue == pair.Second.MaxValue &&
+                pair.First.StartWith == Normalize(pair.Second.StartWith) &&
+                pair.First.Order == pair.Second.Order);
+        }
+
         private static UpdateAnonymousTemplateResponse MapToResponse(
             AnonymousTemplate anonymousTemplate,
-            IReadOnlyCollection<AnonymousTemplateCustomInput> activeCustomInputs)
+            IReadOnlyCollection<AnonymousTemplateCustomInput> activeCustomInputs,
+            Branch? branch)
         {
             return new UpdateAnonymousTemplateResponse
             {
                 AnonymousTemplateId = anonymousTemplate.Id,
                 BranchId = anonymousTemplate.BranchId,
+                BranchNameEn = branch?.NameEn,
+                BranchNameAr = branch?.NameAr,
                 Scope = anonymousTemplate.Scope,
                 ScopeName = anonymousTemplate.Scope.ToString(),
                 IsGlobal = anonymousTemplate.Scope == AnonymousTemplateScope.Global,
@@ -324,9 +402,9 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                 Description = anonymousTemplate.Description,
                 ActiveFrom = anonymousTemplate.ActiveFrom,
                 ExpireTo = anonymousTemplate.ExpireTo,
-                Status = anonymousTemplate.Status,
-                StatusName = anonymousTemplate.Status.ToString(),
                 IsActive = anonymousTemplate.IsActive,
+                IsArchived = anonymousTemplate.IsArchived,
+                LogoPath = anonymousTemplate.LogoPath,
                 PublicUrl = anonymousTemplate.PublicUrl,
                 QrCode = anonymousTemplate.QrCode,
                 CustomInputs = activeCustomInputs

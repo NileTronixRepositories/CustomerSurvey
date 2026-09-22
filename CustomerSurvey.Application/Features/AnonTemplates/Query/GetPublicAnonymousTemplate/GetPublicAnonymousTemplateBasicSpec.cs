@@ -20,7 +20,10 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
                 Description = x.Description,
                 ActiveFrom = x.ActiveFrom,
                 ExpireTo = x.ExpireTo,
-                IsActive = x.IsActive
+                IsActive = x.IsActive,
+                LogoPath = x.LogoPath,
+                BranchNameEn = x.Branch == null ? null : x.Branch.NameEn,
+                BranchNameAr = x.Branch == null ? null : x.Branch.NameAr
             });
         }
     }

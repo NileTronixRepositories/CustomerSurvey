@@ -8,17 +8,21 @@ internal sealed record AnonymousTemplateDashboardItemDto
 
     public Guid? BranchId { get; init; }
 
+    public string? BranchNameEn { get; init; }
+
+    public string? BranchNameAr { get; init; }
+
     public AnonymousTemplateScope Scope { get; init; }
 
     public string NameEn { get; init; } = string.Empty;
 
     public string? NameAr { get; init; }
 
-    public TemplateStatus Status { get; init; }
-
     public bool IsActive { get; init; }
 
-    public string PublicUrl { get; init; } = string.Empty;
+    public string? LogoPath { get; init; }
+
+    public string? PublicUrl { get; init; }
 
     public string? QrCode { get; init; }
 }

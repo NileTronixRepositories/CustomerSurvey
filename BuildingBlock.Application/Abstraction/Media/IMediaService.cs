@@ -8,6 +8,8 @@ namespace BuildingBlock.Application.Abstraction.Media
 
         Task<List<string>> SaveAsync(List<IFormFile> formFiles, string folderName);
 
+        Task<string> CopyAsync(string relativePath, string folderName);
+
         Task<Stream> GetStream(IFormFile formFile);
 
         void Remove(string filePath);

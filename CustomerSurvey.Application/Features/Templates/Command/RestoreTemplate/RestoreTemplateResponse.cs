@@ -18,8 +18,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.RestoreTemplate
 
         public string? Description { get; init; }
 
-        public string Status { get; init; } = string.Empty;
-
         public bool IsActive { get; init; }
     }
 }

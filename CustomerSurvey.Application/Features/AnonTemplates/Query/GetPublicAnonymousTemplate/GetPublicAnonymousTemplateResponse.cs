@@ -24,6 +24,10 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
 
         public DateTime? ExpireTo { get; init; }
 
+        public string? LogoPath { get; init; }
+
+        public PublicAnonymousTemplateBranchResponse? Branch { get; init; }
+
         public IReadOnlyCollection<PublicAnonymousTemplateCustomInputResponse> CustomInputs { get; init; }
             = Array.Empty<PublicAnonymousTemplateCustomInputResponse>();
 
@@ -35,6 +39,15 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
 
         public IReadOnlyCollection<Guid> RootAnonymousTemplateQuestionIds { get; init; }
             = Array.Empty<Guid>();
+    }
+
+    public sealed record PublicAnonymousTemplateBranchResponse
+    {
+        public Guid BranchId { get; init; }
+
+        public string NameEn { get; init; } = string.Empty;
+
+        public string? NameAr { get; init; }
     }
 
     public sealed record PublicAnonymousTemplateCustomInputResponse

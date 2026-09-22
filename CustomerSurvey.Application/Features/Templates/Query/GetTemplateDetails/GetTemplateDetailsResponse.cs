@@ -21,9 +21,9 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
         public string? Description { get; init; }
 
-        public string Status { get; init; } = string.Empty;
-
         public bool IsActive { get; init; }
+
+        public string? LogoPath { get; init; }
 
         public DateTime ActiveFrom { get; init; }
 

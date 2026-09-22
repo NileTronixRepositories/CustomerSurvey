@@ -8,6 +8,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
 
         public Guid? BranchId { get; init; }
 
+        public string? BranchNameEn { get; init; }
+
+        public string? BranchNameAr { get; init; }
+
         public AnonymousTemplateScope Scope { get; init; }
 
         public string ScopeName { get; init; } = string.Empty;
@@ -24,13 +28,13 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
 
         public DateTime? ExpireTo { get; init; }
 
-        public TemplateStatus Status { get; init; }
-
-        public string StatusName { get; init; } = string.Empty;
-
         public bool IsActive { get; init; }
 
-        public string PublicUrl { get; init; } = string.Empty;
+        public bool IsArchived { get; init; }
+
+        public string? LogoPath { get; init; }
+
+        public string? PublicUrl { get; init; }
 
         public string? QrCode { get; init; }
 

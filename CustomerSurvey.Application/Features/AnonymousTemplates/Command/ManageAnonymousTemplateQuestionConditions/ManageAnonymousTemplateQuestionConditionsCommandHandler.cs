@@ -113,7 +113,23 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.ManageA
                     Type: ErrorType.NotFound));
             }
 
-            if (!anonymousTemplate.IsActive)
+            if (anonymousTemplate.IsArchived)
+            {
+                return Result<ManageAnonymousTemplateQuestionConditionsResponse>.Fail(new Error(
+                    Code: "AnonymousTemplates.ManageConditions.TemplateArchived",
+                    Message: "The global anonymous template must be restored before its structure can be changed.",
+                    Type: ErrorType.Validation));
+            }
+
+            if (anonymousTemplate.SourceGlobalAnonymousTemplateId.HasValue)
+            {
+                return Result<ManageAnonymousTemplateQuestionConditionsResponse>.Fail(new Error(
+                    Code: "AnonymousTemplates.ManageConditions.ManagedCopyReadOnly",
+                    Message: "A managed global branch copy has read-only survey structure.",
+                    Type: ErrorType.Validation));
+            }
+
+            if (anonymousTemplate.IsBranchScoped && !anonymousTemplate.IsActive)
             {
                 return Result<ManageAnonymousTemplateQuestionConditionsResponse>.Fail(new Error(
                     Code: "AnonymousTemplates.ManageConditions.TemplateInactive",

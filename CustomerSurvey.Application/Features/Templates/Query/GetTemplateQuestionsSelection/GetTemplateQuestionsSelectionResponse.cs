@@ -13,9 +13,13 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
 
         public string? TemplateNameAr { get; init; }
 
-        public string Status { get; init; } = string.Empty;
-
         public bool IsActive { get; init; }
+
+        public string? LogoPath { get; init; }
+
+        public string BranchNameEn { get; init; } = string.Empty;
+
+        public string? BranchNameAr { get; init; }
 
         public IReadOnlyCollection<TemplateQuestionsSelectionGroupResponse> Groups { get; init; }
             = Array.Empty<TemplateQuestionsSelectionGroupResponse>();

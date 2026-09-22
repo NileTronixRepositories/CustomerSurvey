@@ -11,8 +11,14 @@ internal sealed class GetAnonymousTemplateForCopyToBranchSpec
     {
         AddCriteria(x => x.Id == anonymousTemplateId);
 
+        AddInclude(x => x.Include(template => template.CustomInputs));
         AddInclude(x => x
-            .Include(template => template.CustomInputs)
-            .Include(template => template.Questions));
+            .Include(template => template.Questions)
+            .ThenInclude(templateQuestion => templateQuestion.Question)
+            .ThenInclude(question => question.Group));
+        AddInclude(x => x
+            .Include(template => template.Questions)
+            .ThenInclude(templateQuestion => templateQuestion.Question)
+            .ThenInclude(question => question.Options));
     }
 }

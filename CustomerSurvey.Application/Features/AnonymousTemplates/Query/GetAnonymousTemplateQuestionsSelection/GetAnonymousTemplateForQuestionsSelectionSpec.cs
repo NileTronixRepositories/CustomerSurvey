@@ -32,7 +32,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                 Scope = x.Scope,
                 NameEn = x.NameEn,
                 NameAr = x.NameAr,
-                IsActive = x.IsActive
+                IsActive = x.IsActive,
+                LogoPath = x.LogoPath,
+                BranchNameEn = x.Branch == null ? null : x.Branch.NameEn,
+                BranchNameAr = x.Branch == null ? null : x.Branch.NameAr
             });
         }
     }

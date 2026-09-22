@@ -16,7 +16,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.DeleteA
 
             if (isSuperAdmin)
             {
-                AddCriteria(x => x.Scope == AnonymousTemplateScope.Global);
+                AddCriteria(x =>
+                    x.Scope == AnonymousTemplateScope.Global ||
+                    (x.Scope == AnonymousTemplateScope.Branch &&
+                     x.SourceGlobalAnonymousTemplateId.HasValue));
             }
             else
             {

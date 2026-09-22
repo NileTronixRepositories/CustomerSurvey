@@ -221,6 +221,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                         BranchNameEn = template.BranchNameEn,
                         BranchNameAr = template.BranchNameAr,
                         BranchCode = template.BranchCode,
+                        LogoPath = template.LogoPath,
 
                         QuestionsCount = questions.Count,
                         CustomInputsCount = customInputs.Count,

@@ -212,7 +212,7 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetMyBranchDetails
                         NameEn = template.NameEn,
                         NameAr = template.NameAr,
                         Description = template.Description,
-                        Status = template.Status.ToString(),
+                        LogoPath = template.LogoPath,
                         QuestionsCount = template.QuestionsCount
                     })
                     .ToArray(),

@@ -36,19 +36,32 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.ExpireTo)
                 .IsRequired(false);
 
-            builder.Property(x => x.Status)
-                .IsRequired()
-                .HasConversion<int>();
-
             builder.Property(x => x.IsActive)
                 .IsRequired()
                 .HasDefaultValue(true);
 
-            builder.Property(x => x.PublicUrl)
+            builder.Property(x => x.IsArchived)
                 .IsRequired()
+                .HasDefaultValue(false);
+
+            builder.Property(x => x.PublicUrl)
+                .IsRequired(false)
                 .HasMaxLength(1000);
 
             builder.Property(x => x.QrCode)
+                .IsRequired(false);
+
+            builder.Property(x => x.LogoPath)
+                .IsRequired(false)
+                .HasMaxLength(500);
+
+            builder.Property(x => x.TemplateFamilyId)
+                .IsRequired(false);
+
+            builder.Property(x => x.SourceGlobalAnonymousTemplateId)
+                .IsRequired(false);
+
+            builder.Property(x => x.OriginAnonymousTemplateId)
                 .IsRequired(false);
 
             builder.Property(x => x.CreatedByApplicationUserId)
@@ -65,6 +78,18 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.HasIndex(x => new { x.BranchId, x.NameEn })
                 .IsUnique()
                 .HasFilter("[Scope] = 1 AND [BranchId] IS NOT NULL");
+
+            builder.HasIndex(x => new { x.BranchId, x.SourceGlobalAnonymousTemplateId })
+                .IsUnique()
+                .HasDatabaseName("UX_AnonymousTemplate_Branch_GlobalSource")
+                .HasFilter("[SourceGlobalAnonymousTemplateId] IS NOT NULL AND [BranchId] IS NOT NULL");
+
+            builder.HasIndex(x => new { x.BranchId, x.OriginAnonymousTemplateId })
+                .IsUnique()
+                .HasDatabaseName("UX_AnonymousTemplate_Branch_OriginAnonymousTemplateId")
+                .HasFilter("[OriginAnonymousTemplateId] IS NOT NULL AND [BranchId] IS NOT NULL");
+
+            builder.HasIndex(x => new { x.BranchId, x.TemplateFamilyId });
 
             builder.HasIndex(x => x.NameEn)
                 .IsUnique()

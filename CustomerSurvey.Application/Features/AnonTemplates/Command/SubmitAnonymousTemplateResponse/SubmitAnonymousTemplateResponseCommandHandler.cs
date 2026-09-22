@@ -211,6 +211,15 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
         {
             var utcNow = DateTime.UtcNow;
 
+            if (anonymousTemplate.Scope != AnonymousTemplateScope.Branch ||
+                !anonymousTemplate.BranchId.HasValue)
+            {
+                return ValidationResult.Fail(new Error(
+                    Code: "AnonTemplates.Submit.GlobalTemplateNotAvailable",
+                    Message: ErrorMessage.SubmitAnonymousTemplateResponse_Template_NotAvailable,
+                    Type: ErrorType.NotFound));
+            }
+
             if (!anonymousTemplate.IsActive)
             {
                 return ValidationResult.Fail(new Error(

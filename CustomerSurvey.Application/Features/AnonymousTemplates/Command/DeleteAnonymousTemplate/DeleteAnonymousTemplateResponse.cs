@@ -14,10 +14,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.DeleteA
 
         public bool IsGlobal { get; init; }
 
-        public TemplateStatus Status { get; init; }
-
-        public string StatusName { get; init; } = string.Empty;
-
         public bool IsActive { get; init; }
+
+        public bool IsArchived { get; init; }
     }
 }

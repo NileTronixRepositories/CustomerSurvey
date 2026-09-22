@@ -28,12 +28,19 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.ExpireTo)
                 .IsRequired(false);
 
-            builder.Property(x => x.Status)
-                .IsRequired();
-
             builder.Property(x => x.IsActive)
                 .IsRequired()
                 .HasDefaultValue(true);
+
+            builder.Property(x => x.LogoPath)
+                .IsRequired(false)
+                .HasMaxLength(500);
+
+            builder.Property(x => x.TemplateFamilyId)
+                .IsRequired(false);
+
+            builder.Property(x => x.OriginTemplateId)
+                .IsRequired(false);
 
             builder.Property(x => x.CreatedByApplicationUserId)
                 .IsRequired();
@@ -42,6 +49,13 @@ namespace CustomerSurvey.infrastructure.Configurations
 
             builder.HasIndex(x => new { x.BranchId, x.NameEn })
                 .IsUnique();
+
+            builder.HasIndex(x => new { x.BranchId, x.OriginTemplateId })
+                .IsUnique()
+                .HasDatabaseName("UX_Template_Branch_OriginTemplateId")
+                .HasFilter("[OriginTemplateId] IS NOT NULL");
+
+            builder.HasIndex(x => new { x.BranchId, x.TemplateFamilyId });
 
             builder.HasIndex(x => new { x.IsActive, x.ActiveFrom });
 
