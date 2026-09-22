@@ -64,6 +64,9 @@ public sealed record BranchTemplatesPdfReportModel
     public IReadOnlyCollection<BranchTemplatesReportResponse> Responses { get; init; }
         = Array.Empty<BranchTemplatesReportResponse>();
 
+    [JsonIgnore]
+    public BranchTemplatesReportGraphics Graphics { get; init; } = new();
+
     public IReadOnlyCollection<BranchTemplatesPdfTemplateSummary> TemplatesWithoutResponses =>
         Templates
             .Where(x => x.TotalResponses == 0)
@@ -337,6 +340,40 @@ public enum BranchTemplatesPdfFlowLineKind
     ConditionalQuestion = 2,
 
     Trigger = 3
+}
+
+public sealed record BranchTemplatesReportGraphics
+{
+    public decimal? OverallSatisfactionPercentage { get; init; }
+
+    public decimal? AverageScoreValue { get; init; }
+
+    public int TotalResponses { get; init; }
+
+    public int ScoredResponses { get; init; }
+
+    public int NotScoredResponses { get; init; }
+
+    public int ExcellentResponses { get; init; }
+
+    public int GoodResponses { get; init; }
+
+    public int AverageResponses { get; init; }
+
+    public int PoorResponses { get; init; }
+
+    public int CriticalResponses { get; init; }
+
+    public int RootQuestions { get; init; }
+
+    public int ConditionalQuestions { get; init; }
+
+    public int IncludedAnswers { get; init; }
+
+    public int NonScoredAnswers { get; init; }
+
+    public int ScoreDistributionTotal =>
+        ExcellentResponses + GoodResponses + AverageResponses + PoorResponses + CriticalResponses;
 }
 
 public sealed record BranchTemplatesReportCustomInputDefinition

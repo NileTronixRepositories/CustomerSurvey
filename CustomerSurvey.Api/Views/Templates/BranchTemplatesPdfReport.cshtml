@@ -1,6 +1,7 @@
 @model CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.BranchTemplatesPdfReportModel
 @using System.Globalization
 @using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport
+@using CustomerSurvey.Domain.Enums
 
 @{
     var ar = Model.IsArabic;
@@ -113,8 +114,90 @@
             "Smiles" => T("Smiles", "وجوه تعبيرية"),
             "Complain" => T("Complaint", "شكوى"),
             "Voice" => T("Voice", "صوت"),
+            "Image" => T("Image", "صورة"),
             _ => type
         };
+
+    string ResponseDate(DateTime value) => value.ToString("dd/MM/yyyy HH:mm");
+
+    string IncludedLabel(bool included) => included ? T("Yes", "نعم") : T("No", "لا");
+
+    string InclusionReason(string reason)
+    {
+        if (!ar)
+        {
+            return reason;
+        }
+
+        return reason switch
+        {
+            "Non-Scorable Question" => "سؤال غير قابل للتقييم",
+            "Root Question" => "سؤال رئيسي",
+            "Selected By Lowest Condition Level" => "تم اختياره حسب أدنى مستوى شرطي",
+            "Root Question - Not Included" => "سؤال رئيسي - غير محتسب",
+            "Conditional Question - Not Included" => "سؤال شرطي - غير محتسب",
+            _ => reason
+        };
+    }
+
+    string BusinessAnswer(BranchTemplatesReportAnswer answer) => answer.QuestionType switch
+    {
+        QuestionType.SingleChoice => answer.DisplaySelectedOption(ar),
+        QuestionType.StarRating => answer.StarRatingValue?.ToString() ?? answer.DisplayValue,
+        QuestionType.Smiles => answer.SmileValue?.ToString() ?? answer.DisplayValue,
+        QuestionType.Complain => answer.TextAnswer ?? answer.DisplayValue,
+        QuestionType.Voice => T("Voice attachment", "مرفق صوتي"),
+        QuestionType.Image => T("Image attachment", "مرفق صورة"),
+        _ => answer.DisplayValue
+    };
+
+    string? MediaValue(BranchTemplatesReportAnswer answer) => answer.QuestionType switch
+    {
+        QuestionType.Voice => answer.VoiceFilePath ?? answer.VoiceFileName,
+        QuestionType.Image => answer.ImageFilePath ?? answer.ImageFileName,
+        _ => null
+    };
+
+    bool IsAbsoluteWebUrl(string? value) =>
+        Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
+        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+
+    string DonutSvg(
+        IReadOnlyList<(decimal Value, string Color)> segments,
+        string primaryText,
+        string secondaryText)
+    {
+        var total = segments.Where(x => x.Value > 0).Sum(x => x.Value);
+        var builder = new System.Text.StringBuilder();
+        builder.Append("<svg class=\"donut\" viewBox=\"0 0 100 100\" role=\"img\">");
+        builder.Append("<circle class=\"donut-track\" cx=\"50\" cy=\"50\" r=\"38\" pathLength=\"100\"></circle>");
+
+        if (total > 0)
+        {
+            decimal offset = 0;
+            foreach (var segment in segments.Where(x => x.Value > 0))
+            {
+                var percentage = segment.Value * 100m / total;
+                builder.Append("<circle class=\"donut-segment\" cx=\"50\" cy=\"50\" r=\"38\" pathLength=\"100\" stroke=\"")
+                    .Append(segment.Color)
+                    .Append("\" stroke-dasharray=\"")
+                    .Append(percentage.ToString("0.####", CultureInfo.InvariantCulture))
+                    .Append(' ')
+                    .Append((100m - percentage).ToString("0.####", CultureInfo.InvariantCulture))
+                    .Append("\" stroke-dashoffset=\"")
+                    .Append((-offset).ToString("0.####", CultureInfo.InvariantCulture))
+                    .Append("\"></circle>");
+                offset += percentage;
+            }
+        }
+
+        builder.Append("<text class=\"donut-center-primary\" x=\"50\" y=\"49\">")
+            .Append(System.Net.WebUtility.HtmlEncode(primaryText))
+            .Append("</text><text class=\"donut-center-secondary\" x=\"50\" y=\"61\">")
+            .Append(System.Net.WebUtility.HtmlEncode(secondaryText))
+            .Append("</text></svg>");
+        return builder.ToString();
+    }
 
     string FlowLineClass(BranchTemplatesPdfFlowLine line) =>
         line.LineKind switch
@@ -274,6 +357,8 @@
             margin: 0 0 10px;
             padding-bottom: 7px;
             border-bottom: 2px solid #d7e3f3;
+            break-after: avoid;
+            page-break-after: avoid;
         }
 
         .section-subtitle {
@@ -350,6 +435,9 @@
             border: 1px solid #dce5f1;
             padding: 7px 8px;
             vertical-align: top;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            white-space: normal;
         }
 
         td {
@@ -549,6 +637,192 @@
         .data-notes li {
             margin-bottom: 6px;
         }
+
+        .graphics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            align-items: start;
+        }
+
+        .chart-card {
+            border: 1px solid #dce5f1;
+            border-radius: 8px;
+            padding: 10px;
+            background: #ffffff;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .chart-card.wide {
+            grid-column: span 2;
+        }
+
+        .chart-title {
+            color: #0b1f3a;
+            font-size: 12px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .chart-body {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .donut {
+            width: 132px;
+            height: 132px;
+            flex: 0 0 132px;
+        }
+
+        .donut-track {
+            fill: none;
+            stroke: #e2e8f0;
+            stroke-width: 14;
+        }
+
+        .donut-segment {
+            fill: none;
+            stroke-width: 14;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .donut-center-primary {
+            fill: #0b1f3a;
+            font-size: 15px;
+            font-weight: 800;
+            text-anchor: middle;
+        }
+
+        .donut-center-secondary {
+            fill: #64748b;
+            font-size: 7px;
+            text-anchor: middle;
+        }
+
+        .chart-legend {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .legend-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin: 4px 0;
+            font-size: 10px;
+        }
+
+        .legend-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-swatch {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+            flex: 0 0 9px;
+        }
+
+        .response-details {
+            margin-top: 18px;
+        }
+
+        .response-block {
+            margin: 0 0 16px;
+        }
+
+        .response-summary {
+            display: inline-block;
+            width: 100%;
+            border-top: 3px solid #1d4ed8;
+            padding-top: 8px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .response-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #0b1f3a;
+            margin-bottom: 8px;
+            break-after: avoid;
+            page-break-after: avoid;
+        }
+
+        .response-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+            margin-bottom: 9px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .response-meta-item {
+            border: 1px solid #dce5f1;
+            border-radius: 5px;
+            padding: 6px 7px;
+        }
+
+        .response-meta-label {
+            color: #64748b;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .response-meta-value {
+            color: #0b1f3a;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .response-subtitle {
+            font-size: 12px;
+            font-weight: 800;
+            color: #0b1f3a;
+            margin: 9px 0 5px;
+            break-after: avoid;
+            page-break-after: avoid;
+        }
+
+        .custom-input-table tr {
+            break-inside: auto;
+            page-break-inside: auto;
+        }
+
+        .custom-input-table {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .answers-table tbody tr {
+            break-inside: auto;
+            page-break-inside: auto;
+        }
+
+        .answers-table td,
+        .answers-table th {
+            font-size: 9px;
+            padding: 5px;
+        }
+
+        .media-link {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -683,6 +957,127 @@
                     </tr>
                 </tbody>
             </table>
+        </section>
+
+        <section class="section graphics-section">
+            <h2 class="section-title">@T("Graphics", "الرسوم البيانية")</h2>
+            <div class="graphics-grid">
+                <div class="chart-card">
+                    <div class="chart-title">@T("Overall Satisfaction", "الرضا العام")</div>
+                    <div class="chart-body">
+                        @if (Model.Graphics.OverallSatisfactionPercentage.HasValue)
+                        {
+                            var satisfaction = Model.Graphics.OverallSatisfactionPercentage.Value;
+                            @Raw(DonutSvg(
+                                new[]
+                                {
+                                    (satisfaction, "#2563EB"),
+                                    (Math.Max(0m, 100m - satisfaction), "#E2E8F0")
+                                },
+                                $"{satisfaction:0.##}%",
+                                T("Satisfaction", "الرضا")))
+                        }
+                        else
+                        {
+                            @Raw(DonutSvg(Array.Empty<(decimal, string)>(), T("No Data", "لا توجد بيانات"), T("Satisfaction", "الرضا")))
+                        }
+                        <div class="chart-legend">
+                            <div class="legend-row"><span>@T("Overall Satisfaction", "الرضا العام")</span><strong>@PercentOrDash(Model.Graphics.OverallSatisfactionPercentage)</strong></div>
+                            <div class="legend-row"><span>@T("Average Score", "متوسط التقييم")</span><strong>@DecimalOrDash(Model.Graphics.AverageScoreValue) / 5</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-title">@T("Responses Scored vs Not Scored", "الردود المقيمة مقابل غير المقيمة")</div>
+                    <div class="chart-body">
+                        @Raw(DonutSvg(
+                            Model.Graphics.TotalResponses > 0
+                                ? new[]
+                                {
+                                    ((decimal)Model.Graphics.ScoredResponses, "#16A34A"),
+                                    ((decimal)Model.Graphics.NotScoredResponses, "#94A3B8")
+                                }
+                                : Array.Empty<(decimal, string)>(),
+                            Model.Graphics.TotalResponses > 0 ? Model.Graphics.TotalResponses.ToString() : T("No Data", "لا توجد بيانات"),
+                            T("Responses", "الردود")))
+                        <div class="chart-legend">
+                            <div class="legend-row"><span class="legend-label"><i class="legend-swatch" style="background:#16A34A"></i>@T("Scored", "مقيمة")</span><strong>@Model.Graphics.ScoredResponses</strong></div>
+                            <div class="legend-row"><span class="legend-label"><i class="legend-swatch" style="background:#94A3B8"></i>@T("Not Scored", "غير مقيمة")</span><strong>@Model.Graphics.NotScoredResponses</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card wide">
+                    <div class="chart-title">@T("Response Score Distribution", "توزيع تقييم الردود")</div>
+                    <div class="chart-body">
+                        @Raw(DonutSvg(
+                            Model.Graphics.ScoreDistributionTotal > 0
+                                ? new[]
+                                {
+                                    ((decimal)Model.Graphics.ExcellentResponses, "#15803D"),
+                                    ((decimal)Model.Graphics.GoodResponses, "#65A30D"),
+                                    ((decimal)Model.Graphics.AverageResponses, "#EAB308"),
+                                    ((decimal)Model.Graphics.PoorResponses, "#F97316"),
+                                    ((decimal)Model.Graphics.CriticalResponses, "#DC2626")
+                                }
+                                : Array.Empty<(decimal, string)>(),
+                            Model.Graphics.ScoreDistributionTotal > 0 ? Model.Graphics.ScoreDistributionTotal.ToString() : T("No Data", "لا توجد بيانات"),
+                            T("Scored Responses", "الردود المقيمة")))
+                        <div class="chart-legend">
+                            <div class="legend-row"><span class="legend-label"><i class="legend-swatch" style="background:#15803D"></i>@T("Excellent", "ممتاز")</span><strong>@Model.Graphics.ExcellentResponses</strong></div>
+                            <div class="legend-row"><span class="legend-label"><i class="legend-swatch" style="background:#65A30D"></i>@T("Good", "جيد")</span><strong>@Model.Graphics.GoodResponses</strong></div>
+                            <div class="legend-row"><span class="legend-label"><i class="legend-swatch" style="background:#EAB308"></i>@T("Average", "متوسط")</span><strong>@Model.Graphics.AverageResponses</strong></div>
+                            <div class="legend-row"><span class="legend-label"><i class="legend-swatch" style="background:#F97316"></i>@T("Poor", "ضعيف")</span><strong>@Model.Graphics.PoorResponses</strong></div>
+                            <div class="legend-row"><span class="legend-label"><i class="legend-swatch" style="background:#DC2626"></i>@T("Critical", "حرج")</span><strong>@Model.Graphics.CriticalResponses</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-title">@T("Root vs Conditional Questions", "الأسئلة الرئيسية مقابل الشرطية")</div>
+                    <div class="chart-body">
+                        @Raw(DonutSvg(
+                            Model.Graphics.RootQuestions + Model.Graphics.ConditionalQuestions > 0
+                                ? new[]
+                                {
+                                    ((decimal)Model.Graphics.RootQuestions, "#2563EB"),
+                                    ((decimal)Model.Graphics.ConditionalQuestions, "#F59E0B")
+                                }
+                                : Array.Empty<(decimal, string)>(),
+                            (Model.Graphics.RootQuestions + Model.Graphics.ConditionalQuestions) > 0
+                                ? (Model.Graphics.RootQuestions + Model.Graphics.ConditionalQuestions).ToString()
+                                : T("No Data", "لا توجد بيانات"),
+                            T("Questions", "الأسئلة")))
+                        <div class="chart-legend">
+                            <div class="legend-row"><span class="legend-label"><i class="legend-swatch" style="background:#2563EB"></i>@T("Root", "رئيسية")</span><strong>@Model.Graphics.RootQuestions</strong></div>
+                            <div class="legend-row"><span class="legend-label"><i class="legend-swatch" style="background:#F59E0B"></i>@T("Conditional", "شرطية")</span><strong>@Model.Graphics.ConditionalQuestions</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-title">@T("Scored vs Non-Scored Answers", "الإجابات المحتسبة مقابل غير المحتسبة")</div>
+                    <div class="chart-body">
+                        @Raw(DonutSvg(
+                            Model.Graphics.IncludedAnswers + Model.Graphics.NonScoredAnswers > 0
+                                ? new[]
+                                {
+                                    ((decimal)Model.Graphics.IncludedAnswers, "#7C3AED"),
+                                    ((decimal)Model.Graphics.NonScoredAnswers, "#CBD5E1")
+                                }
+                                : Array.Empty<(decimal, string)>(),
+                            (Model.Graphics.IncludedAnswers + Model.Graphics.NonScoredAnswers) > 0
+                                ? (Model.Graphics.IncludedAnswers + Model.Graphics.NonScoredAnswers).ToString()
+                                : T("No Data", "لا توجد بيانات"),
+                            T("Answers", "الإجابات")))
+                        <div class="chart-legend">
+                            <div class="legend-row"><span class="legend-label"><i class="legend-swatch" style="background:#7C3AED"></i>@T("Scored Answers", "الإجابات المحتسبة")</span><strong>@Model.Graphics.IncludedAnswers</strong></div>
+                            <div class="legend-row"><span class="legend-label"><i class="legend-swatch" style="background:#CBD5E1"></i>@T("Non-Scored Answers", "الإجابات غير المحتسبة")</span><strong>@Model.Graphics.NonScoredAnswers</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section class="section">
@@ -1028,6 +1423,142 @@
                         </tbody>
                     </table>
                 }
+
+                <div class="response-details">
+                    <h3 class="section-title">@T("Response Details", "تفاصيل الردود")</h3>
+                    @{
+                        var templateResponses = Model.Responses
+                            .Where(x => x.TemplateId == summary.TemplateId && x.TemplateKind == summary.TemplateKind)
+                            .OrderBy(x => x.SubmittedOnUtc)
+                            .ThenBy(x => x.ResponseId)
+                            .ToArray();
+                    }
+
+                    @if (!templateResponses.Any())
+                    {
+                        <div class="note warning">@T("No responses match the selected period.", "لا توجد ردود مطابقة للفترة المحددة.")</div>
+                    }
+                    else
+                    {
+                        @for (var responseIndex = 0; responseIndex < templateResponses.Length; responseIndex++)
+                        {
+                            var response = templateResponses[responseIndex];
+                            var responseNumber = responseIndex + 1;
+
+                            <article class="response-block">
+                                <div class="response-summary">
+                                    <div class="response-heading">
+                                        <span>@T("Response", "الرد") #@responseNumber</span>
+                                        <span class="badge @(response.IsScored ? "score-good" : "score-na")">
+                                            @(response.IsScored ? T("Scored", "مُقيّم") : T("Not Scored", "غير مُقيّم"))
+                                        </span>
+                                    </div>
+
+                                    <div class="response-meta-grid">
+                                        <div class="response-meta-item">
+                                            <div class="response-meta-label">@T("Submitted At", "وقت الإرسال")</div>
+                                            <div class="response-meta-value">@ResponseDate(response.SubmittedOnUtc)</div>
+                                        </div>
+                                        <div class="response-meta-item">
+                                            <div class="response-meta-label">@T("Operator", "المشغل")</div>
+                                            <div class="response-meta-value">@(string.IsNullOrWhiteSpace(response.DisplayOperatorName(ar)) ? "—" : response.DisplayOperatorName(ar))</div>
+                                        </div>
+                                        <div class="response-meta-item">
+                                            <div class="response-meta-label">@T("Scoring Status", "حالة التقييم")</div>
+                                            <div class="response-meta-value">@(response.IsScored ? T("Scored", "مُقيّم") : T("Not Scored", "غير مُقيّم"))</div>
+                                        </div>
+                                        <div class="response-meta-item">
+                                            <div class="response-meta-label">@T("Score", "التقييم")</div>
+                                            <div class="response-meta-value">@(response.IsScored && response.AverageScoreValue.HasValue ? $"{response.AverageScoreValue.Value:0.00} / 5" : "—")</div>
+                                        </div>
+                                        <div class="response-meta-item">
+                                            <div class="response-meta-label">@T("Score Percentage", "نسبة التقييم")</div>
+                                            <div class="response-meta-value">@(response.IsScored && response.ScorePercentage.HasValue ? $"{response.ScorePercentage.Value:0.##}%" : "—")</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="response-subtitle">@T("Custom Inputs", "الحقول المخصصة")</div>
+                                @if (!response.CustomInputs.Any())
+                                {
+                                    <div class="muted">@T("No custom inputs.", "لا توجد حقول مخصصة.")</div>
+                                }
+                                else
+                                {
+                                    @foreach (var customInputChunk in response.CustomInputs
+                                        .OrderBy(x => x.Order ?? int.MaxValue)
+                                        .ThenBy(x => x.Name)
+                                        .Chunk(8))
+                                    {
+                                        <table class="custom-input-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>@T("Custom Input", "الحقل المخصص")</th>
+                                                    <th>@T("Value", "القيمة")</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var customInput in customInputChunk)
+                                                {
+                                                    <tr>
+                                                        <td>@customInput.Name</td>
+                                                        <td>@customInput.DisplayValue</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    }
+                                }
+
+                                <div class="response-subtitle">@T("Answers", "الإجابات")</div>
+                                @if (!response.Answers.Any())
+                                {
+                                    <div class="muted">@T("No answers.", "لا توجد إجابات.")</div>
+                                }
+                                else
+                                {
+                                    <table class="answers-table">
+                                        <thead>
+                                            <tr>
+                                                <th>@T("Question", "السؤال")</th>
+                                                <th>@T("Answer", "الإجابة")</th>
+                                                <th>@T("Option Value", "قيمة الاختيار")</th>
+                                                <th>@T("Score Value", "قيمة التقييم")</th>
+                                                <th>@T("Included In Score", "محتسبة في التقييم")</th>
+                                                <th>@T("Score Inclusion Reason", "سبب الاحتساب")</th>
+                                                <th>@T("Media", "الوسائط")</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var answer in response.Answers.OrderBy(x => x.QuestionOrder ?? int.MaxValue).ThenBy(x => x.QuestionTextEn))
+                                            {
+                                                var media = MediaValue(answer);
+                                                <tr>
+                                                    <td>@answer.DisplayQuestionText(ar)</td>
+                                                    <td>@BusinessAnswer(answer)</td>
+                                                    <td>@(answer.QuestionType == QuestionType.SingleChoice ? ValueOrDash(answer.SelectedOptionValue) : "—")</td>
+                                                    <td>@DecimalOrDash(answer.ScoreValue)</td>
+                                                    <td>@IncludedLabel(answer.IncludedInScore)</td>
+                                                    <td>@InclusionReason(answer.ScoreInclusionReason)</td>
+                                                    <td>
+                                                        @if (IsAbsoluteWebUrl(media))
+                                                        {
+                                                            <a class="media-link" href="@media">@(answer.QuestionType == QuestionType.Voice ? T("Open Voice", "فتح الصوت") : T("View Image", "عرض الصورة"))</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            @(string.IsNullOrWhiteSpace(media) ? "—" : media)
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            </article>
+                        }
+                    }
+                </div>
             </section>
         }
 
