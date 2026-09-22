@@ -19,9 +19,13 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
 
         public string? NameAr { get; init; }
 
-        public TemplateStatus Status { get; init; }
-
         public bool IsActive { get; init; }
+
+        public string? LogoPath { get; init; }
+
+        public string BranchNameEn { get; init; } = string.Empty;
+
+        public string? BranchNameAr { get; init; }
     }
 
     internal sealed class GetTemplateForQuestionsSelectionSpec
@@ -41,8 +45,10 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                 BranchId = x.BranchId,
                 NameEn = x.NameEn,
                 NameAr = x.NameAr,
-                Status = x.Status,
-                IsActive = x.IsActive
+                IsActive = x.IsActive,
+                LogoPath = x.LogoPath,
+                BranchNameEn = x.Branch.NameEn,
+                BranchNameAr = x.Branch.NameAr
             });
         }
     }

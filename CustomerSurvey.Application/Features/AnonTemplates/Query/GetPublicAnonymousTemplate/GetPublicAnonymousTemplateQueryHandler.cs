@@ -57,6 +57,15 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
 
             var utcNow = DateTime.UtcNow;
 
+            if (anonymousTemplate.Scope != AnonymousTemplateScope.Branch ||
+                !anonymousTemplate.BranchId.HasValue)
+            {
+                return Result<GetPublicAnonymousTemplateResponse>.Fail(new Error(
+                    Code: "AnonTemplates.GetPublic.GlobalTemplateNotAvailable",
+                    Message: ErrorMessage.GetPublicAnonymousTemplate_Template_NotAvailable,
+                    Type: ErrorType.NotFound));
+            }
+
             if (!anonymousTemplate.IsActive)
             {
                 return Result<GetPublicAnonymousTemplateResponse>.Fail(new Error(
@@ -177,6 +186,15 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
                 Description = anonymousTemplate.Description,
                 ActiveFrom = anonymousTemplate.ActiveFrom,
                 ExpireTo = anonymousTemplate.ExpireTo,
+                LogoPath = anonymousTemplate.LogoPath,
+                Branch = anonymousTemplate.BranchId.HasValue
+                    ? new PublicAnonymousTemplateBranchResponse
+                    {
+                        BranchId = anonymousTemplate.BranchId.Value,
+                        NameEn = anonymousTemplate.BranchNameEn!,
+                        NameAr = anonymousTemplate.BranchNameAr
+                    }
+                    : null,
                 CustomInputs = customInputs
                     .OrderBy(x => x.Order)
                     .ToArray(),

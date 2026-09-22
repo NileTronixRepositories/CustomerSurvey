@@ -12,15 +12,19 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesPagina
 
         public Guid BranchId { get; init; }
 
+        public string BranchNameEn { get; init; } = string.Empty;
+
+        public string? BranchNameAr { get; init; }
+
         public string NameEn { get; init; } = string.Empty;
 
         public string? NameAr { get; init; }
 
         public string? Description { get; init; }
 
-        public string Status { get; init; } = string.Empty;
-
         public bool IsActive { get; init; }
+
+        public string? LogoPath { get; init; }
 
         public int QuestionsCount { get; init; }
 

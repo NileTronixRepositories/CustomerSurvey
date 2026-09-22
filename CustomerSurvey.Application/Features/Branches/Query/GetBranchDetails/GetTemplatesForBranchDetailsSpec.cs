@@ -19,7 +19,7 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchDetails
 
         public string? Description { get; init; }
 
-        public TemplateStatus Status { get; init; }
+        public string? LogoPath { get; init; }
 
         public int QuestionsCount { get; init; }
     }
@@ -39,7 +39,7 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchDetails
                 NameEn = x.NameEn,
                 NameAr = x.NameAr,
                 Description = x.Description,
-                Status = x.Status,
+                LogoPath = x.LogoPath,
                 QuestionsCount = x.TemplateQuestions.Count
             });
         }

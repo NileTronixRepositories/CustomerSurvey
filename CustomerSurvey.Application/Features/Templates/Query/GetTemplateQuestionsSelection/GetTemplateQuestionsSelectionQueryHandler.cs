@@ -207,8 +207,10 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                 BranchId = template.BranchId,
                 TemplateNameEn = template.NameEn,
                 TemplateNameAr = template.NameAr,
-                Status = template.Status.ToString(),
                 IsActive = template.IsActive,
+                LogoPath = template.LogoPath,
+                BranchNameEn = template.BranchNameEn,
+                BranchNameAr = template.BranchNameAr,
 
                 Groups = groups
                     .Select(group => new TemplateQuestionsSelectionGroupResponse

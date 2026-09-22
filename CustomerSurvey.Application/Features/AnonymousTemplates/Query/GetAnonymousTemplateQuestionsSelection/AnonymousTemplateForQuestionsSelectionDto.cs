@@ -15,5 +15,11 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
         public string? NameAr { get; init; }
 
         public bool IsActive { get; init; }
+
+        public string? LogoPath { get; init; }
+
+        public string? BranchNameEn { get; init; }
+
+        public string? BranchNameAr { get; init; }
     }
 }

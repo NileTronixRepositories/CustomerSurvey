@@ -1134,7 +1134,6 @@
                             <th>@T("Conditional Questions", "أسئلة شرطية")</th>
                             <th>@T("Average Value", "متوسط القيمة")</th>
                             <th>@T("Satisfaction %", "نسبة الرضا")</th>
-                            <th>@T("Status", "الحالة")</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1152,7 +1151,6 @@
                                 <td>@item.ConditionalQuestions</td>
                                 <td>@DecimalOrDash(item.AverageScoreValue)</td>
                                 <td>@PercentOrDash(item.AverageScorePercentage)</td>
-                                <td>@item.Status</td>
                             </tr>
                         }
                     </tbody>
@@ -1255,7 +1253,6 @@
                         <tr>
                             <th>@T("Template", "النموذج")</th>
                             <th>@T("Kind", "النوع")</th>
-                            <th>@T("Status", "الحالة")</th>
                             <th>@T("Active From", "يبدأ من")</th>
                             <th>@T("Expire To", "ينتهي في")</th>
                         </tr>
@@ -1266,7 +1263,6 @@
                             <tr>
                                 <td>@item.DisplayName(ar)</td>
                                 <td>@item.DisplayKind(ar)</td>
-                                <td>@item.Status</td>
                                 <td>@DateOrDash(item.ActiveFrom)</td>
                                 <td>@DateOrDash(item.ExpireTo)</td>
                             </tr>
@@ -1285,7 +1281,6 @@
                     <h2>@summary.DisplayName(ar)</h2>
                     <div class="template-meta">
                         <span class="badge @(summary.TemplateKind == ReportTemplateKind.Normal ? "badge-authorized" : "badge-anonymous")">@summary.DisplayKind(ar)</span>
-                        <span class="badge score-na">@summary.Status</span>
                         <span class="badge score-na">@T("Responses", "الردود"): @summary.TotalResponses</span>
                         <span class="badge @ScoreStatusClass(summary.AverageScorePercentage)">
                             @T("Satisfaction", "الرضا"): @PercentOrDash(summary.AverageScorePercentage)

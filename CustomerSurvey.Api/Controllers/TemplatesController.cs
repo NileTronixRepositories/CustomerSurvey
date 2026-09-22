@@ -3,11 +3,14 @@ using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Api.Contracts.Templates;
 using CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsToTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.CopyTemplateToBranch;
+using CustomerSurvey.Application.Features.Templates.Command.CopyTemplateAsAnonymous;
 using CustomerSurvey.Application.Features.Templates.Command.CreateTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.DeleteTemplate;
+using CustomerSurvey.Application.Features.Templates.Command.DeleteTemplateLogo;
 using CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQuestionConditions;
 using CustomerSurvey.Application.Features.Templates.Command.RestoreTemplate;
 using CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate;
+using CustomerSurvey.Application.Features.Templates.Command.UpdateTemplateLogo;
 using CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails;
 using CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestionsSelection;
 using CustomerSurvey.Application.Features.Templates.Query.GetSuperAdminTemplatesPagination;
@@ -266,6 +269,51 @@ namespace CustomerSurvey.Api.Controllers
             };
 
             var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPost("{templateId:guid}/copy-as-anonymous")]
+        [Permission("Templates.CopyBetweenTypes")]
+        public async Task<IActionResult> CopyAsAnonymous(
+            Guid templateId,
+            CancellationToken cancellationToken)
+        {
+            var result = await sender.Send(new CopyTemplateAsAnonymousCommand
+            {
+                TemplateId = templateId
+            }, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("{templateId:guid}/logo")]
+        [Consumes("multipart/form-data")]
+        [Permission("Templates.Update")]
+        public async Task<IActionResult> UpdateLogo(
+            Guid templateId,
+            [FromForm] UpdateTemplateLogoRequest request,
+            CancellationToken cancellationToken)
+        {
+            var result = await sender.Send(new UpdateTemplateLogoCommand
+            {
+                TemplateId = templateId,
+                Logo = request.Logo
+            }, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpDelete("{templateId:guid}/logo")]
+        [Permission("Templates.Update")]
+        public async Task<IActionResult> DeleteLogo(
+            Guid templateId,
+            CancellationToken cancellationToken)
+        {
+            var result = await sender.Send(new DeleteTemplateLogoCommand
+            {
+                TemplateId = templateId
+            }, cancellationToken);
 
             return result.ToIActionResult();
         }

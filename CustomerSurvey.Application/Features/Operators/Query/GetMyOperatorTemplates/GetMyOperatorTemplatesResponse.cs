@@ -38,6 +38,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public string BranchCode { get; init; } = string.Empty;
 
+        public string? LogoPath { get; init; }
+
         public int QuestionsCount { get; init; }
 
         public int CustomInputsCount { get; init; }

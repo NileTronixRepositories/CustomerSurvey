@@ -104,7 +104,7 @@ namespace CustomerSurvey.Application.Features.Branches.Query.GetBranchDetails
 
         public string? Description { get; init; }
 
-        public string Status { get; init; } = string.Empty;
+        public string? LogoPath { get; init; }
 
         public int QuestionsCount { get; init; }
     }

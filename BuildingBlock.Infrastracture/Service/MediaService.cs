@@ -113,6 +113,31 @@ namespace BuildingBlock.Infrastracture.Service
             return filePaths;
         }
 
+        public async Task<string> CopyAsync(string relativePath, string folderName)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(relativePath);
+
+            var normalizedRelativePath = relativePath
+                .Replace('\\', '/')
+                .TrimStart('/');
+
+            var sourcePath = Path.Combine("./wwwroot", normalizedRelativePath);
+
+            if (!File.Exists(sourcePath))
+            {
+                throw new FileNotFoundException("The source media file was not found.", sourcePath);
+            }
+
+            var targetPath = GetUniqueFilePath(folderName, Path.GetExtension(sourcePath));
+            Directory.CreateDirectory(Path.GetDirectoryName(targetPath)!);
+
+            await using var source = new FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            await using var target = new FileStream(targetPath, FileMode.CreateNew, FileAccess.Write, FileShare.None);
+            await source.CopyToAsync(target);
+
+            return Path.GetFileName(targetPath);
+        }
+
         public void Remove(string filePath)
         {
             if (File.Exists(filePath))

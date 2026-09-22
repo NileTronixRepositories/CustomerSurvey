@@ -95,7 +95,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.DeleteA
                     Type: ErrorType.NotFound));
             }
 
-            if (!anonymousTemplate.IsActive)
+            if ((anonymousTemplate.IsGlobal && anonymousTemplate.IsArchived) ||
+                (anonymousTemplate.IsBranchScoped && !anonymousTemplate.IsActive))
             {
                 return Result<DeleteAnonymousTemplateResponse>.Fail(new Error(
                     Code: "AnonymousTemplates.Delete.TemplateAlreadyInactive",
@@ -123,9 +124,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.DeleteA
                 Scope = anonymousTemplate.Scope,
                 ScopeName = anonymousTemplate.Scope.ToString(),
                 IsGlobal = anonymousTemplate.Scope == AnonymousTemplateScope.Global,
-                Status = anonymousTemplate.Status,
-                StatusName = anonymousTemplate.Status.ToString(),
-                IsActive = anonymousTemplate.IsActive
+                IsActive = anonymousTemplate.IsActive,
+                IsArchived = anonymousTemplate.IsArchived
             };
         }
     }

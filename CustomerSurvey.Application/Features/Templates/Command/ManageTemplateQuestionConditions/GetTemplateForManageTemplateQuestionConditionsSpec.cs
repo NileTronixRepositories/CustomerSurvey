@@ -17,7 +17,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQu
 
         public bool IsActive { get; init; }
 
-        public TemplateStatus Status { get; init; }
     }
 
     internal sealed class GetTemplateForManageTemplateQuestionConditionsSpec
@@ -35,8 +34,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQu
             {
                 TemplateId = x.Id,
                 BranchId = x.BranchId,
-                IsActive = x.IsActive,
-                Status = x.Status
+                IsActive = x.IsActive
             });
         }
     }

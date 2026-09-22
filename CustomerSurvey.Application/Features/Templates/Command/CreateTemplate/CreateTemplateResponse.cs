@@ -13,6 +13,10 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
 
         public Guid BranchId { get; init; }
 
+        public string BranchNameEn { get; init; } = string.Empty;
+
+        public string? BranchNameAr { get; init; }
+
         public string NameEn { get; init; } = string.Empty;
 
         public string? NameAr { get; init; }
@@ -23,9 +27,9 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
 
         public DateTime? ExpireTo { get; init; }
 
-        public string Status { get; init; } = string.Empty;
-
         public bool IsActive { get; init; }
+
+        public string? LogoPath { get; init; }
 
         public IReadOnlyCollection<CreateTemplateCustomInputResponse> CustomInputs { get; init; }
             = Array.Empty<CreateTemplateCustomInputResponse>();

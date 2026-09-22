@@ -19,12 +19,18 @@ internal sealed class CopyTemplateToBranchCommandHandler
     private readonly IWriteReadRepository<AnonymousTemplate> _anonymousTemplateReadRepository;
     private readonly IWriteReadRepository<TemplateQuestionCondition> _templateConditionReadRepository;
     private readonly IWriteReadRepository<AnonymousTemplateQuestionCondition> _anonymousTemplateConditionReadRepository;
+    private readonly IWriteReadRepository<QuestionGroup> _questionGroupReadRepository;
+    private readonly IWriteReadRepository<Question> _questionReadRepository;
+    private readonly IWriteReadRepository<QuestionOption> _questionOptionReadRepository;
     private readonly IWriteRepository<Template> _templateWriteRepository;
     private readonly IWriteRepository<TemplateQuestion> _templateQuestionWriteRepository;
     private readonly IWriteRepository<TemplateQuestionCondition> _templateConditionWriteRepository;
     private readonly IWriteRepository<AnonymousTemplate> _anonymousTemplateWriteRepository;
     private readonly IWriteRepository<AnonymousTemplateQuestion> _anonymousTemplateQuestionWriteRepository;
     private readonly IWriteRepository<AnonymousTemplateQuestionCondition> _anonymousTemplateConditionWriteRepository;
+    private readonly IWriteRepository<QuestionGroup> _questionGroupWriteRepository;
+    private readonly IWriteRepository<Question> _questionWriteRepository;
+    private readonly IWriteRepository<QuestionOption> _questionOptionWriteRepository;
     private readonly IPublicSurveyUrlBuilder _publicSurveyUrlBuilder;
     private readonly IQrCodeGenerator _qrCodeGenerator;
     private readonly ICurrentUser _currentUser;
@@ -37,12 +43,18 @@ internal sealed class CopyTemplateToBranchCommandHandler
         IWriteReadRepository<AnonymousTemplate> anonymousTemplateReadRepository,
         IWriteReadRepository<TemplateQuestionCondition> templateConditionReadRepository,
         IWriteReadRepository<AnonymousTemplateQuestionCondition> anonymousTemplateConditionReadRepository,
+        IWriteReadRepository<QuestionGroup> questionGroupReadRepository,
+        IWriteReadRepository<Question> questionReadRepository,
+        IWriteReadRepository<QuestionOption> questionOptionReadRepository,
         IWriteRepository<Template> templateWriteRepository,
         IWriteRepository<TemplateQuestion> templateQuestionWriteRepository,
         IWriteRepository<TemplateQuestionCondition> templateConditionWriteRepository,
         IWriteRepository<AnonymousTemplate> anonymousTemplateWriteRepository,
         IWriteRepository<AnonymousTemplateQuestion> anonymousTemplateQuestionWriteRepository,
         IWriteRepository<AnonymousTemplateQuestionCondition> anonymousTemplateConditionWriteRepository,
+        IWriteRepository<QuestionGroup> questionGroupWriteRepository,
+        IWriteRepository<Question> questionWriteRepository,
+        IWriteRepository<QuestionOption> questionOptionWriteRepository,
         IPublicSurveyUrlBuilder publicSurveyUrlBuilder,
         IQrCodeGenerator qrCodeGenerator,
         ICurrentUser currentUser,
@@ -60,6 +72,12 @@ internal sealed class CopyTemplateToBranchCommandHandler
             ?? throw new ArgumentNullException(nameof(templateConditionReadRepository));
         _anonymousTemplateConditionReadRepository = anonymousTemplateConditionReadRepository
             ?? throw new ArgumentNullException(nameof(anonymousTemplateConditionReadRepository));
+        _questionGroupReadRepository = questionGroupReadRepository
+            ?? throw new ArgumentNullException(nameof(questionGroupReadRepository));
+        _questionReadRepository = questionReadRepository
+            ?? throw new ArgumentNullException(nameof(questionReadRepository));
+        _questionOptionReadRepository = questionOptionReadRepository
+            ?? throw new ArgumentNullException(nameof(questionOptionReadRepository));
         _templateWriteRepository = templateWriteRepository
             ?? throw new ArgumentNullException(nameof(templateWriteRepository));
         _templateQuestionWriteRepository = templateQuestionWriteRepository
@@ -72,6 +90,12 @@ internal sealed class CopyTemplateToBranchCommandHandler
             ?? throw new ArgumentNullException(nameof(anonymousTemplateQuestionWriteRepository));
         _anonymousTemplateConditionWriteRepository = anonymousTemplateConditionWriteRepository
             ?? throw new ArgumentNullException(nameof(anonymousTemplateConditionWriteRepository));
+        _questionGroupWriteRepository = questionGroupWriteRepository
+            ?? throw new ArgumentNullException(nameof(questionGroupWriteRepository));
+        _questionWriteRepository = questionWriteRepository
+            ?? throw new ArgumentNullException(nameof(questionWriteRepository));
+        _questionOptionWriteRepository = questionOptionWriteRepository
+            ?? throw new ArgumentNullException(nameof(questionOptionWriteRepository));
         _publicSurveyUrlBuilder = publicSurveyUrlBuilder
             ?? throw new ArgumentNullException(nameof(publicSurveyUrlBuilder));
         _qrCodeGenerator = qrCodeGenerator
@@ -108,11 +132,11 @@ internal sealed class CopyTemplateToBranchCommandHandler
                 Type: ErrorType.Security));
         }
 
-        var branchExists = await _branchReadRepository.AnyAsync(
-            x => x.Id == request.BranchId,
+        var targetBranch = await _branchReadRepository.GetByPropertyAsync(
+            x => x.Id == request.BranchId && x.IsActive,
             cancellationToken);
 
-        if (!branchExists)
+        if (targetBranch is null)
         {
             return Result<CopyTemplateToBranchResponse>.Fail(new Error(
                 Code: "Templates.CopyToBranch.BranchNotFound",
@@ -140,7 +164,7 @@ internal sealed class CopyTemplateToBranchCommandHandler
         {
             return await CopyAuthorizedTemplateAsync(
                 sourceTemplate,
-                request.BranchId,
+                targetBranch,
                 currentApplicationUserId,
                 cancellationToken);
         }
@@ -149,7 +173,7 @@ internal sealed class CopyTemplateToBranchCommandHandler
         {
             return await CopyAnonymousTemplateAsync(
                 sourceAnonymousTemplate,
-                request.BranchId,
+                targetBranch,
                 currentApplicationUserId,
                 cancellationToken);
         }
@@ -162,10 +186,40 @@ internal sealed class CopyTemplateToBranchCommandHandler
 
     private async Task<Result<CopyTemplateToBranchResponse>> CopyAuthorizedTemplateAsync(
         Template sourceTemplate,
-        Guid targetBranchId,
+        Branch targetBranch,
         Guid currentApplicationUserId,
         CancellationToken cancellationToken)
     {
+        var targetBranchId = targetBranch.Id;
+        if (!sourceTemplate.IsActive)
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(new Error(
+                "Templates.CopyToBranch.SourceInactive",
+                "The source template is inactive.",
+                ErrorType.Validation));
+        }
+
+        if (sourceTemplate.BranchId == targetBranchId)
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(new Error(
+                "Templates.CopyToBranch.SameBranch",
+                "Source and target branches must be different.",
+                ErrorType.Validation));
+        }
+
+        var rootOriginId = sourceTemplate.OriginTemplateId ?? sourceTemplate.Id;
+        var duplicateOrigin = await _templateReadRepository.AnyAsync(
+            x => x.BranchId == targetBranchId && x.OriginTemplateId == rootOriginId,
+            cancellationToken);
+
+        if (duplicateOrigin)
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(new Error(
+                "Templates.CopyToBranch.DuplicateOrigin",
+                "The same logical template was already copied to the target branch.",
+                ErrorType.Conflict));
+        }
+
         var normalizedNameEn = sourceTemplate.NameEn.Trim();
 
         var alreadyExists = await _templateReadRepository.AnyAsync(
@@ -187,9 +241,8 @@ internal sealed class CopyTemplateToBranchCommandHandler
             description: sourceTemplate.Description,
             activeFrom: sourceTemplate.ActiveFrom,
             expireTo: sourceTemplate.ExpireTo,
-            createdByApplicationUserId: currentApplicationUserId);
-
-        ApplyTemplateStatus(copiedTemplate, sourceTemplate.Status);
+            createdByApplicationUserId: currentApplicationUserId,
+            originTemplateId: rootOriginId);
 
         foreach (var sourceInput in sourceTemplate.CustomInputs.OrderBy(x => x.Order))
         {
@@ -216,12 +269,40 @@ internal sealed class CopyTemplateToBranchCommandHandler
 
         var copiedQuestions = new List<TemplateQuestion>();
         var templateQuestionIdMap = new Dictionary<Guid, Guid>();
+        var optionIdMap = new Dictionary<Guid, Guid>();
+        var newGroups = new List<QuestionGroup>();
+        var newCatalogQuestions = new List<Question>();
+        var newOptions = new List<QuestionOption>();
+        var groupCache = new Dictionary<Guid, QuestionGroup>();
+        var questionCache = new Dictionary<Guid, Question>();
+
+        var groupConflict = await ValidateQuestionGroupLineageConflictsAsync(
+            sourceTemplate.TemplateQuestions.Select(x => x.Question),
+            targetBranchId,
+            cancellationToken);
+
+        if (groupConflict is not null)
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(groupConflict);
+        }
 
         foreach (var sourceQuestion in sourceTemplate.TemplateQuestions.OrderBy(x => x.Order))
         {
+            var targetQuestion = await ResolveTargetQuestionAsync(
+                sourceQuestion.Question,
+                targetBranchId,
+                currentApplicationUserId,
+                groupCache,
+                questionCache,
+                optionIdMap,
+                newGroups,
+                newCatalogQuestions,
+                newOptions,
+                cancellationToken);
+
             var copiedQuestion = TemplateQuestion.Create(
                 templateId: copiedTemplate.Id,
-                questionId: sourceQuestion.QuestionId,
+                questionId: targetQuestion.Id,
                 order: sourceQuestion.Order,
                 createdByApplicationUserId: currentApplicationUserId);
 
@@ -233,6 +314,15 @@ internal sealed class CopyTemplateToBranchCommandHandler
             new GetTemplateQuestionConditionsForCopyToBranchSpec(sourceTemplate.Id),
             cancellationToken);
 
+        if (sourceConditions.Any(x => x.SelectedQuestionOptionId.HasValue &&
+                                      !optionIdMap.ContainsKey(x.SelectedQuestionOptionId.Value)))
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(new Error(
+                "Templates.CopyToBranch.QuestionOptionLineageConflict",
+                "A required target question option lineage could not be resolved.",
+                ErrorType.Conflict));
+        }
+
         var copiedConditions = sourceConditions
             .Where(x =>
                 templateQuestionIdMap.ContainsKey(x.ParentTemplateQuestionId) &&
@@ -241,8 +331,22 @@ internal sealed class CopyTemplateToBranchCommandHandler
                 copiedTemplate.Id,
                 x,
                 templateQuestionIdMap,
+                optionIdMap,
                 currentApplicationUserId))
             .ToList();
+
+        if (newGroups.Count > 0)
+        {
+            await _questionGroupWriteRepository.AddRangeAsync(newGroups, cancellationToken);
+        }
+        if (newCatalogQuestions.Count > 0)
+        {
+            await _questionWriteRepository.AddRangeAsync(newCatalogQuestions, cancellationToken);
+        }
+        if (newOptions.Count > 0)
+        {
+            await _questionOptionWriteRepository.AddRangeAsync(newOptions, cancellationToken);
+        }
 
         await _templateWriteRepository.AddAsync(copiedTemplate, cancellationToken);
 
@@ -267,14 +371,16 @@ internal sealed class CopyTemplateToBranchCommandHandler
             SourceTemplateId = sourceTemplate.Id,
             TemplateId = copiedTemplate.Id,
             BranchId = copiedTemplate.BranchId,
+            BranchNameEn = targetBranch.NameEn,
+            BranchNameAr = targetBranch.NameAr,
             TemplateKind = TemplateCatalogKind.Authorized,
             NameEn = copiedTemplate.NameEn,
             NameAr = copiedTemplate.NameAr,
             Description = copiedTemplate.Description,
             ActiveFrom = copiedTemplate.ActiveFrom,
             ExpireTo = copiedTemplate.ExpireTo,
-            Status = copiedTemplate.Status.ToString(),
             IsActive = copiedTemplate.IsActive,
+            LogoPath = null,
             QuestionsCount = copiedQuestions.Count,
             ConditionsCount = copiedConditions.Count,
             CustomInputsCount = copiedTemplate.CustomInputs.Count,
@@ -285,10 +391,56 @@ internal sealed class CopyTemplateToBranchCommandHandler
 
     private async Task<Result<CopyTemplateToBranchResponse>> CopyAnonymousTemplateAsync(
         AnonymousTemplate sourceTemplate,
-        Guid targetBranchId,
+        Branch targetBranch,
         Guid currentApplicationUserId,
         CancellationToken cancellationToken)
     {
+        var targetBranchId = targetBranch.Id;
+        if (!sourceTemplate.IsBranchScoped)
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(new Error(
+                "Templates.CopyToBranch.SourceMustBeBranchScoped",
+                "The source anonymous template must be branch scoped.",
+                ErrorType.Validation));
+        }
+
+        if (!sourceTemplate.IsActive)
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(new Error(
+                "Templates.CopyToBranch.SourceInactive",
+                "The source anonymous template is inactive.",
+                ErrorType.Validation));
+        }
+
+        if (sourceTemplate.SourceGlobalAnonymousTemplateId.HasValue)
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(new Error(
+                "Templates.CopyToBranch.ManagedGlobalCopyForbidden",
+                "Managed global branch copies must be distributed from their global source.",
+                ErrorType.Validation));
+        }
+
+        if (sourceTemplate.BranchId == targetBranchId)
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(new Error(
+                "Templates.CopyToBranch.SameBranch",
+                "Source and target branches must be different.",
+                ErrorType.Validation));
+        }
+
+        var rootOriginId = sourceTemplate.OriginAnonymousTemplateId ?? sourceTemplate.Id;
+        var duplicateOrigin = await _anonymousTemplateReadRepository.AnyAsync(
+            x => x.BranchId == targetBranchId && x.OriginAnonymousTemplateId == rootOriginId,
+            cancellationToken);
+
+        if (duplicateOrigin)
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(new Error(
+                "Templates.CopyToBranch.DuplicateOrigin",
+                "The same logical anonymous template was already copied to the target branch.",
+                ErrorType.Conflict));
+        }
+
         var normalizedNameEn = sourceTemplate.NameEn.Trim();
 
         var alreadyExists = await _anonymousTemplateReadRepository.AnyAsync(
@@ -312,9 +464,8 @@ internal sealed class CopyTemplateToBranchCommandHandler
             description: sourceTemplate.Description,
             activeFrom: sourceTemplate.ActiveFrom,
             expireTo: sourceTemplate.ExpireTo,
-            createdByApplicationUserId: currentApplicationUserId);
-
-        ApplyAnonymousTemplateStatus(copiedTemplate, sourceTemplate.Status);
+            createdByApplicationUserId: currentApplicationUserId,
+            originAnonymousTemplateId: rootOriginId);
 
         foreach (var sourceInput in sourceTemplate.CustomInputs.OrderBy(x => x.Order))
         {
@@ -348,12 +499,40 @@ internal sealed class CopyTemplateToBranchCommandHandler
 
         var copiedQuestions = new List<AnonymousTemplateQuestion>();
         var templateQuestionIdMap = new Dictionary<Guid, Guid>();
+        var optionIdMap = new Dictionary<Guid, Guid>();
+        var newGroups = new List<QuestionGroup>();
+        var newCatalogQuestions = new List<Question>();
+        var newOptions = new List<QuestionOption>();
+        var groupCache = new Dictionary<Guid, QuestionGroup>();
+        var questionCache = new Dictionary<Guid, Question>();
+
+        var groupConflict = await ValidateQuestionGroupLineageConflictsAsync(
+            sourceTemplate.Questions.Select(x => x.Question),
+            targetBranchId,
+            cancellationToken);
+
+        if (groupConflict is not null)
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(groupConflict);
+        }
 
         foreach (var sourceQuestion in sourceTemplate.Questions.OrderBy(x => x.Order))
         {
+            var targetQuestion = await ResolveTargetQuestionAsync(
+                sourceQuestion.Question,
+                targetBranchId,
+                currentApplicationUserId,
+                groupCache,
+                questionCache,
+                optionIdMap,
+                newGroups,
+                newCatalogQuestions,
+                newOptions,
+                cancellationToken);
+
             var copiedQuestion = AnonymousTemplateQuestion.Create(
                 anonymousTemplateId: copiedTemplate.Id,
-                questionId: sourceQuestion.QuestionId,
+                questionId: targetQuestion.Id,
                 order: sourceQuestion.Order,
                 createdByApplicationUserId: currentApplicationUserId);
 
@@ -365,6 +544,15 @@ internal sealed class CopyTemplateToBranchCommandHandler
             new GetAnonymousTemplateQuestionConditionsForCopyToBranchSpec(sourceTemplate.Id),
             cancellationToken);
 
+        if (sourceConditions.Any(x => x.SelectedQuestionOptionId.HasValue &&
+                                      !optionIdMap.ContainsKey(x.SelectedQuestionOptionId.Value)))
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(new Error(
+                "Templates.CopyToBranch.QuestionOptionLineageConflict",
+                "A required target question option lineage could not be resolved.",
+                ErrorType.Conflict));
+        }
+
         var copiedConditions = sourceConditions
             .Where(x =>
                 templateQuestionIdMap.ContainsKey(x.ParentAnonymousTemplateQuestionId) &&
@@ -373,8 +561,22 @@ internal sealed class CopyTemplateToBranchCommandHandler
                 copiedTemplate.Id,
                 x,
                 templateQuestionIdMap,
+                optionIdMap,
                 currentApplicationUserId))
             .ToList();
+
+        if (newGroups.Count > 0)
+        {
+            await _questionGroupWriteRepository.AddRangeAsync(newGroups, cancellationToken);
+        }
+        if (newCatalogQuestions.Count > 0)
+        {
+            await _questionWriteRepository.AddRangeAsync(newCatalogQuestions, cancellationToken);
+        }
+        if (newOptions.Count > 0)
+        {
+            await _questionOptionWriteRepository.AddRangeAsync(newOptions, cancellationToken);
+        }
 
         await _anonymousTemplateWriteRepository.AddAsync(
             copiedTemplate,
@@ -401,14 +603,16 @@ internal sealed class CopyTemplateToBranchCommandHandler
             SourceTemplateId = sourceTemplate.Id,
             TemplateId = copiedTemplate.Id,
             BranchId = copiedTemplate.BranchId!.Value,
+            BranchNameEn = targetBranch.NameEn,
+            BranchNameAr = targetBranch.NameAr,
             TemplateKind = TemplateCatalogKind.Anonymous,
             NameEn = copiedTemplate.NameEn,
             NameAr = copiedTemplate.NameAr,
             Description = copiedTemplate.Description,
             ActiveFrom = copiedTemplate.ActiveFrom,
             ExpireTo = copiedTemplate.ExpireTo,
-            Status = copiedTemplate.Status.ToString(),
             IsActive = copiedTemplate.IsActive,
+            LogoPath = null,
             QuestionsCount = copiedQuestions.Count,
             ConditionsCount = copiedConditions.Count,
             CustomInputsCount = copiedTemplate.CustomInputs.Count,
@@ -417,42 +621,167 @@ internal sealed class CopyTemplateToBranchCommandHandler
         });
     }
 
-    private static void ApplyTemplateStatus(
-        Template template,
-        TemplateStatus status)
+    private async Task<Error?> ValidateQuestionGroupLineageConflictsAsync(
+        IEnumerable<Question> sourceQuestions,
+        Guid targetBranchId,
+        CancellationToken cancellationToken)
     {
-        if (status == TemplateStatus.Active)
+        var groups = sourceQuestions
+            .Where(x => x.Scope == QuestionScope.Branch)
+            .Select(x => x.Group)
+            .DistinctBy(x => x.Id)
+            .ToArray();
+
+        foreach (var group in groups)
         {
-            template.Activate();
-            return;
+            var rootOriginId = group.OriginQuestionGroupId ?? group.Id;
+            var existingOrigin = await _questionGroupReadRepository.AnyAsync(
+                x => x.BranchId == targetBranchId && x.OriginQuestionGroupId == rootOriginId,
+                cancellationToken);
+
+            if (existingOrigin)
+            {
+                continue;
+            }
+
+            var nameConflict = await _questionGroupReadRepository.AnyAsync(
+                x => x.BranchId == targetBranchId && x.NameEn == group.NameEn,
+                cancellationToken);
+
+            if (nameConflict)
+            {
+                return new Error(
+                    "Templates.CopyToBranch.QuestionGroupLineageConflict",
+                    $"Question group '{group.NameEn}' conflicts with an unrelated target branch group.",
+                    ErrorType.Conflict);
+            }
         }
 
-        if (status == TemplateStatus.Inactive)
-        {
-            template.Deactivate();
-        }
+        return null;
     }
 
-    private static void ApplyAnonymousTemplateStatus(
-        AnonymousTemplate template,
-        TemplateStatus status)
+    private async Task<Question> ResolveTargetQuestionAsync(
+        Question sourceQuestion,
+        Guid targetBranchId,
+        Guid currentApplicationUserId,
+        IDictionary<Guid, QuestionGroup> groupCache,
+        IDictionary<Guid, Question> questionCache,
+        IDictionary<Guid, Guid> optionIdMap,
+        ICollection<QuestionGroup> newGroups,
+        ICollection<Question> newQuestions,
+        ICollection<QuestionOption> newOptions,
+        CancellationToken cancellationToken)
     {
-        if (status == TemplateStatus.Active)
+        if (sourceQuestion.Scope == QuestionScope.Global)
         {
-            template.Activate();
-            return;
+            foreach (var option in sourceQuestion.Options)
+            {
+                optionIdMap[option.Id] = option.Id;
+            }
+
+            return sourceQuestion;
         }
 
-        if (status == TemplateStatus.Inactive)
+        var rootGroupId = sourceQuestion.Group.OriginQuestionGroupId ?? sourceQuestion.Group.Id;
+        if (!groupCache.TryGetValue(rootGroupId, out var targetGroup))
         {
-            template.Deactivate();
+            targetGroup = await _questionGroupReadRepository.GetByPropertyAsync(
+                x => x.BranchId == targetBranchId && x.OriginQuestionGroupId == rootGroupId,
+                cancellationToken);
+
+            if (targetGroup is null)
+            {
+                targetGroup = QuestionGroup.Create(
+                    targetBranchId,
+                    sourceQuestion.Group.NameEn,
+                    sourceQuestion.Group.NameAr,
+                    currentApplicationUserId,
+                    rootGroupId);
+                newGroups.Add(targetGroup);
+            }
+
+            groupCache[rootGroupId] = targetGroup;
         }
+
+        var rootQuestionId = sourceQuestion.OriginQuestionId ?? sourceQuestion.Id;
+        if (!questionCache.TryGetValue(rootQuestionId, out var targetQuestion))
+        {
+            targetQuestion = await _questionReadRepository.GetByPropertyAsync(
+                x => x.BranchId == targetBranchId && x.OriginQuestionId == rootQuestionId,
+                cancellationToken);
+
+            if (targetQuestion is null)
+            {
+                targetQuestion = Question.Create(
+                    targetBranchId,
+                    targetGroup.Id,
+                    sourceQuestion.TextEn,
+                    sourceQuestion.TextAr,
+                    sourceQuestion.Type,
+                    currentApplicationUserId,
+                    rootQuestionId);
+                newQuestions.Add(targetQuestion);
+
+                foreach (var sourceOption in sourceQuestion.Options.Where(x => x.IsActive).OrderBy(x => x.Order))
+                {
+                    var rootOptionId = sourceOption.OriginQuestionOptionId ?? sourceOption.Id;
+                    var targetOption = QuestionOption.Create(
+                        targetQuestion.Id,
+                        sourceOption.TextEn,
+                        sourceOption.TextAr,
+                        sourceOption.Order,
+                        sourceOption.Value,
+                        currentApplicationUserId,
+                        rootOptionId);
+                    newOptions.Add(targetOption);
+                    optionIdMap[sourceOption.Id] = targetOption.Id;
+                }
+            }
+            else
+            {
+                var targetOptions = await _questionOptionReadRepository.ListAsync(
+                    new GetTargetQuestionOptionsForCopyToBranchSpec(targetQuestion.Id),
+                    cancellationToken);
+
+                foreach (var sourceOption in sourceQuestion.Options.Where(x => x.IsActive))
+                {
+                    var rootOptionId = sourceOption.OriginQuestionOptionId ?? sourceOption.Id;
+                    var targetOption = targetOptions.FirstOrDefault(
+                        x => x.OriginQuestionOptionId == rootOptionId);
+
+                    if (targetOption is not null)
+                    {
+                        optionIdMap[sourceOption.Id] = targetOption.Id;
+                    }
+                }
+            }
+
+            questionCache[rootQuestionId] = targetQuestion;
+        }
+        else
+        {
+            foreach (var sourceOption in sourceQuestion.Options.Where(x => x.IsActive))
+            {
+                var rootOptionId = sourceOption.OriginQuestionOptionId ?? sourceOption.Id;
+                var targetOption = newOptions.FirstOrDefault(
+                    x => x.QuestionId == targetQuestion.Id &&
+                         x.OriginQuestionOptionId == rootOptionId);
+
+                if (targetOption is not null)
+                {
+                    optionIdMap[sourceOption.Id] = targetOption.Id;
+                }
+            }
+        }
+
+        return targetQuestion;
     }
 
     private static TemplateQuestionCondition CopyCondition(
         Guid copiedTemplateId,
         TemplateQuestionCondition sourceCondition,
         IReadOnlyDictionary<Guid, Guid> templateQuestionIdMap,
+        IReadOnlyDictionary<Guid, Guid> optionIdMap,
         Guid currentApplicationUserId)
     {
         return sourceCondition.TriggerType switch
@@ -462,7 +791,7 @@ internal sealed class CopyTemplateToBranchCommandHandler
                     templateId: copiedTemplateId,
                     parentTemplateQuestionId: templateQuestionIdMap[sourceCondition.ParentTemplateQuestionId],
                     childTemplateQuestionId: templateQuestionIdMap[sourceCondition.ChildTemplateQuestionId],
-                    selectedQuestionOptionId: sourceCondition.SelectedQuestionOptionId!.Value,
+                    selectedQuestionOptionId: optionIdMap[sourceCondition.SelectedQuestionOptionId!.Value],
                     order: sourceCondition.Order,
                     createdByApplicationUserId: currentApplicationUserId),
 
@@ -493,6 +822,7 @@ internal sealed class CopyTemplateToBranchCommandHandler
         Guid copiedTemplateId,
         AnonymousTemplateQuestionCondition sourceCondition,
         IReadOnlyDictionary<Guid, Guid> templateQuestionIdMap,
+        IReadOnlyDictionary<Guid, Guid> optionIdMap,
         Guid currentApplicationUserId)
     {
         return sourceCondition.TriggerType switch
@@ -502,7 +832,7 @@ internal sealed class CopyTemplateToBranchCommandHandler
                     anonymousTemplateId: copiedTemplateId,
                     parentAnonymousTemplateQuestionId: templateQuestionIdMap[sourceCondition.ParentAnonymousTemplateQuestionId],
                     childAnonymousTemplateQuestionId: templateQuestionIdMap[sourceCondition.ChildAnonymousTemplateQuestionId],
-                    selectedQuestionOptionId: sourceCondition.SelectedQuestionOptionId!.Value,
+                    selectedQuestionOptionId: optionIdMap[sourceCondition.SelectedQuestionOptionId!.Value],
                     order: sourceCondition.Order,
                     createdByApplicationUserId: currentApplicationUserId),
 

@@ -113,7 +113,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.RestoreTemplate
                 NameEn = template.NameEn,
                 NameAr = template.NameAr,
                 Description = template.Description,
-                Status = template.Status.ToString(),
                 IsActive = template.IsActive
             };
 

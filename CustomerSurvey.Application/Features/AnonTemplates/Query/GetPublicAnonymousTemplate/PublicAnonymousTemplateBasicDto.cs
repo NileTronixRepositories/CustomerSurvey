@@ -21,5 +21,11 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
         public DateTime? ExpireTo { get; init; }
 
         public bool IsActive { get; init; }
+
+        public string? LogoPath { get; init; }
+
+        public string? BranchNameEn { get; init; }
+
+        public string? BranchNameAr { get; init; }
     }
 }

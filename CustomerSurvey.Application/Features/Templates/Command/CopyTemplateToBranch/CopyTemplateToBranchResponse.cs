@@ -10,6 +10,10 @@ public sealed record CopyTemplateToBranchResponse
 
     public Guid BranchId { get; init; }
 
+    public string BranchNameEn { get; init; } = string.Empty;
+
+    public string? BranchNameAr { get; init; }
+
     public TemplateCatalogKind TemplateKind { get; init; }
 
     public string TemplateKindName => TemplateKind.ToString();
@@ -24,9 +28,9 @@ public sealed record CopyTemplateToBranchResponse
 
     public DateTime? ExpireTo { get; init; }
 
-    public string Status { get; init; } = string.Empty;
-
     public bool IsActive { get; init; }
+
+    public string? LogoPath { get; init; }
 
     public int QuestionsCount { get; init; }
 

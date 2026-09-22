@@ -150,8 +150,9 @@ namespace CustomerSurvey.infrastructure.Reports
                 })
                 .FirstAsync(cancellationToken);
 
-            var normalTemplates = await LoadNormalTemplatesAsync(request, cancellationToken);
-            var anonymousTemplates = await LoadAnonymousTemplatesAsync(request, cancellationToken);
+            var selectedFamilyId = await ResolveSelectedTemplateFamilyIdAsync(request, cancellationToken);
+            var normalTemplates = await LoadNormalTemplatesAsync(request, selectedFamilyId, cancellationToken);
+            var anonymousTemplates = await LoadAnonymousTemplatesAsync(request, selectedFamilyId, cancellationToken);
 
             var selectionError = ValidateSelectedTemplateResolution(
                 request,
@@ -353,9 +354,10 @@ namespace CustomerSurvey.infrastructure.Reports
 
         private async Task<IReadOnlyCollection<TemplateHeaderDto>> LoadNormalTemplatesAsync(
             BranchTemplatesPdfReportRequest request,
+            Guid? selectedFamilyId,
             CancellationToken cancellationToken)
         {
-            if (request.TemplateKind == ReportTemplateKind.Anonymous)
+            if (!selectedFamilyId.HasValue && request.TemplateKind == ReportTemplateKind.Anonymous)
             {
                 return Array.Empty<TemplateHeaderDto>();
             }
@@ -364,7 +366,11 @@ namespace CustomerSurvey.infrastructure.Reports
                 .AsNoTracking()
                 .Where(x => x.BranchId == request.BranchId);
 
-            if (request.TemplateId.HasValue)
+            if (selectedFamilyId.HasValue)
+            {
+                query = query.Where(x => x.TemplateFamilyId == selectedFamilyId.Value);
+            }
+            else if (request.TemplateId.HasValue)
             {
                 query = query.Where(x => x.Id == request.TemplateId.Value);
             }
@@ -376,7 +382,6 @@ namespace CustomerSurvey.infrastructure.Reports
                     TemplateKind = ReportTemplateKind.Normal,
                     NameEn = x.NameEn,
                     NameAr = x.NameAr,
-                    Status = x.Status.ToString(),
                     ActiveFrom = x.ActiveFrom,
                     ExpireTo = x.ExpireTo
                 })
@@ -385,9 +390,10 @@ namespace CustomerSurvey.infrastructure.Reports
 
         private async Task<IReadOnlyCollection<TemplateHeaderDto>> LoadAnonymousTemplatesAsync(
             BranchTemplatesPdfReportRequest request,
+            Guid? selectedFamilyId,
             CancellationToken cancellationToken)
         {
-            if (request.TemplateKind == ReportTemplateKind.Normal)
+            if (!selectedFamilyId.HasValue && request.TemplateKind == ReportTemplateKind.Normal)
             {
                 return Array.Empty<TemplateHeaderDto>();
             }
@@ -398,7 +404,11 @@ namespace CustomerSurvey.infrastructure.Reports
                     x.BranchId.HasValue &&
                     x.BranchId.Value == request.BranchId);
 
-            if (request.TemplateId.HasValue)
+            if (selectedFamilyId.HasValue)
+            {
+                query = query.Where(x => x.TemplateFamilyId == selectedFamilyId.Value);
+            }
+            else if (request.TemplateId.HasValue)
             {
                 query = query.Where(x => x.Id == request.TemplateId.Value);
             }
@@ -410,11 +420,40 @@ namespace CustomerSurvey.infrastructure.Reports
                     TemplateKind = ReportTemplateKind.Anonymous,
                     NameEn = x.NameEn,
                     NameAr = x.NameAr,
-                    Status = x.Status.ToString(),
                     ActiveFrom = x.ActiveFrom,
                     ExpireTo = x.ExpireTo
                 })
                 .ToArrayAsync(cancellationToken);
+        }
+
+        private async Task<Guid?> ResolveSelectedTemplateFamilyIdAsync(
+            BranchTemplatesPdfReportRequest request,
+            CancellationToken cancellationToken)
+        {
+            if (!request.TemplateId.HasValue)
+            {
+                return null;
+            }
+
+            if (request.TemplateKind != ReportTemplateKind.Anonymous)
+            {
+                var normalFamilyId = await _templateRepository.Query()
+                    .AsNoTracking()
+                    .Where(x => x.Id == request.TemplateId.Value && x.BranchId == request.BranchId)
+                    .Select(x => x.TemplateFamilyId)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (normalFamilyId.HasValue || request.TemplateKind == ReportTemplateKind.Normal)
+                {
+                    return normalFamilyId;
+                }
+            }
+
+            return await _anonymousTemplateRepository.Query()
+                .AsNoTracking()
+                .Where(x => x.Id == request.TemplateId.Value && x.BranchId == request.BranchId)
+                .Select(x => x.TemplateFamilyId)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         private async Task<IReadOnlyCollection<ResponseFlatDto>> LoadNormalResponsesAsync(
@@ -1744,7 +1783,6 @@ namespace CustomerSurvey.infrastructure.Reports
                     TemplateKind = templateKind,
                     NameEn = template.NameEn,
                     NameAr = template.NameAr,
-                    Status = template.Status,
                     ActiveFrom = template.ActiveFrom,
                     ExpireTo = template.ExpireTo,
                     TotalQuestions = templateQuestions.Length,
@@ -2050,8 +2088,6 @@ namespace CustomerSurvey.infrastructure.Reports
 
             public string DisplayName(bool isArabic)
                 => isArabic && !string.IsNullOrWhiteSpace(NameAr) ? NameAr! : NameEn;
-
-            public string Status { get; init; } = string.Empty;
 
             public DateTime? ActiveFrom { get; init; }
 

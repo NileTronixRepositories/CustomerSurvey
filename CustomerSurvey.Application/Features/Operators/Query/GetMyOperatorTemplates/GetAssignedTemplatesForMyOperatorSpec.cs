@@ -28,6 +28,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public DateTime ActiveFrom { get; init; }
 
         public DateTime? ExpireTo { get; init; }
+        public string? LogoPath { get; init; }
     }
 
     internal sealed class GetAssignedTemplatesForMyOperatorSpec
@@ -55,6 +56,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 BranchCode = x.Template.Branch.Code,
                 ActiveFrom = x.Template.ActiveFrom,
                 ExpireTo = x.Template.ExpireTo,
+                LogoPath = x.Template.LogoPath,
             });
         }
     }

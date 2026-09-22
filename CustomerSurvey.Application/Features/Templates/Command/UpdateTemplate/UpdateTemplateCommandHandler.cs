@@ -14,6 +14,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
     {
         private readonly IWriteReadRepository<Template> _templateReadRepository;
         private readonly IWriteRepository<Template> _templateWriteRepository;
+        private readonly IWriteReadRepository<Branch> _branchReadRepository;
 
         private readonly IWriteReadRepository<TemplateCustomInput> _templateCustomInputReadRepository;
         private readonly IWriteRepository<TemplateCustomInput> _templateCustomInputWriteRepository;
@@ -25,6 +26,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
         public UpdateTemplateCommandHandler(
             IWriteReadRepository<Template> templateReadRepository,
             IWriteRepository<Template> templateWriteRepository,
+            IWriteReadRepository<Branch> branchReadRepository,
             IWriteReadRepository<TemplateCustomInput> templateCustomInputReadRepository,
             IWriteRepository<TemplateCustomInput> templateCustomInputWriteRepository,
             ICurrentBranchScopeResolver currentBranchScopeResolver,
@@ -36,6 +38,9 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
 
             _templateWriteRepository = templateWriteRepository
                 ?? throw new ArgumentNullException(nameof(templateWriteRepository));
+
+            _branchReadRepository = branchReadRepository
+                ?? throw new ArgumentNullException(nameof(branchReadRepository));
 
             _templateCustomInputReadRepository = templateCustomInputReadRepository
                 ?? throw new ArgumentNullException(nameof(templateCustomInputReadRepository));
@@ -151,17 +156,23 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
                 .OrderBy(x => x.Order)
                 .ToArray();
 
+            var branch = await _branchReadRepository.GetByPropertyAsync(
+                x => x.Id == branchId,
+                cancellationToken);
+
             var response = new UpdateTemplateResponse
             {
                 TemplateId = template.Id,
                 BranchId = template.BranchId,
+                BranchNameEn = branch?.NameEn ?? string.Empty,
+                BranchNameAr = branch?.NameAr,
                 NameEn = template.NameEn,
                 NameAr = template.NameAr,
                 Description = template.Description,
                 ActiveFrom = template.ActiveFrom,
                 ExpireTo = template.ExpireTo,
-                Status = template.Status.ToString(),
                 IsActive = template.IsActive,
+                LogoPath = template.LogoPath,
 
                 CustomInputs = activeCustomInputs
                     .Select(x => new UpdateTemplateCustomInputResponse

@@ -93,7 +93,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQu
                     Type: ErrorType.NotFound));
             }
 
-            if (!template.IsActive || template.Status == TemplateStatus.Inactive)
+            if (!template.IsActive)
             {
                 return Result<ManageTemplateQuestionConditionsResponse>.Fail(new Error(
                     Code: "Templates.ManageQuestionConditions.TemplateInactive",

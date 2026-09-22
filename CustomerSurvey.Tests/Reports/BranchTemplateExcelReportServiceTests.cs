@@ -482,7 +482,6 @@ public sealed class BranchTemplateExcelReportServiceTests
             TemplateId = templateId,
             TemplateKind = ReportTemplateKind.Normal,
             NameEn = "Customer Satisfaction",
-            Status = "Active",
             TotalQuestions = 1,
             RootQuestions = 1
         };

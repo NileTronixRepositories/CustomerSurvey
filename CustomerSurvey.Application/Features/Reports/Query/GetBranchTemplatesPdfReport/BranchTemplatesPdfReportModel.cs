@@ -124,8 +124,6 @@ public sealed record BranchTemplatesPdfTemplateSummary
             ? isArabic ? "مصرح" : "Authorized"
             : isArabic ? "مجهول" : "Anonymous";
 
-    public string Status { get; init; } = string.Empty;
-
     public DateTime? ActiveFrom { get; init; }
 
     public DateTime? ExpireTo { get; init; }

@@ -32,6 +32,9 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.IsActive)
                 .IsRequired();
 
+            builder.Property(x => x.OriginQuestionOptionId)
+                .IsRequired(false);
+
             builder.Property(x => x.CreatedByApplicationUserId)
                 .IsRequired();
 
@@ -39,6 +42,11 @@ namespace CustomerSurvey.infrastructure.Configurations
 
             builder.HasIndex(x => new { x.QuestionId, x.Order })
                 .IsUnique();
+
+            builder.HasIndex(x => new { x.QuestionId, x.OriginQuestionOptionId })
+                .IsUnique()
+                .HasDatabaseName("UX_QuestionOption_Question_OriginQuestionOptionId")
+                .HasFilter("[OriginQuestionOptionId] IS NOT NULL");
 
             builder.HasOne(x => x.Question)
                 .WithMany(x => x.Options)

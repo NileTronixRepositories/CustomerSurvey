@@ -39,6 +39,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorTemplat
 
         public string BranchCode { get; init; } = string.Empty;
 
+        public string? LogoPath { get; init; }
+
         public int QuestionsCount { get; init; }
         public DateTime ActiveFrom { get; init; }
 

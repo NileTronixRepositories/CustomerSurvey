@@ -2,11 +2,15 @@
 using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Api.Contracts.AnonymousTemplates;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignQuestionsToAnonymousTemplate;
+using CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignGlobalAnonymousTemplateToBranch;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateAnonymousTemplate;
+using CustomerSurvey.Application.Features.AnonymousTemplates.Command.CopyAnonymousTemplateAsAuthorized;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Command.DeleteAnonymousTemplate;
+using CustomerSurvey.Application.Features.AnonymousTemplates.Command.DeleteAnonymousTemplateLogo;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Command.ManageAnonymousTemplateQuestionConditions;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Command.RestoreAnonymousTemplate;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateAnonymousTemplate;
+using CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateAnonymousTemplateLogo;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateDashboard;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateDetails;
 using CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateQuestionsSelection;
@@ -249,6 +253,71 @@ namespace CustomerSurvey.Api.Controllers
             };
 
             var result = await sender.Send(command, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPost("{anonymousTemplateId:guid}/copy-as-authorized")]
+        [Permission("Templates.CopyBetweenTypes")]
+        public async Task<IActionResult> CopyAsAuthorized(
+            Guid anonymousTemplateId,
+            CancellationToken cancellationToken)
+        {
+            var result = await sender.Send(new CopyAnonymousTemplateAsAuthorizedCommand
+            {
+                AnonymousTemplateId = anonymousTemplateId
+            }, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPut("{anonymousTemplateId:guid}/logo")]
+        [Consumes("multipart/form-data")]
+        [Permission("AnonymousTemplates.Update")]
+        public async Task<IActionResult> UpdateLogo(
+            Guid anonymousTemplateId,
+            [FromForm] UpdateAnonymousTemplateLogoRequest request,
+            CancellationToken cancellationToken)
+        {
+            var result = await sender.Send(new UpdateAnonymousTemplateLogoCommand
+            {
+                AnonymousTemplateId = anonymousTemplateId,
+                Logo = request.Logo
+            }, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpDelete("{anonymousTemplateId:guid}/logo")]
+        [Permission("AnonymousTemplates.Update")]
+        public async Task<IActionResult> DeleteLogo(
+            Guid anonymousTemplateId,
+            CancellationToken cancellationToken)
+        {
+            var result = await sender.Send(new DeleteAnonymousTemplateLogoCommand
+            {
+                AnonymousTemplateId = anonymousTemplateId
+            }, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpPost("{globalTemplateId:guid}/assign-to-branch")]
+        [Consumes("multipart/form-data")]
+        [Permission("AnonymousTemplates.AssignGlobalToBranch")]
+        public async Task<IActionResult> AssignGlobalToBranch(
+            Guid globalTemplateId,
+            [FromForm] AssignGlobalAnonymousTemplateToBranchRequest request,
+            CancellationToken cancellationToken)
+        {
+            var result = await sender.Send(new AssignGlobalAnonymousTemplateToBranchCommand
+            {
+                GlobalTemplateId = globalTemplateId,
+                BranchId = request.BranchId,
+                ActiveFrom = request.ActiveFrom,
+                ExpireTo = request.ExpireTo,
+                Logo = request.Logo
+            }, cancellationToken);
 
             return result.ToIActionResult();
         }

@@ -31,6 +31,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesForSel
                 BranchNameEn = x.Branch.NameEn,
                 BranchNameAr = x.Branch.NameAr,
                 BranchCode = x.Branch.Code,
+                LogoPath = x.LogoPath,
                 ActiveFrom = x.ActiveFrom,
                 ExpireTo = x.ExpireTo
             });

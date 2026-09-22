@@ -20,11 +20,13 @@ internal sealed class GetAnonymousTemplateForDashboardSpec
         {
             AnonymousTemplateId = x.Id,
             BranchId = x.BranchId,
+            BranchNameEn = x.Branch == null ? null : x.Branch.NameEn,
+            BranchNameAr = x.Branch == null ? null : x.Branch.NameAr,
             Scope = x.Scope,
             NameEn = x.NameEn,
             NameAr = x.NameAr,
-            Status = x.Status,
             IsActive = x.IsActive,
+            LogoPath = x.LogoPath,
             PublicUrl = x.PublicUrl,
             QrCode = x.QrCode
         });

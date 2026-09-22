@@ -21,6 +21,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplatesForSel
         public string? BranchNameAr { get; init; }
 
         public string BranchCode { get; init; } = string.Empty;
+        public string? LogoPath { get; init; }
         public DateTime ActiveFrom { get; init; }
 
         public DateTime? ExpireTo { get; init; }

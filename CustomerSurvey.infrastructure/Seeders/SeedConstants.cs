@@ -88,6 +88,7 @@ internal static class SeedConstants
         public const string TemplatesViewSuperAdminCatalog = "Templates.ViewSuperAdminCatalog";
         public const string TemplatesAssignQuestions = "Templates.AssignQuestions";
         public const string TemplatesManageQuestionConditions = "Templates.ManageQuestionConditions";
+        public const string TemplatesCopyBetweenTypes = "Templates.CopyBetweenTypes";
 
         public const string QuestionGroupsCreate = "QuestionGroups.Create";
         public const string QuestionGroupsUpdate = "QuestionGroups.Update";
@@ -134,6 +135,7 @@ internal static class SeedConstants
         public const string AnonymousTemplatesAssignQuestions = "AnonymousTemplates.AssignQuestions";
         public const string AnonymousTemplatesManageQuestionConditions = "AnonymousTemplates.ManageQuestionConditions";
         public const string AnonymousTemplatesViewResponses = "AnonymousTemplates.ViewResponses";
+        public const string AnonymousTemplatesAssignGlobalToBranch = "AnonymousTemplates.AssignGlobalToBranch";
     }
 
     public static class SeedIds
@@ -409,6 +411,12 @@ internal static class SeedConstants
 
             public static readonly Guid OperatorsRestore =
                 Guid.Parse("12000000-0000-0000-0000-000000000087");
+
+            public static readonly Guid TemplatesCopyBetweenTypes =
+                Guid.Parse("12000000-0000-0000-0000-000000000088");
+
+            public static readonly Guid AnonymousTemplatesAssignGlobalToBranch =
+                Guid.Parse("12000000-0000-0000-0000-000000000089");
         }
     }
 
@@ -485,6 +493,7 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.TemplatesViewSuperAdminCatalog, PermissionNames.TemplatesViewSuperAdminCatalog),
             new PermissionSeedItem(SeedIds.Permissions.TemplatesAssignQuestions, PermissionNames.TemplatesAssignQuestions),
             new PermissionSeedItem(SeedIds.Permissions.TemplatesManageQuestionConditions, PermissionNames.TemplatesManageQuestionConditions),
+            new PermissionSeedItem(SeedIds.Permissions.TemplatesCopyBetweenTypes, PermissionNames.TemplatesCopyBetweenTypes),
 
             new PermissionSeedItem(SeedIds.Permissions.QuestionGroupsCreate, PermissionNames.QuestionGroupsCreate),
             new PermissionSeedItem(SeedIds.Permissions.QuestionGroupsUpdate, PermissionNames.QuestionGroupsUpdate),
@@ -530,7 +539,8 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesViewDetails, PermissionNames.AnonymousTemplatesViewDetails),
             new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesAssignQuestions, PermissionNames.AnonymousTemplatesAssignQuestions),
             new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesManageQuestionConditions, PermissionNames.AnonymousTemplatesManageQuestionConditions),
-            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesViewResponses, PermissionNames.AnonymousTemplatesViewResponses)
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesViewResponses, PermissionNames.AnonymousTemplatesViewResponses),
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesAssignGlobalToBranch, PermissionNames.AnonymousTemplatesAssignGlobalToBranch)
         ];
 
         public static readonly IReadOnlyCollection<RolePermissionSeedItem> RolePermissions =
@@ -590,6 +600,7 @@ internal static class SeedConstants
                 SeedIds.Permissions.TemplatesViewSelection,
                 SeedIds.Permissions.TemplatesAssignQuestions,
                 SeedIds.Permissions.TemplatesManageQuestionConditions,
+                SeedIds.Permissions.TemplatesCopyBetweenTypes,
 
                 SeedIds.Permissions.AnonymousTemplatesCreate,
                 SeedIds.Permissions.AnonymousTemplatesUpdate,
@@ -645,6 +656,7 @@ internal static class SeedConstants
                 SeedIds.Permissions.TemplatesViewSelection,
                 SeedIds.Permissions.TemplatesAssignQuestions,
                 SeedIds.Permissions.TemplatesManageQuestionConditions,
+                SeedIds.Permissions.TemplatesCopyBetweenTypes,
 
                 SeedIds.Permissions.AnonymousTemplatesCreate,
                 SeedIds.Permissions.AnonymousTemplatesUpdate,
@@ -711,6 +723,7 @@ internal static class SeedConstants
                 SeedIds.Permissions.TemplatesViewSelection,
                 SeedIds.Permissions.TemplatesAssignQuestions,
                 SeedIds.Permissions.TemplatesManageQuestionConditions,
+                SeedIds.Permissions.TemplatesCopyBetweenTypes,
 
                 SeedIds.Permissions.AnonymousTemplatesCreate,
                 SeedIds.Permissions.AnonymousTemplatesUpdate,

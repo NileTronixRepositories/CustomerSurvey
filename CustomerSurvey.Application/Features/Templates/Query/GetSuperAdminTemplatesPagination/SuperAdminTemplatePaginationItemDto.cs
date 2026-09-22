@@ -20,9 +20,9 @@ internal sealed record SuperAdminTemplatePaginationItemDto
 
     public string? Description { get; init; }
 
-    public TemplateStatus Status { get; init; }
-
     public bool IsActive { get; init; }
+
+    public string? LogoPath { get; init; }
 
     public int QuestionsCount { get; init; }
 

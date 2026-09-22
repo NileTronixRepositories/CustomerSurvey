@@ -1,6 +1,4 @@
 ﻿using BuildingBlock.Domain.EntitiesHelper;
-using CustomerSurvey.Domain.Enums;
-
 namespace CustomerSurvey.Domain.Entities
 {
     public sealed class Template : AggregateRoot<Guid>
@@ -18,8 +16,10 @@ namespace CustomerSurvey.Domain.Entities
         public DateTime ActiveFrom { get; private set; }
         public DateTime? ExpireTo { get; private set; }
 
-        public TemplateStatus Status { get; private set; }
         public bool IsActive { get; private set; }
+        public string? LogoPath { get; private set; }
+        public Guid? TemplateFamilyId { get; private set; }
+        public Guid? OriginTemplateId { get; private set; }
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
@@ -40,7 +40,9 @@ namespace CustomerSurvey.Domain.Entities
             string? description,
             DateTime activeFrom,
             DateTime? expireTo,
-            Guid createdByApplicationUserId)
+            Guid createdByApplicationUserId,
+            Guid? templateFamilyId = null,
+            Guid? originTemplateId = null)
         {
             return new Template
             {
@@ -51,8 +53,9 @@ namespace CustomerSurvey.Domain.Entities
                 Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim(),
                 ActiveFrom = activeFrom,
                 ExpireTo = expireTo,
-                Status = TemplateStatus.Active,
                 IsActive = true,
+                TemplateFamilyId = templateFamilyId,
+                OriginTemplateId = originTemplateId,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
         }
@@ -88,46 +91,29 @@ namespace CustomerSurvey.Domain.Entities
             _customInputs.Add(customInput);
         }
 
-        public void Activate()
+        public void SetLogoPath(string logoPath)
         {
-            if (!IsActive)
-            {
-                return;
-            }
+            LogoPath = string.IsNullOrWhiteSpace(logoPath) ? null : logoPath.Trim();
+        }
 
-            Status = TemplateStatus.Active;
+        public void ClearLogo()
+        {
+            LogoPath = null;
+        }
+
+        public void SetTemplateFamily(Guid templateFamilyId)
+        {
+            TemplateFamilyId = templateFamilyId;
         }
 
         public void Deactivate()
         {
-            if (!IsActive)
-            {
-                return;
-            }
-
             IsActive = false;
-            Status = TemplateStatus.Inactive;
-        }
-
-        public void ReturnToDraft()
-        {
-            if (!IsActive)
-            {
-                return;
-            }
-
-            Status = TemplateStatus.Draft;
         }
 
         public void Restore()
         {
-            if (IsActive)
-            {
-                return;
-            }
-
             IsActive = true;
-            Status = TemplateStatus.Draft;
         }
     }
 }

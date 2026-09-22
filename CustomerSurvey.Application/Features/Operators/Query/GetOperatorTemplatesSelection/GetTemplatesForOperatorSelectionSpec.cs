@@ -28,6 +28,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorTemplat
         public DateTime ActiveFrom { get; init; }
 
         public DateTime? ExpireTo { get; init; }
+        public string? LogoPath { get; init; }
     }
 
     internal sealed class GetTemplatesForOperatorSelectionSpec
@@ -63,7 +64,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorTemplat
                 BranchNameAr = x.Branch.NameAr,
                 BranchCode = x.Branch.Code,
                 ExpireTo = x.ExpireTo,
-                ActiveFrom = x.ActiveFrom
+                ActiveFrom = x.ActiveFrom,
+                LogoPath = x.LogoPath
             });
         }
     }

@@ -81,6 +81,12 @@ public sealed record AnonymousTemplateDashboardPerformanceResponse
 {
     public Guid AnonymousTemplateId { get; init; }
 
+    public Guid BranchId { get; init; }
+
+    public string BranchNameEn { get; init; } = string.Empty;
+
+    public string? BranchNameAr { get; init; }
+
     public string NameEn { get; init; } = string.Empty;
 
     public string? NameAr { get; init; }
@@ -89,13 +95,11 @@ public sealed record AnonymousTemplateDashboardPerformanceResponse
 
     public string ScopeName { get; init; } = string.Empty;
 
-    public TemplateStatus Status { get; init; }
-
-    public string StatusName { get; init; } = string.Empty;
-
     public bool IsActive { get; init; }
 
-    public string PublicUrl { get; init; } = string.Empty;
+    public string? LogoPath { get; init; }
+
+    public string? PublicUrl { get; init; }
 
     public string? QrCode { get; init; }
 

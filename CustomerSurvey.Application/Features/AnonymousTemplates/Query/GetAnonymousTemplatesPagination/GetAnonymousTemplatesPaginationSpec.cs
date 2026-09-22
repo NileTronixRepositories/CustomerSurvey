@@ -89,10 +89,9 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                 ActiveFrom = x.ActiveFrom,
                 ExpireTo = x.ExpireTo,
 
-                Status = x.Status,
-                StatusName = x.Status.ToString(),
-
                 IsActive = x.IsActive,
+                IsArchived = x.IsArchived,
+                LogoPath = x.LogoPath,
 
                 PublicUrl = x.PublicUrl,
                 QrCode = x.QrCode,
