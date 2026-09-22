@@ -13,13 +13,14 @@ public sealed class BranchTemplateExcelReportServiceTests
     private static readonly string[] ExpectedSheetNames =
     {
         "01 - Summary",
-        "02 - Response Matrix",
-        "03 - Responses",
-        "04 - Answers",
-        "05 - Custom Inputs",
-        "06 - Question Analysis",
-        "07 - Worst Questions",
-        "08 - Best Questions"
+        "02 - Graphics",
+        "03 - Response Matrix",
+        "04 - Responses",
+        "05 - Answers",
+        "06 - Custom Inputs",
+        "07 - Question Analysis",
+        "08 - Worst Questions",
+        "09 - Best Questions"
     };
 
     [Fact]
@@ -49,22 +50,49 @@ public sealed class BranchTemplateExcelReportServiceTests
             Assert.Equal(ExpectedSheetNames, workbook.Worksheets.Select(x => x.Name));
             Assert.Equal("Customer Satisfaction", workbook.Worksheet("01 - Summary").Cell("B5").GetString());
 
-            var matrix = workbook.Worksheet("02 - Response Matrix");
-            Assert.Equal("01012345678", matrix.Cell(4, 11).GetString());
-            Assert.Equal("@", matrix.Cell(4, 11).Style.NumberFormat.Format);
-            Assert.Equal(1d, matrix.Cell(4, 10).GetDouble());
-            Assert.True(matrix.Cell(5, 10).IsEmpty());
+            var graphics = workbook.Worksheet("02 - Graphics");
+            Assert.Equal(5, graphics.Pictures.Count);
 
-            var answers = workbook.Worksheet("04 - Answers");
-            Assert.Equal("Rate the service", answers.Cell(4, 7).GetString());
-            Assert.True(answers.Cell(4, 10).IsEmpty());
-            Assert.True(answers.Cell(4, 13).IsEmpty());
-            Assert.True(answers.Cell(4, 24).GetBoolean());
-            Assert.Equal("Root Question", answers.Cell(4, 25).GetString());
+            var matrix = workbook.Worksheet("03 - Response Matrix");
+            Assert.Equal("Response No", matrix.Cell(3, 1).GetString());
+            Assert.Equal("01012345678", matrix.Cell(4, 7).GetString());
+            Assert.Equal("@", matrix.Cell(4, 7).Style.NumberFormat.Format);
+            Assert.Equal(1d, matrix.Cell(4, 6).GetDouble());
+            Assert.True(matrix.Cell(5, 6).IsEmpty());
+            Assert.True(matrix.Column(matrix.LastColumnUsed()!.ColumnNumber()).IsHidden);
+
+            var responses = workbook.Worksheet("04 - Responses");
+            var answers = workbook.Worksheet("05 - Answers");
+            var customInputs = workbook.Worksheet("06 - Custom Inputs");
+            Assert.Equal("Rate the service", answers.Cell(4, 4).GetString());
+            Assert.True(answers.Cell(4, 7).IsEmpty());
+            Assert.True(answers.Cell(4, 11).GetBoolean());
+            Assert.Equal("Root Question", answers.Cell(4, 12).GetString());
+            Assert.Equal(matrix.Cell(4, 1).GetDouble(), responses.Cell(4, 1).GetDouble());
+            Assert.Equal(matrix.Cell(4, 1).GetDouble(), answers.Cell(4, 1).GetDouble());
+            Assert.Equal(matrix.Cell(4, 1).GetDouble(), customInputs.Cell(4, 1).GetDouble());
+            Assert.True(responses.Column(7).IsHidden);
+            Assert.True(answers.Column(14).IsHidden);
+            Assert.True(customInputs.Column(6).IsHidden);
+
+            var matrixHeaders = matrix.Row(3).CellsUsed().Select(x => x.GetString()).ToArray();
+            Assert.DoesNotContain("Template Kind", matrixHeaders);
+            Assert.DoesNotContain("Operator Id", matrixHeaders);
+            Assert.DoesNotContain("Max Score", matrixHeaders);
+
+            var responseHeaders = responses.Row(3).CellsUsed().Select(x => x.GetString()).ToArray();
+            Assert.DoesNotContain("Template Id", responseHeaders);
+            Assert.DoesNotContain("Template Name", responseHeaders);
+            Assert.DoesNotContain("Scored Items Count", responseHeaders);
+
+            var answerHeaders = answers.Row(3).CellsUsed().Select(x => x.GetString()).ToArray();
+            Assert.DoesNotContain("Template Question Id", answerHeaders);
+            Assert.DoesNotContain("Selected Option Id", answerHeaders);
+            Assert.DoesNotContain("Star Rating", answerHeaders);
 
             Assert.NotEmpty(matrix.Tables);
-            Assert.NotEmpty(workbook.Worksheet("03 - Responses").Tables);
-            Assert.NotEmpty(workbook.Worksheet("04 - Answers").Tables);
+            Assert.NotEmpty(responses.Tables);
+            Assert.NotEmpty(answers.Tables);
         }
         finally
         {
@@ -102,9 +130,11 @@ public sealed class BranchTemplateExcelReportServiceTests
         using var workbook = new XLWorkbook(stream);
 
         Assert.Equal(ExpectedSheetNames, workbook.Worksheets.Select(x => x.Name));
-        Assert.Equal("Survey Response Id", workbook.Worksheet("03 - Responses").Cell(3, 2).GetString());
-        Assert.True(workbook.Worksheet("03 - Responses").Cell(4, 1).IsEmpty());
-        Assert.True(workbook.Worksheet("03 - Responses").AutoFilter.IsEnabled);
+        var responses = workbook.Worksheet("04 - Responses");
+        Assert.Equal("Survey Response Id", responses.Cell(3, 7).GetString());
+        Assert.True(responses.Column(7).IsHidden);
+        Assert.True(responses.Cell(4, 1).IsEmpty());
+        Assert.True(responses.AutoFilter.IsEnabled);
     }
 
     [Fact]
@@ -117,6 +147,85 @@ public sealed class BranchTemplateExcelReportServiceTests
 
         Assert.True(result.IsFailure);
         Assert.Null(source.LastRequest);
+    }
+
+    [Fact]
+    public async Task GenerateAsync_CreatesHyperlinkOnlyForAbsoluteMediaUrl()
+    {
+        var model = CreatePopulatedModel();
+        var firstResponse = model.Responses.First();
+        var voice = new BranchTemplatesReportAnswer
+        {
+            ResponseId = firstResponse.ResponseId,
+            TemplateId = firstResponse.TemplateId,
+            TemplateKind = firstResponse.TemplateKind,
+            QuestionId = Guid.NewGuid(),
+            QuestionTextEn = "Voice feedback",
+            QuestionType = QuestionType.Voice,
+            VoiceFilePath = "https://cdn.example.com/voice.mp3",
+            DisplayValue = "https://cdn.example.com/voice.mp3",
+            ScoreInclusionReason = "Non-Scorable Question"
+        };
+        var image = voice with
+        {
+            QuestionId = Guid.NewGuid(),
+            QuestionTextEn = "Receipt image",
+            QuestionType = QuestionType.Image,
+            VoiceFilePath = null,
+            ImageFilePath = "Media/SurveyAnswerImages/receipt.png",
+            DisplayValue = "Media/SurveyAnswerImages/receipt.png"
+        };
+        model = model with
+        {
+            Responses = model.Responses
+                .Select(x => x.ResponseId == firstResponse.ResponseId
+                    ? x with { Answers = x.Answers.Concat(new[] { voice, image }).ToArray() }
+                    : x)
+                .ToArray()
+        };
+
+        var sut = new BranchTemplateExcelReportService(new StubBranchTemplatesReportService(model));
+        var result = await sut.GenerateAsync(CreateRequest(model.SelectedTemplateId), CancellationToken.None);
+
+        using var stream = new MemoryStream(result.Value.Content);
+        using var workbook = new XLWorkbook(stream);
+        var answers = workbook.Worksheet("05 - Answers");
+
+        Assert.Equal("Open Voice", answers.Cell(5, 13).GetString());
+        Assert.Equal("https://cdn.example.com/voice.mp3", answers.Cell(5, 13).GetHyperlink().ExternalAddress.ToString());
+        Assert.Equal("Media/SurveyAnswerImages/receipt.png", answers.Cell(6, 13).GetString());
+        Assert.False(answers.Cell(6, 13).HasHyperlink);
+    }
+
+    [Fact]
+    public async Task GenerateAsync_ArabicReportLocalizesVisibleWorkbookLabels()
+    {
+        var templateId = Guid.NewGuid();
+        var model = CreateBaseModel(templateId) with
+        {
+            Language = "ar",
+            Graphics = new BranchTemplatesReportGraphics
+            {
+                OverallSatisfactionPercentage = 80m,
+                AverageScoreValue = 4m,
+                TotalResponses = 1,
+                ScoredResponses = 1,
+                ExcellentResponses = 1,
+                RootQuestions = 1,
+                IncludedAnswers = 1
+            }
+        };
+        var sut = new BranchTemplateExcelReportService(new StubBranchTemplatesReportService(model));
+
+        var result = await sut.GenerateAsync(CreateRequest(templateId) with { Language = "ar" }, CancellationToken.None);
+
+        using var stream = new MemoryStream(result.Value.Content);
+        using var workbook = new XLWorkbook(stream);
+
+        Assert.Equal("تقرير نموذج استبيان العملاء", workbook.Worksheet("01 - Summary").Cell("A1").GetString());
+        Assert.Equal("التحليلات المرئية", workbook.Worksheet("02 - Graphics").Cell("A1").GetString());
+        Assert.Equal("رقم الرد", workbook.Worksheet("03 - Response Matrix").Cell(3, 1).GetString());
+        Assert.True(workbook.Worksheet("03 - Response Matrix").RightToLeft);
     }
 
     private static BranchTemplatesPdfReportModel CreatePopulatedModel()
@@ -204,6 +313,18 @@ public sealed class BranchTemplateExcelReportServiceTests
                 TotalNonScoredAnswers = 1,
                 AverageScoreValue = 5m,
                 AverageScorePercentage = 100m
+            },
+            Graphics = new BranchTemplatesReportGraphics
+            {
+                OverallSatisfactionPercentage = 100m,
+                AverageScoreValue = 5m,
+                TotalResponses = 2,
+                ScoredResponses = 1,
+                NotScoredResponses = 1,
+                ExcellentResponses = 1,
+                RootQuestions = 1,
+                IncludedAnswers = 1,
+                NonScoredAnswers = 1
             },
             Templates = new[]
             {

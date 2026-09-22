@@ -85,7 +85,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 StringComparison.OrdinalIgnoreCase);
 
             var modelResult = await BuildReportModelAsync(
-                request,
+                PreparePdfRequest(request),
                 cancellationToken);
 
             if (modelResult.IsFailure)
@@ -122,6 +122,10 @@ namespace CustomerSurvey.infrastructure.Reports
                     Content = pdfBytes
                 });
         }
+
+        internal static BranchTemplatesPdfReportRequest PreparePdfRequest(
+            BranchTemplatesPdfReportRequest request)
+            => request with { IncludeResponseDetails = true };
 
         public async Task<Result<BranchTemplatesPdfReportModel>> BuildReportModelAsync(
             BranchTemplatesPdfReportRequest request,
@@ -270,6 +274,23 @@ namespace CustomerSurvey.infrastructure.Reports
                 allResponseScores,
                 isArabic);
 
+            var detailedAnswers = normalQuestionBuild.Answers
+                .Concat(anonymousQuestionBuild.Answers)
+                .ToArray();
+
+            var graphics = BranchTemplatesReportGraphicsBuilder.Build(
+                totalResponses: normalResponses.Count + anonymousResponses.Count,
+                responseScores: allResponseScores,
+                questions: allQuestions,
+                totalAnswers: request.IncludeResponseDetails
+                    ? detailedAnswers.Length
+                    : executiveSummary.TotalAnswers,
+                includedAnswers: request.IncludeResponseDetails
+                    ? detailedAnswers.Count(x => x.IncludedInScore)
+                    : allScoreTokens.Length,
+                overallSatisfactionPercentage: executiveSummary.AverageScorePercentage,
+                averageScoreValue: executiveSummary.AverageScoreValue);
+
             var templateDetails = BuildTemplateDetails(
                 templates,
                 allQuestions,
@@ -323,7 +344,8 @@ namespace CustomerSurvey.infrastructure.Reports
                     bestQuestionsMinScorePercentage),
                 TemplateDetails = templateDetails,
                 CustomInputDefinitions = customInputDefinitions,
-                Responses = reportResponses
+                Responses = reportResponses,
+                Graphics = graphics
             };
 
             return Result<BranchTemplatesPdfReportModel>.Ok(model);
@@ -1612,9 +1634,27 @@ namespace CustomerSurvey.infrastructure.Reports
         }
 
         private static string? BuildMediaPath(string basePath, string? fileName)
-            => string.IsNullOrWhiteSpace(fileName)
-                ? null
-                : $"{basePath}/{fileName}";
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return null;
+            }
+
+            var value = fileName.Trim().Replace('\\', '/');
+
+            if (Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
+                (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+            {
+                return value;
+            }
+
+            if (value.StartsWith("Media/", StringComparison.OrdinalIgnoreCase))
+            {
+                return value;
+            }
+
+            return $"{basePath}/{value.TrimStart('/')}";
+        }
 
         private static IReadOnlyCollection<BranchTemplatesPdfTemplateSummary> BuildTemplateSummaries(
             IReadOnlyCollection<TemplateHeaderDto> normalTemplates,
