@@ -6,7 +6,7 @@ public sealed record SuperAdminTemplatePaginationItemResponse
 {
     public Guid TemplateId { get; init; }
 
-    public Guid BranchId { get; init; }
+    public Guid? BranchId { get; init; }
 
     public string? BranchNameEn { get; init; }
 
@@ -15,6 +15,18 @@ public sealed record SuperAdminTemplatePaginationItemResponse
     public TemplateCatalogKind TemplateKind { get; init; }
 
     public string TemplateKindName => TemplateKind.ToString();
+
+    public AnonymousTemplateScope? Scope { get; init; }
+
+    public string? ScopeName => Scope?.ToString();
+
+    public bool IsGlobal { get; init; }
+
+    public bool IsArchived { get; init; }
+
+    public Guid? SourceGlobalAnonymousTemplateId { get; init; }
+
+    public bool IsManagedGlobalCopy { get; init; }
 
     public string NameEn { get; init; } = string.Empty;
 

@@ -6,13 +6,23 @@ internal sealed record SuperAdminTemplatePaginationItemDto
 {
     public Guid TemplateId { get; init; }
 
-    public Guid BranchId { get; init; }
+    public Guid? BranchId { get; init; }
 
     public string? BranchNameEn { get; init; }
 
     public string? BranchNameAr { get; init; }
 
     public TemplateCatalogKind TemplateKind { get; init; }
+
+    public AnonymousTemplateScope? Scope { get; init; }
+
+    public bool IsGlobal { get; init; }
+
+    public bool IsArchived { get; init; }
+
+    public Guid? SourceGlobalAnonymousTemplateId { get; init; }
+
+    public bool IsManagedGlobalCopy { get; init; }
 
     public string NameEn { get; init; } = string.Empty;
 

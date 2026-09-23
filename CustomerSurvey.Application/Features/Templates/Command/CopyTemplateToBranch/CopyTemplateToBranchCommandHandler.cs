@@ -133,7 +133,7 @@ internal sealed class CopyTemplateToBranchCommandHandler
         }
 
         var targetBranch = await _branchReadRepository.GetByPropertyAsync(
-            x => x.Id == request.BranchId && x.IsActive,
+            x => x.Id == request.BranchId,
             cancellationToken);
 
         if (targetBranch is null)
@@ -142,6 +142,14 @@ internal sealed class CopyTemplateToBranchCommandHandler
                 Code: "Templates.CopyToBranch.BranchNotFound",
                 Message: ErrorMessage.CopyTemplateToBranch_Branch_NotFound,
                 Type: ErrorType.NotFound));
+        }
+
+        if (!targetBranch.IsActive)
+        {
+            return Result<CopyTemplateToBranchResponse>.Fail(new Error(
+                Code: "Templates.CopyToBranch.BranchInactive",
+                Message: "Target branch is inactive.",
+                Type: ErrorType.Validation));
         }
 
         var sourceTemplate = await _templateReadRepository.FirstOrDefaultAsync(

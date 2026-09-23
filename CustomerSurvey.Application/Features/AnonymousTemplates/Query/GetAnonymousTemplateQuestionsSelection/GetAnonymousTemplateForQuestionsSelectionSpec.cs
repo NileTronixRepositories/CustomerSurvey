@@ -33,6 +33,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                 NameEn = x.NameEn,
                 NameAr = x.NameAr,
                 IsActive = x.IsActive,
+                IsArchived = x.IsArchived,
                 LogoPath = x.LogoPath,
                 BranchNameEn = x.Branch == null ? null : x.Branch.NameEn,
                 BranchNameAr = x.Branch == null ? null : x.Branch.NameAr
