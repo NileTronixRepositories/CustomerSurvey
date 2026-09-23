@@ -11,8 +11,6 @@ internal sealed class GetSuperAdminAnonymousTemplatesPaginationSpec
     public GetSuperAdminAnonymousTemplatesPaginationSpec(
         GetSuperAdminTemplatesPaginationQuery request)
     {
-        AddCriteria(x => x.Scope == AnonymousTemplateScope.Branch);
-
         if (request.BranchId.HasValue)
         {
             AddCriteria(x => x.BranchId == request.BranchId.Value);
@@ -51,7 +49,7 @@ internal sealed class GetSuperAdminAnonymousTemplatesPaginationSpec
         Select(x => new SuperAdminTemplatePaginationItemDto
         {
             TemplateId = x.Id,
-            BranchId = x.BranchId!.Value,
+            BranchId = x.BranchId,
             BranchNameEn = x.Branch == null
                 ? null
                 : x.Branch.NameEn,
@@ -59,6 +57,11 @@ internal sealed class GetSuperAdminAnonymousTemplatesPaginationSpec
                 ? null
                 : x.Branch.NameAr,
             TemplateKind = TemplateCatalogKind.Anonymous,
+            Scope = x.Scope,
+            IsGlobal = x.Scope == AnonymousTemplateScope.Global,
+            IsArchived = x.IsArchived,
+            SourceGlobalAnonymousTemplateId = x.SourceGlobalAnonymousTemplateId,
+            IsManagedGlobalCopy = x.SourceGlobalAnonymousTemplateId.HasValue,
             NameEn = x.NameEn,
             NameAr = x.NameAr,
             Description = x.Description,

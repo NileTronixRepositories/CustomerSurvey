@@ -101,7 +101,16 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                     Type: ErrorType.NotFound));
             }
 
-            if (!anonymousTemplate.IsActive)
+            if (anonymousTemplate.IsArchived)
+            {
+                return Result<GetAnonymousTemplateQuestionsSelectionResponse>.Fail(new Error(
+                    Code: "AnonymousTemplates.QuestionsSelection.TemplateArchived",
+                    Message: "The global anonymous template must be restored before selecting questions.",
+                    Type: ErrorType.Validation));
+            }
+
+            if (anonymousTemplate.Scope == AnonymousTemplateScope.Branch &&
+                !anonymousTemplate.IsActive)
             {
                 return Result<GetAnonymousTemplateQuestionsSelectionResponse>.Fail(new Error(
                     Code: "AnonymousTemplates.QuestionsSelection.TemplateInactive",
