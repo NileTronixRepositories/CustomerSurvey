@@ -1,5 +1,6 @@
 using BuildingBlock.Domain.Enums;
 using BuildingBlock.Domain.Specification;
+using CustomerSurvey.Application.Features.Reports.Shared;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 
@@ -50,6 +51,8 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
                 x.MaxScore > 0 &&
                 x.ScorePercentage <= query.MaxScorePercentage.Value);
         }
+
+        ApplyDrillDownFilters(query);
 
         if (query.HasComplaint.HasValue)
         {
@@ -159,5 +162,72 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
                 })
                 .ToArray()
         });
+    }
+
+    private void ApplyDrillDownFilters(GetBranchAnonymousResponsesPaginationQuery query)
+    {
+        if (query.IsScored.HasValue)
+        {
+            AddCriteria(query.IsScored.Value
+                ? x => x.MaxScore > 0
+                : x => x.MaxScore <= 0);
+        }
+
+        if (query.SatisfactionCategory.HasValue)
+        {
+            switch (query.SatisfactionCategory.Value)
+            {
+                case SatisfactionCategory.Satisfied:
+                    AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage >= SatisfactionCategoryRule.SatisfiedMinimum);
+                    break;
+                case SatisfactionCategory.Neutral:
+                    AddCriteria(x =>
+                        x.MaxScore > 0 &&
+                        x.ScorePercentage >= SatisfactionCategoryRule.NeutralMinimum &&
+                        x.ScorePercentage < SatisfactionCategoryRule.SatisfiedMinimum);
+                    break;
+                case SatisfactionCategory.Unhappy:
+                    AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage < SatisfactionCategoryRule.NeutralMinimum);
+                    break;
+            }
+        }
+
+        if (query.QuestionId.HasValue)
+        {
+            AddCriteria(x => x.Answers.Any(answer => answer.QuestionId == query.QuestionId.Value));
+        }
+
+        var customInputName = query.CustomInputName?.Trim();
+        var customInputValue = query.CustomInputValue?.Trim();
+
+        if (!string.IsNullOrWhiteSpace(customInputName) ||
+            query.CustomInputType.HasValue ||
+            !string.IsNullOrWhiteSpace(customInputValue))
+        {
+            var hasName = !string.IsNullOrWhiteSpace(customInputName);
+            var hasValue = !string.IsNullOrWhiteSpace(customInputValue);
+
+            if (query.CustomInputType == TemplateCustomInputType.Integer && hasValue)
+            {
+                var integerValue = int.Parse(customInputValue!);
+                AddCriteria(x => x.CustomInputValues.Any(value =>
+                    (!hasName || value.NameSnapshot == customInputName) &&
+                    value.TypeSnapshot == TemplateCustomInputType.Integer &&
+                    value.IntegerValue == integerValue));
+            }
+            else if (query.CustomInputType == TemplateCustomInputType.String && hasValue)
+            {
+                AddCriteria(x => x.CustomInputValues.Any(value =>
+                    (!hasName || value.NameSnapshot == customInputName) &&
+                    value.TypeSnapshot == TemplateCustomInputType.String &&
+                    value.StringValue == customInputValue));
+            }
+            else
+            {
+                AddCriteria(x => x.CustomInputValues.Any(value =>
+                    (!hasName || value.NameSnapshot == customInputName) &&
+                    (!query.CustomInputType.HasValue || value.TypeSnapshot == query.CustomInputType.Value)));
+            }
+        }
     }
 }

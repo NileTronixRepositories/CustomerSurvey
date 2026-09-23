@@ -15,6 +15,10 @@ public sealed record SurveyDashboardResponse
 
     public SurveyDashboardSummaryResponse Summary { get; init; } = new();
 
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardChartsResponse Charts { get; init; } = new();
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardSummaryActionsResponse SummaryActions { get; init; } = new();
+
     public SurveyDashboardSourceBreakdownResponse SourceBreakdown { get; init; } = new();
 
     public IReadOnlyCollection<SurveyDashboardBranchSummaryResponse> BranchesSummary { get; init; }
@@ -161,6 +165,8 @@ public sealed record SurveyDashboardSourceSummaryResponse
     public int ComplaintsCount { get; init; }
 
     public int VoiceAnswersCount { get; init; }
+
+    public SurveyDashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record SurveyDashboardBranchSummaryResponse
@@ -201,6 +207,8 @@ public sealed record SurveyDashboardTrendItemResponse
     public decimal? InternalAverageScorePercentage { get; init; }
 
     public decimal? AnonymousAverageScorePercentage { get; init; }
+
+    public SurveyDashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record SurveyDashboardTemplatePerformanceItemResponse

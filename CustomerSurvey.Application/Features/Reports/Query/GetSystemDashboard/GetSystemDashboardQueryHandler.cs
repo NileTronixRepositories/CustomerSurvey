@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Features.Reports.Shared;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -265,34 +266,61 @@ internal sealed class GetSystemDashboardQueryHandler
                 UnscoredResponses = responses.Count - scoredResponses.Length,
                 AverageScorePercentage = averageScore,
 
-                SatisfiedResponses = scoredResponses.Count(x => x.ScorePercentage >= 80m),
-                NeutralResponses = scoredResponses.Count(x => x.ScorePercentage >= 60m && x.ScorePercentage < 80m),
-                UnhappyResponses = scoredResponses.Count(x => x.ScorePercentage < 60m),
+                SatisfiedResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
+                    x.MaxScore, x.ScorePercentage, SatisfactionCategory.Satisfied)),
+                NeutralResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
+                    x.MaxScore, x.ScorePercentage, SatisfactionCategory.Neutral)),
+                UnhappyResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
+                    x.MaxScore, x.ScorePercentage, SatisfactionCategory.Unhappy)),
 
                 ComplaintsCount = complaintsCount,
                 VoiceAnswersCount = voiceAnswersCount
             },
 
+            Charts = new DashboardChartsResponse
+            {
+                SatisfactionDistribution = SatisfactionDistributionBuilder.Build(
+                    scoredResponses,
+                    x => x.ScorePercentage,
+                    category => BuildSystemResponsesNavigation(
+                        request,
+                        period,
+                        ("satisfactionCategory", category)))
+            },
+
+            SummaryActions = new DashboardSummaryActionsResponse
+            {
+                AllResponses = BuildSystemResponsesNavigation(request, period),
+                Complaints = BuildSystemResponsesNavigation(request, period, ("hasComplaint", true)),
+                VoiceAnswers = BuildSystemResponsesNavigation(request, period, ("hasVoice", true))
+            },
+
             SatisfactionTrend = BuildTrend(
                 scoredResponses,
-                request.GroupBy),
+                request,
+                period),
 
             BranchPerformance = BuildBranchPerformance(
                 branches,
                 templates,
                 responses,
-                answers),
+                answers,
+                request,
+                period),
 
             DepartmentActivity = BuildDepartmentActivity(
                 departments,
                 operators,
-                responses),
+                responses,
+                request,
+                period),
 
             TopTemplates = BuildTopTemplates(
                 templates,
                 responses,
                 answers,
-                request.TopTemplatesCount),
+                request,
+                period),
 
             CriticalResponses = BuildCriticalResponses(
                 responses,
@@ -305,9 +333,10 @@ internal sealed class GetSystemDashboardQueryHandler
 
     private static IReadOnlyCollection<SystemDashboardTrendPointResponse> BuildTrend(
         IReadOnlyCollection<SystemDashboardSurveyResponseDto> scoredResponses,
-        SystemDashboardGroupBy groupBy)
+        GetSystemDashboardQuery request,
+        ResolvedSystemDashboardPeriod period)
     {
-        if (groupBy == SystemDashboardGroupBy.Month)
+        if (request.GroupBy == SystemDashboardGroupBy.Month)
         {
             return scoredResponses
                 .GroupBy(x => new
@@ -317,11 +346,22 @@ internal sealed class GetSystemDashboardQueryHandler
                 })
                 .OrderBy(x => x.Key.Year)
                 .ThenBy(x => x.Key.Month)
-                .Select(x => new SystemDashboardTrendPointResponse
+                .Select(x =>
                 {
-                    Period = $"{x.Key.Year:D4}-{x.Key.Month:D2}",
-                    ResponsesCount = x.Count(),
-                    AverageScorePercentage = Round(x.Average(r => r.ScorePercentage))
+                    var periodKey = $"{x.Key.Year:D4}-{x.Key.Month:D2}";
+                    var range = DashboardDrillDownPathBuilder.ResolveTrendRange(periodKey, true, period.From, period.To);
+                    return new SystemDashboardTrendPointResponse
+                    {
+                        Period = periodKey,
+                        ResponsesCount = x.Count(),
+                        AverageScorePercentage = Round(x.Average(r => r.ScorePercentage)),
+                        DetailsNavigation = BuildSystemResponsesNavigation(
+                            request,
+                            period,
+                            ("from", range.From),
+                            ("to", range.To),
+                            ("isScored", true))
+                    };
                 })
                 .ToArray();
         }
@@ -333,7 +373,13 @@ internal sealed class GetSystemDashboardQueryHandler
             {
                 Period = x.Key.ToString("yyyy-MM-dd"),
                 ResponsesCount = x.Count(),
-                AverageScorePercentage = Round(x.Average(r => r.ScorePercentage))
+                AverageScorePercentage = Round(x.Average(r => r.ScorePercentage)),
+                DetailsNavigation = BuildSystemResponsesNavigation(
+                    request,
+                    period,
+                    ("from", x.Key),
+                    ("to", x.Key),
+                    ("isScored", true))
             })
             .ToArray();
     }
@@ -342,7 +388,9 @@ internal sealed class GetSystemDashboardQueryHandler
         IReadOnlyCollection<SystemDashboardBranchDto> branches,
         IReadOnlyCollection<SystemDashboardTemplateDto> templates,
         IReadOnlyCollection<SystemDashboardSurveyResponseDto> responses,
-        IReadOnlyCollection<SystemDashboardSurveyAnswerDto> answers)
+        IReadOnlyCollection<SystemDashboardSurveyAnswerDto> answers,
+        GetSystemDashboardQuery request,
+        ResolvedSystemDashboardPeriod period)
     {
         var templatesCountByBranchId = templates
             .Where(x => x.IsActive)
@@ -404,7 +452,11 @@ internal sealed class GetSystemDashboardQueryHandler
                     ComplaintsCount = complaintsCount,
                     VoiceAnswersCount = voiceAnswersCount,
                     ActiveTemplatesCount = activeTemplatesCount,
-                    RiskLevel = ResolveRiskLevel(average)
+                    RiskLevel = ResolveRiskLevel(average),
+                    DetailsNavigation = BuildSystemResponsesNavigation(
+                        request,
+                        period,
+                        ("branchId", branch.BranchId))
                 };
             })
             .OrderBy(x => x.AverageScorePercentage)
@@ -415,7 +467,9 @@ internal sealed class GetSystemDashboardQueryHandler
     private static IReadOnlyCollection<SystemDashboardDepartmentActivityResponse> BuildDepartmentActivity(
         IReadOnlyCollection<SystemDashboardDepartmentDto> departments,
         IReadOnlyCollection<SystemDashboardOperatorDto> operators,
-        IReadOnlyCollection<SystemDashboardSurveyResponseDto> responses)
+        IReadOnlyCollection<SystemDashboardSurveyResponseDto> responses,
+        GetSystemDashboardQuery request,
+        ResolvedSystemDashboardPeriod period)
     {
         var operatorsCountByDepartmentId = operators
             .GroupBy(x => x.DepartmentId)
@@ -451,7 +505,11 @@ internal sealed class GetSystemDashboardQueryHandler
                     ResponsesCount = departmentResponses.Length,
                     LastResponseOnUtc = departmentResponses.Length == 0
                         ? null
-                        : departmentResponses.Max(x => x.SubmittedOnUtc)
+                        : departmentResponses.Max(x => x.SubmittedOnUtc),
+                    DetailsNavigation = BuildSystemResponsesNavigation(
+                        request,
+                        period,
+                        ("departmentId", department.DepartmentId))
                 };
             })
             .OrderByDescending(x => x.ResponsesCount)
@@ -463,7 +521,8 @@ internal sealed class GetSystemDashboardQueryHandler
         IReadOnlyCollection<SystemDashboardTemplateDto> templates,
         IReadOnlyCollection<SystemDashboardSurveyResponseDto> responses,
         IReadOnlyCollection<SystemDashboardSurveyAnswerDto> answers,
-        int topTemplatesCount)
+        GetSystemDashboardQuery request,
+        ResolvedSystemDashboardPeriod period)
     {
         var templatesById = templates.ToDictionary(x => x.TemplateId);
 
@@ -505,12 +564,16 @@ internal sealed class GetSystemDashboardQueryHandler
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
                     ComplaintsCount = complaintsCount,
-                    RiskLevel = ResolveRiskLevel(average)
+                    RiskLevel = ResolveRiskLevel(average),
+                    DetailsNavigation = BuildSystemResponsesNavigation(
+                        request,
+                        period,
+                        ("templateId", template.TemplateId))
                 };
             })
             .OrderByDescending(x => x.ResponsesCount)
             .ThenBy(x => x.AverageScorePercentage)
-            .Take(topTemplatesCount)
+            .Take(request.TopTemplatesCount)
             .ToArray();
     }
 
@@ -572,7 +635,10 @@ internal sealed class GetSystemDashboardQueryHandler
                     SubmittedOnUtc = x.SubmittedOnUtc,
                     ScorePercentage = x.ScorePercentage,
                     ComplaintText = complaintText,
-                    CustomInputs = customInputs ?? Array.Empty<SystemDashboardCriticalResponseCustomInputItem>()
+                    CustomInputs = customInputs ?? Array.Empty<SystemDashboardCriticalResponseCustomInputItem>(),
+                    DetailsNavigation = DashboardDrillDownPathBuilder.Navigation(
+                        "SystemResponseDetails",
+                        $"/api/reports/system-responses/{x.SurveyResponseId}")
                 };
             })
             .ToArray();
@@ -593,6 +659,34 @@ internal sealed class GetSystemDashboardQueryHandler
             Name = value.NameSnapshot,
             Value = displayValue
         };
+    }
+
+    private static DashboardDetailsNavigationResponse BuildSystemResponsesNavigation(
+        GetSystemDashboardQuery request,
+        ResolvedSystemDashboardPeriod period,
+        params (string Name, object? Value)[] additionalFilters)
+    {
+        var filters = new List<(string Name, object? Value)>
+        {
+            ("from", period.From),
+            ("to", period.To),
+            ("branchId", request.BranchId),
+            ("departmentId", request.DepartmentId)
+        };
+
+        foreach (var filter in additionalFilters)
+        {
+            filters.RemoveAll(existing => string.Equals(existing.Name, filter.Name, StringComparison.OrdinalIgnoreCase));
+            filters.Add(filter);
+        }
+
+        filters.Add(("pageNumber", 1));
+        filters.Add(("pageSize", 10));
+
+        return DashboardDrillDownPathBuilder.Navigation(
+            "SystemResponses",
+            "/api/reports/system-responses",
+            filters.ToArray());
     }
 
     private static string ResolveRiskLevel(decimal averageScorePercentage)

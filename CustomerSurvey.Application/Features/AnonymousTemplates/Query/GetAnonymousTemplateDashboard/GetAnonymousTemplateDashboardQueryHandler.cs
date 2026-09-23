@@ -3,6 +3,7 @@ using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Security;
+using CustomerSurvey.Application.Features.Reports.Shared;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -208,9 +209,12 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
             ? 0m
             : Round(scoredResponses.Average(x => x.ScorePercentage));
 
-        var satisfiedResponses = scoredResponses.Count(x => x.ScorePercentage >= 80m);
-        var neutralResponses = scoredResponses.Count(x => x.ScorePercentage >= 60m && x.ScorePercentage < 80m);
-        var unhappyResponses = scoredResponses.Count(x => x.ScorePercentage < 60m);
+        var satisfiedResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
+            x.MaxScore, x.ScorePercentage, SatisfactionCategory.Satisfied));
+        var neutralResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
+            x.MaxScore, x.ScorePercentage, SatisfactionCategory.Neutral));
+        var unhappyResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
+            x.MaxScore, x.ScorePercentage, SatisfactionCategory.Unhappy));
 
         var complaintsCount = answers.Count(x => x.QuestionType == QuestionType.Complain);
         var voiceAnswersCount = answers.Count(x => x.QuestionType == QuestionType.Voice);
@@ -251,20 +255,44 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
                 VoiceAnswersCount = voiceAnswersCount
             },
 
+            Charts = new DashboardChartsResponse
+            {
+                SatisfactionDistribution = SatisfactionDistributionBuilder.Build(
+                    scoredResponses,
+                    x => x.ScorePercentage,
+                    category => BuildAnonymousResponsesNavigation(
+                        request,
+                        period,
+                        ("satisfactionCategory", category)))
+            },
+
+            SummaryActions = new DashboardSummaryActionsResponse
+            {
+                AllResponses = BuildAnonymousResponsesNavigation(request, period),
+                Complaints = BuildAnonymousResponsesNavigation(request, period, ("hasComplaint", true)),
+                VoiceAnswers = BuildAnonymousResponsesNavigation(request, period, ("hasVoice", true))
+            },
+
             SatisfactionTrend = BuildTrend(
                 scoredResponses,
-                request.GroupBy),
+                request,
+                period),
 
             AnonymousTemplatePerformance = BuildAnonymousTemplatePerformance(
                 responses,
-                answers),
+                answers,
+                request,
+                period),
 
             LowestRatedQuestions = BuildLowestRatedQuestions(
                 answers,
-                request.TopQuestionsCount),
+                request,
+                period),
 
             CustomInputSegments = BuildCustomInputSegments(
-                customInputValues),
+                customInputValues,
+                request,
+                period),
 
             CriticalResponses = BuildCriticalResponses(
                 responses,
@@ -277,9 +305,10 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
 
     private static IReadOnlyCollection<AnonymousTemplateDashboardTrendPointResponse> BuildTrend(
         IReadOnlyCollection<AnonymousDashboardSurveyResponseDto> scoredResponses,
-        AnonymousTemplateDashboardGroupBy groupBy)
+        GetAnonymousTemplateDashboardQuery request,
+        ResolvedAnonymousTemplateDashboardPeriod period)
     {
-        if (groupBy == AnonymousTemplateDashboardGroupBy.Month)
+        if (request.GroupBy == AnonymousTemplateDashboardGroupBy.Month)
         {
             return scoredResponses
                 .GroupBy(x => new
@@ -289,11 +318,22 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
                 })
                 .OrderBy(x => x.Key.Year)
                 .ThenBy(x => x.Key.Month)
-                .Select(x => new AnonymousTemplateDashboardTrendPointResponse
+                .Select(x =>
                 {
-                    Period = $"{x.Key.Year:D4}-{x.Key.Month:D2}",
-                    ResponsesCount = x.Count(),
-                    AverageScorePercentage = Round(x.Average(r => r.ScorePercentage))
+                    var periodKey = $"{x.Key.Year:D4}-{x.Key.Month:D2}";
+                    var range = DashboardDrillDownPathBuilder.ResolveTrendRange(periodKey, true, period.From, period.To);
+                    return new AnonymousTemplateDashboardTrendPointResponse
+                    {
+                        Period = periodKey,
+                        ResponsesCount = x.Count(),
+                        AverageScorePercentage = Round(x.Average(r => r.ScorePercentage)),
+                        DetailsNavigation = BuildAnonymousResponsesNavigation(
+                            request,
+                            period,
+                            ("from", range.From),
+                            ("to", range.To),
+                            ("isScored", true))
+                    };
                 })
                 .ToArray();
         }
@@ -305,14 +345,22 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
             {
                 Period = x.Key.ToString("yyyy-MM-dd"),
                 ResponsesCount = x.Count(),
-                AverageScorePercentage = Round(x.Average(r => r.ScorePercentage))
+                AverageScorePercentage = Round(x.Average(r => r.ScorePercentage)),
+                DetailsNavigation = BuildAnonymousResponsesNavigation(
+                    request,
+                    period,
+                    ("from", x.Key),
+                    ("to", x.Key),
+                    ("isScored", true))
             })
             .ToArray();
     }
 
     private static IReadOnlyCollection<AnonymousTemplateDashboardPerformanceResponse> BuildAnonymousTemplatePerformance(
         IReadOnlyCollection<AnonymousDashboardSurveyResponseDto> responses,
-        IReadOnlyCollection<AnonymousDashboardSurveyAnswerDto> answers)
+        IReadOnlyCollection<AnonymousDashboardSurveyAnswerDto> answers,
+        GetAnonymousTemplateDashboardQuery request,
+        ResolvedAnonymousTemplateDashboardPeriod period)
     {
         var complaintsCountByTemplateId = answers
             .Where(x => x.QuestionType == QuestionType.Complain)
@@ -368,7 +416,11 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
                     ComplaintsCount = complaintsCount,
-                    RiskLevel = ResolveRiskLevel(average)
+                    RiskLevel = ResolveRiskLevel(average),
+                    DetailsNavigation = BuildTemplateResponsesNavigation(
+                        x.Key.AnonymousTemplateId,
+                        request,
+                        period)
                 };
             })
             .OrderBy(x => x.AverageScorePercentage)
@@ -378,7 +430,8 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
 
     private static IReadOnlyCollection<AnonymousTemplateDashboardQuestionInsightResponse> BuildLowestRatedQuestions(
         IReadOnlyCollection<AnonymousDashboardSurveyAnswerDto> answers,
-        int topQuestionsCount)
+        GetAnonymousTemplateDashboardQuery request,
+        ResolvedAnonymousTemplateDashboardPeriod period)
     {
         return answers
             .Where(x =>
@@ -420,17 +473,24 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
                     QuestionTypeName = x.Key.QuestionType.ToString(),
                     AnswersCount = x.Count(),
                     AverageValue = averageValue,
-                    AverageScorePercentage = Round(averageValue / 5m * 100m)
+                    AverageScorePercentage = Round(averageValue / 5m * 100m),
+                    DetailsNavigation = BuildTemplateResponsesNavigation(
+                        x.Key.AnonymousTemplateId,
+                        request,
+                        period,
+                        ("questionId", x.Key.QuestionId))
                 };
             })
             .OrderBy(x => x.AverageScorePercentage)
             .ThenByDescending(x => x.AnswersCount)
-            .Take(topQuestionsCount)
+            .Take(request.TopQuestionsCount)
             .ToArray();
     }
 
     private static IReadOnlyCollection<AnonymousTemplateDashboardCustomInputSegmentResponse> BuildCustomInputSegments(
-        IReadOnlyCollection<AnonymousDashboardCustomInputValueDto> customInputValues)
+        IReadOnlyCollection<AnonymousDashboardCustomInputValueDto> customInputValues,
+        GetAnonymousTemplateDashboardQuery request,
+        ResolvedAnonymousTemplateDashboardPeriod period)
     {
         return customInputValues
             .Where(x => x.MaxScore > 0)
@@ -456,7 +516,14 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
                     {
                         Value = valueGroup.Key,
                         ResponsesCount = valueGroup.Count(),
-                        AverageScorePercentage = Round(valueGroup.Average(v => v.ScorePercentage))
+                        AverageScorePercentage = Round(valueGroup.Average(v => v.ScorePercentage)),
+                        DetailsNavigation = BuildAnonymousResponsesNavigation(
+                            request,
+                            period,
+                            ("customInputName", inputGroup.Key.NameSnapshot),
+                            ("customInputType", inputGroup.Key.TypeSnapshot),
+                            ("customInputValue", valueGroup.Key),
+                            ("isScored", true))
                     })
                     .ToArray()
             })
@@ -520,7 +587,10 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
                     SubmittedOnUtc = x.SubmittedOnUtc,
                     ScorePercentage = x.ScorePercentage,
                     ComplaintText = complaintText,
-                    CustomInputs = customInputs ?? Array.Empty<AnonymousTemplateDashboardCriticalResponseCustomInputItem>()
+                    CustomInputs = customInputs ?? Array.Empty<AnonymousTemplateDashboardCriticalResponseCustomInputItem>(),
+                    DetailsNavigation = DashboardDrillDownPathBuilder.Navigation(
+                        "AnonymousResponseDetails",
+                        $"/api/anonymous-templates/{x.AnonymousTemplateId}/responses/{x.AnonymousSurveyResponseId}")
                 };
             })
             .ToArray();
@@ -534,6 +604,61 @@ internal sealed class GetAnonymousTemplateDashboardQueryHandler
             TemplateCustomInputType.Integer => value.IntegerValue?.ToString() ?? string.Empty,
             _ => string.Empty
         };
+    }
+
+    private static DashboardDetailsNavigationResponse BuildAnonymousResponsesNavigation(
+        GetAnonymousTemplateDashboardQuery request,
+        ResolvedAnonymousTemplateDashboardPeriod period,
+        params (string Name, object? Value)[] additionalFilters)
+    {
+        var filters = new List<(string Name, object? Value)>
+        {
+            ("from", period.From),
+            ("to", period.To),
+            ("anonymousTemplateId", request.AnonymousTemplateId)
+        };
+
+        AddOrReplace(filters, additionalFilters);
+        filters.Add(("pageNumber", 1));
+        filters.Add(("pageSize", 10));
+
+        return DashboardDrillDownPathBuilder.Navigation(
+            "AnonymousResponses",
+            "/api/reports/anonymous-responses",
+            filters.ToArray());
+    }
+
+    private static DashboardDetailsNavigationResponse BuildTemplateResponsesNavigation(
+        Guid anonymousTemplateId,
+        GetAnonymousTemplateDashboardQuery request,
+        ResolvedAnonymousTemplateDashboardPeriod period,
+        params (string Name, object? Value)[] additionalFilters)
+    {
+        var filters = new List<(string Name, object? Value)>
+        {
+            ("fromDate", period.From),
+            ("toDate", period.To.AddDays(1))
+        };
+
+        AddOrReplace(filters, additionalFilters);
+        filters.Add(("pageNumber", 1));
+        filters.Add(("pageSize", 10));
+
+        return DashboardDrillDownPathBuilder.Navigation(
+            "AnonymousTemplateResponses",
+            $"/api/anonymous-templates/{anonymousTemplateId}/responses",
+            filters.ToArray());
+    }
+
+    private static void AddOrReplace(
+        List<(string Name, object? Value)> filters,
+        IReadOnlyCollection<(string Name, object? Value)> additionalFilters)
+    {
+        foreach (var filter in additionalFilters)
+        {
+            filters.RemoveAll(existing => string.Equals(existing.Name, filter.Name, StringComparison.OrdinalIgnoreCase));
+            filters.Add(filter);
+        }
     }
 
     private static string ResolveRiskLevel(decimal averageScorePercentage)
