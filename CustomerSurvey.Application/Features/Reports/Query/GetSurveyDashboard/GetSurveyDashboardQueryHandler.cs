@@ -6,6 +6,7 @@ using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using CustomerSurvey.Application.Features.Reports.Services.Scoring;
+using CustomerSurvey.Application.Features.Reports.Shared;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
@@ -759,40 +760,100 @@ internal sealed class GetSurveyDashboardQueryHandler
                     .Count()
             },
 
+            Charts = new DashboardChartsResponse
+            {
+                SatisfactionDistribution = SatisfactionDistributionBuilder.Build(
+                    scoredResponses,
+                    x => x.ScorePercentage,
+                    category => BuildSurveyResponsesNavigation(
+                        request,
+                        actor,
+                        scope,
+                        period,
+                        appliedSource,
+                        templateFilter,
+                        ("satisfactionCategory", category)))
+            },
+
+            SummaryActions = new DashboardSummaryActionsResponse
+            {
+                AllResponses = BuildSurveyResponsesNavigation(
+                    request, actor, scope, period, appliedSource, templateFilter),
+                Complaints = BuildSurveyResponsesNavigation(
+                    request, actor, scope, period, appliedSource, templateFilter, ("hasComplaint", true)),
+                VoiceAnswers = BuildSurveyResponsesNavigation(
+                    request, actor, scope, period, appliedSource, templateFilter, ("hasVoice", true))
+            },
+
             SourceBreakdown = new SurveyDashboardSourceBreakdownResponse
             {
                 Internal = BuildSourceSummary(
                     internalResponses,
-                    answers.Where(x => x.Source == SurveyDashboardSource.Internal)),
+                    answers.Where(x => x.Source == SurveyDashboardSource.Internal),
+                    SurveyDashboardSource.Internal,
+                    request,
+                    actor,
+                    scope,
+                    period,
+                    templateFilter),
 
                 Anonymous = BuildSourceSummary(
                     anonymousResponses,
-                    answers.Where(x => x.Source == SurveyDashboardSource.Anonymous))
+                    answers.Where(x => x.Source == SurveyDashboardSource.Anonymous),
+                    SurveyDashboardSource.Anonymous,
+                    request,
+                    actor,
+                    scope,
+                    period,
+                    templateFilter)
             },
 
             BranchesSummary = BuildBranchesSummary(
                 scope,
                 responses,
                 answers,
-                actor.IsSuperAdmin),
+                actor,
+                request,
+                period,
+                appliedSource,
+                templateFilter),
 
             SatisfactionTrend = BuildTrend(
                 responses,
-                request.GroupBy),
+                request,
+                actor,
+                scope,
+                period,
+                appliedSource,
+                templateFilter),
 
             TemplatePerformance = BuildTemplatePerformance(
                 responses,
-                answers),
+                answers,
+                request,
+                actor,
+                scope,
+                period,
+                templateFilter),
 
             LowestRatedQuestions = BuildLowestRatedQuestions(
                 questionScoreTokens,
                 internalTemplates.Concat(anonymousTemplates).ToArray(),
                 templateQuestions,
-                request.TopQuestionsCount),
+                request,
+                actor,
+                scope,
+                period,
+                templateFilter),
 
             CustomInputSegments = BuildCustomInputSegments(
                 appliedSource,
-                customInputValues),
+                customInputValues,
+                request,
+                actor,
+                scope,
+                period,
+                templateFilter),
 
             CriticalResponses = BuildCriticalResponses(
                 responses,
@@ -805,7 +866,13 @@ internal sealed class GetSurveyDashboardQueryHandler
 
     private static SurveyDashboardSourceSummaryResponse BuildSourceSummary(
         IReadOnlyCollection<SurveyDashboardResponseRow> responses,
-        IEnumerable<SurveyDashboardAnswerRow> answers)
+        IEnumerable<SurveyDashboardAnswerRow> answers,
+        SurveyDashboardSource source,
+        GetSurveyDashboardQuery request,
+        CurrentSurveyDashboardActor actor,
+        ResolvedSurveyDashboardScope scope,
+        ResolvedSurveyDashboardPeriod period,
+        ResolvedSurveyDashboardTemplateFilter? templateFilter)
     {
         var answersArray = answers.ToArray();
         var scored = responses.Where(IsScored).ToArray();
@@ -819,7 +886,17 @@ internal sealed class GetSurveyDashboardQueryHandler
             NeutralResponses = scored.Count(IsNeutral),
             UnhappyResponses = scored.Count(IsUnhappy),
             ComplaintsCount = CountComplaints(answersArray),
-            VoiceAnswersCount = CountVoiceAnswers(answersArray)
+            VoiceAnswersCount = CountVoiceAnswers(answersArray),
+            DetailsNavigation = responses.Count == 0
+                ? null
+                : ToSurveyNavigation(BuildSurveyResponsesNavigation(
+                    request,
+                    actor,
+                    scope,
+                    period,
+                    source,
+                    templateFilter,
+                    ("source", source)))
         };
     }
 
@@ -827,7 +904,11 @@ internal sealed class GetSurveyDashboardQueryHandler
         ResolvedSurveyDashboardScope scope,
         IReadOnlyCollection<SurveyDashboardResponseRow> responses,
         IReadOnlyCollection<SurveyDashboardAnswerRow> answers,
-        bool isSuperAdmin)
+        CurrentSurveyDashboardActor actor,
+        GetSurveyDashboardQuery request,
+        ResolvedSurveyDashboardPeriod period,
+        SurveyDashboardSource appliedSource,
+        ResolvedSurveyDashboardTemplateFilter? templateFilter)
     {
         var responsesByBranchId = responses
             .GroupBy(x => x.BranchId)
@@ -865,7 +946,14 @@ internal sealed class GetSurveyDashboardQueryHandler
                     AverageScorePercentage = AverageScore(scored),
                     ComplaintsCount = complaintsCount,
                     VoiceAnswersCount = voiceAnswersCount,
-                    DetailsNavigation = BuildBranchDashboardNavigation(branch.BranchId, isSuperAdmin)
+                    DetailsNavigation = ToSurveyNavigation(BuildSurveyResponsesNavigation(
+                        request,
+                        actor,
+                        scope,
+                        period,
+                        appliedSource,
+                        templateFilter,
+                        ("branchId", actor.IsSuperAdmin ? branch.BranchId : null)))
                 };
             })
             .OrderByDescending(x => x.TotalResponses)
@@ -875,10 +963,15 @@ internal sealed class GetSurveyDashboardQueryHandler
 
     private static IReadOnlyCollection<SurveyDashboardTrendItemResponse> BuildTrend(
         IReadOnlyCollection<SurveyDashboardResponseRow> responses,
-        DashboardGroupBy groupBy)
+        GetSurveyDashboardQuery request,
+        CurrentSurveyDashboardActor actor,
+        ResolvedSurveyDashboardScope scope,
+        ResolvedSurveyDashboardPeriod period,
+        SurveyDashboardSource appliedSource,
+        ResolvedSurveyDashboardTemplateFilter? templateFilter)
     {
         return responses
-            .GroupBy(x => GetPeriodKey(x.SubmittedOnUtc, groupBy))
+            .GroupBy(x => GetPeriodKey(x.SubmittedOnUtc, request.GroupBy))
             .OrderBy(x => x.Key)
             .Select(x =>
             {
@@ -890,6 +983,12 @@ internal sealed class GetSurveyDashboardQueryHandler
                     .Where(r => r.Source == SurveyDashboardSource.Anonymous && IsScored(r))
                     .ToArray();
 
+                var range = DashboardDrillDownPathBuilder.ResolveTrendRange(
+                    x.Key,
+                    request.GroupBy == DashboardGroupBy.Month,
+                    period.From,
+                    period.To);
+
                 return new SurveyDashboardTrendItemResponse
                 {
                     Period = x.Key,
@@ -898,7 +997,17 @@ internal sealed class GetSurveyDashboardQueryHandler
                     AnonymousResponses = x.Count(r => r.Source == SurveyDashboardSource.Anonymous),
                     AverageScorePercentage = AverageScore(scored),
                     InternalAverageScorePercentage = internalScored.Length == 0 ? null : AverageScore(internalScored),
-                    AnonymousAverageScorePercentage = anonymousScored.Length == 0 ? null : AverageScore(anonymousScored)
+                    AnonymousAverageScorePercentage = anonymousScored.Length == 0 ? null : AverageScore(anonymousScored),
+                    DetailsNavigation = ToSurveyNavigation(BuildSurveyResponsesNavigation(
+                        request,
+                        actor,
+                        scope,
+                        period,
+                        appliedSource,
+                        templateFilter,
+                        ("from", range.From),
+                        ("to", range.To),
+                        ("isScored", true)))
                 };
             })
             .ToArray();
@@ -906,7 +1015,12 @@ internal sealed class GetSurveyDashboardQueryHandler
 
     private static IReadOnlyCollection<SurveyDashboardTemplatePerformanceItemResponse> BuildTemplatePerformance(
         IReadOnlyCollection<SurveyDashboardResponseRow> responses,
-        IReadOnlyCollection<SurveyDashboardAnswerRow> answers)
+        IReadOnlyCollection<SurveyDashboardAnswerRow> answers,
+        GetSurveyDashboardQuery request,
+        CurrentSurveyDashboardActor actor,
+        ResolvedSurveyDashboardScope scope,
+        ResolvedSurveyDashboardPeriod period,
+        ResolvedSurveyDashboardTemplateFilter? templateFilter)
     {
         var complaintsByTemplate = answers
             .Where(IsComplaint)
@@ -954,7 +1068,16 @@ internal sealed class GetSurveyDashboardQueryHandler
                     ComplaintsCount = complaintsCount,
                     VoiceAnswersCount = voiceAnswersCount,
                     RiskLevel = ResolveRiskLevel(average),
-                    DetailsNavigation = BuildTemplateResponsesNavigation(x.Key.Source, x.Key.TemplateId)
+                    DetailsNavigation = ToSurveyNavigation(BuildSurveyResponsesNavigation(
+                        request,
+                        actor,
+                        scope,
+                        period,
+                        x.Key.Source,
+                        templateFilter,
+                        ("source", x.Key.Source),
+                        ("templateId", x.Key.Source == SurveyDashboardSource.Internal ? x.Key.TemplateId : null),
+                        ("anonymousTemplateId", x.Key.Source == SurveyDashboardSource.Anonymous ? x.Key.TemplateId : null)))
                 };
             })
             .OrderBy(x => x.AverageScorePercentage)
@@ -966,7 +1089,11 @@ internal sealed class GetSurveyDashboardQueryHandler
         IReadOnlyCollection<QuestionScoreToken> scoreTokens,
         IReadOnlyCollection<SurveyDashboardTemplateRow> templates,
         IReadOnlyCollection<TemplateQuestionFlatDto> templateQuestions,
-        int topQuestionsCount)
+        GetSurveyDashboardQuery request,
+        CurrentSurveyDashboardActor actor,
+        ResolvedSurveyDashboardScope scope,
+        ResolvedSurveyDashboardPeriod period,
+        ResolvedSurveyDashboardTemplateFilter? templateFilter)
     {
         var templatesByKey = templates
             .GroupBy(x => new
@@ -1032,22 +1159,35 @@ internal sealed class GetSurveyDashboardQueryHandler
                 AnswersCount = scoreGroup.Count(),
                 AverageValue = averageValue,
                 AverageScorePercentage = Round(averageValue / 5m * 100m),
-                DetailsNavigation = BuildQuestionContextNavigation(
+                DetailsNavigation = ToSurveyNavigation(BuildSurveyResponsesNavigation(
+                    request,
+                    actor,
+                    scope,
+                    period,
                     scoreGroup.Key.Source,
-                    scoreGroup.Key.TemplateId)
+                    templateFilter,
+                    ("source", scoreGroup.Key.Source),
+                    ("templateId", scoreGroup.Key.Source == SurveyDashboardSource.Internal ? scoreGroup.Key.TemplateId : null),
+                    ("anonymousTemplateId", scoreGroup.Key.Source == SurveyDashboardSource.Anonymous ? scoreGroup.Key.TemplateId : null),
+                    ("questionId", scoreGroup.Key.QuestionId)))
             });
         }
 
         return result
             .OrderBy(x => x.AverageScorePercentage)
             .ThenByDescending(x => x.AnswersCount)
-            .Take(topQuestionsCount)
+            .Take(request.TopQuestionsCount)
             .ToArray();
     }
 
     private static IReadOnlyCollection<SurveyDashboardCustomInputSegmentResponse> BuildCustomInputSegments(
         SurveyDashboardSource requestedSource,
-        IReadOnlyCollection<SurveyDashboardCustomInputValueRow> customInputValues)
+        IReadOnlyCollection<SurveyDashboardCustomInputValueRow> customInputValues,
+        GetSurveyDashboardQuery request,
+        CurrentSurveyDashboardActor actor,
+        ResolvedSurveyDashboardScope scope,
+        ResolvedSurveyDashboardPeriod period,
+        ResolvedSurveyDashboardTemplateFilter? templateFilter)
     {
         return customInputValues
             .Where(x => x.MaxScore > 0)
@@ -1087,7 +1227,22 @@ internal sealed class GetSurveyDashboardQueryHandler
                         InternalResponses = valueGroup.Count(x => x.Value.Source == SurveyDashboardSource.Internal),
                         AnonymousResponses = valueGroup.Count(x => x.Value.Source == SurveyDashboardSource.Anonymous),
                         AverageScorePercentage = Round(valueGroup.Average(x => x.Value.ScorePercentage)),
-                        DetailsNavigation = null
+                        DetailsNavigation = ToSurveyNavigation(BuildSurveyResponsesNavigation(
+                            request,
+                            actor,
+                            scope,
+                            period,
+                            requestedSource,
+                            templateFilter,
+                            ("source", requestedSource),
+                            ("customInputName", inputGroup.Key.NameSnapshot),
+                            ("customInputLabelEn", inputGroup.Key.LabelEn),
+                            ("customInputLabelAr", inputGroup.Key.LabelAr),
+                            ("customInputLabelEnIsNull", inputGroup.Key.LabelEn is null ? true : null),
+                            ("customInputLabelArIsNull", inputGroup.Key.LabelAr is null ? true : null),
+                            ("customInputType", inputGroup.Key.TypeSnapshot),
+                            ("customInputValue", valueGroup.Key),
+                            ("isScored", true)))
                     })
                     .ToArray()
             })
@@ -1203,17 +1358,26 @@ internal sealed class GetSurveyDashboardQueryHandler
 
     private static bool IsSatisfied(SurveyDashboardResponseRow response)
     {
-        return response.ScorePercentage >= 80m;
+        return SatisfactionCategoryRule.Matches(
+            response.MaxScore,
+            response.ScorePercentage,
+            SatisfactionCategory.Satisfied);
     }
 
     private static bool IsNeutral(SurveyDashboardResponseRow response)
     {
-        return response.ScorePercentage >= 60m && response.ScorePercentage < 80m;
+        return SatisfactionCategoryRule.Matches(
+            response.MaxScore,
+            response.ScorePercentage,
+            SatisfactionCategory.Neutral);
     }
 
     private static bool IsUnhappy(SurveyDashboardResponseRow response)
     {
-        return response.ScorePercentage < 60m;
+        return SatisfactionCategoryRule.Matches(
+            response.MaxScore,
+            response.ScorePercentage,
+            SatisfactionCategory.Unhappy);
     }
 
     private static bool IsComplaint(SurveyDashboardAnswerRow answer)
@@ -1260,59 +1424,53 @@ internal sealed class GetSurveyDashboardQueryHandler
         return "Healthy";
     }
 
-    private static SurveyDashboardDetailsNavigationResponse BuildBranchDashboardNavigation(
-        Guid branchId,
-        bool isSuperAdmin)
+    private static DashboardDetailsNavigationResponse BuildSurveyResponsesNavigation(
+        GetSurveyDashboardQuery request,
+        CurrentSurveyDashboardActor actor,
+        ResolvedSurveyDashboardScope scope,
+        ResolvedSurveyDashboardPeriod period,
+        SurveyDashboardSource appliedSource,
+        ResolvedSurveyDashboardTemplateFilter? templateFilter,
+        params (string Name, object? Value)[] additionalFilters)
     {
-        var path = isSuperAdmin
-            ? $"/api/reports/survey-dashboard?branchId={branchId}&source=All"
-            : "/api/reports/survey-dashboard?source=All";
-
-        return new SurveyDashboardDetailsNavigationResponse
+        var filters = new List<(string Name, object? Value)>
         {
-            RouteType = "BranchDashboard",
-            Method = "GET",
-            Path = path
+            ("source", appliedSource),
+            ("branchId", actor.IsSuperAdmin ? scope.BranchId : null),
+            ("templateId", templateFilter?.TemplateKind == SurveyDashboardTemplateKind.Authorized
+                ? templateFilter.TemplateId
+                : null),
+            ("anonymousTemplateId", templateFilter?.TemplateKind == SurveyDashboardTemplateKind.Anonymous
+                ? templateFilter.TemplateId
+                : null),
+            ("from", period.From),
+            ("to", period.To),
+            ("scoreCalculationMode", request.ScoreCalculationMode)
         };
+
+        foreach (var filter in additionalFilters)
+        {
+            filters.RemoveAll(existing => string.Equals(existing.Name, filter.Name, StringComparison.OrdinalIgnoreCase));
+            filters.Add(filter);
+        }
+
+        filters.Add(("pageNumber", 1));
+        filters.Add(("pageSize", 10));
+
+        return DashboardDrillDownPathBuilder.Navigation(
+            "SurveyResponses",
+            "/api/reports/survey-responses",
+            filters.ToArray());
     }
 
-    private static SurveyDashboardDetailsNavigationResponse BuildTemplateResponsesNavigation(
-        SurveyDashboardSource source,
-        Guid templateId)
-    {
-        return source == SurveyDashboardSource.Anonymous
-            ? new SurveyDashboardDetailsNavigationResponse
-            {
-                RouteType = "AnonymousTemplateResponses",
-                Method = "GET",
-                Path = $"/api/anonymous-templates/{templateId}/responses?pageNumber=1&pageSize=10"
-            }
-            : new SurveyDashboardDetailsNavigationResponse
-            {
-                RouteType = "InternalTemplateResponses",
-                Method = "GET",
-                Path = $"/api/reports/branch-responses?templateId={templateId}&pageNumber=1&pageSize=10"
-            };
-    }
-
-    private static SurveyDashboardDetailsNavigationResponse BuildQuestionContextNavigation(
-        SurveyDashboardSource source,
-        Guid templateId)
-    {
-        return source == SurveyDashboardSource.Anonymous
-            ? new SurveyDashboardDetailsNavigationResponse
-            {
-                RouteType = "AnonymousTemplateResponsesByQuestionContext",
-                Method = "GET",
-                Path = $"/api/anonymous-templates/{templateId}/responses?pageNumber=1&pageSize=10"
-            }
-            : new SurveyDashboardDetailsNavigationResponse
-            {
-                RouteType = "InternalTemplateResponsesByQuestionContext",
-                Method = "GET",
-                Path = $"/api/reports/branch-responses?templateId={templateId}&pageNumber=1&pageSize=10"
-            };
-    }
+    private static SurveyDashboardDetailsNavigationResponse ToSurveyNavigation(
+        DashboardDetailsNavigationResponse navigation)
+        => new()
+        {
+            RouteType = navigation.RouteType,
+            Method = navigation.Method,
+            Path = navigation.Path
+        };
 
     private static SurveyDashboardDetailsNavigationResponse BuildResponseDetailsNavigation(
         SurveyDashboardSource source,

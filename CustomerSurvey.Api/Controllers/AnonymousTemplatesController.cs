@@ -342,7 +342,13 @@ namespace CustomerSurvey.Api.Controllers
                 FromDate = query.FromDate,
                 ToDate = query.ToDate,
                 MinScorePercentage = query.MinScorePercentage,
-                MaxScorePercentage = query.MaxScorePercentage
+                MaxScorePercentage = query.MaxScorePercentage,
+                SatisfactionCategory = query.SatisfactionCategory,
+                IsScored = query.IsScored,
+                QuestionId = query.QuestionId,
+                CustomInputName = query.CustomInputName,
+                CustomInputType = query.CustomInputType,
+                CustomInputValue = query.CustomInputValue
             };
 
             var result = await sender.Send(request, cancellationToken);

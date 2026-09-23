@@ -10,11 +10,13 @@ using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfRep
 using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperatorSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperatorSurveyResponsesPagination;
+using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentSurveyResponsesPagination;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponsesPagination;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardTemplatesSelection;
+using CustomerSurvey.Application.Features.Reports.Query.GetSurveyResponsesPagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -81,6 +83,20 @@ namespace CustomerSurvey.Api.Controllers
         {
             query ??= new GetDepartmentOperatorSurveyResponsesPaginationQuery();
             query.OperatorId = operatorId;
+            query.SearchText ??= string.Empty;
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("department-responses")]
+        [Permission("Reports.ViewDepartmentReports")]
+        public async Task<IActionResult> GetDepartmentResponses(
+            [FromQuery] GetDepartmentSurveyResponsesPaginationQuery query,
+            CancellationToken cancellationToken)
+        {
+            query ??= new GetDepartmentSurveyResponsesPaginationQuery();
             query.SearchText ??= string.Empty;
 
             var result = await sender.Send(query, cancellationToken);
@@ -170,6 +186,20 @@ namespace CustomerSurvey.Api.Controllers
     CancellationToken cancellationToken)
         {
             query ??= new GetSurveyDashboardTemplatesSelectionQuery();
+
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("survey-responses")]
+        [Permission("Reports.ViewBranchReports")]
+        public async Task<IActionResult> GetSurveyResponses(
+            [FromQuery] GetSurveyResponsesPaginationQuery query,
+            CancellationToken cancellationToken)
+        {
+            query ??= new GetSurveyResponsesPaginationQuery();
+            query.SearchText ??= string.Empty;
 
             var result = await sender.Send(query, cancellationToken);
 

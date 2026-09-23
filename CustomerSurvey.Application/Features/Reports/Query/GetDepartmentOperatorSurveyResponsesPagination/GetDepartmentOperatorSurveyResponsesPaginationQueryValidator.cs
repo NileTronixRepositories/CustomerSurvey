@@ -43,5 +43,22 @@ internal sealed class GetDepartmentOperatorSurveyResponsesPaginationQueryValidat
                 !x.MaxScorePercentage.HasValue ||
                 x.MinScorePercentage.Value <= x.MaxScorePercentage.Value)
             .WithMessage(ErrorMessage.GetDepartmentOperatorSurveyResponsesPagination_ScoreRange_Invalid);
+
+        RuleFor(x => x.CustomInputType)
+            .NotNull()
+            .When(x => !string.IsNullOrWhiteSpace(x.CustomInputValue))
+            .WithMessage("CustomInputType is required when CustomInputValue is supplied.");
+
+        RuleFor(x => x.CustomInputValue)
+            .Must(value => int.TryParse(value, out _))
+            .When(x =>
+                x.CustomInputType == CustomerSurvey.Domain.Enums.TemplateCustomInputType.Integer &&
+                !string.IsNullOrWhiteSpace(x.CustomInputValue))
+            .WithMessage("CustomInputValue must be a valid integer for an Integer custom input.");
+
+        RuleFor(x => x.SatisfactionCategory)
+            .IsInEnum()
+            .When(x => x.SatisfactionCategory.HasValue)
+            .WithMessage("SatisfactionCategory is invalid.");
     }
 }

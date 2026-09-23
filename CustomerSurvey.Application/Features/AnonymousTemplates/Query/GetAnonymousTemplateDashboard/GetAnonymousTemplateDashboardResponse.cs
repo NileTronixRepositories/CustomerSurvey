@@ -8,6 +8,10 @@ public sealed record GetAnonymousTemplateDashboardResponse
 
     public AnonymousTemplateDashboardSummaryResponse Summary { get; init; } = new();
 
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardChartsResponse Charts { get; init; } = new();
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardSummaryActionsResponse SummaryActions { get; init; } = new();
+
     public IReadOnlyCollection<AnonymousTemplateDashboardTrendPointResponse> SatisfactionTrend { get; init; }
         = Array.Empty<AnonymousTemplateDashboardTrendPointResponse>();
 
@@ -75,6 +79,8 @@ public sealed record AnonymousTemplateDashboardTrendPointResponse
     public int ResponsesCount { get; init; }
 
     public decimal AverageScorePercentage { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record AnonymousTemplateDashboardPerformanceResponse
@@ -112,6 +118,8 @@ public sealed record AnonymousTemplateDashboardPerformanceResponse
     public int ComplaintsCount { get; init; }
 
     public string RiskLevel { get; init; } = string.Empty;
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record AnonymousTemplateDashboardQuestionInsightResponse
@@ -139,6 +147,8 @@ public sealed record AnonymousTemplateDashboardQuestionInsightResponse
     public decimal AverageValue { get; init; }
 
     public decimal AverageScorePercentage { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record AnonymousTemplateDashboardCustomInputSegmentResponse
@@ -160,6 +170,8 @@ public sealed record AnonymousTemplateDashboardCustomInputSegmentValueResponse
     public int ResponsesCount { get; init; }
 
     public decimal AverageScorePercentage { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record AnonymousTemplateDashboardCriticalResponseItem
@@ -180,6 +192,8 @@ public sealed record AnonymousTemplateDashboardCriticalResponseItem
 
     public IReadOnlyCollection<AnonymousTemplateDashboardCriticalResponseCustomInputItem> CustomInputs { get; init; }
         = Array.Empty<AnonymousTemplateDashboardCriticalResponseCustomInputItem>();
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record AnonymousTemplateDashboardCriticalResponseCustomInputItem

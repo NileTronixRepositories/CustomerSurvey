@@ -6,6 +6,10 @@ public sealed record GetSystemDashboardResponse
 
     public SystemDashboardSummaryResponse Summary { get; init; } = new();
 
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardChartsResponse Charts { get; init; } = new();
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardSummaryActionsResponse SummaryActions { get; init; } = new();
+
     public IReadOnlyCollection<SystemDashboardTrendPointResponse> SatisfactionTrend { get; init; }
         = Array.Empty<SystemDashboardTrendPointResponse>();
 
@@ -77,6 +81,8 @@ public sealed record SystemDashboardTrendPointResponse
     public int ResponsesCount { get; init; }
 
     public decimal AverageScorePercentage { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record SystemDashboardBranchPerformanceResponse
@@ -102,6 +108,8 @@ public sealed record SystemDashboardBranchPerformanceResponse
     public int ActiveTemplatesCount { get; init; }
 
     public string RiskLevel { get; init; } = string.Empty;
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record SystemDashboardDepartmentActivityResponse
@@ -117,6 +125,8 @@ public sealed record SystemDashboardDepartmentActivityResponse
     public int ResponsesCount { get; init; }
 
     public DateTime? LastResponseOnUtc { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record SystemDashboardTopTemplateResponse
@@ -142,6 +152,8 @@ public sealed record SystemDashboardTopTemplateResponse
     public int ComplaintsCount { get; init; }
 
     public string RiskLevel { get; init; } = string.Empty;
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record SystemDashboardCriticalResponseItem
@@ -174,6 +186,8 @@ public sealed record SystemDashboardCriticalResponseItem
 
     public IReadOnlyCollection<SystemDashboardCriticalResponseCustomInputItem> CustomInputs { get; init; }
         = Array.Empty<SystemDashboardCriticalResponseCustomInputItem>();
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record SystemDashboardCriticalResponseCustomInputItem

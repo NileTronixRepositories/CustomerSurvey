@@ -8,6 +8,10 @@ public sealed record GetBranchDashboardResponse
 
     public BranchDashboardSummaryResponse Summary { get; init; } = new();
 
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardChartsResponse Charts { get; init; } = new();
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardSummaryActionsResponse SummaryActions { get; init; } = new();
+
     public IReadOnlyCollection<BranchDashboardTrendPointResponse> SatisfactionTrend { get; init; }
         = Array.Empty<BranchDashboardTrendPointResponse>();
 
@@ -73,6 +77,8 @@ public sealed record BranchDashboardTrendPointResponse
     public int ResponsesCount { get; init; }
 
     public decimal AverageScorePercentage { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record BranchDashboardTemplatePerformanceResponse
@@ -92,6 +98,8 @@ public sealed record BranchDashboardTemplatePerformanceResponse
     public int ComplaintsCount { get; init; }
 
     public string RiskLevel { get; init; } = string.Empty;
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record BranchDashboardQuestionInsightResponse
@@ -117,6 +125,8 @@ public sealed record BranchDashboardQuestionInsightResponse
     public decimal AverageValue { get; init; }
 
     public decimal AverageScorePercentage { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record BranchDashboardCustomInputSegmentResponse
@@ -138,6 +148,8 @@ public sealed record BranchDashboardCustomInputSegmentValueResponse
     public int ResponsesCount { get; init; }
 
     public decimal AverageScorePercentage { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record BranchDashboardCriticalResponseItem
@@ -158,6 +170,8 @@ public sealed record BranchDashboardCriticalResponseItem
 
     public IReadOnlyCollection<BranchDashboardCriticalResponseCustomInputItem> CustomInputs { get; init; }
         = Array.Empty<BranchDashboardCriticalResponseCustomInputItem>();
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record BranchDashboardCriticalResponseCustomInputItem

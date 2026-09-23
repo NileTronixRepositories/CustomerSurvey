@@ -8,6 +8,10 @@ public sealed record GetDepartmentDashboardResponse
 
     public DepartmentDashboardSummaryResponse Summary { get; init; } = new();
 
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardChartsResponse Charts { get; init; } = new();
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardSummaryActionsResponse SummaryActions { get; init; } = new();
+
     public IReadOnlyCollection<DepartmentDashboardTrendPointResponse> SatisfactionTrend { get; init; }
         = Array.Empty<DepartmentDashboardTrendPointResponse>();
 
@@ -82,6 +86,8 @@ public sealed record DepartmentDashboardTrendPointResponse
     public int ResponsesCount { get; init; }
 
     public decimal AverageScorePercentage { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record DepartmentDashboardOperatorPerformanceResponse
@@ -107,6 +113,8 @@ public sealed record DepartmentDashboardOperatorPerformanceResponse
     public DateTime? LastResponseOnUtc { get; init; }
 
     public string RiskLevel { get; init; } = string.Empty;
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record DepartmentDashboardTemplatePerformanceResponse
@@ -134,6 +142,8 @@ public sealed record DepartmentDashboardTemplatePerformanceResponse
     public int ComplaintsCount { get; init; }
 
     public string RiskLevel { get; init; } = string.Empty;
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record DepartmentDashboardQuestionInsightResponse
@@ -159,6 +169,8 @@ public sealed record DepartmentDashboardQuestionInsightResponse
     public decimal AverageValue { get; init; }
 
     public decimal AverageScorePercentage { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record DepartmentDashboardCustomInputSegmentResponse
@@ -180,6 +192,8 @@ public sealed record DepartmentDashboardCustomInputSegmentValueResponse
     public int ResponsesCount { get; init; }
 
     public decimal AverageScorePercentage { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record DepartmentDashboardCriticalResponseItem
@@ -212,6 +226,8 @@ public sealed record DepartmentDashboardCriticalResponseItem
 
     public IReadOnlyCollection<DepartmentDashboardCriticalResponseCustomInputItem> CustomInputs { get; init; }
         = Array.Empty<DepartmentDashboardCriticalResponseCustomInputItem>();
+
+    public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 }
 
 public sealed record DepartmentDashboardCriticalResponseCustomInputItem
