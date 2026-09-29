@@ -15,7 +15,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
             {
                 CustomInputValueId = x.Id,
                 AnonymousTemplateCustomInputId = x.AnonymousTemplateCustomInputId,
-                NameSnapshot = x.NameSnapshot,
+                LabelEnSnapshot = x.LabelEnSnapshot,
+                LabelArSnapshot = x.LabelArSnapshot,
 
                 Type = x.IntegerValue.HasValue
                     ? TemplateCustomInputType.Integer

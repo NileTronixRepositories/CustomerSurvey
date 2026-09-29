@@ -75,6 +75,8 @@ public sealed class SurveyReportScoringServiceTests
         var star = Question(templateId, Guid.NewGuid(), Guid.NewGuid(), 1, QuestionType.StarRating);
         var complaint = Question(templateId, Guid.NewGuid(), Guid.NewGuid(), 2, QuestionType.Complain);
         var voice = Question(templateId, Guid.NewGuid(), Guid.NewGuid(), 3, QuestionType.Voice);
+        var freeText = Question(templateId, Guid.NewGuid(), Guid.NewGuid(), 4, QuestionType.FreeText);
+        var image = Question(templateId, Guid.NewGuid(), Guid.NewGuid(), 5, QuestionType.Image);
 
         var scores = _sut.CalculateResponseScores(
             new[] { Response(responseId, templateId) },
@@ -82,9 +84,11 @@ public sealed class SurveyReportScoringServiceTests
             {
                 Answer(responseId, templateId, star.QuestionId, QuestionType.StarRating, star: 5),
                 Answer(responseId, templateId, complaint.QuestionId, QuestionType.Complain, hasText: true),
-                Answer(responseId, templateId, voice.QuestionId, QuestionType.Voice, hasVoice: true)
+                Answer(responseId, templateId, voice.QuestionId, QuestionType.Voice, hasVoice: true),
+                Answer(responseId, templateId, freeText.QuestionId, QuestionType.FreeText, hasText: true),
+                Answer(responseId, templateId, image.QuestionId, QuestionType.Image)
             },
-            new[] { star, complaint, voice },
+            new[] { star, complaint, voice, freeText, image },
             Array.Empty<ConditionFlatDto>(),
             Array.Empty<QuestionOptionFlatDto>(),
             ScoreCalculationMode.RootQuestions);
@@ -223,6 +227,40 @@ public sealed class SurveyReportScoringServiceTests
         Assert.Equal(75m, scores.Average(x => x.ScorePercentage));
     }
 
+    [Fact]
+    public void CalculateQuestionScoreTokens_SeparatesAuthorizedAndAnonymousTemplatesWithSameIds()
+    {
+        var templateId = Guid.NewGuid();
+        var responseId = Guid.NewGuid();
+        var templateQuestionId = Guid.NewGuid();
+        var questionId = Guid.NewGuid();
+
+        var authorizedQuestion = Question(
+            templateId, templateQuestionId, questionId, 1, QuestionType.StarRating);
+        var anonymousQuestion = authorizedQuestion with { TemplateKind = ReportTemplateKind.Anonymous };
+        var authorizedResponse = Response(responseId, templateId);
+        var anonymousResponse = authorizedResponse with { TemplateKind = ReportTemplateKind.Anonymous };
+        var authorizedAnswer = Answer(
+            responseId, templateId, questionId, QuestionType.StarRating, star: 5);
+        var anonymousAnswer = authorizedAnswer with
+        {
+            TemplateKind = ReportTemplateKind.Anonymous,
+            StarRatingValue = 1
+        };
+
+        var tokens = _sut.CalculateQuestionScoreTokens(
+            new[] { authorizedResponse, anonymousResponse },
+            new[] { authorizedAnswer, anonymousAnswer },
+            new[] { authorizedQuestion, anonymousQuestion },
+            Array.Empty<ConditionFlatDto>(),
+            Array.Empty<QuestionOptionFlatDto>(),
+            ScoreCalculationMode.RootQuestions);
+
+        Assert.Equal(2, tokens.Count);
+        Assert.Equal(5m, Assert.Single(tokens, x => x.TemplateKind == ReportTemplateKind.Normal).ScoreValue);
+        Assert.Equal(1m, Assert.Single(tokens, x => x.TemplateKind == ReportTemplateKind.Anonymous).ScoreValue);
+    }
+
     private static ResponseFlatDto Response(Guid responseId, Guid templateId)
         => new()
         {
@@ -240,6 +278,7 @@ public sealed class SurveyReportScoringServiceTests
         QuestionType questionType)
         => new()
         {
+            TemplateKind = ReportTemplateKind.Normal,
             TemplateId = templateId,
             TemplateQuestionId = templateQuestionId,
             QuestionId = questionId,
@@ -257,6 +296,7 @@ public sealed class SurveyReportScoringServiceTests
         int? triggerValue = null)
         => new()
         {
+            TemplateKind = ReportTemplateKind.Normal,
             TemplateId = templateId,
             ParentTemplateQuestionId = parentTemplateQuestionId,
             ChildTemplateQuestionId = childTemplateQuestionId,
@@ -278,6 +318,7 @@ public sealed class SurveyReportScoringServiceTests
         => new()
         {
             ResponseId = responseId,
+            TemplateKind = ReportTemplateKind.Normal,
             TemplateId = templateId,
             QuestionId = questionId,
             QuestionType = questionType,

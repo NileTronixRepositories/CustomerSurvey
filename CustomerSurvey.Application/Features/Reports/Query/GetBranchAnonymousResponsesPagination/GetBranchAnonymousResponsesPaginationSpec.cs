@@ -62,7 +62,7 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
                     x.Answers.Any(answer =>
                         answer.QuestionType == QuestionType.Complain &&
                         answer.TextAnswer != null &&
-                        answer.TextAnswer != string.Empty));
+                        answer.TextAnswer.Trim() != string.Empty));
             }
             else
             {
@@ -70,7 +70,7 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
                     !x.Answers.Any(answer =>
                         answer.QuestionType == QuestionType.Complain &&
                         answer.TextAnswer != null &&
-                        answer.TextAnswer != string.Empty));
+                        answer.TextAnswer.Trim() != string.Empty));
             }
         }
 
@@ -102,7 +102,8 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
                 x.AnonymousTemplate.NameEn.Contains(searchText) ||
                 (x.AnonymousTemplate.NameAr != null && x.AnonymousTemplate.NameAr.Contains(searchText)) ||
                 x.CustomInputValues.Any(value =>
-                    value.NameSnapshot.Contains(searchText) ||
+                    (value.LabelEnSnapshot != null && value.LabelEnSnapshot.Contains(searchText)) ||
+                    (value.LabelArSnapshot != null && value.LabelArSnapshot.Contains(searchText)) ||
                     (value.StringValue != null && value.StringValue.Contains(searchText)) ||
                     (value.AnonymousTemplateCustomInput.LabelEn != null &&
                         value.AnonymousTemplateCustomInput.LabelEn.Contains(searchText)) ||
@@ -138,7 +139,7 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
             HasComplaint = x.Answers.Any(answer =>
                 answer.QuestionType == QuestionType.Complain &&
                 answer.TextAnswer != null &&
-                answer.TextAnswer != string.Empty),
+                answer.TextAnswer.Trim() != string.Empty),
 
             HasVoice = x.Answers.Any(answer =>
                 answer.QuestionType == QuestionType.Voice &&
@@ -151,9 +152,9 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
                 .Take(CustomInputsPreviewCount)
                 .Select(value => new BranchAnonymousResponseCustomInputPreviewResponse
                 {
-                    Name = value.NameSnapshot,
-                    LabelEn = value.AnonymousTemplateCustomInput.LabelEn,
-                    LabelAr = value.AnonymousTemplateCustomInput.LabelAr,
+                    CustomInputId = value.AnonymousTemplateCustomInputId,
+                    LabelEnSnapshot = value.LabelEnSnapshot,
+                    LabelArSnapshot = value.LabelArSnapshot,
                     Value = value.TypeSnapshot == TemplateCustomInputType.String
                         ? value.StringValue ?? string.Empty
                         : value.TypeSnapshot == TemplateCustomInputType.Integer && value.IntegerValue.HasValue
@@ -197,35 +198,35 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
             AddCriteria(x => x.Answers.Any(answer => answer.QuestionId == query.QuestionId.Value));
         }
 
-        var customInputName = query.CustomInputName?.Trim();
+        var customInputId = query.CustomInputId;
         var customInputValue = query.CustomInputValue?.Trim();
 
-        if (!string.IsNullOrWhiteSpace(customInputName) ||
+        if (customInputId.HasValue ||
             query.CustomInputType.HasValue ||
             !string.IsNullOrWhiteSpace(customInputValue))
         {
-            var hasName = !string.IsNullOrWhiteSpace(customInputName);
+            var hasCustomInputId = customInputId.HasValue;
             var hasValue = !string.IsNullOrWhiteSpace(customInputValue);
 
             if (query.CustomInputType == TemplateCustomInputType.Integer && hasValue)
             {
                 var integerValue = int.Parse(customInputValue!);
                 AddCriteria(x => x.CustomInputValues.Any(value =>
-                    (!hasName || value.NameSnapshot == customInputName) &&
+                    (!hasCustomInputId || value.AnonymousTemplateCustomInputId == customInputId.Value) &&
                     value.TypeSnapshot == TemplateCustomInputType.Integer &&
                     value.IntegerValue == integerValue));
             }
             else if (query.CustomInputType == TemplateCustomInputType.String && hasValue)
             {
                 AddCriteria(x => x.CustomInputValues.Any(value =>
-                    (!hasName || value.NameSnapshot == customInputName) &&
+                    (!hasCustomInputId || value.AnonymousTemplateCustomInputId == customInputId.Value) &&
                     value.TypeSnapshot == TemplateCustomInputType.String &&
                     value.StringValue == customInputValue));
             }
             else
             {
                 AddCriteria(x => x.CustomInputValues.Any(value =>
-                    (!hasName || value.NameSnapshot == customInputName) &&
+                    (!hasCustomInputId || value.AnonymousTemplateCustomInputId == customInputId.Value) &&
                     (!query.CustomInputType.HasValue || value.TypeSnapshot == query.CustomInputType.Value)));
             }
         }

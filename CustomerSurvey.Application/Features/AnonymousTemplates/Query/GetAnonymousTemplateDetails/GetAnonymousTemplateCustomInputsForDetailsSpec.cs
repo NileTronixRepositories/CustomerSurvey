@@ -17,7 +17,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
             Select(x => new AnonymousTemplateDetailsCustomInputResponse
             {
                 CustomInputId = x.Id,
-                Name = x.Name,
                 LabelEn = x.LabelEn,
                 LabelAr = x.LabelAr,
                 Type = x.Type,

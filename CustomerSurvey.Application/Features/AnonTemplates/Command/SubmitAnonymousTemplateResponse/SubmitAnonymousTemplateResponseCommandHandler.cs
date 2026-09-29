@@ -542,6 +542,9 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                     QuestionType.Complain =>
                         ValidateComplainAnswer(answer),
 
+                    QuestionType.FreeText =>
+                        ValidateFreeTextAnswer(answer),
+
                     QuestionType.Voice =>
                         ValidateVoiceAnswer(answer),
 
@@ -661,6 +664,25 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
             {
                 return ValidationResult.Fail(new Error(
                     Code: "AnonTemplates.Submit.ComplainAnswerInvalid",
+                    Message: ErrorMessage.SubmitAnonymousTemplateResponse_ComplainAnswer_Invalid,
+                    Type: ErrorType.Validation));
+            }
+
+            return ValidationResult.Ok();
+        }
+
+        private static ValidationResult ValidateFreeTextAnswer(
+            SubmitAnonymousTemplateAnswerCommandItem answer)
+        {
+            if (string.IsNullOrWhiteSpace(answer.TextAnswer) ||
+                answer.SelectedQuestionOptionId.HasValue ||
+                answer.StarRatingValue.HasValue ||
+                answer.SmileValue.HasValue ||
+                !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
+                answer.ImageFile is not null)
+            {
+                return ValidationResult.Fail(new Error(
+                    Code: "AnonTemplates.Submit.FreeTextAnswerInvalid",
                     Message: ErrorMessage.SubmitAnonymousTemplateResponse_ComplainAnswer_Invalid,
                     Type: ErrorType.Validation));
             }
@@ -905,7 +927,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                         AnonymousSurveyResponseCustomInputValue.CreateStringValue(
                             anonymousSurveyResponseId: response.Id,
                             anonymousTemplateCustomInputId: customInput.CustomInputId,
-                            nameSnapshot: customInput.Name,
+                            labelEnSnapshot: customInput.LabelEn,
+                            labelArSnapshot: customInput.LabelAr,
                             value: submittedValue.StringValue));
                 }
 
@@ -916,7 +939,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                         AnonymousSurveyResponseCustomInputValue.CreateIntegerValue(
                             anonymousSurveyResponseId: response.Id,
                             anonymousTemplateCustomInputId: customInput.CustomInputId,
-                            nameSnapshot: customInput.Name,
+                            labelEnSnapshot: customInput.LabelEn,
+                            labelArSnapshot: customInput.LabelAr,
                             value: submittedValue.IntegerValue.Value));
                 }
             }
@@ -962,6 +986,13 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
 
                     QuestionType.Complain =>
                         AnonymousSurveyAnswer.CreateComplain(
+                            anonymousSurveyResponseId: response.Id,
+                            anonymousTemplateQuestionId: question.AnonymousTemplateQuestionId,
+                            questionId: question.QuestionId,
+                            textAnswer: submittedAnswer.TextAnswer!),
+
+                    QuestionType.FreeText =>
+                        AnonymousSurveyAnswer.CreateFreeText(
                             anonymousSurveyResponseId: response.Id,
                             anonymousTemplateQuestionId: question.AnonymousTemplateQuestionId,
                             questionId: question.QuestionId,

@@ -1660,7 +1660,7 @@
     <value>بيانات الحقول المخصصة غير صحيحة.</value>
   </data>
   <data name="CreateTemplate_CustomInput_Name_Required" xml:space="preserve">
-    <value>اسم الحقل المخصص مطلوب.</value>
+    <value>يجب إدخال تسمية واحدة على الأقل للحقل المخصص.</value>
   </data>
   <data name="CreateTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
     <value>اسم الحقل المخصص يجب ألا يزيد عن 100 حرف.</value>
@@ -1708,7 +1708,7 @@
     <value>أحد الحقول المخصصة غير موجود داخل هذا القالب.</value>
   </data>
   <data name="UpdateTemplate_CustomInput_Name_Required" xml:space="preserve">
-    <value>اسم الحقل المخصص مطلوب.</value>
+    <value>يجب إدخال تسمية واحدة على الأقل للحقل المخصص.</value>
   </data>
   <data name="UpdateTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
     <value>اسم الحقل المخصص يجب ألا يزيد عن 100 حرف.</value>
@@ -1816,7 +1816,7 @@
     <value>بيانات الحقول المخصصة غير صحيحة.</value>
   </data>
   <data name="CreateAnonymousTemplate_CustomInput_Name_Required" xml:space="preserve">
-    <value>اسم الحقل المخصص مطلوب.</value>
+    <value>يجب إدخال تسمية واحدة على الأقل للحقل المخصص.</value>
   </data>
   <data name="CreateAnonymousTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
     <value>اسم الحقل المخصص يجب ألا يزيد عن 100 حرف.</value>
@@ -1906,7 +1906,7 @@
     <value>بيانات الحقول المخصصة غير صحيحة.</value>
   </data>
   <data name="UpdateAnonymousTemplate_CustomInput_Name_Required" xml:space="preserve">
-    <value>اسم الحقل المخصص مطلوب.</value>
+    <value>يجب إدخال تسمية واحدة على الأقل للحقل المخصص.</value>
   </data>
   <data name="UpdateAnonymousTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
     <value>اسم الحقل المخصص يجب ألا يزيد عن 100 حرف.</value>

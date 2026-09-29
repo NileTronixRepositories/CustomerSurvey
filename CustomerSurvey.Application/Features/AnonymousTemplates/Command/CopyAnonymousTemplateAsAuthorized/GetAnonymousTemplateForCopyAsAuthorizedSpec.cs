@@ -9,6 +9,8 @@ internal sealed class GetAnonymousTemplateForCopyAsAuthorizedSpec : Specificatio
     public GetAnonymousTemplateForCopyAsAuthorizedSpec(Guid templateId, Guid branchId)
     {
         AddCriteria(x => x.Id == templateId && x.BranchId == branchId);
-        AddInclude(x => x.Include(template => template.Questions));
+        AddInclude(x => x
+            .Include(template => template.Questions)
+            .Include(template => template.CustomInputs));
     }
 }

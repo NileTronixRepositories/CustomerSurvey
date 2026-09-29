@@ -37,6 +37,9 @@ internal sealed class BranchTemplatesReportResponseNumberMap
     public int GetNumber(BranchTemplatesReportResponse response)
         => _numbers[(ToKey(response), response.ResponseId)];
 
+    public int GetNumber(ReportTemplateKind templateKind, Guid responseId)
+        => _numbers[((ReportTemplateKindKey)(int)templateKind, responseId)];
+
     private static ReportTemplateKindKey ToKey(BranchTemplatesReportResponse response)
         => (ReportTemplateKindKey)(int)response.TemplateKind;
 

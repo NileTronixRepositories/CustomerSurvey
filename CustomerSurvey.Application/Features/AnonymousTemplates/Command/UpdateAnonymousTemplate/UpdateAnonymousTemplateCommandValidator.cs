@@ -46,11 +46,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
             RuleForEach(x => x.CustomInputs)
                 .ChildRules(input =>
                 {
-                    input.RuleFor(x => x.Name)
-                        .NotEmpty()
-                        .WithMessage(ErrorMessage.UpdateAnonymousTemplate_CustomInput_Name_Required)
-                        .MaximumLength(100)
-                        .WithMessage(ErrorMessage.UpdateAnonymousTemplate_CustomInput_Name_MaxLength);
+                    input.RuleFor(x => x)
+                        .Must(x => !string.IsNullOrWhiteSpace(x.LabelEn) ||
+                                   !string.IsNullOrWhiteSpace(x.LabelAr))
+                        .WithMessage(ErrorMessage.UpdateAnonymousTemplate_CustomInput_Name_Required);
 
                     input.RuleFor(x => x.LabelEn)
                         .MaximumLength(200)
@@ -106,10 +105,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                 .WithMessage(ErrorMessage.UpdateAnonymousTemplate_CustomInput_Id_Duplicated);
 
             RuleFor(x => x.CustomInputs)
-                .Must(HaveUniqueInputNames)
-                .WithMessage(ErrorMessage.UpdateAnonymousTemplate_CustomInput_Name_Duplicated);
-
-            RuleFor(x => x.CustomInputs)
                 .Must(HaveUniqueOrders)
                 .WithMessage(ErrorMessage.UpdateAnonymousTemplate_CustomInput_Order_Duplicated);
         }
@@ -145,17 +140,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                 .ToArray();
 
             return ids.Length == ids.Distinct().Count();
-        }
-
-        private static bool HaveUniqueInputNames(
-            IReadOnlyCollection<UpdateAnonymousTemplateCustomInputCommandItem> inputs)
-        {
-            var normalizedNames = inputs
-                .Where(x => !string.IsNullOrWhiteSpace(x.Name))
-                .Select(x => x.Name.Trim().ToLowerInvariant())
-                .ToArray();
-
-            return normalizedNames.Length == normalizedNames.Distinct().Count();
         }
 
         private static bool HaveUniqueOrders(

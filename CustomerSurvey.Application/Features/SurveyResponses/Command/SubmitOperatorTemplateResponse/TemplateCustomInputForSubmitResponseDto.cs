@@ -13,7 +13,9 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
 
         public Guid TemplateId { get; init; }
 
-        public string Name { get; init; } = string.Empty;
+        public string? LabelEn { get; init; }
+
+        public string? LabelAr { get; init; }
 
         public TemplateCustomInputType Type { get; init; }
 

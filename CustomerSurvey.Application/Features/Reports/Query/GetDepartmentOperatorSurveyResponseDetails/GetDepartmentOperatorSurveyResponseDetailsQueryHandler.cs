@@ -201,7 +201,8 @@ internal sealed class GetDepartmentOperatorSurveyResponseDetailsQueryHandler
         return new DepartmentOperatorSurveyResponseCustomInputResponse
         {
             CustomInputId = customInput.CustomInputId,
-            Name = customInput.NameSnapshot,
+            LabelEnSnapshot = customInput.LabelEnSnapshot,
+            LabelArSnapshot = customInput.LabelArSnapshot,
             Type = customInput.TypeSnapshot,
             TypeName = customInput.TypeSnapshot.ToString(),
             StringValue = customInput.StringValue,
@@ -271,7 +272,7 @@ internal sealed class GetDepartmentOperatorSurveyResponseDetailsQueryHandler
             QuestionType.SingleChoice => selectedOption?.TextEn ?? string.Empty,
             QuestionType.StarRating => answer.StarRatingValue?.ToString() ?? string.Empty,
             QuestionType.Smiles => answer.SmileValue?.ToString() ?? string.Empty,
-            QuestionType.Complain => answer.TextAnswer ?? string.Empty,
+            QuestionType.Complain or QuestionType.FreeText => answer.TextAnswer ?? string.Empty,
             QuestionType.Voice => voiceFileUrl ?? answer.VoiceFileName ?? string.Empty,
             QuestionType.Image => imageFileUrl ?? answer.ImageFileName ?? string.Empty,
             _ => string.Empty

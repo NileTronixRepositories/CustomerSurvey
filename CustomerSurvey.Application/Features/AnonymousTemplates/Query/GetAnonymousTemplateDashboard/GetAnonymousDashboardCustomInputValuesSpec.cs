@@ -27,7 +27,9 @@ internal sealed class GetAnonymousDashboardCustomInputValuesSpec
         Select(x => new AnonymousDashboardCustomInputValueDto
         {
             AnonymousSurveyResponseId = x.AnonymousSurveyResponseId,
-            NameSnapshot = x.NameSnapshot,
+            CustomInputId = x.AnonymousTemplateCustomInputId,
+            LabelEnSnapshot = x.LabelEnSnapshot,
+            LabelArSnapshot = x.LabelArSnapshot,
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue,

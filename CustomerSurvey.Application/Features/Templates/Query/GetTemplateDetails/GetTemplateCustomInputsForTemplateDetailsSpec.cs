@@ -23,7 +23,6 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
             {
                 CustomInputId = x.Id,
                 TemplateId = x.TemplateId,
-                Name = x.Name,
                 LabelEn = x.LabelEn,
                 LabelAr = x.LabelAr,
                 Type = x.Type,

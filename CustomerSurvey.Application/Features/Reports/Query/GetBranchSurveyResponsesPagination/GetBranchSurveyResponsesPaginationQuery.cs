@@ -26,7 +26,7 @@ public sealed class GetBranchSurveyResponsesPaginationQuery
 
     public Guid? QuestionId { get; init; }
 
-    public string? CustomInputName { get; init; }
+    public Guid? CustomInputId { get; init; }
 
     public CustomerSurvey.Domain.Enums.TemplateCustomInputType? CustomInputType { get; init; }
 

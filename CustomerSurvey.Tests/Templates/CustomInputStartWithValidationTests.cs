@@ -64,8 +64,7 @@ public sealed class CustomInputStartWithValidationTests
     {
         var customInput = TemplateCustomInput.Create(
             templateId: Guid.NewGuid(),
-            name: "CustomerPhone",
-            labelEn: null,
+            labelEn: "Customer Phone",
             labelAr: null,
             type: TemplateCustomInputType.String,
             isRequired: true,
@@ -85,8 +84,7 @@ public sealed class CustomInputStartWithValidationTests
     {
         var customInput = TemplateCustomInput.Create(
             templateId: Guid.NewGuid(),
-            name: "CustomerAge",
-            labelEn: null,
+            labelEn: "Customer Age",
             labelAr: null,
             type: TemplateCustomInputType.Integer,
             isRequired: true,
@@ -108,7 +106,7 @@ public sealed class CustomInputStartWithValidationTests
         {
             CustomInputId = Guid.NewGuid(),
             TemplateId = Guid.NewGuid(),
-            Name = "CustomerPhone",
+            LabelEn = "Customer Phone",
             Type = TemplateCustomInputType.String,
             IsRequired = true,
             StartWith = "011",
@@ -237,7 +235,7 @@ public sealed class CustomInputStartWithValidationTests
             {
                 new CreateTemplateCustomInputCommandItem
                 {
-                    Name = "CustomerPhone",
+                    LabelEn = "Customer Phone",
                     Type = type,
                     IsRequired = true,
                     MinValue = type == TemplateCustomInputType.Integer ? 1 : null,
@@ -260,7 +258,7 @@ public sealed class CustomInputStartWithValidationTests
             {
                 new CreateAnonymousTemplateCustomInputCommandItem
                 {
-                    Name = "CustomerPhone",
+                    LabelEn = "Customer Phone",
                     Type = type,
                     IsRequired = true,
                     MinValue = type == TemplateCustomInputType.Integer ? 1 : null,
@@ -284,7 +282,7 @@ public sealed class CustomInputStartWithValidationTests
                 new UpdateTemplateCustomInputCommandItem
                 {
                     CustomInputId = Guid.NewGuid(),
-                    Name = "CustomerPhone",
+                    LabelEn = "Customer Phone",
                     Type = type,
                     IsRequired = true,
                     MinValue = type == TemplateCustomInputType.Integer ? 1 : null,
@@ -308,7 +306,7 @@ public sealed class CustomInputStartWithValidationTests
                 new UpdateAnonymousTemplateCustomInputCommandItem
                 {
                     CustomInputId = Guid.NewGuid(),
-                    Name = "CustomerPhone",
+                    LabelEn = "Customer Phone",
                     Type = type,
                     IsRequired = true,
                     MinValue = type == TemplateCustomInputType.Integer ? 1 : null,

@@ -220,7 +220,9 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
             var neutralResponses = scoredResponses.Count(x => x.ScorePercentage >= 60m && x.ScorePercentage < 80m);
             var unsatisfiedResponses = scoredResponses.Count(x => x.ScorePercentage < 60m);
 
-            var complaintsCount = answers.Count(x => x.QuestionType == QuestionType.Complain);
+            var complaintsCount = answers.Count(x =>
+                x.QuestionType == QuestionType.Complain &&
+                !string.IsNullOrWhiteSpace(x.TextAnswer));
             var voiceAnswersCount = answers.Count(x => x.QuestionType == QuestionType.Voice);
 
             var distributionValues = scoredResponses

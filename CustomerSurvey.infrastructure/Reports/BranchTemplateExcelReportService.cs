@@ -91,6 +91,8 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
         AddQuestionAnalysisSheets(workbook, model);
         AddRankingSheets(workbook, model, worst: true);
         AddRankingSheets(workbook, model, worst: false);
+        AddQuestionGroupsSheet(workbook, model);
+        AddComplaintsSheet(workbook, model, responseNumbers);
 
         return workbook;
     }
@@ -144,10 +146,16 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
                 (T(isArabic, "Average Score / 5", "متوسط التقييم / 5"), template.AverageScoreValue, "0.00"),
                 (T(isArabic, "Average Satisfaction %", "متوسط الرضا %"), ToExcelPercentage(template.AverageScorePercentage), "0.00%"),
                 (T(isArabic, "Responses With Score", "الردود ذات التقييم"), responsesWithScore, "0"),
-                (T(isArabic, "Responses Without Score", "الردود بدون تقييم"), Math.Max(0, model.Responses.Count - responsesWithScore), "0")
+                (T(isArabic, "Responses Without Score", "الردود بدون تقييم"), Math.Max(0, model.Responses.Count - responsesWithScore), "0"),
+                (T(isArabic, "Total Complaints", "إجمالي الشكاوى"), model.ExecutiveSummary.TotalComplaints, "0"),
+                (T(isArabic, "Responses With Complaints", "الردود التي تحتوي على شكاوى"), model.ExecutiveSummary.ResponsesWithComplaints, "0"),
+                (T(isArabic, "Complaint Rate", "نسبة الشكاوى"), ToExcelPercentage(model.ExecutiveSummary.ComplaintRate), "0.00%"),
+                (T(isArabic, "Question Groups Count", "عدد مجموعات الأسئلة"), model.ExecutiveSummary.QuestionGroupsCount, "0"),
+                (T(isArabic, "Highest Satisfaction Group", "أعلى مجموعة رضا"), model.ExecutiveSummary.HighestSatisfactionGroupName, null),
+                (T(isArabic, "Lowest Satisfaction Group", "أقل مجموعة رضا"), model.ExecutiveSummary.LowestSatisfactionGroupName, null)
             });
 
-        var explanationRow = 28;
+        var explanationRow = 34;
         worksheet.Cell(explanationRow, 1).Value = T(isArabic, "Scoring Explanation", "شرح حساب التقييم");
         StyleSectionHeader(worksheet.Range(explanationRow, 1, explanationRow, 2));
         worksheet.Cell(explanationRow + 1, 1).Value = isArabic
@@ -275,6 +283,8 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
                 (T(model.IsArabic, "Scored Answers", "الإجابات المحتسبة"), graphics.IncludedAnswers.ToString()),
                 (T(model.IsArabic, "Non-Scored Answers", "الإجابات غير المحتسبة"), graphics.NonScoredAnswers.ToString())
             });
+
+        AddQuestionGroupGraphicsCard(worksheet, model, 39, 10);
 
         for (var column = 1; column <= 18; column++)
         {
@@ -499,7 +509,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
                 responseNumbers.GetNumber(response),
                 response.SubmittedOnUtc,
                 response.DisplayOperatorName(isArabic),
-                customInput.Name,
+                customInput.DisplayName(isArabic),
                 ToTypedCustomInputValue(customInput),
                 response.ResponseId.ToString()
             }))
@@ -609,6 +619,146 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
             percentageColumns: new HashSet<int> { 7 },
             wrapColumns: new HashSet<int> { 2 },
             isArabic: isArabic);
+    }
+
+    private static void AddQuestionGroupsSheet(
+        XLWorkbook workbook,
+        BranchTemplatesPdfReportModel model)
+    {
+        var isArabic = model.IsArabic;
+        var headers = new[]
+        {
+            T(isArabic, "Question Group", "مجموعة الأسئلة"),
+            T(isArabic, "Questions", "الأسئلة"),
+            T(isArabic, "Scorable Questions", "الأسئلة القابلة للتقييم"),
+            T(isArabic, "Total Responses", "إجمالي الردود"),
+            T(isArabic, "Scored Responses", "الردود المقيمة"),
+            T(isArabic, "Scored Items", "العناصر المقيمة"),
+            T(isArabic, "Average Score / 5", "متوسط التقييم / 5"),
+            T(isArabic, "Satisfaction %", "نسبة الرضا %"),
+            "Question Group Id"
+        };
+
+        var rows = model.QuestionGroupAnalytics
+            .Select(group => (IReadOnlyList<object?>)new object?[]
+            {
+                group.DisplayGroupName(isArabic),
+                group.QuestionsCount,
+                group.ScorableQuestionsCount,
+                group.TotalResponses,
+                group.ScoredResponsesCount,
+                group.ScoredItemsCount,
+                group.AverageScoreValue,
+                ToExcelPercentage(group.AverageScorePercentage),
+                group.QuestionGroupId.ToString()
+            })
+            .ToArray();
+
+        AddDataSheets(
+            workbook,
+            "10 - Question Groups",
+            "QuestionGroupsTable",
+            headers,
+            rows,
+            freezeColumns: 1,
+            percentageColumns: new HashSet<int> { 8 },
+            wrapColumns: new HashSet<int> { 1 },
+            hiddenColumns: new HashSet<int> { 9 },
+            isArabic: isArabic);
+    }
+
+    private static void AddComplaintsSheet(
+        XLWorkbook workbook,
+        BranchTemplatesPdfReportModel model,
+        BranchTemplatesReportResponseNumberMap responseNumbers)
+    {
+        var isArabic = model.IsArabic;
+        var headers = new[]
+        {
+            "#",
+            T(isArabic, "Response", "الرد"),
+            T(isArabic, "Question", "السؤال"),
+            T(isArabic, "Complaint", "الشكوى"),
+            T(isArabic, "Submitted At", "وقت الإرسال"),
+            T(isArabic, "Source", "المصدر"),
+            T(isArabic, "Operator", "المشغل"),
+            "Survey Response Id"
+        };
+
+        var rows = model.ComplaintAnalytics.Complaints
+            .Select((complaint, index) => (IReadOnlyList<object?>)new object?[]
+            {
+                index + 1,
+                responseNumbers.GetNumber(complaint.TemplateKind, complaint.ResponseId),
+                complaint.DisplayQuestionText(isArabic),
+                complaint.ComplaintText,
+                complaint.SubmittedOnUtc,
+                complaint.TemplateKind == ReportTemplateKind.Normal
+                    ? T(isArabic, "Authorized", "مصرح")
+                    : T(isArabic, "Anonymous", "مجهول"),
+                complaint.DisplayOperatorName(isArabic),
+                complaint.ResponseId.ToString()
+            })
+            .ToArray();
+
+        AddDataSheets(
+            workbook,
+            "11 - Complaints",
+            "ComplaintsTable",
+            headers,
+            rows,
+            freezeColumns: 2,
+            percentageColumns: new HashSet<int>(),
+            wrapColumns: new HashSet<int> { 3, 4 },
+            hiddenColumns: new HashSet<int> { 8 },
+            dateColumns: new HashSet<int> { 5 },
+            isArabic: isArabic);
+    }
+
+    private static void AddQuestionGroupGraphicsCard(
+        IXLWorksheet worksheet,
+        BranchTemplatesPdfReportModel model,
+        int startRow,
+        int startColumn)
+    {
+        var titleRange = worksheet.Range(startRow, startColumn, startRow, startColumn + 7);
+        titleRange.Merge();
+        titleRange.FirstCell().Value = T(model.IsArabic, "Satisfaction By Question Group", "الرضا حسب مجموعة الأسئلة");
+        StyleSectionHeader(titleRange);
+        titleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+        var groups = model.QuestionGroupAnalytics
+            .Where(x => x.AverageScorePercentage.HasValue)
+            .OrderByDescending(x => x.AverageScorePercentage)
+            .Take(8)
+            .ToArray();
+        var image = HorizontalBarChartPngRenderer.Render(
+            groups.Select(x => x.AverageScorePercentage!.Value).ToArray(),
+            width: 320,
+            height: 180);
+        using var imageStream = new MemoryStream(image);
+        worksheet.AddPicture(imageStream, ClosedXML.Excel.Drawings.XLPictureFormat.Png, "QuestionGroupSatisfactionChart")
+            .MoveTo(worksheet.Cell(startRow + 2, startColumn))
+            .WithSize(320, 180);
+
+        var detailRow = startRow + 3;
+        if (groups.Length == 0)
+        {
+            worksheet.Cell(detailRow, startColumn + 5).Value = T(model.IsArabic, "No Data", "لا توجد بيانات");
+        }
+        else
+        {
+            foreach (var group in groups)
+            {
+                worksheet.Cell(detailRow, startColumn + 5).Value = group.DisplayGroupName(model.IsArabic);
+                worksheet.Cell(detailRow, startColumn + 7).Value = group.AverageScorePercentage!.Value / 100m;
+                worksheet.Cell(detailRow, startColumn + 7).Style.NumberFormat.Format = "0.00%";
+                detailRow++;
+            }
+        }
+
+        worksheet.Range(startRow + 1, startColumn, startRow + 16, startColumn + 7)
+            .Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
     }
 
     private static void AddGraphicsCard(
@@ -864,7 +1014,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
     {
         var current = model.CustomInputDefinitions
             .OrderBy(x => x.Order)
-            .ThenBy(x => x.Name)
+            .ThenBy(x => x.LabelEn)
             .Select(x => new MatrixCustomInputColumn(
                 x.CustomInputId,
                 x.DisplayName(model.IsArabic),
@@ -878,10 +1028,10 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
             .GroupBy(x => x.CustomInputId)
             .Select(x => x.OrderBy(value => value.Order ?? int.MaxValue).First())
             .OrderBy(x => x.Order ?? int.MaxValue)
-            .ThenBy(x => x.Name)
+            .ThenBy(x => x.LabelEnSnapshot)
             .Select(x => new MatrixCustomInputColumn(
                 x.CustomInputId,
-                x.Name,
+                x.DisplayName(model.IsArabic),
                 x.Type));
 
         current.AddRange(historical);
@@ -1041,7 +1191,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
             QuestionType.SingleChoice => answer.DisplaySelectedOption(isArabic),
             QuestionType.StarRating => answer.StarRatingValue,
             QuestionType.Smiles => answer.SmileValue,
-            QuestionType.Complain => answer.TextAnswer,
+            QuestionType.Complain or QuestionType.FreeText => answer.TextAnswer,
             QuestionType.Voice => answer.VoiceFilePath ?? answer.VoiceFileName,
             QuestionType.Image => answer.ImageFilePath ?? answer.ImageFileName,
             _ => answer.DisplayValue
@@ -1111,6 +1261,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
             QuestionType.StarRating => T(isArabic, "Star Rating", "تقييم النجوم"),
             QuestionType.Smiles => T(isArabic, "Smiles", "الوجوه التعبيرية"),
             QuestionType.Complain => T(isArabic, "Complaint", "شكوى"),
+            QuestionType.FreeText => T(isArabic, "Free Text", "نص حر"),
             QuestionType.Voice => T(isArabic, "Voice", "صوت"),
             QuestionType.Image => T(isArabic, "Image", "صورة"),
             _ => questionType.ToString()

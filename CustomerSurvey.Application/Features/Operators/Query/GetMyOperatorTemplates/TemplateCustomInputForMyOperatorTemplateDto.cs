@@ -13,8 +13,6 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public Guid TemplateId { get; init; }
 
-        public string Name { get; init; } = string.Empty;
-
         public string? LabelEn { get; init; }
 
         public string? LabelAr { get; init; }

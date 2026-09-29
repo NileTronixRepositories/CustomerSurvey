@@ -131,7 +131,11 @@ public sealed record BranchDashboardQuestionInsightResponse
 
 public sealed record BranchDashboardCustomInputSegmentResponse
 {
-    public string CustomInputName { get; init; } = string.Empty;
+    public Guid CustomInputId { get; init; }
+
+    public string? LabelEn { get; init; }
+
+    public string? LabelAr { get; init; }
 
     public TemplateCustomInputType Type { get; init; }
 
@@ -176,7 +180,11 @@ public sealed record BranchDashboardCriticalResponseItem
 
 public sealed record BranchDashboardCriticalResponseCustomInputItem
 {
-    public string Name { get; init; } = string.Empty;
+    public Guid CustomInputId { get; init; }
+
+    public string? LabelEnSnapshot { get; init; }
+
+    public string? LabelArSnapshot { get; init; }
 
     public string Value { get; init; } = string.Empty;
 }

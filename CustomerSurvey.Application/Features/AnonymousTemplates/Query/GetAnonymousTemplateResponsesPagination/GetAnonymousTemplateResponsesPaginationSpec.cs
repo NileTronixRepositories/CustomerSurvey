@@ -98,33 +98,33 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                 AddCriteria(x => x.Answers.Any(answer => answer.QuestionId == query.QuestionId.Value));
             }
 
-            var customInputName = query.CustomInputName?.Trim();
+            var customInputId = query.CustomInputId;
             var customInputValue = query.CustomInputValue?.Trim();
 
-            if (!string.IsNullOrWhiteSpace(customInputName) || query.CustomInputType.HasValue || !string.IsNullOrWhiteSpace(customInputValue))
+            if (customInputId.HasValue || query.CustomInputType.HasValue || !string.IsNullOrWhiteSpace(customInputValue))
             {
-                var hasName = !string.IsNullOrWhiteSpace(customInputName);
+                var hasCustomInputId = customInputId.HasValue;
                 var hasValue = !string.IsNullOrWhiteSpace(customInputValue);
 
                 if (query.CustomInputType == TemplateCustomInputType.Integer && hasValue)
                 {
                     var integerValue = int.Parse(customInputValue!);
                     AddCriteria(x => x.CustomInputValues.Any(value =>
-                        (!hasName || value.NameSnapshot == customInputName) &&
+                        (!hasCustomInputId || value.AnonymousTemplateCustomInputId == customInputId.Value) &&
                         value.TypeSnapshot == TemplateCustomInputType.Integer &&
                         value.IntegerValue == integerValue));
                 }
                 else if (query.CustomInputType == TemplateCustomInputType.String && hasValue)
                 {
                     AddCriteria(x => x.CustomInputValues.Any(value =>
-                        (!hasName || value.NameSnapshot == customInputName) &&
+                        (!hasCustomInputId || value.AnonymousTemplateCustomInputId == customInputId.Value) &&
                         value.TypeSnapshot == TemplateCustomInputType.String &&
                         value.StringValue == customInputValue));
                 }
                 else
                 {
                     AddCriteria(x => x.CustomInputValues.Any(value =>
-                        (!hasName || value.NameSnapshot == customInputName) &&
+                        (!hasCustomInputId || value.AnonymousTemplateCustomInputId == customInputId.Value) &&
                         (!query.CustomInputType.HasValue || value.TypeSnapshot == query.CustomInputType.Value)));
                 }
             }

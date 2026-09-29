@@ -13,7 +13,8 @@ internal sealed class GetSystemSurveyResponseCustomInputValuesSpec
         Select(x => new SystemSurveyResponseCustomInputValueDto
         {
             CustomInputId = x.TemplateCustomInputId,
-            NameSnapshot = x.NameSnapshot,
+            LabelEnSnapshot = x.LabelEnSnapshot,
+            LabelArSnapshot = x.LabelArSnapshot,
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue

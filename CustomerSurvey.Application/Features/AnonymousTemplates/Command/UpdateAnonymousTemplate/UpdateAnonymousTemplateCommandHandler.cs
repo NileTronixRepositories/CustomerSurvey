@@ -260,8 +260,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
 
             foreach (var requestedCustomInput in requestedCustomInputs.OrderBy(x => x.Order))
             {
-                var normalizedName = requestedCustomInput.Name.Trim();
-
                 AnonymousTemplateCustomInput? customInput;
 
                 if (requestedCustomInput.CustomInputId.HasValue)
@@ -279,11 +277,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                 }
                 else
                 {
-                    customInput = existingCustomInputsList.FirstOrDefault(
-                        x => string.Equals(
-                            x.Name,
-                            normalizedName,
-                            StringComparison.OrdinalIgnoreCase));
+                    customInput = null;
                 }
 
                 if (customInput is not null)
@@ -297,7 +291,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                     }
 
                     customInput.Update(
-                        name: requestedCustomInput.Name,
                         labelEn: requestedCustomInput.LabelEn,
                         labelAr: requestedCustomInput.LabelAr,
                         type: requestedCustomInput.Type,
@@ -317,7 +310,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
 
                 var newCustomInput = AnonymousTemplateCustomInput.Create(
                     anonymousTemplateId: anonymousTemplateId,
-                    name: requestedCustomInput.Name,
                     labelEn: requestedCustomInput.LabelEn,
                     labelAr: requestedCustomInput.LabelAr,
                     type: requestedCustomInput.Type,
@@ -370,7 +362,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
 
             return existing.Length == requested.Length && existing.Zip(requested).All(pair =>
                 pair.First.Id == pair.Second.CustomInputId &&
-                pair.First.Name == pair.Second.Name.Trim() &&
                 pair.First.LabelEn == Normalize(pair.Second.LabelEn) &&
                 pair.First.LabelAr == Normalize(pair.Second.LabelAr) &&
                 pair.First.Type == pair.Second.Type &&
@@ -412,7 +403,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                     .Select(x => new UpdateAnonymousTemplateCustomInputResponse
                     {
                         CustomInputId = x.Id,
-                        Name = x.Name,
                         LabelEn = x.LabelEn,
                         LabelAr = x.LabelAr,
                         Type = x.Type,

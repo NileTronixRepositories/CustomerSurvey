@@ -205,7 +205,9 @@ internal sealed class GetDepartmentOperatorSurveyResponsesPaginationQueryHandler
 
         return new DepartmentOperatorSurveyResponseCustomInputPreviewResponse
         {
-            Name = value.NameSnapshot,
+            CustomInputId = value.CustomInputId,
+            LabelEnSnapshot = value.LabelEnSnapshot,
+            LabelArSnapshot = value.LabelArSnapshot,
             Value = displayValue
         };
     }

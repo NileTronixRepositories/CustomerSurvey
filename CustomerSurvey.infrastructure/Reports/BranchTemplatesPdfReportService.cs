@@ -222,6 +222,10 @@ namespace CustomerSurvey.infrastructure.Reports
                 .Concat(anonymousQuestionBuild.ScoreTokens)
                 .ToArray();
 
+            var allTemplateQuestions = normalQuestionBuild.TemplateQuestions
+                .Concat(anonymousQuestionBuild.TemplateQuestions)
+                .ToArray();
+
             var allResponseScores = normalQuestionBuild.ResponseScores
                 .Concat(anonymousQuestionBuild.ResponseScores)
                 .ToArray();
@@ -244,7 +248,7 @@ namespace CustomerSurvey.infrastructure.Reports
                     .Concat(anonymousCustomInputDefinitions)
                     .OrderBy(x => x.TemplateKind)
                     .ThenBy(x => x.Order)
-                    .ThenBy(x => x.Name)
+                    .ThenBy(x => x.LabelEn)
                     .ToArray();
 
                 var normalCustomInputValues = await LoadNormalCustomInputValuesAsync(
@@ -266,6 +270,16 @@ namespace CustomerSurvey.infrastructure.Reports
                     normalCustomInputValues.Concat(anonymousCustomInputValues).ToArray());
             }
 
+            var questionGroupAnalytics = BuildQuestionGroupAnalytics(
+                templates,
+                normalResponses.Concat(anonymousResponses).ToArray(),
+                allTemplateQuestions,
+                allScoreTokens);
+
+            var complaintAnalytics = BuildComplaintAnalytics(
+                reportResponses,
+                normalResponses.Count + anonymousResponses.Count);
+
             var executiveSummary = BuildExecutiveSummary(
                 templates,
                 normalResponses,
@@ -273,6 +287,8 @@ namespace CustomerSurvey.infrastructure.Reports
                 allQuestions,
                 allScoreTokens,
                 allResponseScores,
+                questionGroupAnalytics,
+                complaintAnalytics,
                 isArabic);
 
             var detailedAnswers = normalQuestionBuild.Answers
@@ -346,7 +362,9 @@ namespace CustomerSurvey.infrastructure.Reports
                 TemplateDetails = templateDetails,
                 CustomInputDefinitions = customInputDefinitions,
                 Responses = reportResponses,
-                Graphics = graphics
+                Graphics = graphics,
+                QuestionGroupAnalytics = questionGroupAnalytics,
+                ComplaintAnalytics = complaintAnalytics
             };
 
             return Result<BranchTemplatesPdfReportModel>.Ok(model);
@@ -548,13 +566,17 @@ namespace CustomerSurvey.infrastructure.Reports
                 .Where(x => templateIds.Contains(x.TemplateId))
                 .Select(x => new TemplateQuestionFlatDto
                 {
+                    TemplateKind = ReportTemplateKind.Normal,
                     TemplateQuestionId = x.Id,
                     TemplateId = x.TemplateId,
                     QuestionId = x.QuestionId,
                     Order = x.Order,
                     QuestionTextEn = x.Question.TextEn,
                     QuestionTextAr = x.Question.TextAr,
-                    QuestionType = x.Question.Type
+                    QuestionType = x.Question.Type,
+                    QuestionGroupId = x.Question.GroupId,
+                    QuestionGroupNameEn = x.Question.Group.NameEn,
+                    QuestionGroupNameAr = x.Question.Group.NameAr
                 })
                 .ToArrayAsync(cancellationToken);
 
@@ -563,6 +585,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 .Where(x => templateIds.Contains(x.TemplateId) && x.IsActive)
                 .Select(x => new ConditionFlatDto
                 {
+                    TemplateKind = ReportTemplateKind.Normal,
                     TemplateId = x.TemplateId,
                     ParentTemplateQuestionId = x.ParentTemplateQuestionId,
                     ChildTemplateQuestionId = x.ChildTemplateQuestionId,
@@ -652,13 +675,17 @@ namespace CustomerSurvey.infrastructure.Reports
                 .Where(x => templateIds.Contains(x.AnonymousTemplateId))
                 .Select(x => new TemplateQuestionFlatDto
                 {
+                    TemplateKind = ReportTemplateKind.Anonymous,
                     TemplateQuestionId = x.Id,
                     TemplateId = x.AnonymousTemplateId,
                     QuestionId = x.QuestionId,
                     Order = x.Order,
                     QuestionTextEn = x.Question.TextEn,
                     QuestionTextAr = x.Question.TextAr,
-                    QuestionType = x.Question.Type
+                    QuestionType = x.Question.Type,
+                    QuestionGroupId = x.Question.GroupId,
+                    QuestionGroupNameEn = x.Question.Group.NameEn,
+                    QuestionGroupNameAr = x.Question.Group.NameAr
                 })
                 .ToArrayAsync(cancellationToken);
 
@@ -667,6 +694,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 .Where(x => templateIds.Contains(x.AnonymousTemplateId) && x.IsActive)
                 .Select(x => new ConditionFlatDto
                 {
+                    TemplateKind = ReportTemplateKind.Anonymous,
                     TemplateId = x.AnonymousTemplateId,
                     ParentTemplateQuestionId = x.ParentAnonymousTemplateQuestionId,
                     ChildTemplateQuestionId = x.ChildAnonymousTemplateQuestionId,
@@ -909,6 +937,9 @@ namespace CustomerSurvey.infrastructure.Reports
                     QuestionTextEn = templateQuestion.QuestionTextEn,
                     QuestionTextAr = templateQuestion.QuestionTextAr,
                     QuestionType = templateQuestion.QuestionType.ToString(),
+                    QuestionGroupId = templateQuestion.QuestionGroupId,
+                    QuestionGroupNameEn = templateQuestion.QuestionGroupNameEn,
+                    QuestionGroupNameAr = templateQuestion.QuestionGroupNameAr,
                     QuestionOrder = templateQuestion.Order,
                     IsRootQuestion = isRoot,
                     ParentTriggerTextEn = parentTrigger?.TextEn,
@@ -945,7 +976,8 @@ namespace CustomerSurvey.infrastructure.Reports
                 scoreTokens,
                 responseScores,
                 flowLines,
-                detailedAnswers);
+                detailedAnswers,
+                templateQuestions);
         }
 
         private static IReadOnlyCollection<BranchTemplatesPdfFlowLine> BuildFlowLines(
@@ -1423,7 +1455,6 @@ namespace CustomerSurvey.infrastructure.Reports
                     TemplateId = x.TemplateId,
                     TemplateKind = ReportTemplateKind.Normal,
                     CustomInputId = x.Id,
-                    Name = x.Name,
                     LabelEn = x.LabelEn,
                     LabelAr = x.LabelAr,
                     Type = x.Type,
@@ -1449,7 +1480,6 @@ namespace CustomerSurvey.infrastructure.Reports
                     TemplateId = x.AnonymousTemplateId,
                     TemplateKind = ReportTemplateKind.Anonymous,
                     CustomInputId = x.Id,
-                    Name = x.Name,
                     LabelEn = x.LabelEn,
                     LabelAr = x.LabelAr,
                     Type = x.Type,
@@ -1479,7 +1509,8 @@ namespace CustomerSurvey.infrastructure.Reports
                     TemplateId = x.SurveyResponse.TemplateId,
                     TemplateKind = ReportTemplateKind.Normal,
                     CustomInputId = x.TemplateCustomInputId,
-                    Name = x.NameSnapshot,
+                    LabelEnSnapshot = x.LabelEnSnapshot,
+                    LabelArSnapshot = x.LabelArSnapshot,
                     Type = x.TypeSnapshot,
                     StringValue = x.StringValue,
                     IntegerValue = x.IntegerValue
@@ -1519,7 +1550,8 @@ namespace CustomerSurvey.infrastructure.Reports
                     TemplateId = x.AnonymousSurveyResponse.AnonymousTemplateId,
                     TemplateKind = ReportTemplateKind.Anonymous,
                     CustomInputId = x.AnonymousTemplateCustomInputId,
-                    Name = x.NameSnapshot,
+                    LabelEnSnapshot = x.LabelEnSnapshot,
+                    LabelArSnapshot = x.LabelArSnapshot,
                     Type = x.TypeSnapshot,
                     StringValue = x.StringValue,
                     IntegerValue = x.IntegerValue
@@ -1567,7 +1599,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 .GroupBy(x => new { x.TemplateKind, x.ResponseId })
                 .ToDictionary(
                     x => (x.Key.TemplateKind, x.Key.ResponseId),
-                    x => x.OrderBy(value => value.Order ?? int.MaxValue).ThenBy(value => value.Name).ToArray());
+                    x => x.OrderBy(value => value.Order ?? int.MaxValue).ThenBy(value => value.LabelEnSnapshot).ToArray());
 
             return normalResponses
                 .Concat(anonymousResponses)
@@ -1618,7 +1650,7 @@ namespace CustomerSurvey.infrastructure.Reports
                 QuestionType.SingleChoice => selectedOption?.TextEn ?? string.Empty,
                 QuestionType.StarRating => answer.StarRatingValue?.ToString() ?? string.Empty,
                 QuestionType.Smiles => answer.SmileValue?.ToString() ?? string.Empty,
-                QuestionType.Complain => answer.TextAnswer ?? string.Empty,
+                QuestionType.Complain or QuestionType.FreeText => answer.TextAnswer ?? string.Empty,
                 QuestionType.Voice => BuildMediaPath(SurveyVoiceAnswersBasePath, answer.VoiceFileName) ?? string.Empty,
                 QuestionType.Image => BuildMediaPath(SurveyAnswerImagesBasePath, answer.ImageFileName) ?? string.Empty,
                 _ => string.Empty
@@ -1804,6 +1836,8 @@ namespace CustomerSurvey.infrastructure.Reports
             IReadOnlyCollection<BranchTemplatesPdfQuestionAnalytics> questions,
             IReadOnlyCollection<QuestionScoreToken> scoreTokens,
             IReadOnlyCollection<CalculatedResponseScore> responseScores,
+            IReadOnlyCollection<BranchTemplatesReportQuestionGroupAnalytics> questionGroups,
+            BranchTemplatesReportComplaintAnalytics complaintAnalytics,
             bool isArabic)
         {
             var allResponses = normalResponses.Concat(anonymousResponses).ToArray();
@@ -1836,6 +1870,16 @@ namespace CustomerSurvey.infrastructure.Reports
                 ? (decimal?)ReportScoreRounding.Round(avgPercentage.Value * MaxScoreValue / 100m)
                 : null;
 
+            var scoredGroups = questionGroups
+                .Where(x => x.AverageScorePercentage.HasValue)
+                .ToArray();
+            var highestGroup = scoredGroups
+                .OrderByDescending(x => x.AverageScorePercentage)
+                .FirstOrDefault();
+            var lowestGroup = scoredGroups
+                .OrderBy(x => x.AverageScorePercentage)
+                .FirstOrDefault();
+
             return new BranchTemplatesPdfExecutiveSummary
             {
                 TotalNormalTemplates = templates.Count(x => x.TemplateKind == ReportTemplateKind.Normal),
@@ -1851,7 +1895,123 @@ namespace CustomerSurvey.infrastructure.Reports
                 HighestRatedTemplateName = highest?.DisplayName(isArabic) ?? "-",
                 LowestRatedTemplateName = lowest?.DisplayName(isArabic) ?? "-",
                 MostAnsweredTemplateName = mostAnswered?.DisplayName(isArabic) ?? "-",
-                TemplatesWithoutResponses = templates.Count(x => x.TotalResponses == 0)
+                TemplatesWithoutResponses = templates.Count(x => x.TotalResponses == 0),
+                TotalComplaints = complaintAnalytics.TotalComplaints,
+                ResponsesWithComplaints = complaintAnalytics.ResponsesWithComplaints,
+                ComplaintRate = complaintAnalytics.ComplaintRate,
+                QuestionGroupsCount = questionGroups.Count,
+                HighestSatisfactionGroupName = highestGroup?.DisplayGroupName(isArabic) ?? "-",
+                LowestSatisfactionGroupName = lowestGroup?.DisplayGroupName(isArabic) ?? "-"
+            };
+        }
+
+        private static IReadOnlyCollection<BranchTemplatesReportQuestionGroupAnalytics> BuildQuestionGroupAnalytics(
+            IReadOnlyCollection<BranchTemplatesPdfTemplateSummary> templates,
+            IReadOnlyCollection<ResponseFlatDto> responses,
+            IReadOnlyCollection<TemplateQuestionFlatDto> templateQuestions,
+            IReadOnlyCollection<QuestionScoreToken> scoreTokens)
+        {
+            var templatesByKey = templates.ToDictionary(
+                x => (x.TemplateKind, x.TemplateId),
+                x => x);
+            var responsesByTemplate = responses
+                .GroupBy(x => (x.TemplateKind, x.TemplateId))
+                .ToDictionary(x => x.Key, x => x.Count());
+            var tokensByQuestion = scoreTokens
+                .GroupBy(x => (x.TemplateKind, x.TemplateId, x.TemplateQuestionId))
+                .ToDictionary(x => x.Key, x => x.ToArray());
+
+            return templateQuestions
+                .GroupBy(x => new
+                {
+                    x.TemplateKind,
+                    x.TemplateId,
+                    x.QuestionGroupId,
+                    x.QuestionGroupNameEn,
+                    x.QuestionGroupNameAr
+                })
+                .Select(group =>
+                {
+                    var tokens = group
+                        .SelectMany(question => tokensByQuestion.GetValueOrDefault(
+                            (question.TemplateKind, question.TemplateId, question.TemplateQuestionId),
+                            Array.Empty<QuestionScoreToken>()))
+                        .ToArray();
+                    var templateKey = (group.Key.TemplateKind, group.Key.TemplateId);
+                    var template = templatesByKey[templateKey];
+                    var averageValue = tokens.Length == 0
+                        ? (decimal?)null
+                        : ReportScoreRounding.Round(tokens.Average(x => x.ScoreValue));
+
+                    return new BranchTemplatesReportQuestionGroupAnalytics
+                    {
+                        TemplateId = group.Key.TemplateId,
+                        TemplateKind = group.Key.TemplateKind,
+                        TemplateNameEn = template.NameEn,
+                        TemplateNameAr = template.NameAr,
+                        QuestionGroupId = group.Key.QuestionGroupId,
+                        QuestionGroupNameEn = group.Key.QuestionGroupNameEn,
+                        QuestionGroupNameAr = group.Key.QuestionGroupNameAr,
+                        QuestionsCount = group.Count(),
+                        ScorableQuestionsCount = group.Count(x => IsScoredQuestionType(x.QuestionType)),
+                        TotalResponses = responsesByTemplate.GetValueOrDefault(templateKey),
+                        ScoredResponsesCount = tokens.Select(x => x.ResponseId).Distinct().Count(),
+                        ScoredItemsCount = tokens.Length,
+                        AverageScoreValue = averageValue,
+                        AverageScorePercentage = averageValue.HasValue
+                            ? ReportScoreRounding.Round(averageValue.Value / MaxScoreValue * 100m)
+                            : null
+                    };
+                })
+                .OrderBy(x => x.TemplateKind)
+                .ThenBy(x => x.TemplateNameEn)
+                .ThenByDescending(x => x.AverageScorePercentage)
+                .ThenBy(x => x.QuestionGroupNameEn)
+                .ToArray();
+        }
+
+        private static BranchTemplatesReportComplaintAnalytics BuildComplaintAnalytics(
+            IReadOnlyCollection<BranchTemplatesReportResponse> responses,
+            int totalResponses)
+        {
+            var complaints = responses
+                .SelectMany(response => response.Answers
+                    .Where(answer =>
+                        answer.QuestionType == QuestionType.Complain &&
+                        !string.IsNullOrWhiteSpace(answer.TextAnswer))
+                    .Select(answer => new BranchTemplatesReportComplaintItem
+                    {
+                        ResponseId = response.ResponseId,
+                        TemplateId = response.TemplateId,
+                        TemplateKind = response.TemplateKind,
+                        TemplateNameEn = response.TemplateNameEn,
+                        TemplateNameAr = response.TemplateNameAr,
+                        QuestionId = answer.QuestionId,
+                        QuestionTextEn = answer.QuestionTextEn,
+                        QuestionTextAr = answer.QuestionTextAr,
+                        ComplaintText = answer.TextAnswer!.Trim(),
+                        SubmittedOnUtc = response.SubmittedOnUtc,
+                        OperatorId = response.OperatorId,
+                        OperatorNameEn = response.OperatorNameEn,
+                        OperatorNameAr = response.OperatorNameAr
+                    }))
+                .OrderByDescending(x => x.SubmittedOnUtc)
+                .ToArray();
+
+            var responsesWithComplaints = complaints
+                .Select(x => (x.TemplateKind, x.ResponseId))
+                .Distinct()
+                .Count();
+
+            return new BranchTemplatesReportComplaintAnalytics
+            {
+                TotalComplaints = complaints.Length,
+                ResponsesWithComplaints = responsesWithComplaints,
+                TotalResponses = totalResponses,
+                ComplaintRate = totalResponses == 0
+                    ? 0m
+                    : ReportScoreRounding.Round(responsesWithComplaints * 100m / totalResponses),
+                Complaints = complaints
             };
         }
 
@@ -1992,13 +2152,17 @@ namespace CustomerSurvey.infrastructure.Reports
             IReadOnlyCollection<AnswerFlatDto> answers,
             IReadOnlyCollection<ResponseFlatDto> responses)
         {
-            var templateIdByResponseId = responses
-                .ToDictionary(x => x.ResponseId, x => x.TemplateId);
+            var templateByResponseId = responses
+                .ToDictionary(x => x.ResponseId, x => (x.TemplateId, x.TemplateKind));
 
             return answers
                 .Select(answer =>
-                    templateIdByResponseId.TryGetValue(answer.ResponseId, out var templateId)
-                        ? answer with { TemplateId = templateId }
+                    templateByResponseId.TryGetValue(answer.ResponseId, out var template)
+                        ? answer with
+                        {
+                            TemplateId = template.TemplateId,
+                            TemplateKind = template.TemplateKind
+                        }
                         : answer)
                 .Where(answer => answer.TemplateId != Guid.Empty)
                 .ToArray();
@@ -2065,7 +2229,8 @@ namespace CustomerSurvey.infrastructure.Reports
             IReadOnlyCollection<QuestionScoreToken> ScoreTokens,
             IReadOnlyCollection<CalculatedResponseScore> ResponseScores,
             IReadOnlyCollection<BranchTemplatesPdfFlowLine> FlowLines,
-            IReadOnlyCollection<BranchTemplatesReportAnswer> Answers)
+            IReadOnlyCollection<BranchTemplatesReportAnswer> Answers,
+            IReadOnlyCollection<TemplateQuestionFlatDto> TemplateQuestions)
         {
             public static QuestionAnalyticsBuildResult Empty()
                 => new(
@@ -2073,7 +2238,8 @@ namespace CustomerSurvey.infrastructure.Reports
                     Array.Empty<QuestionScoreToken>(),
                     Array.Empty<CalculatedResponseScore>(),
                     Array.Empty<BranchTemplatesPdfFlowLine>(),
-                    Array.Empty<BranchTemplatesReportAnswer>());
+                    Array.Empty<BranchTemplatesReportAnswer>(),
+                    Array.Empty<TemplateQuestionFlatDto>());
         }
 
         private sealed record TemplateHeaderDto

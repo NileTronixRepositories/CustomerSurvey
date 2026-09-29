@@ -15,7 +15,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
             Select(x => new AnonymousTemplateCustomInputForSubmitDto
             {
                 CustomInputId = x.Id,
-                Name = x.Name,
+                LabelEn = x.LabelEn,
+                LabelAr = x.LabelAr,
                 Type = x.Type,
                 IsRequired = x.IsRequired,
                 MinLength = x.MinLength,

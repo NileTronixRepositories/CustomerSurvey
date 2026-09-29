@@ -140,7 +140,6 @@ namespace CustomerSurvey.Api.Controllers
                 CustomInputs = request.CustomInputs
                     .Select(customInput => new CreateTemplateCustomInputCommandItem
                     {
-                        Name = customInput.Name,
                         LabelEn = customInput.LabelEn,
                         LabelAr = customInput.LabelAr,
                         Type = customInput.Type,
@@ -194,7 +193,6 @@ namespace CustomerSurvey.Api.Controllers
                     .Select(customInput => new UpdateTemplateCustomInputCommandItem
                     {
                         CustomInputId = customInput.CustomInputId,
-                        Name = customInput.Name,
                         LabelEn = customInput.LabelEn,
                         LabelAr = customInput.LabelAr,
                         Type = customInput.Type,

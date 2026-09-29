@@ -178,7 +178,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
                     .Select(x => new UpdateTemplateCustomInputResponse
                     {
                         CustomInputId = x.Id,
-                        Name = x.Name,
                         LabelEn = x.LabelEn,
                         LabelAr = x.LabelAr,
                         Type = x.Type,
@@ -212,8 +211,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
 
             foreach (var requestedCustomInput in requestedCustomInputs.OrderBy(x => x.Order))
             {
-                var normalizedName = requestedCustomInput.Name.Trim();
-
                 TemplateCustomInput? customInput;
 
                 if (requestedCustomInput.CustomInputId.HasValue)
@@ -231,11 +228,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
                 }
                 else
                 {
-                    customInput = existingCustomInputsList.FirstOrDefault(
-                        x => string.Equals(
-                            x.Name,
-                            normalizedName,
-                            StringComparison.OrdinalIgnoreCase));
+                    customInput = null;
                 }
 
                 if (customInput is not null)
@@ -249,7 +242,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
                     }
 
                     customInput.Update(
-                        name: requestedCustomInput.Name,
                         labelEn: requestedCustomInput.LabelEn,
                         labelAr: requestedCustomInput.LabelAr,
                         type: requestedCustomInput.Type,
@@ -269,7 +261,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
 
                 var newCustomInput = TemplateCustomInput.Create(
                     templateId: templateId,
-                    name: requestedCustomInput.Name,
                     labelEn: requestedCustomInput.LabelEn,
                     labelAr: requestedCustomInput.LabelAr,
                     type: requestedCustomInput.Type,

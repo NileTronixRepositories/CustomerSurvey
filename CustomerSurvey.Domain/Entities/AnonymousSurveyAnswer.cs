@@ -118,6 +118,23 @@ namespace CustomerSurvey.Domain.Entities
             };
         }
 
+        public static AnonymousSurveyAnswer CreateFreeText(
+            Guid anonymousSurveyResponseId,
+            Guid anonymousTemplateQuestionId,
+            Guid questionId,
+            string textAnswer)
+        {
+            return new AnonymousSurveyAnswer
+            {
+                Id = Guid.NewGuid(),
+                AnonymousSurveyResponseId = anonymousSurveyResponseId,
+                AnonymousTemplateQuestionId = anonymousTemplateQuestionId,
+                QuestionId = questionId,
+                QuestionType = QuestionType.FreeText,
+                TextAnswer = textAnswer.Trim()
+            };
+        }
+
         public static AnonymousSurveyAnswer CreateSmiles(
             Guid anonymousSurveyResponseId,
             Guid anonymousTemplateQuestionId,

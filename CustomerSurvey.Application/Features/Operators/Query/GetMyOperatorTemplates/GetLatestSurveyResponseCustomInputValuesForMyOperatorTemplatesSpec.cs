@@ -20,7 +20,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
             {
                 SurveyResponseId = x.SurveyResponseId,
                 CustomInputId = x.TemplateCustomInputId,
-                Name = x.NameSnapshot,
+                LabelEnSnapshot = x.LabelEnSnapshot,
+                LabelArSnapshot = x.LabelArSnapshot,
                 Type = x.TypeSnapshot,
                 StringValue = x.StringValue,
                 IntegerValue = x.IntegerValue

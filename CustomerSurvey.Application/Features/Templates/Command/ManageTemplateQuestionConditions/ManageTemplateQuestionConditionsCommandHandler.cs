@@ -315,7 +315,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.ManageTemplateQu
                     Message: ErrorMessage.Question_Image_ParentCondition_NotAllowed,
                     Type: ErrorType.Validation)),
 
-                QuestionType.Voice or QuestionType.Complain => Result.Fail(new Error(
+                QuestionType.Voice or QuestionType.Complain or QuestionType.FreeText => Result.Fail(new Error(
                     Code: "Templates.ManageQuestionConditions.ParentTypeNotAllowed",
                     Message: ErrorMessage.ManageTemplateQuestionConditions_ParentType_NotAllowed,
                     Type: ErrorType.Validation)),

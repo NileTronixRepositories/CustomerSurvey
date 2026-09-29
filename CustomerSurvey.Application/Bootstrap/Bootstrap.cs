@@ -2,6 +2,7 @@
 using BuildingBlock.Application.Behaviors;
 using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Features.Reports.Services.Scoring;
+using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 using CustomerSurvey.Application.Shared.BranchScope;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +51,7 @@ namespace CustomerSurvey.Application.Bootstrap
             services.AddFluentValidation();
             services.AddScoped<ICurrentBranchScopeResolver, CurrentBranchScopeResolver>();
             services.AddScoped<ISurveyReportScoringService, SurveyReportScoringService>();
+            services.AddScoped<ISurveyDashboardRequestResolver, SurveyDashboardRequestResolver>();
             services.AddMediatorInjection();
             return services;
         }

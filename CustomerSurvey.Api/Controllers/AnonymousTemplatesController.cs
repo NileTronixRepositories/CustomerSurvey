@@ -95,7 +95,6 @@ namespace CustomerSurvey.Api.Controllers
                 CustomInputs = request.CustomInputs?
                     .Select(x => new CreateAnonymousTemplateCustomInputCommandItem
                     {
-                        Name = x.Name,
                         LabelEn = x.LabelEn,
                         LabelAr = x.LabelAr,
                         Type = x.Type,
@@ -135,7 +134,6 @@ namespace CustomerSurvey.Api.Controllers
                     .Select(x => new UpdateAnonymousTemplateCustomInputCommandItem
                     {
                         CustomInputId = x.CustomInputId,
-                        Name = x.Name,
                         LabelEn = x.LabelEn,
                         LabelAr = x.LabelAr,
                         Type = x.Type,
@@ -346,7 +344,7 @@ namespace CustomerSurvey.Api.Controllers
                 SatisfactionCategory = query.SatisfactionCategory,
                 IsScored = query.IsScored,
                 QuestionId = query.QuestionId,
-                CustomInputName = query.CustomInputName,
+                CustomInputId = query.CustomInputId,
                 CustomInputType = query.CustomInputType,
                 CustomInputValue = query.CustomInputValue
             };

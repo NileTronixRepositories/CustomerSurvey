@@ -49,13 +49,17 @@ internal sealed class GetDepartmentOperatorSurveyResponsesPaginationSpec
             {
                 AddCriteria(x =>
                     x.Answers.Any(answer =>
-                        answer.QuestionType == QuestionType.Complain));
+                        answer.QuestionType == QuestionType.Complain &&
+                        answer.TextAnswer != null &&
+                        answer.TextAnswer.Trim() != string.Empty));
             }
             else
             {
                 AddCriteria(x =>
                     !x.Answers.Any(answer =>
-                        answer.QuestionType == QuestionType.Complain));
+                        answer.QuestionType == QuestionType.Complain &&
+                        answer.TextAnswer != null &&
+                        answer.TextAnswer.Trim() != string.Empty));
             }
         }
 
@@ -91,7 +95,8 @@ internal sealed class GetDepartmentOperatorSurveyResponsesPaginationSpec
                 (x.Operator.ApplicationUser.NameAr != null && x.Operator.ApplicationUser.NameAr.Contains(searchText)) ||
 
                 x.CustomInputValues.Any(value =>
-                    value.NameSnapshot.Contains(searchText) ||
+                    (value.LabelEnSnapshot != null && value.LabelEnSnapshot.Contains(searchText)) ||
+                    (value.LabelArSnapshot != null && value.LabelArSnapshot.Contains(searchText)) ||
                     (value.StringValue != null && value.StringValue.Contains(searchText))) ||
 
                 x.Answers.Any(answer =>
@@ -140,7 +145,9 @@ internal sealed class GetDepartmentOperatorSurveyResponsesPaginationSpec
             IsScored = x.MaxScore > 0,
 
             HasComplaint = x.Answers.Any(answer =>
-                answer.QuestionType == QuestionType.Complain),
+                answer.QuestionType == QuestionType.Complain &&
+                answer.TextAnswer != null &&
+                answer.TextAnswer.Trim() != string.Empty),
 
             HasVoice = x.Answers.Any(answer =>
                 answer.QuestionType == QuestionType.Voice)
@@ -178,33 +185,33 @@ internal sealed class GetDepartmentOperatorSurveyResponsesPaginationSpec
             AddCriteria(x => x.Answers.Any(answer => answer.QuestionId == query.QuestionId.Value));
         }
 
-        var customInputName = query.CustomInputName?.Trim();
+        var customInputId = query.CustomInputId;
         var customInputValue = query.CustomInputValue?.Trim();
 
-        if (!string.IsNullOrWhiteSpace(customInputName) || query.CustomInputType.HasValue || !string.IsNullOrWhiteSpace(customInputValue))
+        if (customInputId.HasValue || query.CustomInputType.HasValue || !string.IsNullOrWhiteSpace(customInputValue))
         {
-            var hasName = !string.IsNullOrWhiteSpace(customInputName);
+            var hasCustomInputId = customInputId.HasValue;
             var hasValue = !string.IsNullOrWhiteSpace(customInputValue);
 
             if (query.CustomInputType == TemplateCustomInputType.Integer && hasValue)
             {
                 var integerValue = int.Parse(customInputValue!);
                 AddCriteria(x => x.CustomInputValues.Any(value =>
-                    (!hasName || value.NameSnapshot == customInputName) &&
+                    (!hasCustomInputId || value.TemplateCustomInputId == customInputId.Value) &&
                     value.TypeSnapshot == TemplateCustomInputType.Integer &&
                     value.IntegerValue == integerValue));
             }
             else if (query.CustomInputType == TemplateCustomInputType.String && hasValue)
             {
                 AddCriteria(x => x.CustomInputValues.Any(value =>
-                    (!hasName || value.NameSnapshot == customInputName) &&
+                    (!hasCustomInputId || value.TemplateCustomInputId == customInputId.Value) &&
                     value.TypeSnapshot == TemplateCustomInputType.String &&
                     value.StringValue == customInputValue));
             }
             else
             {
                 AddCriteria(x => x.CustomInputValues.Any(value =>
-                    (!hasName || value.NameSnapshot == customInputName) &&
+                    (!hasCustomInputId || value.TemplateCustomInputId == customInputId.Value) &&
                     (!query.CustomInputType.HasValue || value.TypeSnapshot == query.CustomInputType.Value)));
             }
         }

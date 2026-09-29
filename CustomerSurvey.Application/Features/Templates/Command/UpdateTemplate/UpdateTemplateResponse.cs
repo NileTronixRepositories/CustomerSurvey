@@ -39,8 +39,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
     {
         public Guid CustomInputId { get; init; }
 
-        public string Name { get; init; } = string.Empty;
-
         public string? LabelEn { get; init; }
 
         public string? LabelAr { get; init; }

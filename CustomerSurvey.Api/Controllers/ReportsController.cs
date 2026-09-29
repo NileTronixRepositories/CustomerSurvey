@@ -15,6 +15,8 @@ using CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponsesPagination;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
+using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardComplaints;
+using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardQuestionGroups;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardTemplatesSelection;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyResponsesPagination;
 using MediatR;
@@ -176,6 +178,28 @@ namespace CustomerSurvey.Api.Controllers
 
             var result = await sender.Send(query, cancellationToken);
 
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("survey-dashboard/complaints")]
+        [Permission("Reports.ViewBranchReports")]
+        public async Task<IActionResult> GetSurveyDashboardComplaints(
+            [FromQuery] GetSurveyDashboardComplaintsQuery query,
+            CancellationToken cancellationToken)
+        {
+            query ??= new GetSurveyDashboardComplaintsQuery();
+            var result = await sender.Send(query, cancellationToken);
+            return result.ToIActionResult();
+        }
+
+        [HttpGet("survey-dashboard/question-groups")]
+        [Permission("Reports.ViewBranchReports")]
+        public async Task<IActionResult> GetSurveyDashboardQuestionGroups(
+            [FromQuery] GetSurveyDashboardQuestionGroupsQuery query,
+            CancellationToken cancellationToken)
+        {
+            query ??= new GetSurveyDashboardQuestionGroupsQuery();
+            var result = await sender.Send(query, cancellationToken);
             return result.ToIActionResult();
         }
 

@@ -6,7 +6,11 @@ internal sealed record SystemDashboardCustomInputPreviewDto
 {
     public Guid SurveyResponseId { get; init; }
 
-    public string NameSnapshot { get; init; } = string.Empty;
+    public Guid CustomInputId { get; init; }
+
+    public string? LabelEnSnapshot { get; init; }
+
+    public string? LabelArSnapshot { get; init; }
 
     public TemplateCustomInputType TypeSnapshot { get; init; }
 

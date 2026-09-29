@@ -77,21 +77,21 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
         }
 
         var templateQuestionsByTemplate = templateQuestions
-            .GroupBy(x => x.TemplateId)
+            .GroupBy(x => (x.TemplateKind, x.TemplateId))
             .ToDictionary(x => x.Key, x => x.ToArray());
 
         var templateQuestionsById = templateQuestions
-            .GroupBy(x => x.TemplateQuestionId)
+            .GroupBy(x => (x.TemplateKind, x.TemplateQuestionId))
             .ToDictionary(x => x.Key, x => x.First());
 
         var childTemplateQuestionIdsByTemplate = conditions
-            .GroupBy(x => x.TemplateId)
+            .GroupBy(x => (x.TemplateKind, x.TemplateId))
             .ToDictionary(
                 x => x.Key,
                 x => x.Select(c => c.ChildTemplateQuestionId).ToHashSet());
 
         var childConditionsByParent = conditions
-            .GroupBy(x => x.ParentTemplateQuestionId)
+            .GroupBy(x => (x.TemplateKind, x.ParentTemplateQuestionId))
             .ToDictionary(
                 x => x.Key,
                 x => x.OrderBy(c => GetChildQuestionOrder(c, templateQuestionsById)).ToArray());
@@ -100,11 +100,12 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
             .GroupBy(x => new
             {
                 x.ResponseId,
+                x.TemplateKind,
                 x.TemplateId,
                 x.QuestionId
             })
             .ToDictionary(
-                x => (x.Key.ResponseId, x.Key.TemplateId, x.Key.QuestionId),
+                x => (x.Key.ResponseId, x.Key.TemplateKind, x.Key.TemplateId, x.Key.QuestionId),
                 x => x.First());
 
         var questionOptionsById = questionOptions
@@ -115,12 +116,16 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
 
         foreach (var response in responses)
         {
-            if (!templateQuestionsByTemplate.TryGetValue(response.TemplateId, out var currentTemplateQuestions))
+            if (!templateQuestionsByTemplate.TryGetValue(
+                    (response.TemplateKind, response.TemplateId),
+                    out var currentTemplateQuestions))
             {
                 continue;
             }
 
-            if (!childTemplateQuestionIdsByTemplate.TryGetValue(response.TemplateId, out var childIds))
+            if (!childTemplateQuestionIdsByTemplate.TryGetValue(
+                    (response.TemplateKind, response.TemplateId),
+                    out var childIds))
             {
                 childIds = new HashSet<Guid>();
             }
@@ -161,12 +166,12 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
     private static void AddRootScoreTokenIfPossible(
         ResponseFlatDto response,
         TemplateQuestionFlatDto rootQuestion,
-        IReadOnlyDictionary<(Guid ResponseId, Guid TemplateId, Guid QuestionId), AnswerFlatDto> answersByResponseAndQuestion,
+        IReadOnlyDictionary<(Guid ResponseId, ReportTemplateKind TemplateKind, Guid TemplateId, Guid QuestionId), AnswerFlatDto> answersByResponseAndQuestion,
         IReadOnlyDictionary<Guid, QuestionOptionFlatDto> questionOptionsById,
         List<QuestionScoreToken> result)
     {
         if (!answersByResponseAndQuestion.TryGetValue(
-                (response.ResponseId, response.TemplateId, rootQuestion.QuestionId),
+                (response.ResponseId, response.TemplateKind, response.TemplateId, rootQuestion.QuestionId),
                 out var answer))
         {
             return;
@@ -183,9 +188,9 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
     private static void AddLowestConditionLevelScoreTokenIfPossible(
         ResponseFlatDto response,
         TemplateQuestionFlatDto rootQuestion,
-        IReadOnlyDictionary<Guid, TemplateQuestionFlatDto> templateQuestionsById,
-        IReadOnlyDictionary<Guid, ConditionFlatDto[]> childConditionsByParent,
-        IReadOnlyDictionary<(Guid ResponseId, Guid TemplateId, Guid QuestionId), AnswerFlatDto> answersByResponseAndQuestion,
+        IReadOnlyDictionary<(ReportTemplateKind TemplateKind, Guid TemplateQuestionId), TemplateQuestionFlatDto> templateQuestionsById,
+        IReadOnlyDictionary<(ReportTemplateKind TemplateKind, Guid ParentTemplateQuestionId), ConditionFlatDto[]> childConditionsByParent,
+        IReadOnlyDictionary<(Guid ResponseId, ReportTemplateKind TemplateKind, Guid TemplateId, Guid QuestionId), AnswerFlatDto> answersByResponseAndQuestion,
         IReadOnlyDictionary<Guid, QuestionOptionFlatDto> questionOptionsById,
         List<QuestionScoreToken> result)
     {
@@ -202,7 +207,7 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
             }
 
             if (!answersByResponseAndQuestion.TryGetValue(
-                    (response.ResponseId, response.TemplateId, current.QuestionId),
+                    (response.ResponseId, response.TemplateKind, response.TemplateId, current.QuestionId),
                     out var currentAnswer))
             {
                 break;
@@ -218,7 +223,7 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
             }
 
             if (!childConditionsByParent.TryGetValue(
-                    current.TemplateQuestionId,
+                    (response.TemplateKind, current.TemplateQuestionId),
                     out var possibleConditions))
             {
                 break;
@@ -233,7 +238,7 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
             }
 
             if (!templateQuestionsById.TryGetValue(
-                    matchedCondition.ChildTemplateQuestionId,
+                    (response.TemplateKind, matchedCondition.ChildTemplateQuestionId),
                     out var childQuestion))
             {
                 break;
@@ -323,8 +328,10 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
 
     private static int GetChildQuestionOrder(
         ConditionFlatDto condition,
-        IReadOnlyDictionary<Guid, TemplateQuestionFlatDto> templateQuestionsById)
-        => templateQuestionsById.TryGetValue(condition.ChildTemplateQuestionId, out var child)
+        IReadOnlyDictionary<(ReportTemplateKind TemplateKind, Guid TemplateQuestionId), TemplateQuestionFlatDto> templateQuestionsById)
+        => templateQuestionsById.TryGetValue(
+            (condition.TemplateKind, condition.ChildTemplateQuestionId),
+            out var child)
             ? child.Order
             : int.MaxValue;
 

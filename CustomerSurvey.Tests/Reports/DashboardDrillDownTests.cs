@@ -13,6 +13,37 @@ namespace CustomerSurvey.Tests.Reports;
 
 public sealed class DashboardDrillDownTests
 {
+    [Fact]
+    public void ComplaintFilter_CountsOnlyNonBlankComplaintAnswersAndNeverFreeText()
+    {
+        var query = new GetBranchSurveyResponsesPaginationQuery { HasComplaint = true };
+        var spec = new GetBranchSurveyResponsesPaginationSpec(
+            branchId: null,
+            DateTime.UtcNow.AddDays(-1),
+            DateTime.UtcNow.AddDays(1),
+            query);
+
+        var freeTextResponse = SurveyResponse.Create(
+            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 0, 0, 0m);
+        freeTextResponse.AddAnswer(SurveyAnswer.CreateFreeText(
+            freeTextResponse.Id, Guid.NewGuid(), "ordinary feedback"));
+
+        var blankComplaintResponse = SurveyResponse.Create(
+            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 0, 0, 0m);
+        blankComplaintResponse.AddAnswer(SurveyAnswer.CreateComplain(
+            blankComplaintResponse.Id, Guid.NewGuid(), "   "));
+
+        var complaintResponse = SurveyResponse.Create(
+            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 0, 0, 0m);
+        complaintResponse.AddAnswer(SurveyAnswer.CreateComplain(
+            complaintResponse.Id, Guid.NewGuid(), "Service was delayed"));
+
+        var predicate = spec.Criteria.Compile();
+        Assert.False(predicate(freeTextResponse));
+        Assert.False(predicate(blankComplaintResponse));
+        Assert.True(predicate(complaintResponse));
+    }
+
     [Theory]
     [InlineData(59.99, SatisfactionCategory.Unhappy)]
     [InlineData(60, SatisfactionCategory.Neutral)]
@@ -97,7 +128,7 @@ public sealed class DashboardDrillDownTests
             ("branchId", branchId),
             ("source", SurveyDashboardSource.All),
             ("scoreCalculationMode", ScoreCalculationMode.RootQuestions),
-            ("customInputName", "Region / المنطقة"),
+            ("customInputId", "11111111-1111-1111-1111-111111111111"),
             ("customInputValue", "North & East"),
             ("pageNumber", 1),
             ("pageSize", 10));
@@ -109,7 +140,7 @@ public sealed class DashboardDrillDownTests
         Assert.Contains($"branchId={branchId}", path);
         Assert.Contains("source=All", path);
         Assert.Contains("scoreCalculationMode=RootQuestions", path);
-        Assert.Contains("customInputName=Region%20%2F%20", path);
+        Assert.Contains("customInputId=11111111-1111-1111-1111-111111111111", path);
         Assert.Contains("customInputValue=North%20%26%20East", path);
     }
 
@@ -138,17 +169,19 @@ public sealed class DashboardDrillDownTests
             maxScore: 5,
             scorePercentage: 60m);
         response.AddAnswer(SurveyAnswer.CreateStarRating(response.Id, questionId, 3));
+        var customInputId = Guid.NewGuid();
         response.AddCustomInputValue(SurveyResponseCustomInputValue.CreateStringValue(
             response.Id,
-            Guid.NewGuid(),
+            customInputId,
             "Region",
+            null,
             "North"));
 
         var query = new GetBranchSurveyResponsesPaginationQuery
         {
             SatisfactionCategory = SatisfactionCategory.Neutral,
             QuestionId = questionId,
-            CustomInputName = "Region",
+            CustomInputId = customInputId,
             CustomInputType = TemplateCustomInputType.String,
             CustomInputValue = "North"
         };
@@ -168,7 +201,7 @@ public sealed class DashboardDrillDownTests
             {
                 SatisfactionCategory = SatisfactionCategory.Neutral,
                 QuestionId = Guid.NewGuid(),
-                CustomInputName = "Region",
+                CustomInputId = customInputId,
                 CustomInputType = TemplateCustomInputType.String,
                 CustomInputValue = "North"
             });
@@ -191,17 +224,19 @@ public sealed class DashboardDrillDownTests
             scorePercentage: 40m);
         SetProperty(response, nameof(SurveyResponse.Operator), operatorProfile);
         response.AddAnswer(SurveyAnswer.CreateStarRating(response.Id, questionId, 2));
+        var customInputId = Guid.NewGuid();
         response.AddCustomInputValue(SurveyResponseCustomInputValue.CreateIntegerValue(
             response.Id,
-            Guid.NewGuid(),
+            customInputId,
             "Age",
+            null,
             30));
 
         var query = new GetDepartmentSurveyResponsesPaginationQuery
         {
             SatisfactionCategory = SatisfactionCategory.Unhappy,
             QuestionId = questionId,
-            CustomInputName = "Age",
+            CustomInputId = customInputId,
             CustomInputType = TemplateCustomInputType.Integer,
             CustomInputValue = "30"
         };

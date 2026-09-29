@@ -1660,7 +1660,7 @@
     <value>Custom inputs are invalid.</value>
   </data>
   <data name="CreateTemplate_CustomInput_Name_Required" xml:space="preserve">
-    <value>Custom input name is required.</value>
+    <value>At least one custom input label is required.</value>
   </data>
   <data name="CreateTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
     <value>Custom input name must not exceed 100 characters.</value>
@@ -1708,7 +1708,7 @@
     <value>One custom input was not found inside this template.</value>
   </data>
   <data name="UpdateTemplate_CustomInput_Name_Required" xml:space="preserve">
-    <value>Custom input name is required.</value>
+    <value>At least one custom input label is required.</value>
   </data>
   <data name="UpdateTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
     <value>Custom input name must not exceed 100 characters.</value>
@@ -1816,7 +1816,7 @@
     <value>Custom inputs are invalid.</value>
   </data>
   <data name="CreateAnonymousTemplate_CustomInput_Name_Required" xml:space="preserve">
-    <value>Custom input name is required.</value>
+    <value>At least one custom input label is required.</value>
   </data>
   <data name="CreateAnonymousTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
     <value>Custom input name must not exceed 100 characters.</value>
@@ -1906,7 +1906,7 @@
     <value>Custom inputs are invalid.</value>
   </data>
   <data name="UpdateAnonymousTemplate_CustomInput_Name_Required" xml:space="preserve">
-    <value>Custom input name is required.</value>
+    <value>At least one custom input label is required.</value>
   </data>
   <data name="UpdateAnonymousTemplate_CustomInput_Name_MaxLength" xml:space="preserve">
     <value>Custom input name must not exceed 100 characters.</value>

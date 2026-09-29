@@ -48,11 +48,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
             RuleForEach(x => x.CustomInputs)
                 .ChildRules(input =>
                 {
-                    input.RuleFor(x => x.Name)
-                        .NotEmpty()
-                        .WithMessage(ErrorMessage.CreateAnonymousTemplate_CustomInput_Name_Required)
-                        .MaximumLength(100)
-                        .WithMessage(ErrorMessage.CreateAnonymousTemplate_CustomInput_Name_MaxLength);
+                    input.RuleFor(x => x)
+                        .Must(x => !string.IsNullOrWhiteSpace(x.LabelEn) ||
+                                   !string.IsNullOrWhiteSpace(x.LabelAr))
+                        .WithMessage(ErrorMessage.CreateAnonymousTemplate_CustomInput_Name_Required);
 
                     input.RuleFor(x => x.LabelEn)
                         .MaximumLength(200)
@@ -104,10 +103,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
                 });
 
             RuleFor(x => x.CustomInputs)
-                .Must(HaveUniqueInputNames)
-                .WithMessage(ErrorMessage.CreateAnonymousTemplate_CustomInput_Name_Duplicated);
-
-            RuleFor(x => x.CustomInputs)
                 .Must(HaveUniqueOrders)
                 .WithMessage(ErrorMessage.CreateAnonymousTemplate_CustomInput_Order_Duplicated);
         }
@@ -132,17 +127,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
             }
 
             return !input.MinLength.HasValue && !input.MaxLength.HasValue;
-        }
-
-        private static bool HaveUniqueInputNames(
-            IReadOnlyCollection<CreateAnonymousTemplateCustomInputCommandItem> inputs)
-        {
-            var normalizedNames = inputs
-                .Where(x => !string.IsNullOrWhiteSpace(x.Name))
-                .Select(x => x.Name.Trim().ToLowerInvariant())
-                .ToArray();
-
-            return normalizedNames.Length == normalizedNames.Distinct().Count();
         }
 
         private static bool HaveUniqueOrders(

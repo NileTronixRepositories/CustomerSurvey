@@ -82,7 +82,9 @@ public sealed record SystemSurveyResponseCustomInputResponse
 {
     public Guid CustomInputId { get; init; }
 
-    public string Name { get; init; } = string.Empty;
+    public string? LabelEnSnapshot { get; init; }
+
+    public string? LabelArSnapshot { get; init; }
 
     public TemplateCustomInputType Type { get; init; }
 

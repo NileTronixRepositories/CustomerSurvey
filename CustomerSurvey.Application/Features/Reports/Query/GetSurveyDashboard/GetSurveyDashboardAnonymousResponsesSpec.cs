@@ -52,7 +52,7 @@ internal sealed class GetSurveyDashboardAnonymousResponsesSpec
             HasComplaint = x.Answers.Any(answer =>
                 answer.QuestionType == QuestionType.Complain &&
                 answer.TextAnswer != null &&
-                answer.TextAnswer != string.Empty),
+                answer.TextAnswer.Trim() != string.Empty),
             HasVoice = x.Answers.Any(answer =>
                 answer.QuestionType == QuestionType.Voice &&
                 answer.VoiceFileName != null &&
@@ -146,9 +146,9 @@ internal sealed class GetSurveyDashboardAnonymousCustomInputValuesSpec
             Source = SurveyDashboardSource.Anonymous,
             ResponseId = x.AnonymousSurveyResponseId,
             BranchId = x.AnonymousSurveyResponse.AnonymousTemplate.BranchId!.Value,
-            NameSnapshot = x.NameSnapshot,
-            LabelEn = x.AnonymousTemplateCustomInput.LabelEn,
-            LabelAr = x.AnonymousTemplateCustomInput.LabelAr,
+            CustomInputId = x.AnonymousTemplateCustomInputId,
+            LabelEnSnapshot = x.LabelEnSnapshot,
+            LabelArSnapshot = x.LabelArSnapshot,
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue,

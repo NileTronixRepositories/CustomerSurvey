@@ -20,8 +20,6 @@ namespace CustomerSurvey.Api.Contracts.Templates
 
     public sealed class CreateTemplateCustomInputRequest
     {
-        public string Name { get; init; } = string.Empty;
-
         public string? LabelEn { get; init; }
 
         public string? LabelAr { get; init; }

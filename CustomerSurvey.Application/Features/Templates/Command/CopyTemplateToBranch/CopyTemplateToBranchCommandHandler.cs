@@ -261,7 +261,6 @@ internal sealed class CopyTemplateToBranchCommandHandler
 
             copiedTemplate.AddCustomInput(TemplateCustomInput.Create(
                 templateId: copiedTemplate.Id,
-                name: sourceInput.Name,
                 labelEn: sourceInput.LabelEn,
                 labelAr: sourceInput.LabelAr,
                 type: sourceInput.Type,
@@ -484,7 +483,6 @@ internal sealed class CopyTemplateToBranchCommandHandler
 
             copiedTemplate.AddCustomInput(AnonymousTemplateCustomInput.Create(
                 anonymousTemplateId: copiedTemplate.Id,
-                name: sourceInput.Name,
                 labelEn: sourceInput.LabelEn,
                 labelAr: sourceInput.LabelAr,
                 type: sourceInput.Type,

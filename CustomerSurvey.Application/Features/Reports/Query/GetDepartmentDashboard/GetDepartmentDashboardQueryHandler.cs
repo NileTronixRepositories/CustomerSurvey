@@ -223,7 +223,9 @@ internal sealed class GetDepartmentDashboardQueryHandler
         var unhappyResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
             x.MaxScore, x.ScorePercentage, SatisfactionCategory.Unhappy));
 
-        var complaintsCount = answers.Count(x => x.QuestionType == QuestionType.Complain);
+        var complaintsCount = answers.Count(x =>
+            x.QuestionType == QuestionType.Complain &&
+            !string.IsNullOrWhiteSpace(x.TextAnswer));
         var voiceAnswersCount = answers.Count(x => x.QuestionType == QuestionType.Voice);
 
         return new GetDepartmentDashboardResponse
@@ -389,7 +391,9 @@ internal sealed class GetDepartmentDashboardQueryHandler
                 x => x.ToArray());
 
         var complaintsCountByOperatorId = answers
-            .Where(x => x.QuestionType == QuestionType.Complain)
+            .Where(x =>
+                x.QuestionType == QuestionType.Complain &&
+                !string.IsNullOrWhiteSpace(x.TextAnswer))
             .GroupBy(x => x.OperatorId)
             .ToDictionary(
                 x => x.Key,
@@ -476,7 +480,9 @@ internal sealed class GetDepartmentDashboardQueryHandler
                 x => x.ToArray());
 
         var complaintsCountByTemplateId = answers
-            .Where(x => x.QuestionType == QuestionType.Complain)
+            .Where(x =>
+                x.QuestionType == QuestionType.Complain &&
+                !string.IsNullOrWhiteSpace(x.TextAnswer))
             .GroupBy(x => x.TemplateId)
             .ToDictionary(
                 x => x.Key,
@@ -600,14 +606,18 @@ internal sealed class GetDepartmentDashboardQueryHandler
             .Where(x => x.MaxScore > 0)
             .GroupBy(x => new
             {
-                x.NameSnapshot,
+                x.CustomInputId,
+                x.LabelEnSnapshot,
+                x.LabelArSnapshot,
                 x.TypeSnapshot
             })
             .OrderByDescending(x => x.Count())
             .Take(MaxCustomInputsToReturn)
             .Select(inputGroup => new DepartmentDashboardCustomInputSegmentResponse
             {
-                CustomInputName = inputGroup.Key.NameSnapshot,
+                CustomInputId = inputGroup.Key.CustomInputId,
+                LabelEn = inputGroup.Key.LabelEnSnapshot,
+                LabelAr = inputGroup.Key.LabelArSnapshot,
                 Type = inputGroup.Key.TypeSnapshot,
                 TypeName = inputGroup.Key.TypeSnapshot.ToString(),
 
@@ -624,7 +634,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
                         DetailsNavigation = BuildDepartmentResponsesNavigation(
                             request,
                             period,
-                            ("customInputName", inputGroup.Key.NameSnapshot),
+                            ("customInputId", inputGroup.Key.CustomInputId),
                             ("customInputType", inputGroup.Key.TypeSnapshot),
                             ("customInputValue", valueGroup.Key),
                             ("isScored", true))
@@ -659,7 +669,9 @@ internal sealed class GetDepartmentDashboardQueryHandler
                     .Take(5)
                     .Select(value => new DepartmentDashboardCriticalResponseCustomInputItem
                     {
-                        Name = value.NameSnapshot,
+                        CustomInputId = value.CustomInputId,
+                        LabelEnSnapshot = value.LabelEnSnapshot,
+                        LabelArSnapshot = value.LabelArSnapshot,
                         Value = GetCustomInputValueText(value)
                     })
                     .Where(value => !string.IsNullOrWhiteSpace(value.Value))

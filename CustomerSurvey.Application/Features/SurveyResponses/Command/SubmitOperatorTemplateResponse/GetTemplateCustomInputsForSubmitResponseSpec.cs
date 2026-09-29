@@ -23,7 +23,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             {
                 CustomInputId = x.Id,
                 TemplateId = x.TemplateId,
-                Name = x.Name,
+                LabelEn = x.LabelEn,
+                LabelAr = x.LabelAr,
                 Type = x.Type,
                 IsRequired = x.IsRequired,
                 MinLength = x.MinLength,

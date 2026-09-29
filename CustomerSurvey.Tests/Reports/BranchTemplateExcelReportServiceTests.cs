@@ -20,7 +20,9 @@ public sealed class BranchTemplateExcelReportServiceTests
         "06 - Custom Inputs",
         "07 - Question Analysis",
         "08 - Worst Questions",
-        "09 - Best Questions"
+        "09 - Best Questions",
+        "10 - Question Groups",
+        "11 - Complaints"
     };
 
     [Fact]
@@ -51,7 +53,7 @@ public sealed class BranchTemplateExcelReportServiceTests
             Assert.Equal("Customer Satisfaction", workbook.Worksheet("01 - Summary").Cell("B5").GetString());
 
             var graphics = workbook.Worksheet("02 - Graphics");
-            Assert.Equal(5, graphics.Pictures.Count);
+            Assert.Equal(6, graphics.Pictures.Count);
             Assert.Equal(
                 XLColor.FromHtml("#16A34A").Color.ToArgb(),
                 graphics.Cell(6, 14).Style.Fill.BackgroundColor.Color.ToArgb());
@@ -100,6 +102,13 @@ public sealed class BranchTemplateExcelReportServiceTests
             Assert.NotEmpty(matrix.Tables);
             Assert.NotEmpty(responses.Tables);
             Assert.NotEmpty(answers.Tables);
+
+            var questionGroups = workbook.Worksheet("10 - Question Groups");
+            Assert.Equal("Service Quality", questionGroups.Cell(4, 1).GetString());
+            Assert.Equal(1d, questionGroups.Cell(4, 8).GetDouble());
+
+            var complaints = workbook.Worksheet("11 - Complaints");
+            Assert.Equal("No comment", complaints.Cell(4, 4).GetString());
 
             var questionAnalysis = workbook.Worksheet("07 - Question Analysis");
             Assert.Equal("Yes", questionAnalysis.Cell(4, 10).GetString());
@@ -365,7 +374,7 @@ public sealed class BranchTemplateExcelReportServiceTests
             TemplateId = templateId,
             TemplateKind = ReportTemplateKind.Normal,
             CustomInputId = customInputId,
-            Name = "Phone",
+            LabelEnSnapshot = "Phone",
             Type = TemplateCustomInputType.String,
             Order = 1,
             StringValue = "01012345678"
@@ -396,6 +405,46 @@ public sealed class BranchTemplateExcelReportServiceTests
                 IncludedAnswers = 1,
                 NonScoredAnswers = 1
             },
+            QuestionGroupAnalytics = new[]
+            {
+                new BranchTemplatesReportQuestionGroupAnalytics
+                {
+                    TemplateId = templateId,
+                    TemplateKind = ReportTemplateKind.Normal,
+                    TemplateNameEn = "Customer Satisfaction",
+                    QuestionGroupId = Guid.NewGuid(),
+                    QuestionGroupNameEn = "Service Quality",
+                    QuestionsCount = 2,
+                    ScorableQuestionsCount = 1,
+                    TotalResponses = 2,
+                    ScoredResponsesCount = 1,
+                    ScoredItemsCount = 1,
+                    AverageScoreValue = 5m,
+                    AverageScorePercentage = 100m
+                }
+            },
+            ComplaintAnalytics = new BranchTemplatesReportComplaintAnalytics
+            {
+                TotalComplaints = 1,
+                ResponsesWithComplaints = 1,
+                TotalResponses = 2,
+                ComplaintRate = 50m,
+                Complaints = new[]
+                {
+                    new BranchTemplatesReportComplaintItem
+                    {
+                        ResponseId = unscoredResponseId,
+                        TemplateId = templateId,
+                        TemplateKind = ReportTemplateKind.Normal,
+                        TemplateNameEn = "Customer Satisfaction",
+                        QuestionId = nonScoredQuestionId,
+                        QuestionTextEn = "Additional feedback",
+                        ComplaintText = "No comment",
+                        SubmittedOnUtc = new DateTime(2026, 9, 11, 11, 0, 0, DateTimeKind.Utc),
+                        OperatorNameEn = "Operator Two"
+                    }
+                }
+            },
             Templates = new[]
             {
                 CreateTemplateSummary(templateId) with
@@ -417,7 +466,6 @@ public sealed class BranchTemplateExcelReportServiceTests
                     TemplateId = templateId,
                     TemplateKind = ReportTemplateKind.Normal,
                     CustomInputId = customInputId,
-                    Name = "Phone",
                     LabelEn = "Phone",
                     Type = TemplateCustomInputType.String,
                     Order = 1

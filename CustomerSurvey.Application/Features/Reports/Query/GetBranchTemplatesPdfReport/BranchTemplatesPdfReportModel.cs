@@ -67,6 +67,13 @@ public sealed record BranchTemplatesPdfReportModel
     [JsonIgnore]
     public BranchTemplatesReportGraphics Graphics { get; init; } = new();
 
+    [JsonIgnore]
+    public IReadOnlyCollection<BranchTemplatesReportQuestionGroupAnalytics> QuestionGroupAnalytics { get; init; }
+        = Array.Empty<BranchTemplatesReportQuestionGroupAnalytics>();
+
+    [JsonIgnore]
+    public BranchTemplatesReportComplaintAnalytics ComplaintAnalytics { get; init; } = new();
+
     public IReadOnlyCollection<BranchTemplatesPdfTemplateSummary> TemplatesWithoutResponses =>
         Templates
             .Where(x => x.TotalResponses == 0)
@@ -104,6 +111,18 @@ public sealed record BranchTemplatesPdfExecutiveSummary
     public string MostAnsweredTemplateName { get; init; } = "-";
 
     public int TemplatesWithoutResponses { get; init; }
+
+    public int TotalComplaints { get; init; }
+
+    public int ResponsesWithComplaints { get; init; }
+
+    public decimal ComplaintRate { get; init; }
+
+    public int QuestionGroupsCount { get; init; }
+
+    public string HighestSatisfactionGroupName { get; init; } = "-";
+
+    public string LowestSatisfactionGroupName { get; init; } = "-";
 }
 
 public sealed record BranchTemplatesPdfTemplateSummary
@@ -170,6 +189,12 @@ public sealed record BranchTemplatesPdfQuestionAnalytics
 
     public string QuestionType { get; init; } = string.Empty;
 
+    public Guid QuestionGroupId { get; init; }
+
+    public string QuestionGroupNameEn { get; init; } = string.Empty;
+
+    public string? QuestionGroupNameAr { get; init; }
+
     public bool IsRootQuestion { get; init; }
 
     public string? ParentTriggerTextEn { get; init; }
@@ -222,6 +247,70 @@ public sealed record BranchTemplatesPdfQuestionAnalytics
         => TemplateKind == ReportTemplateKind.Normal
             ? isArabic ? "مصرح" : "Authorized"
             : isArabic ? "مجهول" : "Anonymous";
+}
+
+public sealed record BranchTemplatesReportQuestionGroupAnalytics
+{
+    public Guid TemplateId { get; init; }
+    public ReportTemplateKind TemplateKind { get; init; }
+    public string TemplateNameEn { get; init; } = string.Empty;
+    public string? TemplateNameAr { get; init; }
+    public Guid QuestionGroupId { get; init; }
+    public string QuestionGroupNameEn { get; init; } = string.Empty;
+    public string? QuestionGroupNameAr { get; init; }
+    public int QuestionsCount { get; init; }
+    public int ScorableQuestionsCount { get; init; }
+    public int TotalResponses { get; init; }
+    public int ScoredResponsesCount { get; init; }
+    public int ScoredItemsCount { get; init; }
+    public decimal? AverageScoreValue { get; init; }
+    public decimal? AverageScorePercentage { get; init; }
+
+    public string DisplayTemplateName(bool isArabic)
+        => isArabic && !string.IsNullOrWhiteSpace(TemplateNameAr) ? TemplateNameAr! : TemplateNameEn;
+
+    public string DisplayGroupName(bool isArabic)
+        => isArabic && !string.IsNullOrWhiteSpace(QuestionGroupNameAr)
+            ? QuestionGroupNameAr!
+            : QuestionGroupNameEn;
+}
+
+public sealed record BranchTemplatesReportComplaintAnalytics
+{
+    public int TotalComplaints { get; init; }
+    public int ResponsesWithComplaints { get; init; }
+    public int TotalResponses { get; init; }
+    public decimal ComplaintRate { get; init; }
+    public IReadOnlyCollection<BranchTemplatesReportComplaintItem> Complaints { get; init; }
+        = Array.Empty<BranchTemplatesReportComplaintItem>();
+}
+
+public sealed record BranchTemplatesReportComplaintItem
+{
+    public Guid ResponseId { get; init; }
+    public Guid TemplateId { get; init; }
+    public ReportTemplateKind TemplateKind { get; init; }
+    public string TemplateNameEn { get; init; } = string.Empty;
+    public string? TemplateNameAr { get; init; }
+    public Guid QuestionId { get; init; }
+    public string QuestionTextEn { get; init; } = string.Empty;
+    public string? QuestionTextAr { get; init; }
+    public string ComplaintText { get; init; } = string.Empty;
+    public DateTime SubmittedOnUtc { get; init; }
+    public Guid? OperatorId { get; init; }
+    public string? OperatorNameEn { get; init; }
+    public string? OperatorNameAr { get; init; }
+
+    public string DisplayTemplateName(bool isArabic)
+        => isArabic && !string.IsNullOrWhiteSpace(TemplateNameAr) ? TemplateNameAr! : TemplateNameEn;
+
+    public string DisplayQuestionText(bool isArabic)
+        => isArabic && !string.IsNullOrWhiteSpace(QuestionTextAr) ? QuestionTextAr! : QuestionTextEn;
+
+    public string DisplayOperatorName(bool isArabic)
+        => isArabic && !string.IsNullOrWhiteSpace(OperatorNameAr)
+            ? OperatorNameAr!
+            : OperatorNameEn ?? string.Empty;
 }
 
 public sealed record BranchTemplatesPdfOptionAnalytics
@@ -382,8 +471,6 @@ public sealed record BranchTemplatesReportCustomInputDefinition
 
     public Guid CustomInputId { get; init; }
 
-    public string Name { get; init; } = string.Empty;
-
     public string? LabelEn { get; init; }
 
     public string? LabelAr { get; init; }
@@ -404,7 +491,12 @@ public sealed record BranchTemplatesReportCustomInputDefinition
             return LabelEn!;
         }
 
-        return Name;
+        if (!string.IsNullOrWhiteSpace(LabelAr))
+        {
+            return LabelAr!;
+        }
+
+        return CustomInputId.ToString();
     }
 }
 
@@ -465,7 +557,9 @@ public sealed record BranchTemplatesReportCustomInputValue
 
     public Guid CustomInputId { get; init; }
 
-    public string Name { get; init; } = string.Empty;
+    public string? LabelEnSnapshot { get; init; }
+
+    public string? LabelArSnapshot { get; init; }
 
     public TemplateCustomInputType Type { get; init; }
 
@@ -481,6 +575,16 @@ public sealed record BranchTemplatesReportCustomInputValue
         TemplateCustomInputType.Integer => IntegerValue?.ToString() ?? string.Empty,
         _ => string.Empty
     };
+
+    public string DisplayName(bool isArabic)
+    {
+        if (isArabic && !string.IsNullOrWhiteSpace(LabelArSnapshot))
+        {
+            return LabelArSnapshot!;
+        }
+
+        return LabelEnSnapshot ?? LabelArSnapshot ?? CustomInputId.ToString();
+    }
 }
 
 public sealed record BranchTemplatesReportAnswer

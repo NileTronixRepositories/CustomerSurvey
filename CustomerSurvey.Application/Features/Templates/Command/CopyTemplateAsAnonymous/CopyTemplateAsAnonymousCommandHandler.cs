@@ -105,6 +105,25 @@ internal sealed class CopyTemplateAsAnonymousCommandHandler
             source.ActiveFrom, source.ExpireTo, scope.Value.ApplicationUserId,
             templateFamilyId: familyId);
 
+        foreach (var sourceInput in source.CustomInputs
+                     .Where(x => x.IsActive)
+                     .OrderBy(x => x.Order))
+        {
+            target.AddCustomInput(AnonymousTemplateCustomInput.Create(
+                anonymousTemplateId: target.Id,
+                labelEn: sourceInput.LabelEn,
+                labelAr: sourceInput.LabelAr,
+                type: sourceInput.Type,
+                isRequired: sourceInput.IsRequired,
+                minLength: sourceInput.MinLength,
+                maxLength: sourceInput.MaxLength,
+                minValue: sourceInput.MinValue,
+                maxValue: sourceInput.MaxValue,
+                startWith: sourceInput.StartWith,
+                order: sourceInput.Order,
+                createdByApplicationUserId: scope.Value.ApplicationUserId));
+        }
+
         var publicUrl = _urlBuilder.BuildAnonymousTemplateUrl(target.Id);
         target.SetPublicAccess(publicUrl, _qrCodeGenerator.GenerateBase64Png(publicUrl));
 

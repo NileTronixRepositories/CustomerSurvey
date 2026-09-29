@@ -344,6 +344,9 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
             answers.Select(x => new AnswerFlatDto
             {
                 ResponseId = x.ResponseId,
+                TemplateKind = x.Source == SurveyDashboardSource.Anonymous
+                    ? ReportTemplateKind.Anonymous
+                    : ReportTemplateKind.Normal,
                 TemplateId = x.TemplateId,
                 QuestionId = x.QuestionId,
                 QuestionType = x.QuestionType,
@@ -419,7 +422,8 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
         {
             var search = query.SearchText.Trim();
             var customIds = customInputs.Where(x =>
-                    x.NameSnapshot.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    (x.LabelEnSnapshot?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (x.LabelArSnapshot?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
                     (!string.IsNullOrWhiteSpace(x.StringValue) && x.StringValue.Contains(search, StringComparison.OrdinalIgnoreCase)))
                 .Select(x => (x.Source, x.ResponseId)).ToHashSet();
 
@@ -437,11 +441,7 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
     }
 
     private static bool HasCustomInputFilter(GetSurveyResponsesPaginationQuery query)
-        => !string.IsNullOrWhiteSpace(query.CustomInputName) ||
-           !string.IsNullOrWhiteSpace(query.CustomInputLabelEn) ||
-           !string.IsNullOrWhiteSpace(query.CustomInputLabelAr) ||
-           query.CustomInputLabelEnIsNull.HasValue ||
-           query.CustomInputLabelArIsNull.HasValue ||
+        => query.CustomInputId.HasValue ||
            query.CustomInputType.HasValue ||
            !string.IsNullOrWhiteSpace(query.CustomInputValue);
 
@@ -449,11 +449,7 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
         GetSurveyResponsesPaginationQuery query,
         SurveyDashboardCustomInputValueRow value)
     {
-        if (!string.IsNullOrWhiteSpace(query.CustomInputName) && value.NameSnapshot != query.CustomInputName.Trim()) return false;
-        if (!string.IsNullOrWhiteSpace(query.CustomInputLabelEn) && value.LabelEn != query.CustomInputLabelEn.Trim()) return false;
-        if (!string.IsNullOrWhiteSpace(query.CustomInputLabelAr) && value.LabelAr != query.CustomInputLabelAr.Trim()) return false;
-        if (query.CustomInputLabelEnIsNull.HasValue && (value.LabelEn is null) != query.CustomInputLabelEnIsNull.Value) return false;
-        if (query.CustomInputLabelArIsNull.HasValue && (value.LabelAr is null) != query.CustomInputLabelArIsNull.Value) return false;
+        if (query.CustomInputId.HasValue && value.CustomInputId != query.CustomInputId.Value) return false;
         if (query.CustomInputType.HasValue && value.TypeSnapshot != query.CustomInputType.Value) return false;
 
         if (string.IsNullOrWhiteSpace(query.CustomInputValue)) return true;
@@ -500,9 +496,9 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
     private static SurveyResponseCustomInputPreviewResponse MapPreview(SurveyDashboardCustomInputValueRow value)
         => new()
         {
-            Name = value.NameSnapshot,
-            LabelEn = value.LabelEn,
-            LabelAr = value.LabelAr,
+            CustomInputId = value.CustomInputId,
+            LabelEnSnapshot = value.LabelEnSnapshot,
+            LabelArSnapshot = value.LabelArSnapshot,
             Value = value.TypeSnapshot switch
             {
                 TemplateCustomInputType.String => value.StringValue?.Trim() ?? string.Empty,

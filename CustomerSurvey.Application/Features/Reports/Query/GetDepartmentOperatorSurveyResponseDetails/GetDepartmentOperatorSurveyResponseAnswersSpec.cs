@@ -31,7 +31,8 @@ internal sealed class GetDepartmentOperatorSurveyResponseAnswersSpec
                 ? x.SmileValue
                 : null,
 
-            TextAnswer = x.QuestionType == QuestionType.Complain
+            TextAnswer = x.QuestionType == QuestionType.Complain ||
+                         x.QuestionType == QuestionType.FreeText
                 ? x.TextAnswer
                 : null,
 

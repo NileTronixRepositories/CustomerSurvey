@@ -13,6 +13,7 @@ namespace CustomerSurvey.Domain.Enums
         StarRating = 3,
         Complain = 4,
         Smiles = 5,
-        Image = 6
+        Image = 6,
+        FreeText = 7
     }
 }
