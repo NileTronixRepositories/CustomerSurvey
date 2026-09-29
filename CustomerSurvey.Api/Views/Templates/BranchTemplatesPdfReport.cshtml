@@ -113,6 +113,7 @@
             "StarRating" => T("Star Rating", "تقييم نجوم"),
             "Smiles" => T("Smiles", "وجوه تعبيرية"),
             "Complain" => T("Complaint", "شكوى"),
+            "FreeText" => T("Free Text", "نص حر"),
             "Voice" => T("Voice", "صوت"),
             "Image" => T("Image", "صورة"),
             _ => type
@@ -146,6 +147,7 @@
         QuestionType.StarRating => answer.StarRatingValue?.ToString() ?? answer.DisplayValue,
         QuestionType.Smiles => answer.SmileValue?.ToString() ?? answer.DisplayValue,
         QuestionType.Complain => answer.TextAnswer ?? answer.DisplayValue,
+        QuestionType.FreeText => answer.TextAnswer ?? answer.DisplayValue,
         QuestionType.Voice => T("Voice attachment", "مرفق صوتي"),
         QuestionType.Image => T("Image attachment", "مرفق صورة"),
         _ => answer.DisplayValue
@@ -939,6 +941,24 @@
                         <th>@T("Lowest Rated Template", "أقل نموذج تقييمًا")</th>
                         <td>@Model.ExecutiveSummary.LowestRatedTemplateName</td>
                     </tr>
+                    <tr>
+                        <th>@T("Total Complaints", "إجمالي الشكاوى")</th>
+                        <td>@Model.ExecutiveSummary.TotalComplaints</td>
+                        <th>@T("Responses With Complaints", "الردود التي تحتوي على شكاوى")</th>
+                        <td>@Model.ExecutiveSummary.ResponsesWithComplaints</td>
+                    </tr>
+                    <tr>
+                        <th>@T("Complaint Rate", "نسبة الشكاوى")</th>
+                        <td>@Model.ExecutiveSummary.ComplaintRate.ToString("0.##", CultureInfo.InvariantCulture)%</td>
+                        <th>@T("Question Groups", "مجموعات الأسئلة")</th>
+                        <td>@Model.ExecutiveSummary.QuestionGroupsCount</td>
+                    </tr>
+                    <tr>
+                        <th>@T("Highest Satisfaction Group", "أعلى مجموعة رضا")</th>
+                        <td>@Model.ExecutiveSummary.HighestSatisfactionGroupName</td>
+                        <th>@T("Lowest Satisfaction Group", "أقل مجموعة رضا")</th>
+                        <td>@Model.ExecutiveSummary.LowestSatisfactionGroupName</td>
+                    </tr>
                     @* <tr>
                         <th>@T("Total Answers", "إجمالي الإجابات")</th>
                         <td>@Model.ExecutiveSummary.TotalAnswers</td>
@@ -1081,6 +1101,55 @@
         </section>
 
         <section class="section">
+            <h2 class="section-title">@T("Satisfaction By Question Group", "رضا العملاء حسب مجموعة الأسئلة")</h2>
+            @if (!Model.QuestionGroupAnalytics.Any())
+            {
+                <div class="note warning">@T("No question groups are available for the selected filters.", "لا توجد مجموعات أسئلة متاحة للفلاتر المحددة.")</div>
+            }
+            else
+            {
+                @foreach (var templateGroup in Model.QuestionGroupAnalytics
+                    .GroupBy(x => new { x.TemplateKind, x.TemplateId, x.TemplateNameEn, x.TemplateNameAr }))
+                {
+                    <div class="response-block">
+                        <h3>@(ar && !string.IsNullOrWhiteSpace(templateGroup.Key.TemplateNameAr) ? templateGroup.Key.TemplateNameAr : templateGroup.Key.TemplateNameEn)</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>@T("Question Group", "مجموعة الأسئلة")</th>
+                                    <th>@T("Questions", "الأسئلة")</th>
+                                    <th>@T("Scorable", "القابلة للتقييم")</th>
+                                    <th>@T("Avg / 5", "المتوسط / 5")</th>
+                                    <th>@T("Satisfaction", "الرضا")</th>
+                                    <th>@T("Scored Responses", "الردود المقيمة")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var group in templateGroup)
+                                {
+                                    <tr>
+                                        <td>@group.DisplayGroupName(ar)</td>
+                                        <td>@group.QuestionsCount</td>
+                                        <td>@group.ScorableQuestionsCount</td>
+                                        <td>@DecimalOrDash(group.AverageScoreValue)</td>
+                                        <td>
+                                            @PercentOrDash(group.AverageScorePercentage)
+                                            @if (group.AverageScorePercentage.HasValue)
+                                            {
+                                                <div class="bar"><span style="width:@ProgressWidth(group.AverageScorePercentage.Value)%"></span></div>
+                                            }
+                                        </td>
+                                        <td>@group.ScoredResponsesCount</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            }
+        </section>
+
+        <section class="section">
             <h2 class="section-title">@T("Score Calculation Explanation", "شرح طريقة حساب التقييم")</h2>
             <div class="note">
                 @if (ar)
@@ -1096,7 +1165,7 @@
                         <div>لو أعمق سؤال غير قابل للتقييم، يتم الرجوع لآخر سؤال قابل للتقييم في نفس المسار.</div>
                     }
                     <div>أسئلة الاختيار الواحد والنجوم والوجوه التعبيرية يتم تقييمها من 1 إلى 5.</div>
-                    <div>أسئلة الشكوى والصوت تظهر للتحليل فقط ولا تدخل مباشرة في حساب التقييم.</div>
+                    <div>أسئلة الشكوى والنص الحر والصوت والصورة تظهر للتحليل فقط ولا تدخل مباشرة في حساب التقييم.</div>
                 }
                 else
                 {
@@ -1111,7 +1180,7 @@
                         <div>If the deepest question is not scorable, the report uses the last scorable question in the same path.</div>
                     }
                     <div>SingleChoice, StarRating, and Smiles are scored from 1 to 5.</div>
-                    <div>Complaint and Voice questions are displayed for analysis but are not scored directly.</div>
+                    <div>Complaint, FreeText, Voice, and Image questions are displayed for analysis but are not scored directly.</div>
                 }
             </div>
         </section>
@@ -1271,6 +1340,39 @@
                 </table>
             </section>
         }
+
+        <section class="section page-break">
+            <h2 class="section-title">@T("Complaints Analysis", "تحليل الشكاوى")</h2>
+            <div class="kpi-grid">
+                <div class="card"><div class="card-label">@T("Total Complaints", "إجمالي الشكاوى")</div><div class="card-value">@Model.ComplaintAnalytics.TotalComplaints</div></div>
+                <div class="card"><div class="card-label">@T("Responses With Complaints", "الردود التي تحتوي على شكاوى")</div><div class="card-value">@Model.ComplaintAnalytics.ResponsesWithComplaints</div></div>
+                <div class="card"><div class="card-label">@T("Complaint Rate", "نسبة الشكاوى")</div><div class="card-value">@Model.ComplaintAnalytics.ComplaintRate.ToString("0.##", CultureInfo.InvariantCulture)%</div></div>
+            </div>
+            @if (!Model.ComplaintAnalytics.Complaints.Any())
+            {
+                <div class="note">@T("No valid complaints in the selected period.", "لا توجد شكاوى صالحة في الفترة المحددة.")</div>
+            }
+            else
+            {
+                @foreach (var complaintGroup in Model.ComplaintAnalytics.Complaints
+                    .GroupBy(x => new { x.TemplateKind, x.TemplateId, x.TemplateNameEn, x.TemplateNameAr }))
+                {
+                    <div class="response-block">
+                        <h3>@(ar && !string.IsNullOrWhiteSpace(complaintGroup.Key.TemplateNameAr) ? complaintGroup.Key.TemplateNameAr : complaintGroup.Key.TemplateNameEn)</h3>
+                        <div class="muted">@T("Complaints", "الشكاوى"): @complaintGroup.Count()</div>
+                        @foreach (var complaint in complaintGroup)
+                        {
+                            <div class="note warning">
+                                <strong>@T("Question", "السؤال"):</strong> @complaint.DisplayQuestionText(ar)<br />
+                                <strong>@T("Complaint", "الشكوى"):</strong> @complaint.ComplaintText<br />
+                                <strong>@T("Submitted At", "وقت الإرسال"):</strong> @ResponseDate(complaint.SubmittedOnUtc)<br />
+                                <strong>@T("Response Reference", "مرجع الرد"):</strong> @complaint.ResponseId
+                            </div>
+                        }
+                    </div>
+                }
+            }
+        </section>
 
         @foreach (var detail in Model.TemplateDetails)
         {
@@ -1482,7 +1584,7 @@
                                 {
                                     @foreach (var customInputChunk in response.CustomInputs
                                         .OrderBy(x => x.Order ?? int.MaxValue)
-                                        .ThenBy(x => x.Name)
+                                        .ThenBy(x => x.LabelEnSnapshot)
                                         .Chunk(8))
                                     {
                                         <table class="custom-input-table">
@@ -1496,7 +1598,7 @@
                                                 @foreach (var customInput in customInputChunk)
                                                 {
                                                     <tr>
-                                                        <td>@customInput.Name</td>
+                                                        <td>@customInput.DisplayName(Model.IsArabic)</td>
                                                         <td>@customInput.DisplayValue</td>
                                                     </tr>
                                                 }
@@ -1516,6 +1618,7 @@
                                         <thead>
                                             <tr>
                                                 <th>@T("Question", "السؤال")</th>
+                                                <th>@T("Type", "النوع")</th>
                                                 <th>@T("Answer", "الإجابة")</th>
                                                 <th>@T("Option Value", "قيمة الاختيار")</th>
                                                 <th>@T("Score Value", "قيمة التقييم")</th>
@@ -1530,6 +1633,7 @@
                                                 var media = MediaValue(answer);
                                                 <tr>
                                                     <td>@answer.DisplayQuestionText(ar)</td>
+                                                    <td>@QuestionTypeLabel(answer.QuestionType.ToString())</td>
                                                     <td>@BusinessAnswer(answer)</td>
                                                     <td>@(answer.QuestionType == QuestionType.SingleChoice ? ValueOrDash(answer.SelectedOptionValue) : "—")</td>
                                                     <td>@DecimalOrDash(answer.ScoreValue)</td>

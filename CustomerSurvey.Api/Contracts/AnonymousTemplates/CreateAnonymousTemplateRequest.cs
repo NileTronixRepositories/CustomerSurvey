@@ -21,8 +21,6 @@ namespace CustomerSurvey.Api.Contracts.AnonymousTemplates
 
     public sealed record CreateAnonymousTemplateCustomInputRequest
     {
-        public string Name { get; init; } = string.Empty;
-
         public string? LabelEn { get; init; }
 
         public string? LabelAr { get; init; }

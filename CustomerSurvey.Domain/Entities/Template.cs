@@ -83,11 +83,6 @@ namespace CustomerSurvey.Domain.Entities
 
         public void AddCustomInput(TemplateCustomInput customInput)
         {
-            if (_customInputs.Any(x => x.Name == customInput.Name && x.IsActive))
-            {
-                return;
-            }
-
             _customInputs.Add(customInput);
         }
 

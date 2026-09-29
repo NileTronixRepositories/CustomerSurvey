@@ -16,10 +16,6 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.AnonymousTemplateId)
                 .IsRequired();
 
-            builder.Property(x => x.Name)
-                .IsRequired()
-                .HasMaxLength(100);
-
             builder.Property(x => x.LabelEn)
                 .IsRequired(false)
                 .HasMaxLength(200);
@@ -62,9 +58,6 @@ namespace CustomerSurvey.infrastructure.Configurations
                 .IsRequired();
 
             builder.HasIndex(x => x.AnonymousTemplateId);
-
-            builder.HasIndex(x => new { x.AnonymousTemplateId, x.Name })
-                .IsUnique();
 
             builder.HasIndex(x => new { x.AnonymousTemplateId, x.IsActive, x.Order });
 

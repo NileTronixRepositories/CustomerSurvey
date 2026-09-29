@@ -34,15 +34,7 @@ public sealed class GetSurveyResponsesPaginationQuery
 
     public Guid? QuestionId { get; init; }
 
-    public string? CustomInputName { get; init; }
-
-    public string? CustomInputLabelEn { get; init; }
-
-    public string? CustomInputLabelAr { get; init; }
-
-    public bool? CustomInputLabelEnIsNull { get; init; }
-
-    public bool? CustomInputLabelArIsNull { get; init; }
+    public Guid? CustomInputId { get; init; }
 
     public TemplateCustomInputType? CustomInputType { get; init; }
 

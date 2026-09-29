@@ -9,6 +9,8 @@ internal sealed class GetTemplateForCopyAsAnonymousSpec : Specification<Template
     public GetTemplateForCopyAsAnonymousSpec(Guid templateId, Guid branchId)
     {
         AddCriteria(x => x.Id == templateId && x.BranchId == branchId);
-        AddInclude(x => x.Include(template => template.TemplateQuestions));
+        AddInclude(x => x
+            .Include(template => template.TemplateQuestions)
+            .Include(template => template.CustomInputs));
     }
 }

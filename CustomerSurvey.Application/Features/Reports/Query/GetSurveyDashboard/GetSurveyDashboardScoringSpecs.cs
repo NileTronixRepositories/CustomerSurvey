@@ -1,4 +1,5 @@
 using BuildingBlock.Domain.Specification;
+using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Domain.Entities;
 
@@ -15,13 +16,17 @@ internal sealed class GetSurveyDashboardTemplateQuestionsSpec
 
         Select(x => new TemplateQuestionFlatDto
         {
+            TemplateKind = ReportTemplateKind.Normal,
             TemplateQuestionId = x.Id,
             TemplateId = x.TemplateId,
             QuestionId = x.QuestionId,
             Order = x.Order,
             QuestionTextEn = x.Question.TextEn,
             QuestionTextAr = x.Question.TextAr,
-            QuestionType = x.Question.Type
+            QuestionType = x.Question.Type,
+            QuestionGroupId = x.Question.GroupId,
+            QuestionGroupNameEn = x.Question.Group.NameEn,
+            QuestionGroupNameAr = x.Question.Group.NameAr
         });
     }
 }
@@ -37,13 +42,17 @@ internal sealed class GetSurveyDashboardAnonymousTemplateQuestionsSpec
 
         Select(x => new TemplateQuestionFlatDto
         {
+            TemplateKind = ReportTemplateKind.Anonymous,
             TemplateQuestionId = x.Id,
             TemplateId = x.AnonymousTemplateId,
             QuestionId = x.QuestionId,
             Order = x.Order,
             QuestionTextEn = x.Question.TextEn,
             QuestionTextAr = x.Question.TextAr,
-            QuestionType = x.Question.Type
+            QuestionType = x.Question.Type,
+            QuestionGroupId = x.Question.GroupId,
+            QuestionGroupNameEn = x.Question.Group.NameEn,
+            QuestionGroupNameAr = x.Question.Group.NameAr
         });
     }
 }
@@ -61,6 +70,7 @@ internal sealed class GetSurveyDashboardTemplateQuestionConditionsSpec
 
         Select(x => new ConditionFlatDto
         {
+            TemplateKind = ReportTemplateKind.Normal,
             TemplateId = x.TemplateId,
             ParentTemplateQuestionId = x.ParentTemplateQuestionId,
             ChildTemplateQuestionId = x.ChildTemplateQuestionId,
@@ -84,6 +94,7 @@ internal sealed class GetSurveyDashboardAnonymousTemplateQuestionConditionsSpec
 
         Select(x => new ConditionFlatDto
         {
+            TemplateKind = ReportTemplateKind.Anonymous,
             TemplateId = x.AnonymousTemplateId,
             ParentTemplateQuestionId = x.ParentAnonymousTemplateQuestionId,
             ChildTemplateQuestionId = x.ChildAnonymousTemplateQuestionId,

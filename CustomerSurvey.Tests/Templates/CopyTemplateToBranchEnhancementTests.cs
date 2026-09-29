@@ -22,7 +22,7 @@ public sealed class CopyTemplateToBranchEnhancementTests
         source.SetLogoPath("Media/TemplateLogos/source.png");
         source.SetTemplateFamily(Guid.NewGuid());
         var input = TemplateCustomInput.Create(
-            source.Id, "Phone", "Phone", null, TemplateCustomInputType.String,
+            source.Id, "Phone", null, TemplateCustomInputType.String,
             true, 3, 20, null, null, "01", 1, context.UserId);
         source.AddCustomInput(input);
         AddTemplateQuestion(source, question, 1, context.UserId);
@@ -45,7 +45,8 @@ public sealed class CopyTemplateToBranchEnhancementTests
         Assert.Equal(source.Id, target.OriginTemplateId);
         var copiedInput = Assert.Single(target.CustomInputs);
         Assert.NotEqual(input.Id, copiedInput.Id);
-        Assert.Equal(input.Name, copiedInput.Name);
+        Assert.Equal(input.LabelEn, copiedInput.LabelEn);
+        Assert.Equal(input.LabelAr, copiedInput.LabelAr);
         Assert.Equal(input.StartWith, copiedInput.StartWith);
         Assert.Equal(input.MinLength, copiedInput.MinLength);
         Assert.Equal(input.MaxLength, copiedInput.MaxLength);

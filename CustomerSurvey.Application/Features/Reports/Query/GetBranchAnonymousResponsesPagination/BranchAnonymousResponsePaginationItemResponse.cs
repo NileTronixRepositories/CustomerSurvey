@@ -26,11 +26,11 @@ public sealed record BranchAnonymousResponsePaginationItemResponse
 
 public sealed record BranchAnonymousResponseCustomInputPreviewResponse
 {
-    public string Name { get; init; } = string.Empty;
+    public Guid CustomInputId { get; init; }
 
-    public string? LabelEn { get; init; }
+    public string? LabelEnSnapshot { get; init; }
 
-    public string? LabelAr { get; init; }
+    public string? LabelArSnapshot { get; init; }
 
     public string Value { get; init; } = string.Empty;
 }

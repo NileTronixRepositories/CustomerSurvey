@@ -64,8 +64,14 @@ internal sealed class GetDepartmentSurveyResponsesPaginationSpec
         if (query.HasComplaint.HasValue)
         {
             AddCriteria(query.HasComplaint.Value
-                ? x => x.Answers.Any(answer => answer.QuestionType == QuestionType.Complain)
-                : x => !x.Answers.Any(answer => answer.QuestionType == QuestionType.Complain));
+                ? x => x.Answers.Any(answer =>
+                    answer.QuestionType == QuestionType.Complain &&
+                    answer.TextAnswer != null &&
+                    answer.TextAnswer.Trim() != string.Empty)
+                : x => !x.Answers.Any(answer =>
+                    answer.QuestionType == QuestionType.Complain &&
+                    answer.TextAnswer != null &&
+                    answer.TextAnswer.Trim() != string.Empty));
         }
 
         if (query.HasVoice.HasValue)
@@ -94,7 +100,8 @@ internal sealed class GetDepartmentSurveyResponsesPaginationSpec
                 x.Operator.ApplicationUser.NameEn.Contains(searchText) ||
                 (x.Operator.ApplicationUser.NameAr != null && x.Operator.ApplicationUser.NameAr.Contains(searchText)) ||
                 x.CustomInputValues.Any(value =>
-                    value.NameSnapshot.Contains(searchText) ||
+                    (value.LabelEnSnapshot != null && value.LabelEnSnapshot.Contains(searchText)) ||
+                    (value.LabelArSnapshot != null && value.LabelArSnapshot.Contains(searchText)) ||
                     (value.StringValue != null && value.StringValue.Contains(searchText))));
         }
 
@@ -129,29 +136,32 @@ internal sealed class GetDepartmentSurveyResponsesPaginationSpec
             MaxScore = x.MaxScore,
             ScorePercentage = x.ScorePercentage,
             IsScored = x.MaxScore > 0,
-            HasComplaint = x.Answers.Any(answer => answer.QuestionType == QuestionType.Complain),
+            HasComplaint = x.Answers.Any(answer =>
+                answer.QuestionType == QuestionType.Complain &&
+                answer.TextAnswer != null &&
+                answer.TextAnswer.Trim() != string.Empty),
             HasVoice = x.Answers.Any(answer => answer.QuestionType == QuestionType.Voice)
         });
     }
 
     private void ApplyCustomInputFilter(GetDepartmentSurveyResponsesPaginationQuery query)
     {
-        var name = query.CustomInputName?.Trim();
+        var customInputId = query.CustomInputId;
         var valueText = query.CustomInputValue?.Trim();
 
-        if (string.IsNullOrWhiteSpace(name) && !query.CustomInputType.HasValue && string.IsNullOrWhiteSpace(valueText))
+        if (!customInputId.HasValue && !query.CustomInputType.HasValue && string.IsNullOrWhiteSpace(valueText))
         {
             return;
         }
 
-        var hasName = !string.IsNullOrWhiteSpace(name);
+        var hasCustomInputId = customInputId.HasValue;
         var hasValue = !string.IsNullOrWhiteSpace(valueText);
 
         if (query.CustomInputType == TemplateCustomInputType.Integer && hasValue)
         {
             var integerValue = int.Parse(valueText!);
             AddCriteria(x => x.CustomInputValues.Any(value =>
-                (!hasName || value.NameSnapshot == name) &&
+                (!hasCustomInputId || value.TemplateCustomInputId == customInputId.Value) &&
                 value.TypeSnapshot == TemplateCustomInputType.Integer &&
                 value.IntegerValue == integerValue));
             return;
@@ -160,14 +170,14 @@ internal sealed class GetDepartmentSurveyResponsesPaginationSpec
         if (query.CustomInputType == TemplateCustomInputType.String && hasValue)
         {
             AddCriteria(x => x.CustomInputValues.Any(value =>
-                (!hasName || value.NameSnapshot == name) &&
+                (!hasCustomInputId || value.TemplateCustomInputId == customInputId.Value) &&
                 value.TypeSnapshot == TemplateCustomInputType.String &&
                 value.StringValue == valueText));
             return;
         }
 
         AddCriteria(x => x.CustomInputValues.Any(value =>
-            (!hasName || value.NameSnapshot == name) &&
+            (!hasCustomInputId || value.TemplateCustomInputId == customInputId.Value) &&
             (!query.CustomInputType.HasValue || value.TypeSnapshot == query.CustomInputType.Value)));
     }
 }
@@ -175,7 +185,9 @@ internal sealed class GetDepartmentSurveyResponsesPaginationSpec
 internal sealed record DepartmentSurveyResponseCustomInputPreviewDto
 {
     public Guid SurveyResponseId { get; init; }
-    public string NameSnapshot { get; init; } = string.Empty;
+    public Guid CustomInputId { get; init; }
+    public string? LabelEnSnapshot { get; init; }
+    public string? LabelArSnapshot { get; init; }
     public TemplateCustomInputType TypeSnapshot { get; init; }
     public string? StringValue { get; init; }
     public int? IntegerValue { get; init; }
@@ -194,7 +206,9 @@ internal sealed class GetDepartmentSurveyResponseCustomInputPreviewsSpec
         Select(x => new DepartmentSurveyResponseCustomInputPreviewDto
         {
             SurveyResponseId = x.SurveyResponseId,
-            NameSnapshot = x.NameSnapshot,
+            CustomInputId = x.TemplateCustomInputId,
+            LabelEnSnapshot = x.LabelEnSnapshot,
+            LabelArSnapshot = x.LabelArSnapshot,
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue

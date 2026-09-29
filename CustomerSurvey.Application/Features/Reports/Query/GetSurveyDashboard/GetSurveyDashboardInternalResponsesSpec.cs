@@ -50,7 +50,7 @@ internal sealed class GetSurveyDashboardInternalResponsesSpec
             HasComplaint = x.Answers.Any(answer =>
                 answer.QuestionType == QuestionType.Complain &&
                 answer.TextAnswer != null &&
-                answer.TextAnswer != string.Empty),
+                answer.TextAnswer.Trim() != string.Empty),
             HasVoice = x.Answers.Any(answer =>
                 answer.QuestionType == QuestionType.Voice &&
                 answer.VoiceFileName != null &&
@@ -140,9 +140,9 @@ internal sealed class GetSurveyDashboardInternalCustomInputValuesSpec
             Source = SurveyDashboardSource.Internal,
             ResponseId = x.SurveyResponseId,
             BranchId = x.SurveyResponse.Template.BranchId,
-            NameSnapshot = x.NameSnapshot,
-            LabelEn = x.TemplateCustomInput.LabelEn,
-            LabelAr = x.TemplateCustomInput.LabelAr,
+            CustomInputId = x.TemplateCustomInputId,
+            LabelEnSnapshot = x.LabelEnSnapshot,
+            LabelArSnapshot = x.LabelArSnapshot,
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue,

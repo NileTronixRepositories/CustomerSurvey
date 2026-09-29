@@ -235,7 +235,9 @@ internal sealed class GetSystemDashboardQueryHandler
             ? 0m
             : Round(scoredResponses.Average(x => x.ScorePercentage));
 
-        var complaintsCount = answers.Count(x => x.QuestionType == QuestionType.Complain);
+        var complaintsCount = answers.Count(x =>
+            x.QuestionType == QuestionType.Complain &&
+            !string.IsNullOrWhiteSpace(x.TextAnswer));
         var voiceAnswersCount = answers.Count(x => x.QuestionType == QuestionType.Voice);
 
         return new GetSystemDashboardResponse
@@ -400,7 +402,9 @@ internal sealed class GetSystemDashboardQueryHandler
                 x => x.Count());
 
         var complaintsCountByBranchId = answers
-            .Where(x => x.QuestionType == QuestionType.Complain)
+            .Where(x =>
+                x.QuestionType == QuestionType.Complain &&
+                !string.IsNullOrWhiteSpace(x.TextAnswer))
             .GroupBy(x => x.BranchId)
             .ToDictionary(
                 x => x.Key,
@@ -527,7 +531,9 @@ internal sealed class GetSystemDashboardQueryHandler
         var templatesById = templates.ToDictionary(x => x.TemplateId);
 
         var complaintsCountByTemplateId = answers
-            .Where(x => x.QuestionType == QuestionType.Complain)
+            .Where(x =>
+                x.QuestionType == QuestionType.Complain &&
+                !string.IsNullOrWhiteSpace(x.TextAnswer))
             .GroupBy(x => x.TemplateId)
             .ToDictionary(
                 x => x.Key,
@@ -656,7 +662,9 @@ internal sealed class GetSystemDashboardQueryHandler
 
         return new SystemDashboardCriticalResponseCustomInputItem
         {
-            Name = value.NameSnapshot,
+            CustomInputId = value.CustomInputId,
+            LabelEnSnapshot = value.LabelEnSnapshot,
+            LabelArSnapshot = value.LabelArSnapshot,
             Value = displayValue
         };
     }

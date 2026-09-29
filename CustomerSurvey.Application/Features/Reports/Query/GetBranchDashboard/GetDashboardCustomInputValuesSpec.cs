@@ -25,7 +25,9 @@ internal sealed class GetDashboardCustomInputValuesSpec
         Select(x => new DashboardCustomInputValueDto
         {
             SurveyResponseId = x.SurveyResponseId,
-            NameSnapshot = x.NameSnapshot,
+            CustomInputId = x.TemplateCustomInputId,
+            LabelEnSnapshot = x.LabelEnSnapshot,
+            LabelArSnapshot = x.LabelArSnapshot,
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue,

@@ -12,7 +12,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
     internal sealed class UpdateTemplateCommandValidator
         : AbstractValidator<UpdateTemplateCommand>
     {
-        private const int CustomInputNameMaxLength = 100;
         private const int CustomInputLabelMaxLength = 200;
         private const int CustomInputStringMaxLength = 3000;
         private const int CustomInputStartWithMaxLength = 100;
@@ -57,11 +56,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
                 .When(x => x.CustomInputs is not null && x.CustomInputs.Count > 0);
 
             RuleFor(x => x.CustomInputs)
-                .Must(HaveUniqueCustomInputNames)
-                .WithMessage(ErrorMessage.UpdateTemplate_CustomInput_Name_Duplicated)
-                .When(x => x.CustomInputs is not null && x.CustomInputs.Count > 0);
-
-            RuleFor(x => x.CustomInputs)
                 .Must(HaveUniqueCustomInputOrders)
                 .WithMessage(ErrorMessage.UpdateTemplate_CustomInput_Order_Duplicated)
                 .When(x => x.CustomInputs is not null && x.CustomInputs.Count > 0);
@@ -69,11 +63,10 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
             RuleForEach(x => x.CustomInputs)
                 .ChildRules(customInput =>
                 {
-                    customInput.RuleFor(x => x.Name)
-                        .NotEmpty()
-                        .WithMessage(ErrorMessage.UpdateTemplate_CustomInput_Name_Required)
-                        .MaximumLength(CustomInputNameMaxLength)
-                        .WithMessage(ErrorMessage.UpdateTemplate_CustomInput_Name_MaxLength);
+                    customInput.RuleFor(x => x)
+                        .Must(x => !string.IsNullOrWhiteSpace(x.LabelEn) ||
+                                   !string.IsNullOrWhiteSpace(x.LabelAr))
+                        .WithMessage(ErrorMessage.UpdateTemplate_CustomInput_Name_Required);
 
                     customInput.RuleFor(x => x.LabelEn)
                         .MaximumLength(CustomInputLabelMaxLength)
@@ -128,17 +121,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.UpdateTemplate
                 .ToArray();
 
             return ids.Length == ids.Distinct().Count();
-        }
-
-        private static bool HaveUniqueCustomInputNames(
-            IReadOnlyCollection<UpdateTemplateCustomInputCommandItem> customInputs)
-        {
-            var names = customInputs
-                .Where(x => !string.IsNullOrWhiteSpace(x.Name))
-                .Select(x => x.Name.Trim().ToLowerInvariant())
-                .ToArray();
-
-            return names.Length == names.Distinct().Count();
         }
 
         private static bool HaveUniqueCustomInputOrders(

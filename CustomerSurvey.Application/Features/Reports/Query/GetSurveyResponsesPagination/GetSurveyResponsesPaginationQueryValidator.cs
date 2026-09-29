@@ -26,9 +26,8 @@ internal sealed class GetSurveyResponsesPaginationQueryValidator
         RuleFor(x => x.SatisfactionCategory).IsInEnum()
             .When(x => x.SatisfactionCategory.HasValue)
             .WithMessage("SatisfactionCategory is invalid.");
-        RuleFor(x => x).Must(x =>
-                !(x.CustomInputLabelEnIsNull == true && !string.IsNullOrWhiteSpace(x.CustomInputLabelEn)) &&
-                !(x.CustomInputLabelArIsNull == true && !string.IsNullOrWhiteSpace(x.CustomInputLabelAr)))
-            .WithMessage("A custom-input label cannot have both a value and an is-null filter.");
+        RuleFor(x => x.CustomInputId)
+            .Must(x => !x.HasValue || x.Value != Guid.Empty)
+            .WithMessage("CustomInputId is invalid.");
     }
 }

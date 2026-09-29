@@ -30,7 +30,7 @@ public sealed class GetSystemSurveyResponsesPaginationQuery
 
     public Guid? QuestionId { get; set; }
 
-    public string? CustomInputName { get; set; }
+    public Guid? CustomInputId { get; set; }
 
     public CustomerSurvey.Domain.Enums.TemplateCustomInputType? CustomInputType { get; set; }
 

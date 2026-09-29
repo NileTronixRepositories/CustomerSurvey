@@ -182,7 +182,9 @@ internal sealed class GetSystemSurveyResponsesPaginationQueryHandler
 
         return new SystemSurveyResponseCustomInputPreviewResponse
         {
-            Name = value.NameSnapshot,
+            CustomInputId = value.CustomInputId,
+            LabelEnSnapshot = value.LabelEnSnapshot,
+            LabelArSnapshot = value.LabelArSnapshot,
             Value = displayValue
         };
     }

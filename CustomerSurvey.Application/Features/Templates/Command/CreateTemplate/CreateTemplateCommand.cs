@@ -26,8 +26,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
 
     public sealed record CreateTemplateCustomInputCommandItem
     {
-        public string Name { get; init; } = string.Empty;
-
         public string? LabelEn { get; init; }
 
         public string? LabelAr { get; init; }

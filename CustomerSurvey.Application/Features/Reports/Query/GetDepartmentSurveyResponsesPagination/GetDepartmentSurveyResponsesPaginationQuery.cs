@@ -28,7 +28,7 @@ public sealed class GetDepartmentSurveyResponsesPaginationQuery
 
     public Guid? QuestionId { get; init; }
 
-    public string? CustomInputName { get; init; }
+    public Guid? CustomInputId { get; init; }
 
     public TemplateCustomInputType? CustomInputType { get; init; }
 

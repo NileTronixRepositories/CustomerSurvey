@@ -13,7 +13,8 @@ internal sealed class GetDepartmentOperatorSurveyResponseCustomInputValuesSpec
         Select(x => new DepartmentOperatorSurveyResponseCustomInputValueDto
         {
             CustomInputId = x.TemplateCustomInputId,
-            NameSnapshot = x.NameSnapshot,
+            LabelEnSnapshot = x.LabelEnSnapshot,
+            LabelArSnapshot = x.LabelArSnapshot,
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue

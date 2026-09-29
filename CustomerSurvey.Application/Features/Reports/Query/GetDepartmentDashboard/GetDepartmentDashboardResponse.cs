@@ -175,7 +175,11 @@ public sealed record DepartmentDashboardQuestionInsightResponse
 
 public sealed record DepartmentDashboardCustomInputSegmentResponse
 {
-    public string CustomInputName { get; init; } = string.Empty;
+    public Guid CustomInputId { get; init; }
+
+    public string? LabelEn { get; init; }
+
+    public string? LabelAr { get; init; }
 
     public TemplateCustomInputType Type { get; init; }
 
@@ -232,7 +236,11 @@ public sealed record DepartmentDashboardCriticalResponseItem
 
 public sealed record DepartmentDashboardCriticalResponseCustomInputItem
 {
-    public string Name { get; init; } = string.Empty;
+    public Guid CustomInputId { get; init; }
+
+    public string? LabelEnSnapshot { get; init; }
+
+    public string? LabelArSnapshot { get; init; }
 
     public string Value { get; init; } = string.Empty;
 }

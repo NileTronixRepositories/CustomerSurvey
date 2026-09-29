@@ -101,6 +101,25 @@ internal sealed class CopyAnonymousTemplateAsAuthorizedCommandHandler
             source.ActiveFrom, source.ExpireTo, scope.Value.ApplicationUserId,
             templateFamilyId: familyId);
 
+        foreach (var sourceInput in source.CustomInputs
+                     .Where(x => x.IsActive)
+                     .OrderBy(x => x.Order))
+        {
+            target.AddCustomInput(TemplateCustomInput.Create(
+                templateId: target.Id,
+                labelEn: sourceInput.LabelEn,
+                labelAr: sourceInput.LabelAr,
+                type: sourceInput.Type,
+                isRequired: sourceInput.IsRequired,
+                minLength: sourceInput.MinLength,
+                maxLength: sourceInput.MaxLength,
+                minValue: sourceInput.MinValue,
+                maxValue: sourceInput.MaxValue,
+                startWith: sourceInput.StartWith,
+                order: sourceInput.Order,
+                createdByApplicationUserId: scope.Value.ApplicationUserId));
+        }
+
         var targetQuestions = source.Questions
             .OrderBy(x => x.Order)
             .Select(x => TemplateQuestion.Create(target.Id, x.QuestionId, x.Order, scope.Value.ApplicationUserId))

@@ -355,7 +355,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     .Select(x => new SubmittedCustomInputValueResponse
                     {
                         CustomInputId = x.TemplateCustomInputId,
-                        Name = x.NameSnapshot,
+                        LabelEnSnapshot = x.LabelEnSnapshot,
+                        LabelArSnapshot = x.LabelArSnapshot,
                         Type = x.TypeSnapshot,
                         TypeName = x.TypeSnapshot.ToString(),
                         StringValue = x.StringValue,
@@ -556,7 +557,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     values.Add(SurveyResponseCustomInputValue.CreateStringValue(
                         surveyResponseId: surveyResponseId,
                         templateCustomInputId: templateCustomInput.CustomInputId,
-                        nameSnapshot: templateCustomInput.Name,
+                        labelEnSnapshot: templateCustomInput.LabelEn,
+                        labelArSnapshot: templateCustomInput.LabelAr,
                         value: submittedCustomInput.Value));
 
                     continue;
@@ -569,7 +571,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     values.Add(SurveyResponseCustomInputValue.CreateIntegerValue(
                         surveyResponseId: surveyResponseId,
                         templateCustomInputId: templateCustomInput.CustomInputId,
-                        nameSnapshot: templateCustomInput.Name,
+                        labelEnSnapshot: templateCustomInput.LabelEn,
+                        labelArSnapshot: templateCustomInput.LabelAr,
                         value: integerValue));
                 }
             }
@@ -760,6 +763,11 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     answer.QuestionId,
                     answer.TextAnswer!),
 
+                QuestionType.FreeText => SurveyAnswer.CreateFreeText(
+                    surveyResponseId,
+                    answer.QuestionId,
+                    answer.TextAnswer!),
+
                 QuestionType.Voice => await CreateVoiceAnswerAsync(
                     surveyResponseId,
                     answer,
@@ -825,6 +833,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 QuestionType.StarRating => ValidateStarRating(answer),
 
                 QuestionType.Complain => ValidateComplain(answer),
+
+                QuestionType.FreeText => ValidateFreeText(answer),
 
                 QuestionType.Smiles => ValidateSmiles(answer),
 
@@ -942,6 +952,20 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             {
                 return new Error(
                     Code: "SurveyResponses.Submit.ComplainInvalidShape",
+                    Message: ErrorMessage.SubmitOperatorTemplateResponse_Complain_InvalidShape,
+                    Type: ErrorType.Validation);
+            }
+
+            return null;
+        }
+
+        private static Error? ValidateFreeText(
+            SubmitOperatorTemplateAnswerCommandItem answer)
+        {
+            if (!OnlyComplainFieldsProvided(answer))
+            {
+                return new Error(
+                    Code: "SurveyResponses.Submit.FreeTextInvalidShape",
                     Message: ErrorMessage.SubmitOperatorTemplateResponse_Complain_InvalidShape,
                     Type: ErrorType.Validation);
             }

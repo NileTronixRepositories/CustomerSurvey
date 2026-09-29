@@ -584,6 +584,7 @@ internal sealed class GetSurveyDashboardQueryHandler
         return new AnswerFlatDto
         {
             ResponseId = answer.ResponseId,
+            TemplateKind = ToReportTemplateKind(answer.Source),
             TemplateId = answer.TemplateId,
             QuestionId = answer.QuestionId,
             QuestionType = answer.QuestionType,
@@ -1199,9 +1200,9 @@ internal sealed class GetSurveyDashboardQueryHandler
             .Where(x => !string.IsNullOrWhiteSpace(x.DisplayValue))
             .GroupBy(x => new
             {
-                x.Value.NameSnapshot,
-                x.Value.LabelEn,
-                x.Value.LabelAr,
+                x.Value.CustomInputId,
+                x.Value.LabelEnSnapshot,
+                x.Value.LabelArSnapshot,
                 x.Value.TypeSnapshot
             })
             .OrderByDescending(x => x.Count())
@@ -1211,9 +1212,9 @@ internal sealed class GetSurveyDashboardQueryHandler
                 Source = requestedSource == SurveyDashboardSource.All
                     ? SurveyDashboardSource.All
                     : inputGroup.First().Value.Source,
-                CustomInputName = inputGroup.Key.NameSnapshot,
-                LabelEn = inputGroup.Key.LabelEn,
-                LabelAr = inputGroup.Key.LabelAr,
+                CustomInputId = inputGroup.Key.CustomInputId,
+                LabelEn = inputGroup.Key.LabelEnSnapshot,
+                LabelAr = inputGroup.Key.LabelArSnapshot,
                 Type = inputGroup.Key.TypeSnapshot,
                 TypeName = inputGroup.Key.TypeSnapshot.ToString(),
                 Segments = inputGroup
@@ -1235,11 +1236,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                             requestedSource,
                             templateFilter,
                             ("source", requestedSource),
-                            ("customInputName", inputGroup.Key.NameSnapshot),
-                            ("customInputLabelEn", inputGroup.Key.LabelEn),
-                            ("customInputLabelAr", inputGroup.Key.LabelAr),
-                            ("customInputLabelEnIsNull", inputGroup.Key.LabelEn is null ? true : null),
-                            ("customInputLabelArIsNull", inputGroup.Key.LabelAr is null ? true : null),
+                            ("customInputId", inputGroup.Key.CustomInputId),
                             ("customInputType", inputGroup.Key.TypeSnapshot),
                             ("customInputValue", valueGroup.Key),
                             ("isScored", true)))
@@ -1327,9 +1324,9 @@ internal sealed class GetSurveyDashboardQueryHandler
     {
         return new SurveyDashboardCustomInputPreviewResponse
         {
-            Name = value.NameSnapshot,
-            LabelEn = value.LabelEn,
-            LabelAr = value.LabelAr,
+            CustomInputId = value.CustomInputId,
+            LabelEnSnapshot = value.LabelEnSnapshot,
+            LabelArSnapshot = value.LabelArSnapshot,
             Value = GetCustomInputValueText(value)
         };
     }

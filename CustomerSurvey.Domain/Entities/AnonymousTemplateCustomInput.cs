@@ -8,7 +8,6 @@ namespace CustomerSurvey.Domain.Entities
         public Guid AnonymousTemplateId { get; private set; }
         public AnonymousTemplate AnonymousTemplate { get; private set; } = null!;
 
-        public string Name { get; private set; } = string.Empty;
         public string? LabelEn { get; private set; }
         public string? LabelAr { get; private set; }
 
@@ -36,7 +35,6 @@ namespace CustomerSurvey.Domain.Entities
 
         public static AnonymousTemplateCustomInput Create(
             Guid anonymousTemplateId,
-            string name,
             string? labelEn,
             string? labelAr,
             TemplateCustomInputType type,
@@ -61,7 +59,6 @@ namespace CustomerSurvey.Domain.Entities
             {
                 Id = Guid.NewGuid(),
                 AnonymousTemplateId = anonymousTemplateId,
-                Name = name.Trim(),
                 LabelEn = string.IsNullOrWhiteSpace(labelEn) ? null : labelEn.Trim(),
                 LabelAr = string.IsNullOrWhiteSpace(labelAr) ? null : labelAr.Trim(),
                 Type = type,
@@ -78,7 +75,6 @@ namespace CustomerSurvey.Domain.Entities
         }
 
         public void Update(
-            string name,
             string? labelEn,
             string? labelAr,
             TemplateCustomInputType type,
@@ -98,7 +94,6 @@ namespace CustomerSurvey.Domain.Entities
                 maxValue,
                 startWith);
 
-            Name = name.Trim();
             LabelEn = string.IsNullOrWhiteSpace(labelEn) ? null : labelEn.Trim();
             LabelAr = string.IsNullOrWhiteSpace(labelAr) ? null : labelAr.Trim();
             Type = type;

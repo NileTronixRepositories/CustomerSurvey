@@ -15,7 +15,7 @@ namespace CustomerSurvey.Tests.Templates;
 public sealed class CrossTypeTemplateCopyTests
 {
     [Fact]
-    public async Task AuthorizedToAnonymous_ReusesQuestionsCopiesConditionsAndLogoWithoutCustomInputs()
+    public async Task AuthorizedToAnonymous_ReusesQuestionsAndCopiesConditionsLogoAndCustomInputs()
     {
         var userId = Guid.NewGuid();
         var branch = Branch.Create("Cairo", null, "CAI", null, userId);
@@ -29,7 +29,7 @@ public sealed class CrossTypeTemplateCopyTests
             userId);
         source.SetLogoPath("Media/TemplateLogos/source.png");
         source.AddCustomInput(TemplateCustomInput.Create(
-            source.Id, "Phone", null, null, TemplateCustomInputType.String,
+            source.Id, "Phone", null, TemplateCustomInputType.String,
             true, 3, 20, null, null, "01", 1, userId));
 
         var firstLink = TemplateQuestion.Create(source.Id, Guid.NewGuid(), 1, userId);
@@ -76,7 +76,15 @@ public sealed class CrossTypeTemplateCopyTests
         Assert.NotEqual(source.Id, target.Id);
         Assert.Equal(source.TemplateFamilyId, target.TemplateFamilyId);
         Assert.NotNull(target.TemplateFamilyId);
-        Assert.Empty(target.CustomInputs);
+        var copiedInput = Assert.Single(target.CustomInputs);
+        Assert.Equal("Phone", copiedInput.LabelEn);
+        Assert.Null(copiedInput.LabelAr);
+        Assert.Equal(TemplateCustomInputType.String, copiedInput.Type);
+        Assert.True(copiedInput.IsRequired);
+        Assert.Equal(3, copiedInput.MinLength);
+        Assert.Equal(20, copiedInput.MaxLength);
+        Assert.Equal("01", copiedInput.StartWith);
+        Assert.Equal(1, copiedInput.Order);
         Assert.Equal("Media/TemplateLogos/copied.png", target.LogoPath);
         Assert.Equal($"https://survey.test/{target.Id}", target.PublicUrl);
         Assert.Equal($"qr::{target.PublicUrl}", target.QrCode);
@@ -92,7 +100,7 @@ public sealed class CrossTypeTemplateCopyTests
     }
 
     [Fact]
-    public async Task AnonymousToAuthorized_ReusesQuestionsCopiesConditionsAndLogoWithoutCustomInputs()
+    public async Task AnonymousToAuthorized_ReusesQuestionsAndCopiesConditionsLogoAndCustomInputs()
     {
         var userId = Guid.NewGuid();
         var branch = Branch.Create("Cairo", null, "CAI", null, userId);
@@ -106,7 +114,7 @@ public sealed class CrossTypeTemplateCopyTests
             userId);
         source.SetLogoPath("Media/TemplateLogos/source.png");
         source.AddCustomInput(AnonymousTemplateCustomInput.Create(
-            source.Id, "Phone", null, null, TemplateCustomInputType.String,
+            source.Id, "Phone", null, TemplateCustomInputType.String,
             true, 3, 20, null, null, "01", 1, userId));
 
         var firstLink = AnonymousTemplateQuestion.Create(source.Id, Guid.NewGuid(), 1, userId);
@@ -151,7 +159,15 @@ public sealed class CrossTypeTemplateCopyTests
         Assert.NotEqual(source.Id, target.Id);
         Assert.Equal(source.TemplateFamilyId, target.TemplateFamilyId);
         Assert.NotNull(target.TemplateFamilyId);
-        Assert.Empty(target.CustomInputs);
+        var copiedInput = Assert.Single(target.CustomInputs);
+        Assert.Equal("Phone", copiedInput.LabelEn);
+        Assert.Null(copiedInput.LabelAr);
+        Assert.Equal(TemplateCustomInputType.String, copiedInput.Type);
+        Assert.True(copiedInput.IsRequired);
+        Assert.Equal(3, copiedInput.MinLength);
+        Assert.Equal(20, copiedInput.MaxLength);
+        Assert.Equal("01", copiedInput.StartWith);
+        Assert.Equal(1, copiedInput.Order);
         Assert.Equal("Media/TemplateLogos/copied.png", target.LogoPath);
         Assert.Equal(
             new[] { firstLink.QuestionId, secondLink.QuestionId },

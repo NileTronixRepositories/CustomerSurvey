@@ -6,7 +6,9 @@ internal sealed record DepartmentOperatorSurveyResponseCustomInputValueDto
 {
     public Guid CustomInputId { get; init; }
 
-    public string NameSnapshot { get; init; } = string.Empty;
+    public string? LabelEnSnapshot { get; init; }
+
+    public string? LabelArSnapshot { get; init; }
 
     public TemplateCustomInputType TypeSnapshot { get; init; }
 

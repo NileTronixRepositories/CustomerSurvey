@@ -138,6 +138,14 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<int?>("IntegerValue")
                         .HasColumnType("int");
 
+                    b.Property<string>("LabelArSnapshot")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("LabelEnSnapshot")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
 
@@ -299,11 +307,6 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
@@ -317,9 +320,6 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AnonymousTemplateId");
-
-                    b.HasIndex("AnonymousTemplateId", "Name")
-                        .IsUnique();
 
                     b.HasIndex("AnonymousTemplateId", "IsActive", "Order");
 
@@ -859,6 +859,14 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<int?>("IntegerValue")
                         .HasColumnType("int");
 
+                    b.Property<string>("LabelArSnapshot")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("LabelEnSnapshot")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
 
@@ -1001,11 +1009,6 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
@@ -1024,9 +1027,6 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.HasIndex("CreatedByApplicationUserId");
 
                     b.HasIndex("TemplateId");
-
-                    b.HasIndex("TemplateId", "Name")
-                        .IsUnique();
 
                     b.HasIndex("TemplateId", "IsActive", "Order");
 

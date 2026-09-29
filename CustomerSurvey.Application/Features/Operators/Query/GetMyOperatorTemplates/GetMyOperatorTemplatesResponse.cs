@@ -66,8 +66,6 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
     {
         public Guid CustomInputId { get; init; }
 
-        public string Name { get; init; } = string.Empty;
-
         public string? LabelEn { get; init; }
 
         public string? LabelAr { get; init; }
@@ -160,7 +158,9 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
     {
         public Guid CustomInputId { get; init; }
 
-        public string Name { get; init; } = string.Empty;
+        public string? LabelEnSnapshot { get; init; }
+
+        public string? LabelArSnapshot { get; init; }
 
         public TemplateCustomInputType Type { get; init; }
 

@@ -44,7 +44,11 @@ public sealed record DepartmentOperatorSurveyResponsePaginationItemResponse
 
 public sealed record DepartmentOperatorSurveyResponseCustomInputPreviewResponse
 {
-    public string Name { get; init; } = string.Empty;
+    public Guid CustomInputId { get; init; }
+
+    public string? LabelEnSnapshot { get; init; }
+
+    public string? LabelArSnapshot { get; init; }
 
     public string Value { get; init; } = string.Empty;
 }

@@ -177,7 +177,6 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                     .Select(x => new TemplateDetailsCustomInputResponse
                     {
                         CustomInputId = x.CustomInputId,
-                        Name = x.Name,
                         LabelEn = x.LabelEn,
                         LabelAr = x.LabelAr,
                         Type = x.Type,

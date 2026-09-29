@@ -22,6 +22,8 @@ public sealed record ResponseFlatDto
 
 public sealed record AnswerFlatDto
 {
+    public ReportTemplateKind TemplateKind { get; init; }
+
     public Guid ResponseId { get; init; }
 
     public Guid TemplateId { get; init; }
@@ -55,6 +57,8 @@ public sealed record AnswerFlatDto
 
 public sealed record TemplateQuestionFlatDto
 {
+    public ReportTemplateKind TemplateKind { get; init; }
+
     public Guid TemplateQuestionId { get; init; }
 
     public Guid TemplateId { get; init; }
@@ -68,10 +72,18 @@ public sealed record TemplateQuestionFlatDto
     public string? QuestionTextAr { get; init; }
 
     public QuestionType QuestionType { get; init; }
+
+    public Guid QuestionGroupId { get; init; }
+
+    public string QuestionGroupNameEn { get; init; } = string.Empty;
+
+    public string? QuestionGroupNameAr { get; init; }
 }
 
 public sealed record ConditionFlatDto
 {
+    public ReportTemplateKind TemplateKind { get; init; }
+
     public Guid TemplateId { get; init; }
 
     public Guid ParentTemplateQuestionId { get; init; }

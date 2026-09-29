@@ -22,7 +22,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
         public Guid? QuestionId { get; init; }
 
-        public string? CustomInputName { get; init; }
+        public Guid? CustomInputId { get; init; }
 
         public CustomerSurvey.Domain.Enums.TemplateCustomInputType? CustomInputType { get; init; }
 

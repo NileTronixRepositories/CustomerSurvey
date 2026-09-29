@@ -20,7 +20,6 @@ public sealed class AssignGlobalAnonymousTemplateToBranchTests
         source.AddCustomInput(AnonymousTemplateCustomInput.Create(
             source.Id,
             "Phone",
-            "Phone",
             null,
             TemplateCustomInputType.String,
             true,

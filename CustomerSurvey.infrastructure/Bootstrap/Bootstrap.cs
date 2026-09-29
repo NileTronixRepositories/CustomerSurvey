@@ -112,6 +112,7 @@ namespace CustomerSurvey.infrastructure.Bootstrap
 
             services.AddScoped<IBranchTemplatesPdfReportService, BranchTemplatesPdfReportService>();
             services.AddScoped<IBranchTemplateExcelReportService, BranchTemplateExcelReportService>();
+            services.AddScoped<ISurveyDashboardComplaintReadService, SurveyDashboardComplaintReadService>();
 
             return services;
         }

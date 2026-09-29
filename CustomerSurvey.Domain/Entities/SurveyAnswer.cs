@@ -110,6 +110,21 @@ namespace CustomerSurvey.Domain.Entities
             };
         }
 
+        public static SurveyAnswer CreateFreeText(
+            Guid surveyResponseId,
+            Guid questionId,
+            string textAnswer)
+        {
+            return new SurveyAnswer
+            {
+                Id = Guid.NewGuid(),
+                SurveyResponseId = surveyResponseId,
+                QuestionId = questionId,
+                QuestionType = QuestionType.FreeText,
+                TextAnswer = textAnswer.Trim()
+            };
+        }
+
         public static SurveyAnswer CreateSmiles(
             Guid surveyResponseId,
             Guid questionId,

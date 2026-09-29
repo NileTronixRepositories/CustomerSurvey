@@ -103,7 +103,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
             {
                 var customInput = TemplateCustomInput.Create(
                     templateId: template.Id,
-                    name: customInputRequest.Name,
                     labelEn: customInputRequest.LabelEn,
                     labelAr: customInputRequest.LabelAr,
                     type: customInputRequest.Type,
@@ -145,7 +144,6 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
                     .Select(x => new CreateTemplateCustomInputResponse
                     {
                         CustomInputId = x.Id,
-                        Name = x.Name,
                         LabelEn = x.LabelEn,
                         LabelAr = x.LabelAr,
                         Type = x.Type,

@@ -281,7 +281,7 @@ public sealed record SurveyDashboardCustomInputSegmentResponse
 {
     public SurveyDashboardSource Source { get; init; }
 
-    public string CustomInputName { get; init; } = string.Empty;
+    public Guid CustomInputId { get; init; }
 
     public string? LabelEn { get; init; }
 
@@ -352,11 +352,11 @@ public sealed record SurveyDashboardCriticalResponseItemResponse
 
 public sealed record SurveyDashboardCustomInputPreviewResponse
 {
-    public string Name { get; init; } = string.Empty;
+    public Guid CustomInputId { get; init; }
 
-    public string? LabelEn { get; init; }
+    public string? LabelEnSnapshot { get; init; }
 
-    public string? LabelAr { get; init; }
+    public string? LabelArSnapshot { get; init; }
 
     public string Value { get; init; } = string.Empty;
 }
@@ -482,11 +482,11 @@ internal sealed record SurveyDashboardCustomInputValueRow
 
     public Guid BranchId { get; init; }
 
-    public string NameSnapshot { get; init; } = string.Empty;
+    public Guid CustomInputId { get; init; }
 
-    public string? LabelEn { get; init; }
+    public string? LabelEnSnapshot { get; init; }
 
-    public string? LabelAr { get; init; }
+    public string? LabelArSnapshot { get; init; }
 
     public TemplateCustomInputType TypeSnapshot { get; init; }
 

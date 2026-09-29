@@ -14,7 +14,9 @@ internal sealed class GetBranchSurveyResponseCustomInputPreviewsSpec
         Select(x => new BranchSurveyResponseCustomInputPreviewDto
         {
             SurveyResponseId = x.SurveyResponseId,
-            NameSnapshot = x.NameSnapshot,
+            CustomInputId = x.TemplateCustomInputId,
+            LabelEnSnapshot = x.LabelEnSnapshot,
+            LabelArSnapshot = x.LabelArSnapshot,
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue

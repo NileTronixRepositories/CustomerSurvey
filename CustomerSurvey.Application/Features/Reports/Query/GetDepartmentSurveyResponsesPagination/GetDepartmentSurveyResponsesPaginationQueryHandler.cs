@@ -145,7 +145,9 @@ internal sealed class GetDepartmentSurveyResponsesPaginationQueryHandler
         DepartmentSurveyResponseCustomInputPreviewDto value)
         => new()
         {
-            Name = value.NameSnapshot,
+            CustomInputId = value.CustomInputId,
+            LabelEnSnapshot = value.LabelEnSnapshot,
+            LabelArSnapshot = value.LabelArSnapshot,
             Value = value.TypeSnapshot switch
             {
                 TemplateCustomInputType.String => value.StringValue ?? string.Empty,

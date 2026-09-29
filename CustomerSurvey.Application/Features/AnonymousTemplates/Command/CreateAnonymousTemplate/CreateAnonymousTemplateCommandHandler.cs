@@ -238,7 +238,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
             {
                 var customInput = AnonymousTemplateCustomInput.Create(
                     anonymousTemplateId: anonymousTemplate.Id,
-                    name: input.Name,
                     labelEn: input.LabelEn,
                     labelAr: input.LabelAr,
                     type: input.Type,
@@ -284,7 +283,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
                     .Select(x => new CreateAnonymousTemplateCustomInputResponse
                     {
                         CustomInputId = x.Id,
-                        Name = x.Name,
                         LabelEn = x.LabelEn,
                         LabelAr = x.LabelAr,
                         Type = x.Type,

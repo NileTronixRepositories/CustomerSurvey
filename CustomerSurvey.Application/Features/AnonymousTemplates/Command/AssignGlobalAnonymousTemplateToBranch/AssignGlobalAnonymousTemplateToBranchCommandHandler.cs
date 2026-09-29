@@ -137,7 +137,7 @@ internal sealed class AssignGlobalAnonymousTemplateToBranchCommandHandler
         foreach (var input in source.CustomInputs.Where(x => x.IsActive).OrderBy(x => x.Order))
         {
             target.AddCustomInput(AnonymousTemplateCustomInput.Create(
-                target.Id, input.Name, input.LabelEn, input.LabelAr, input.Type,
+                target.Id, input.LabelEn, input.LabelAr, input.Type,
                 input.IsRequired, input.MinLength, input.MaxLength, input.MinValue,
                 input.MaxValue, input.StartWith, input.Order, userId));
         }

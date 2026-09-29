@@ -199,7 +199,9 @@ internal sealed class GetBranchSurveyResponsesPaginationQueryHandler
 
         return new BranchSurveyResponseCustomInputPreviewResponse
         {
-            Name = value.NameSnapshot,
+            CustomInputId = value.CustomInputId,
+            LabelEnSnapshot = value.LabelEnSnapshot,
+            LabelArSnapshot = value.LabelArSnapshot,
             Value = displayValue
         };
     }

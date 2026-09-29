@@ -3,7 +3,7 @@ using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfRep
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 
-public sealed class GetSurveyDashboardQuery : IQuery<SurveyDashboardResponse>
+public sealed class GetSurveyDashboardQuery : IQuery<SurveyDashboardResponse>, ISurveyDashboardFilterRequest
 {
     public Guid? BranchId { get; init; }
 
@@ -26,6 +26,21 @@ public sealed class GetSurveyDashboardQuery : IQuery<SurveyDashboardResponse>
     public int CriticalResponsesCount { get; init; } = 10;
 
     public decimal CriticalScoreThreshold { get; init; } = 40m;
+}
+
+public interface ISurveyDashboardFilterRequest
+{
+    Guid? BranchId { get; }
+
+    SurveyDashboardSource Source { get; }
+
+    Guid? TemplateId { get; }
+
+    Guid? AnonymousTemplateId { get; }
+
+    DateTime? From { get; }
+
+    DateTime? To { get; }
 }
 
 public enum SurveyDashboardSource

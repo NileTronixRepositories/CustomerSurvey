@@ -28,6 +28,14 @@ namespace CustomerSurvey.infrastructure.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
+            builder.Property(x => x.LabelEnSnapshot)
+                .IsRequired(false)
+                .HasMaxLength(200);
+
+            builder.Property(x => x.LabelArSnapshot)
+                .IsRequired(false)
+                .HasMaxLength(200);
+
             builder.Property(x => x.TypeSnapshot)
                 .IsRequired()
                 .HasConversion<int>();

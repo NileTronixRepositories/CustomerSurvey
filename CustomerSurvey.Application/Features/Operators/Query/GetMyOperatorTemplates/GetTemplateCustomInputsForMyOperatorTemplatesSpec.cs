@@ -24,7 +24,6 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
             {
                 CustomInputId = x.Id,
                 TemplateId = x.TemplateId,
-                Name = x.Name,
                 LabelEn = x.LabelEn,
                 LabelAr = x.LabelAr,
                 Type = x.Type,

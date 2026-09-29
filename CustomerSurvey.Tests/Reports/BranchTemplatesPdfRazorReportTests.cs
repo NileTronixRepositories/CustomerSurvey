@@ -47,7 +47,7 @@ public sealed class BranchTemplatesPdfRazorReportTests
                     TemplateId = templateId,
                     TemplateKind = ReportTemplateKind.Normal,
                     CustomInputId = Guid.NewGuid(),
-                    Name = "Phone",
+                    LabelEnSnapshot = "Phone",
                     Type = TemplateCustomInputType.String,
                     StringValue = "01012345678"
                 }
@@ -81,7 +81,7 @@ public sealed class BranchTemplatesPdfRazorReportTests
                         TemplateId = templateId,
                         TemplateKind = ReportTemplateKind.Normal,
                         CustomInputId = Guid.NewGuid(),
-                        Name = $"Custom Input {inputIndex}",
+                        LabelEnSnapshot = $"Custom Input {inputIndex}",
                         Type = TemplateCustomInputType.String,
                         Order = inputIndex,
                         StringValue = inputIndex == 1 ? "01012345678" : $"Historical value {inputIndex}"
@@ -97,17 +97,19 @@ public sealed class BranchTemplatesPdfRazorReportTests
                         QuestionOrder = answerIndex,
                         QuestionTextEn = $"Question {answerIndex}: Please describe your experience with this service in detail",
                         QuestionTextAr = $"السؤال {answerIndex}: يرجى وصف تجربتك مع هذه الخدمة بالتفصيل",
-                        QuestionType = answerIndex % 6 == 0 ? QuestionType.Image : answerIndex % 5 == 0 ? QuestionType.Voice : answerIndex % 3 == 0 ? QuestionType.Complain : QuestionType.StarRating,
-                        StarRatingValue = answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0 ? 4 : null,
-                        TextAnswer = answerIndex % 6 != 0 && answerIndex % 3 == 0
-                            ? string.Join(' ', Enumerable.Repeat("Long complaint text نص عربي طويل لاختبار التفاف النص وحدود الصفحات.", 8))
-                            : null,
+                        QuestionType = answerIndex == 2 ? QuestionType.FreeText : answerIndex % 6 == 0 ? QuestionType.Image : answerIndex % 5 == 0 ? QuestionType.Voice : answerIndex % 3 == 0 ? QuestionType.Complain : QuestionType.StarRating,
+                        StarRatingValue = answerIndex != 2 && answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0 ? 4 : null,
+                        TextAnswer = answerIndex == 2
+                            ? "Excellent free text feedback."
+                            : answerIndex % 6 != 0 && answerIndex % 3 == 0
+                                ? string.Join(' ', Enumerable.Repeat("Long complaint text نص عربي طويل لاختبار التفاف النص وحدود الصفحات.", 8))
+                                : null,
                         VoiceFilePath = answerIndex % 5 == 0 ? $"Media/SurveyVoiceAnswers/voice-{answerIndex}.mp3" : null,
                         ImageFilePath = answerIndex % 6 == 0 ? $"https://cdn.example.com/image-{answerIndex}.png" : null,
-                        DisplayValue = answerIndex % 6 != 0 && answerIndex % 3 == 0 ? "Long complaint" : "4",
-                        ScoreValue = answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0 ? 4m : null,
-                        IncludedInScore = answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0,
-                        ScoreInclusionReason = answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0 ? "Root Question" : "Non-Scorable Question"
+                        DisplayValue = answerIndex == 2 ? "Excellent free text feedback." : answerIndex % 6 != 0 && answerIndex % 3 == 0 ? "Long complaint" : "4",
+                        ScoreValue = answerIndex != 2 && answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0 ? 4m : null,
+                        IncludedInScore = answerIndex != 2 && answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0,
+                        ScoreInclusionReason = answerIndex != 2 && answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0 ? "Root Question" : "Non-Scorable Question"
                     })
                     .ToArray();
 
@@ -157,6 +159,46 @@ public sealed class BranchTemplatesPdfRazorReportTests
                 NonScoredAnswers = stressResponses.Sum(x => x.Answers.Count(answer => !answer.IncludedInScore))
             },
             Templates = new[] { template },
+            QuestionGroupAnalytics = new[]
+            {
+                new BranchTemplatesReportQuestionGroupAnalytics
+                {
+                    TemplateId = templateId,
+                    TemplateKind = ReportTemplateKind.Normal,
+                    TemplateNameEn = template.NameEn,
+                    QuestionGroupId = Guid.NewGuid(),
+                    QuestionGroupNameEn = "Service Quality",
+                    QuestionsCount = 1,
+                    ScorableQuestionsCount = 1,
+                    TotalResponses = stressResponses.Length,
+                    ScoredResponsesCount = stressResponses.Length,
+                    ScoredItemsCount = stressResponses.Length,
+                    AverageScoreValue = 4m,
+                    AverageScorePercentage = 80m
+                }
+            },
+            ComplaintAnalytics = new BranchTemplatesReportComplaintAnalytics
+            {
+                TotalComplaints = 1,
+                ResponsesWithComplaints = 1,
+                TotalResponses = stressResponses.Length,
+                ComplaintRate = 25m,
+                Complaints = new[]
+                {
+                    new BranchTemplatesReportComplaintItem
+                    {
+                        ResponseId = responseId,
+                        TemplateId = templateId,
+                        TemplateKind = ReportTemplateKind.Normal,
+                        TemplateNameEn = template.NameEn,
+                        QuestionId = Guid.NewGuid(),
+                        QuestionTextEn = "Tell us what went wrong",
+                        ComplaintText = "Long complaint text",
+                        SubmittedOnUtc = response.SubmittedOnUtc,
+                        OperatorNameEn = "Operator 1"
+                    }
+                }
+            },
             TemplateDetails = new[]
             {
                 new BranchTemplatesPdfTemplateDetail { Summary = template }
@@ -174,13 +216,18 @@ public sealed class BranchTemplatesPdfRazorReportTests
             isDraft: false);
 
         Assert.Contains("Graphics", html);
+        Assert.Contains("Satisfaction By Question Group", html);
+        Assert.Contains("Complaints Analysis", html);
+        Assert.Contains("Service Quality", html);
+        Assert.Contains("Long complaint text", html);
         Assert.Contains("Response Details", html);
         Assert.Contains("Response #1", html);
         Assert.Contains("Operator 1", html);
         Assert.Contains("01012345678", html);
         Assert.Contains("Question 1: Please describe your experience", html);
+        Assert.Contains("Excellent free text feedback.", html);
         Assert.Contains("Included In Score", html);
-        Assert.DoesNotContain(responseId.ToString(), html, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(responseId.ToString(), html, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string FindApiContentRoot()

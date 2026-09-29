@@ -216,7 +216,9 @@ internal sealed class GetBranchDashboardQueryHandler
         var unhappyResponses = scoredResponses.Count(x =>
             SatisfactionCategoryRule.Matches(x.MaxScore, x.ScorePercentage, SatisfactionCategory.Unhappy));
 
-        var complaintsCount = answers.Count(x => x.QuestionType == QuestionType.Complain);
+        var complaintsCount = answers.Count(x =>
+            x.QuestionType == QuestionType.Complain &&
+            !string.IsNullOrWhiteSpace(x.TextAnswer));
         var voiceAnswersCount = answers.Count(x => x.QuestionType == QuestionType.Voice);
 
         return new GetBranchDashboardResponse
@@ -363,7 +365,9 @@ internal sealed class GetBranchDashboardQueryHandler
         ResolvedDashboardPeriod period)
     {
         var complaintsCountByTemplateId = answers
-            .Where(x => x.QuestionType == QuestionType.Complain)
+            .Where(x =>
+                x.QuestionType == QuestionType.Complain &&
+                !string.IsNullOrWhiteSpace(x.TextAnswer))
             .GroupBy(x => x.TemplateId)
             .ToDictionary(
                 x => x.Key,
@@ -476,14 +480,18 @@ internal sealed class GetBranchDashboardQueryHandler
             .Where(x => x.MaxScore > 0)
             .GroupBy(x => new
             {
-                x.NameSnapshot,
+                x.CustomInputId,
+                x.LabelEnSnapshot,
+                x.LabelArSnapshot,
                 x.TypeSnapshot
             })
             .OrderByDescending(x => x.Count())
             .Take(MaxCustomInputsToReturn)
             .Select(inputGroup => new BranchDashboardCustomInputSegmentResponse
             {
-                CustomInputName = inputGroup.Key.NameSnapshot,
+                CustomInputId = inputGroup.Key.CustomInputId,
+                LabelEn = inputGroup.Key.LabelEnSnapshot,
+                LabelAr = inputGroup.Key.LabelArSnapshot,
                 Type = inputGroup.Key.TypeSnapshot,
                 TypeName = inputGroup.Key.TypeSnapshot.ToString(),
 
@@ -500,7 +508,7 @@ internal sealed class GetBranchDashboardQueryHandler
                         DetailsNavigation = BuildResponsesNavigation(
                             request,
                             period,
-                            ("customInputName", inputGroup.Key.NameSnapshot),
+                            ("customInputId", inputGroup.Key.CustomInputId),
                             ("customInputType", inputGroup.Key.TypeSnapshot),
                             ("customInputValue", valueGroup.Key),
                             ("isScored", true))
@@ -535,7 +543,9 @@ internal sealed class GetBranchDashboardQueryHandler
                     .Take(5)
                     .Select(value => new BranchDashboardCriticalResponseCustomInputItem
                     {
-                        Name = value.NameSnapshot,
+                        CustomInputId = value.CustomInputId,
+                        LabelEnSnapshot = value.LabelEnSnapshot,
+                        LabelArSnapshot = value.LabelArSnapshot,
                         Value = GetCustomInputValueText(value)
                     })
                     .Where(value => !string.IsNullOrWhiteSpace(value.Value))

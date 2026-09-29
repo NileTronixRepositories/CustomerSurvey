@@ -285,7 +285,6 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                         .Select(customInput => new MyOperatorTemplateCustomInputResponse
                         {
                             CustomInputId = customInput.CustomInputId,
-                            Name = customInput.Name,
                             LabelEn = customInput.LabelEn,
                             LabelAr = customInput.LabelAr,
                             Type = customInput.Type,
@@ -523,7 +522,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                         .Select(customInputValue => new MyOperatorTemplateLatestCustomInputValueResponse
                         {
                             CustomInputId = customInputValue.CustomInputId,
-                            Name = customInputValue.Name,
+                            LabelEnSnapshot = customInputValue.LabelEnSnapshot,
+                            LabelArSnapshot = customInputValue.LabelArSnapshot,
                             Type = customInputValue.Type,
                             TypeName = customInputValue.Type.ToString(),
                             StringValue = customInputValue.StringValue,
