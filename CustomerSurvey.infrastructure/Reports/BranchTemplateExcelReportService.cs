@@ -1,4 +1,4 @@
-using BuildingBlock.Domain.Results;
+﻿using BuildingBlock.Domain.Results;
 using ClosedXML.Excel;
 using CustomerSurvey.Application.Abstraction.Reports;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
@@ -152,13 +152,24 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
                 (T(isArabic, "Complaint Rate", "نسبة الشكاوى"), ToExcelPercentage(model.ExecutiveSummary.ComplaintRate), "0.00%"),
                 (T(isArabic, "Question Groups Count", "عدد مجموعات الأسئلة"), model.ExecutiveSummary.QuestionGroupsCount, "0"),
                 (T(isArabic, "Highest Satisfaction Group", "أعلى مجموعة رضا"), model.ExecutiveSummary.HighestSatisfactionGroupName, null),
-                (T(isArabic, "Lowest Satisfaction Group", "أقل مجموعة رضا"), model.ExecutiveSummary.LowestSatisfactionGroupName, null)
+                (T(isArabic, "Lowest Satisfaction Group", "أقل مجموعة رضا"), model.ExecutiveSummary.LowestSatisfactionGroupName, null),
+                (T(isArabic, "Satisfied Responses", "الردود الراضية"), model.ExecutiveSummary.SatisfiedResponses, "0"),
+                (T(isArabic, "Neutral Responses", "الردود المحايدة"), model.ExecutiveSummary.NeutralResponses, "0"),
+                (T(isArabic, "Unhappy Responses", "الردود غير الراضية"), model.ExecutiveSummary.UnhappyResponses, "0"),
+                (T(isArabic, "Current Branch Risk", "مستوى خطر الفرع الحالي"), model.ExecutiveSummary.RiskLevel, null),
+                (T(isArabic, "Available During Period (Verified)", "متاح خلال الفترة (مؤكد)"), model.Availability.AvailableTemplatesDuringPeriod, "0"),
+                (T(isArabic, "Currently Available", "متاح حاليًا"), model.Availability.CurrentlyAvailableTemplatesCount, "0"),
+                (T(isArabic, "Availability History Complete", "اكتمال تاريخ الإتاحة"), model.Availability.IsHistoryComplete ? "Yes" : "No", null),
+                (T(isArabic, "Stored Legacy Baselines", "تقييمات أصلية لردود قديمة"), model.StoredBaselineResponsesCount, "0"),
+                (T(isArabic, "Requested Mode Available", "توفر طريقة التقييم المطلوبة"), model.RequestedModeAvailable ? "Yes" : "No - stored root baseline used", null)
             });
 
-        var explanationRow = 34;
+        var explanationRow = 46;
         worksheet.Cell(explanationRow, 1).Value = T(isArabic, "Scoring Explanation", "شرح حساب التقييم");
         StyleSectionHeader(worksheet.Range(explanationRow, 1, explanationRow, 2));
-        worksheet.Cell(explanationRow + 1, 1).Value = isArabic
+        worksheet.Cell(explanationRow + 1, 1).Value = model.ScoreCalculationMode == ScoreCalculationMode.AllAnsweredQuestions
+            ? T(isArabic, "All answered scorable questions have equal weight within each response. Overall satisfaction weights each scored response equally.", "لكل سؤال قابل للتقييم وزن متساو داخل الرد، ولكل رد مقيم وزن متساو في الرضا الإجمالي.")
+            : isArabic
             ? model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions
                 ? "تدخل الأسئلة الرئيسية القابلة للتقييم والمجاب عنها فقط في تقييم كل رد."
                 : "يتبع التقييم مسار الشروط المطابق ويستخدم آخر سؤال صالح للتقييم وفق قواعد التقرير الحالية."
@@ -1252,6 +1263,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
     private static string DisplayScoreMode(ScoreCalculationMode mode, bool isArabic)
         => mode == ScoreCalculationMode.RootQuestions
             ? T(isArabic, "Root Questions", "الأسئلة الرئيسية")
+            : mode == ScoreCalculationMode.AllAnsweredQuestions ? T(isArabic, "All Answered Questions", "جميع الأسئلة المجاب عنها")
             : T(isArabic, "Lowest Condition Level", "أدنى مستوى شرطي");
 
     private static string DisplayQuestionType(QuestionType questionType, bool isArabic)
@@ -1283,6 +1295,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
         {
             "Non-Scorable Question" => "سؤال غير قابل للتقييم",
             "Root Question" => "سؤال رئيسي",
+            "All Answered Scorable Questions" => "جميع الأسئلة المجاب عنها والقابلة للتقييم",
             "Selected By Lowest Condition Level" => "تم اختياره حسب أدنى مستوى شرطي",
             "Root Question - Not Included" => "سؤال رئيسي - غير محتسب",
             "Conditional Question - Not Included" => "سؤال شرطي - غير محتسب",

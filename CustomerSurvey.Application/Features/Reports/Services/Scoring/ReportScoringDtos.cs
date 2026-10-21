@@ -1,10 +1,14 @@
-using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
+﻿using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Reports.Services.Scoring;
 
 public sealed record ResponseFlatDto
 {
+    public string? SnapshotPayload { get; init; }
+    public int? OriginalMaxScore { get; init; }
+    public decimal OriginalScorePercentage { get; init; }
+
     public Guid ResponseId { get; init; }
 
     public Guid TemplateId { get; init; }
@@ -22,6 +26,7 @@ public sealed record ResponseFlatDto
 
 public sealed record AnswerFlatDto
 {
+    public CustomerSurvey.Domain.Entities.SnapshotQuestion? HistoricalQuestion { get; init; }
     public ReportTemplateKind TemplateKind { get; init; }
 
     public Guid ResponseId { get; init; }
@@ -57,6 +62,7 @@ public sealed record AnswerFlatDto
 
 public sealed record TemplateQuestionFlatDto
 {
+    public bool? IsRootAtSubmission { get; init; }
     public ReportTemplateKind TemplateKind { get; init; }
 
     public Guid TemplateQuestionId { get; init; }
@@ -114,6 +120,10 @@ public sealed record QuestionOptionFlatDto
 
 public sealed record CalculatedResponseScore
 {
+    public bool ScoredItemsCountIsExact { get; init; } = true;
+    public bool RequestedModeAvailable { get; init; } = true;
+    public string ScoreDerivation { get; init; } = "SubmissionSnapshot";
+
     public Guid ResponseId { get; init; }
 
     public Guid TemplateId { get; init; }
@@ -131,6 +141,8 @@ public sealed record CalculatedResponseScore
 
 public sealed record QuestionScoreToken
 {
+    public CustomerSurvey.Domain.Entities.SnapshotQuestion? HistoricalQuestion { get; init; }
+
     public Guid ResponseId { get; init; }
 
     public Guid TemplateId { get; init; }

@@ -1,4 +1,4 @@
-namespace CustomerSurvey.Application.Features.Reports.Shared;
+﻿namespace CustomerSurvey.Application.Features.Reports.Shared;
 
 public enum SatisfactionCategory
 {
@@ -14,19 +14,20 @@ public static class SatisfactionCategoryRule
 
     public static bool IsScored(int maxScore) => maxScore > 0;
 
-    public static SatisfactionCategory? Classify(int maxScore, decimal scorePercentage)
+    public static SatisfactionCategory? Classify(int maxScore, decimal scorePercentage, EvaluationCriteria? criteria = null)
     {
+        criteria ??= new EvaluationCriteria();
         if (!IsScored(maxScore))
         {
             return null;
         }
 
-        if (scorePercentage >= SatisfiedMinimum)
+        if (scorePercentage >= criteria.SatisfiedMinimum)
         {
             return SatisfactionCategory.Satisfied;
         }
 
-        return scorePercentage >= NeutralMinimum
+        return scorePercentage >= criteria.NeutralMinimum
             ? SatisfactionCategory.Neutral
             : SatisfactionCategory.Unhappy;
     }
@@ -34,6 +35,6 @@ public static class SatisfactionCategoryRule
     public static bool Matches(
         int maxScore,
         decimal scorePercentage,
-        SatisfactionCategory category)
-        => Classify(maxScore, scorePercentage) == category;
+        SatisfactionCategory category, EvaluationCriteria? criteria = null)
+        => Classify(maxScore, scorePercentage, criteria) == category;
 }

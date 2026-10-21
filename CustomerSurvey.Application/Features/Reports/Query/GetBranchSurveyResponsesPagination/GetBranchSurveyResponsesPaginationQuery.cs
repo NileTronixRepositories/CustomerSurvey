@@ -6,6 +6,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSurveyRespo
 public sealed class GetBranchSurveyResponsesPaginationQuery
     : SearchParameters, IQuery<Pagination<BranchSurveyResponsePaginationItemResponse>>
 {
+    public bool ScoreIncludedOnly { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; } = CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions;
+
     public DateOnly? From { get; init; }
 
     public DateOnly? To { get; init; }

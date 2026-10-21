@@ -1,4 +1,4 @@
-using BuildingBlock.Application.Abstraction;
+﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
@@ -10,6 +10,8 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyResponsesPa
 public sealed class GetSurveyResponsesPaginationQuery
     : SearchParameters, IQuery<Pagination<SurveyResponsePaginationItemResponse>>
 {
+    public bool ScoreIncludedOnly { get; init; }
+
     public SurveyDashboardSource Source { get; init; } = SurveyDashboardSource.All;
 
     public Guid? BranchId { get; init; }

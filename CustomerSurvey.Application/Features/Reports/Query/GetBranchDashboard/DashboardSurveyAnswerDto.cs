@@ -4,6 +4,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchDashboard;
 
 internal sealed record DashboardSurveyAnswerDto
 {
+    public DateTime SubmittedOnUtc { get; init; }
+
+    public decimal? ReportScoreValue { get; init; }
+
     public Guid SurveyResponseId { get; init; }
 
     public Guid TemplateId { get; init; }

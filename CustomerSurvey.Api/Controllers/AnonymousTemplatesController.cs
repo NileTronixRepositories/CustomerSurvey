@@ -333,6 +333,9 @@ namespace CustomerSurvey.Api.Controllers
             var request = new GetAnonymousTemplateResponsesPaginationQuery
             {
                 AnonymousTemplateId = anonymousTemplateId,
+                ScoreCalculationMode = query.ScoreCalculationMode,
+                ScoreIncludedOnly = query.ScoreIncludedOnly,
+                ComplaintItemsOnly = query.ComplaintItemsOnly,
                 PageNumber = query.PageNumber,
                 PageSize = query.PageSize,
                 SearchText = query.SearchText,

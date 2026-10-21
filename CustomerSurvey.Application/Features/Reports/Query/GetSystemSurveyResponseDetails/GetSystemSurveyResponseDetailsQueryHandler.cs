@@ -93,6 +93,10 @@ internal sealed class GetSystemSurveyResponseDetailsQueryHandler
             new GetSystemSurveyResponseCustomInputValuesSpec(surveyResponse.SurveyResponseId),
             cancellationToken);
 
+        var historicalSurvey = (await _surveyResponseReadRepository.FirstOrDefaultAsync(
+            new CustomerSurvey.Application.Features.Reports.Shared.GetAuthorizedResponseSnapshotSpec(surveyResponse.SurveyResponseId),
+            cancellationToken))?.Read();
+
         var selectedOptionIds = answers
             .Where(x =>
                 x.QuestionType == QuestionType.SingleChoice &&
@@ -119,6 +123,7 @@ internal sealed class GetSystemSurveyResponseDetailsQueryHandler
 
         var response = new GetSystemSurveyResponseDetailsResponse
         {
+            HistoricalSurvey = historicalSurvey,
             SurveyResponseId = surveyResponse.SurveyResponseId,
 
             Branch = new SystemSurveyResponseBranchInfoResponse
@@ -139,8 +144,8 @@ internal sealed class GetSystemSurveyResponseDetailsQueryHandler
             Template = new SystemSurveyResponseTemplateInfoResponse
             {
                 TemplateId = surveyResponse.TemplateId,
-                NameEn = surveyResponse.TemplateNameEn,
-                NameAr = surveyResponse.TemplateNameAr
+                NameEn = !string.IsNullOrEmpty(historicalSurvey?.TemplateNameEn) ? historicalSurvey.TemplateNameEn : surveyResponse.TemplateNameEn,
+                NameAr = historicalSurvey is not null ? historicalSurvey.TemplateNameAr : surveyResponse.TemplateNameAr
             },
 
             Operator = new SystemSurveyResponseOperatorInfoResponse
@@ -168,7 +173,18 @@ internal sealed class GetSystemSurveyResponseDetailsQueryHandler
                 .ToArray(),
 
             Answers = answers
-                .Select(answer => MapAnswer(answer, optionsById))
+                .Select(answer =>
+                {
+                    var mapped = MapAnswer(answer, optionsById);
+                    var saved = historicalSurvey?.Questions.FirstOrDefault(q => q.QuestionId == answer.QuestionId);
+                    return saved is null ? mapped : mapped with
+                    {
+                        QuestionTextEn = saved.TextEn, QuestionTextAr = saved.TextAr, QuestionType = saved.Type,
+                        QuestionTypeName = saved.Type.ToString(), SelectedOptionTextEn = saved.SelectedOptionTextEn,
+                        SelectedOptionTextAr = saved.SelectedOptionTextAr, SelectedOptionValue = saved.SelectedOptionValue,
+                        DisplayValue = saved.SelectedOptionTextEn ?? mapped.DisplayValue
+                    };
+                })
                 .ToArray()
         };
 

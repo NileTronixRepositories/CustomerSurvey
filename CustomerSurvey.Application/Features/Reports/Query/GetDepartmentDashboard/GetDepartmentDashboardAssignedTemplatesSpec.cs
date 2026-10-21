@@ -1,4 +1,4 @@
-using BuildingBlock.Domain.Specification;
+﻿using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
@@ -6,9 +6,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboa
 internal sealed class GetDepartmentDashboardAssignedTemplatesSpec
     : Specification<OperatorTemplate, DepartmentDashboardAssignedTemplateDto>
 {
-    public GetDepartmentDashboardAssignedTemplatesSpec(Guid departmentId)
+    public GetDepartmentDashboardAssignedTemplatesSpec(Guid departmentId, Guid? templateId = null)
     {
         AddCriteria(x => x.Operator.DepartmentId == departmentId);
+        if (templateId.HasValue) AddCriteria(x => x.TemplateId == templateId);
 
         Select(x => new DepartmentDashboardAssignedTemplateDto
         {

@@ -1,7 +1,13 @@
-namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchAnonymousResponsesPagination;
+﻿namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchAnonymousResponsesPagination;
 
 public sealed record BranchAnonymousResponsePaginationItemResponse
 {
+    public Guid? ComplaintQuestionId { get; init; }
+    public string? ComplaintText { get; init; }
+
+    public bool RequestedModeAvailable { get; init; } = true;
+    public string ScoreDerivation { get; init; } = string.Empty;
+
     public Guid AnonymousSurveyResponseId { get; init; }
 
     public Guid AnonymousTemplateId { get; init; }

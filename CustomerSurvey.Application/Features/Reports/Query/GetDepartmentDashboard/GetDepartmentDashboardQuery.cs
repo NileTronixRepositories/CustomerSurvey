@@ -1,9 +1,11 @@
-using BuildingBlock.Application.Abstraction;
+﻿using BuildingBlock.Application.Abstraction;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
 
 public sealed class GetDepartmentDashboardQuery : IQuery<GetDepartmentDashboardResponse>
 {
+        public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; } = CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions;
+
     public DateOnly? From { get; init; }
 
     public DateOnly? To { get; init; }

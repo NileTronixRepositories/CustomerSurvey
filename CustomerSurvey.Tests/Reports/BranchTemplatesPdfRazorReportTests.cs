@@ -1,4 +1,4 @@
-using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
+﻿using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.infrastructure.Reports;
 using Microsoft.AspNetCore.Hosting;
@@ -10,8 +10,11 @@ namespace CustomerSurvey.Tests.Reports;
 
 public sealed class BranchTemplatesPdfRazorReportTests
 {
-    [Fact]
-    public async Task Render_IncludesGraphicsAndBusinessFacingResponseDetails()
+    [Theory]
+    [InlineData(ScoreCalculationMode.RootQuestions)]
+    [InlineData(ScoreCalculationMode.LowestConditionLevel)]
+    [InlineData(ScoreCalculationMode.AllAnsweredQuestions)]
+    public async Task Render_IncludesGraphicsAndBusinessFacingResponseDetails(ScoreCalculationMode mode)
     {
         var templateId = Guid.NewGuid();
         var responseId = Guid.NewGuid();
@@ -132,6 +135,7 @@ public sealed class BranchTemplatesPdfRazorReportTests
         var model = new BranchTemplatesPdfReportModel
         {
             Language = "en",
+            ScoreCalculationMode = mode,
             BranchName = "Cairo",
             GeneratedBy = "Report User",
             GeneratedAtUtc = DateTime.UtcNow,

@@ -8,6 +8,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
     {
         public GetAnonymousTemplateResponsesPaginationQueryValidator()
         {
+        RuleFor(x => x.ScoreCalculationMode).IsInEnum();
             RuleFor(x => x.AnonymousTemplateId)
                 .NotEmpty()
                 .WithMessage(ErrorMessage.GetAnonymousTemplateResponsesPagination_AnonymousTemplateId_Required);

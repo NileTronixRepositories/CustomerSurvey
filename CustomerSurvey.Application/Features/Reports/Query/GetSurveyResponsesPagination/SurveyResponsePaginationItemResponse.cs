@@ -1,10 +1,13 @@
-using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
+﻿using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 using CustomerSurvey.Application.Features.Reports.Shared;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyResponsesPagination;
 
 public sealed record SurveyResponsePaginationItemResponse
 {
+    public bool RequestedModeAvailable { get; init; } = true;
+    public string ScoreDerivation { get; init; } = string.Empty;
+
     public SurveyDashboardSource Source { get; init; }
 
     public Guid ResponseId { get; init; }

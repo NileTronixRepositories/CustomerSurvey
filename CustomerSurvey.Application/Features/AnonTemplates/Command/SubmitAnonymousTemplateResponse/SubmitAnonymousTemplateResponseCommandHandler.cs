@@ -872,7 +872,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
 
                             if (optionsByQuestionId.TryGetValue(question.QuestionId, out var options))
                             {
-                                maxScore += options.Max(x => x.Value);
+                                maxScore += 5;
                             }
 
                             break;

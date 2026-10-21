@@ -1,4 +1,4 @@
-using BuildingBlock.Application.Abstraction;
+﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
@@ -117,6 +117,10 @@ internal sealed class GetDepartmentOperatorSurveyResponseDetailsQueryHandler
             new GetDepartmentOperatorSurveyResponseCustomInputValuesSpec(surveyResponse.SurveyResponseId),
             cancellationToken);
 
+        var historicalSurvey = (await _surveyResponseReadRepository.FirstOrDefaultAsync(
+            new CustomerSurvey.Application.Features.Reports.Shared.GetAuthorizedResponseSnapshotSpec(surveyResponse.SurveyResponseId),
+            cancellationToken))?.Read();
+
         var selectedOptionIds = answers
             .Where(x =>
                 x.QuestionType == QuestionType.SingleChoice &&
@@ -143,6 +147,7 @@ internal sealed class GetDepartmentOperatorSurveyResponseDetailsQueryHandler
 
         var response = new GetDepartmentOperatorSurveyResponseDetailsResponse
         {
+            HistoricalSurvey = historicalSurvey,
             SurveyResponseId = surveyResponse.SurveyResponseId,
             Branch = new DepartmentOperatorSurveyResponseBranchInfoResponse
             {
@@ -154,8 +159,8 @@ internal sealed class GetDepartmentOperatorSurveyResponseDetailsQueryHandler
             Template = new DepartmentOperatorSurveyResponseTemplateInfoResponse
             {
                 TemplateId = surveyResponse.TemplateId,
-                NameEn = surveyResponse.TemplateNameEn,
-                NameAr = surveyResponse.TemplateNameAr
+                NameEn = !string.IsNullOrEmpty(historicalSurvey?.TemplateNameEn) ? historicalSurvey.TemplateNameEn : surveyResponse.TemplateNameEn,
+                NameAr = historicalSurvey is not null ? historicalSurvey.TemplateNameAr : surveyResponse.TemplateNameAr
             },
             Operator = new DepartmentOperatorSurveyResponseOperatorInfoResponse
             {
@@ -181,7 +186,18 @@ internal sealed class GetDepartmentOperatorSurveyResponseDetailsQueryHandler
                 .ToArray(),
 
             Answers = answers
-                .Select(answer => MapAnswer(answer, optionsById))
+                .Select(answer =>
+                {
+                    var mapped = MapAnswer(answer, optionsById);
+                    var saved = historicalSurvey?.Questions.FirstOrDefault(q => q.QuestionId == answer.QuestionId);
+                    return saved is null ? mapped : mapped with
+                    {
+                        QuestionTextEn = saved.TextEn, QuestionTextAr = saved.TextAr, QuestionType = saved.Type,
+                        QuestionTypeName = saved.Type.ToString(), SelectedOptionTextEn = saved.SelectedOptionTextEn,
+                        SelectedOptionTextAr = saved.SelectedOptionTextAr, SelectedOptionValue = saved.SelectedOptionValue,
+                        DisplayValue = saved.SelectedOptionTextEn ?? mapped.DisplayValue
+                    };
+                })
                 .ToArray()
         };
 

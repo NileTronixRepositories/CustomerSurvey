@@ -80,6 +80,7 @@ namespace CustomerSurvey.infrastructure.Bootstrap
             services.AddScoped(typeof(IReadRepository<>), typeof(PlatformReadRepository<>));
             services.AddScoped(typeof(IWriteRepository<>), typeof(PlatformWriteRepository<>));
             services.AddScoped<IUnitOfWork, PlatformUnitOfWork>();
+            services.AddScoped<SurveyHistoryMaintenance>();
             services.AddScoped(typeof(IWriteReadRepository<>), typeof(PlatformWriteReadRepository<>));
             services.AddScoped<IWriteDbContextAccessor, PlatformWriteDbContextAccessor>();
             services.AddScoped(typeof(IReadModelWriter<>), typeof(EfReadModelWriter<>));
@@ -113,6 +114,7 @@ namespace CustomerSurvey.infrastructure.Bootstrap
             services.AddScoped<IBranchTemplatesPdfReportService, BranchTemplatesPdfReportService>();
             services.AddScoped<IBranchTemplateExcelReportService, BranchTemplateExcelReportService>();
             services.AddScoped<ISurveyDashboardComplaintReadService, SurveyDashboardComplaintReadService>();
+            services.AddScoped<ITemplateAvailabilityReader, TemplateAvailabilityReader>();
 
             return services;
         }

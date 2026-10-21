@@ -8,6 +8,7 @@ internal sealed class GetBranchDashboardQueryValidator
 {
     public GetBranchDashboardQueryValidator()
     {
+        RuleFor(x => x.ScoreCalculationMode).IsInEnum();
         RuleFor(x => x)
             .Must(x =>
                 !x.From.HasValue ||

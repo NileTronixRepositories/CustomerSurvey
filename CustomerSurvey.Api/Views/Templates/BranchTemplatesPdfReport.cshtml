@@ -1,4 +1,4 @@
-@model CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.BranchTemplatesPdfReportModel
+﻿@model CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.BranchTemplatesPdfReportModel
 @using System.Globalization
 @using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport
 @using CustomerSurvey.Domain.Enums
@@ -44,67 +44,24 @@
     string ScoreModeText() =>
         Model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions
             ? T("RootQuestions", "الأسئلة الرئيسية")
+            : Model.ScoreCalculationMode == ScoreCalculationMode.AllAnsweredQuestions ? T("AllAnsweredQuestions", "جميع الأسئلة المجاب عنها")
             : T("LowestConditionLevel", "أعمق مستوى شرطي");
 
-    string ScoreStatusText(decimal? percentage)
+    string ScoreStatusText(decimal? percentage) => Model.CurrentClassificationCriteria.Risk(percentage) switch
     {
-        if (!percentage.HasValue)
-        {
-            return T("No Score", "لا يوجد تقييم");
-        }
+        "Healthy" => T("Healthy", "جيد"),
+        "MediumRisk" => T("Medium Risk", "خطر متوسط"),
+        "HighRisk" => T("High Risk", "خطر مرتفع"),
+        _ => T("No Score", "لا يوجد تقييم")
+    };
 
-        if (percentage.Value >= 80)
-        {
-            return T("Excellent", "ممتاز");
-        }
-
-        if (percentage.Value >= 60)
-        {
-            return T("Good", "جيد");
-        }
-
-        if (percentage.Value >= 40)
-        {
-            return T("Average", "متوسط");
-        }
-
-        if (percentage.Value >= 20)
-        {
-            return T("Poor", "ضعيف");
-        }
-
-        return T("Critical", "حرج");
-    }
-
-    string ScoreStatusClass(decimal? percentage)
+    string ScoreStatusClass(decimal? percentage) => Model.CurrentClassificationCriteria.Risk(percentage) switch
     {
-        if (!percentage.HasValue)
-        {
-            return "score-na";
-        }
-
-        if (percentage.Value >= 80)
-        {
-            return "score-excellent";
-        }
-
-        if (percentage.Value >= 60)
-        {
-            return "score-good";
-        }
-
-        if (percentage.Value >= 40)
-        {
-            return "score-average";
-        }
-
-        if (percentage.Value >= 20)
-        {
-            return "score-poor";
-        }
-
-        return "score-critical";
-    }
+        "Healthy" => "score-excellent",
+        "MediumRisk" => "score-average",
+        "HighRisk" => "score-critical",
+        _ => "score-na"
+    };
 
     string QuestionTypeLabel(string type) =>
         type switch
@@ -134,6 +91,7 @@
         {
             "Non-Scorable Question" => "سؤال غير قابل للتقييم",
             "Root Question" => "سؤال رئيسي",
+            "All Answered Scorable Questions" => "جميع الأسئلة المجاب عنها والقابلة للتقييم",
             "Selected By Lowest Condition Level" => "تم اختياره حسب أدنى مستوى شرطي",
             "Root Question - Not Included" => "سؤال رئيسي - غير محتسب",
             "Conditional Question - Not Included" => "سؤال شرطي - غير محتسب",
@@ -1151,10 +1109,18 @@
 
         <section class="section">
             <h2 class="section-title">@T("Score Calculation Explanation", "شرح طريقة حساب التقييم")</h2>
+            @if (!Model.RequestedModeAvailable)
+            {
+                <div class="note">@T("Some legacy responses use their stored root-score baseline because historical alternate-mode data is unavailable.", "تستخدم بعض الردود القديمة تقييمها الأصلي لعدم توفر بيانات تاريخية مؤكدة لطرق التقييم الأخرى.")</div>
+            }
             <div class="note">
                 @if (ar)
                 {
-                    if (Model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions)
+                    if (Model.ScoreCalculationMode == ScoreCalculationMode.AllAnsweredQuestions)
+                    {
+                        <div>@T("All answered scorable questions contribute equally within each response. Each scored response has equal weight in overall satisfaction.", "كل الأسئلة المجاب عنها والقابلة للتقييم لها وزن متساو داخل الرد، ولكل رد مقيم وزن متساو في الرضا الإجمالي.")</div>
+                    }
+                    else if (Model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions)
                     {
                         <div>يتم حساب التقييم من الأسئلة الرئيسية فقط.</div>
                         <div>الأسئلة الشرطية تظهر في الشجرة والتحليل، لكنها لا تؤثر على تقييم النموذج الأساسي.</div>
@@ -1169,7 +1135,11 @@
                 }
                 else
                 {
-                    if (Model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions)
+                    if (Model.ScoreCalculationMode == ScoreCalculationMode.AllAnsweredQuestions)
+                    {
+                        <div>@T("All answered scorable questions contribute equally within each response. Each scored response has equal weight in overall satisfaction.", "كل الأسئلة المجاب عنها والقابلة للتقييم لها وزن متساو داخل الرد، ولكل رد مقيم وزن متساو في الرضا الإجمالي.")</div>
+                    }
+                    else if (Model.ScoreCalculationMode == ScoreCalculationMode.RootQuestions)
                     {
                         <div>Score is calculated from root questions only.</div>
                         <div>Conditional questions are displayed in the flow and analysis, but they do not affect the main template score.</div>

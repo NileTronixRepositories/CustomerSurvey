@@ -4,6 +4,8 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
 
 public sealed class GetSystemDashboardQuery : IQuery<GetSystemDashboardResponse>
 {
+        public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; } = CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions;
+
     public DateOnly? From { get; init; }
 
     public DateOnly? To { get; init; }

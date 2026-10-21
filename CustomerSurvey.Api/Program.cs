@@ -1,4 +1,4 @@
-using BuildingBlock.Api.Bootstrap;
+﻿using BuildingBlock.Api.Bootstrap;
 using BuildingBlock.Api.Logging;
 using BuildingBlock.Api.OpenAi;
 using CustomerSurvey.Api.Swagger;
@@ -9,7 +9,8 @@ using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json.Serialization;
 
-var builder = WebApplication.CreateBuilder(args);
+var backfillSurveyHistory = args.Contains("--backfill-survey-history");
+var builder = WebApplication.CreateBuilder(args.Where(x => x != "--backfill-survey-history").ToArray());
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -99,6 +100,16 @@ builder.Services.AddCors(options =>
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
 var app = builder.Build();
+
+if (backfillSurveyHistory)
+{
+    using var maintenanceScope = app.Services.CreateScope();
+    var maintenance = maintenanceScope.ServiceProvider.GetRequiredService<CustomerSurvey.infrastructure.Persistence.SurveyHistoryMaintenance>();
+    var batch = await maintenance.RunBatchAsync();
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(batch));
+    return;
+}
+
 
 app.UseSerilogPipeline();
 

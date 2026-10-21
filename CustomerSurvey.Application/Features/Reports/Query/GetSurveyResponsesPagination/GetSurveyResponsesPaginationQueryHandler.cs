@@ -1,4 +1,4 @@
-using BuildingBlock.Application.Abstraction;
+﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Enums;
 using BuildingBlock.Domain.Results;
@@ -334,6 +334,7 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
         var scoreResults = _scoringService.CalculateResponseScores(
             responses.Select(x => new ResponseFlatDto
             {
+                SnapshotPayload = x.SnapshotPayload, OriginalMaxScore = x.MaxScore, OriginalScorePercentage = x.ScorePercentage,
                 ResponseId = x.ResponseId,
                 TemplateId = x.TemplateId,
                 TemplateKind = x.Source == SurveyDashboardSource.Anonymous
@@ -371,7 +372,7 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
                 return response with { MaxScore = 0, ScorePercentage = 0m };
             }
 
-            return response with { MaxScore = score.ScoredItemsCount, ScorePercentage = score.ScorePercentage };
+            return response with { MaxScore = score.ScoredItemsCount, ScorePercentage = score.ScorePercentage, RequestedModeAvailable = score.RequestedModeAvailable, ScoreDerivation = score.ScoreDerivation };
         }).ToList();
     }
 
@@ -391,8 +392,11 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
         if (query.SatisfactionCategory.HasValue)
         {
             filtered = filtered.Where(x => SatisfactionCategoryRule.Matches(
-                x.MaxScore, x.ScorePercentage, query.SatisfactionCategory.Value));
+                x.MaxScore, x.ScorePercentage, query.SatisfactionCategory.Value, x.Criteria));
         }
+
+        if (query.ScoreIncludedOnly && query.QuestionId.HasValue)
+            filtered = filtered.Where(x => DashboardScoreSelection.Question(x.SnapshotPayload, query.QuestionId.Value, query.ScoreCalculationMode) is not null);
 
         if (query.HasComplaint.HasValue)
         {
@@ -467,6 +471,8 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
         IReadOnlyCollection<SurveyResponseCustomInputPreviewResponse> previews)
         => new()
         {
+            RequestedModeAvailable = row.RequestedModeAvailable,
+            ScoreDerivation = row.ScoreDerivation,
             Source = row.Source,
             ResponseId = row.ResponseId,
             TemplateId = row.TemplateId,

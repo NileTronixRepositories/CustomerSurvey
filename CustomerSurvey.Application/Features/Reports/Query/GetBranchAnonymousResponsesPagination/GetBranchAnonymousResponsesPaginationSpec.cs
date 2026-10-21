@@ -1,4 +1,4 @@
-using BuildingBlock.Domain.Enums;
+﻿using BuildingBlock.Domain.Enums;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Application.Features.Reports.Shared;
 using CustomerSurvey.Domain.Entities;
@@ -7,7 +7,7 @@ using CustomerSurvey.Domain.Enums;
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchAnonymousResponsesPagination;
 
 internal sealed class GetBranchAnonymousResponsesPaginationSpec
-    : Specification<AnonymousSurveyResponse, BranchAnonymousResponsePaginationItemResponse>
+    : CustomerSurvey.Application.Features.Reports.Shared.ScoredResponseSpecification<AnonymousSurveyResponse, BranchAnonymousResponsePaginationItemResponse>
 {
     private const int CustomInputsPreviewCount = 5;
 
@@ -16,6 +16,7 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
         DateTime? fromUtc,
         DateTime? toExclusiveUtc,
         GetBranchAnonymousResponsesPaginationQuery query)
+        : base(query.ScoreCalculationMode)
     {
         UseNoTracking();
 
@@ -126,8 +127,12 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
             query.PageNumber,
             query.PageSize);
 
+        ApplyIncludedQuestionFilter(query.QuestionId, query.ScoreIncludedOnly);
+
         Select(x => new BranchAnonymousResponsePaginationItemResponse
         {
+            RequestedModeAvailable = query.ScoreCalculationMode == CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions || (x.Snapshot != null && x.Snapshot.Provenance == SnapshotProvenance.CapturedAtSubmission),
+            ScoreDerivation = x.Snapshot != null && x.Snapshot.Provenance == SnapshotProvenance.CapturedAtSubmission ? "SubmissionSnapshot" : "StoredRootBaseline",
             AnonymousSurveyResponseId = x.Id,
             AnonymousTemplateId = x.AnonymousTemplateId,
             AnonymousTemplateNameEn = x.AnonymousTemplate.NameEn,
@@ -179,16 +184,16 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
             switch (query.SatisfactionCategory.Value)
             {
                 case SatisfactionCategory.Satisfied:
-                    AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage >= SatisfactionCategoryRule.SatisfiedMinimum);
+                    AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage >= (x.AnonymousTemplate == null || x.AnonymousTemplate.Branch == null || x.AnonymousTemplate.Branch.EvaluationSettings == null ? 80m : x.AnonymousTemplate.Branch.EvaluationSettings.SatisfiedMinimum));
                     break;
                 case SatisfactionCategory.Neutral:
                     AddCriteria(x =>
                         x.MaxScore > 0 &&
-                        x.ScorePercentage >= SatisfactionCategoryRule.NeutralMinimum &&
-                        x.ScorePercentage < SatisfactionCategoryRule.SatisfiedMinimum);
+                        x.ScorePercentage >= (x.AnonymousTemplate == null || x.AnonymousTemplate.Branch == null || x.AnonymousTemplate.Branch.EvaluationSettings == null ? 60m : x.AnonymousTemplate.Branch.EvaluationSettings.NeutralMinimum) &&
+                        x.ScorePercentage < (x.AnonymousTemplate == null || x.AnonymousTemplate.Branch == null || x.AnonymousTemplate.Branch.EvaluationSettings == null ? 80m : x.AnonymousTemplate.Branch.EvaluationSettings.SatisfiedMinimum));
                     break;
                 case SatisfactionCategory.Unhappy:
-                    AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage < SatisfactionCategoryRule.NeutralMinimum);
+                    AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage < (x.AnonymousTemplate == null || x.AnonymousTemplate.Branch == null || x.AnonymousTemplate.Branch.EvaluationSettings == null ? 60m : x.AnonymousTemplate.Branch.EvaluationSettings.NeutralMinimum));
                     break;
             }
         }

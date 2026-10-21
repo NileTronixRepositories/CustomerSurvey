@@ -117,11 +117,23 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                     templateId: request.TemplateId),
                 cancellationToken);
 
+            responses = responses.Select(x =>
+            {
+                var score = CustomerSurvey.Application.Features.Reports.Services.Scoring.DashboardScoreSelection.Select(
+                    x.SnapshotPayload, x.MaxScore, x.ScorePercentage, request.ScoreCalculationMode);
+                return x with { MaxScore = score.MaxScore, ScorePercentage = score.ScorePercentage };
+            }).ToList();
             var response = BuildResponse(
                 period: period,
                 responses: responses,
                 answers: answers);
 
+            response = response with
+            {
+                ScoreCalculationMode = request.ScoreCalculationMode,
+                RequestedModeAvailable = request.ScoreCalculationMode == CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions || responses.All(x => CustomerSurvey.Application.Features.Reports.Services.Scoring.SnapshotScoring.Read(x.SnapshotPayload)?.IsHistoricallyVerified == true),
+                StoredBaselineResponsesCount = responses.Count(x => !(CustomerSurvey.Application.Features.Reports.Services.Scoring.SnapshotScoring.Read(x.SnapshotPayload)?.IsHistoricallyVerified ?? false))
+            };
             return Result<GetBranchSatisfactionReportResponse>.Ok(response);
         }
 
@@ -216,9 +228,9 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                 ? 0m
                 : Round(scoredResponses.Average(x => x.ScorePercentage));
 
-            var satisfiedResponses = scoredResponses.Count(x => x.ScorePercentage >= 80m);
-            var neutralResponses = scoredResponses.Count(x => x.ScorePercentage >= 60m && x.ScorePercentage < 80m);
-            var unsatisfiedResponses = scoredResponses.Count(x => x.ScorePercentage < 60m);
+            var satisfiedResponses = scoredResponses.Count(x => x.ScorePercentage >= x.Criteria.SatisfiedMinimum);
+            var neutralResponses = scoredResponses.Count(x => x.ScorePercentage >= x.Criteria.NeutralMinimum && x.ScorePercentage < x.Criteria.SatisfiedMinimum);
+            var unsatisfiedResponses = scoredResponses.Count(x => x.ScorePercentage < x.Criteria.NeutralMinimum);
 
             var complaintsCount = answers.Count(x =>
                 x.QuestionType == QuestionType.Complain &&

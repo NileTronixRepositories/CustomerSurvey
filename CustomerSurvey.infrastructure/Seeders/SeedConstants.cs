@@ -41,6 +41,8 @@ internal static class SeedConstants
         public const string BranchesCreate = "Branches.Create";
         public const string BranchesViewAll = "Branches.ViewAll";
         public const string BranchesViewDetails = "Branches.ViewDetails";
+        public const string BranchesViewEvaluationSettings = "Branches.ViewEvaluationSettings";
+        public const string BranchesManageEvaluationSettings = "Branches.ManageEvaluationSettings";
         public const string BranchesUpdate = "Branches.Update";
 
         public const string BranchAdminsCreate = "BranchAdmins.Create";
@@ -178,6 +180,8 @@ internal static class SeedConstants
             public static readonly Guid BranchesViewDetails =
                 Guid.Parse("12000000-0000-0000-0000-000000000003");
 
+            public static readonly Guid BranchesViewEvaluationSettings = new("abe8f6c9-1452-4d01-bb97-417cb08a1001");
+            public static readonly Guid BranchesManageEvaluationSettings = new("abe8f6c9-1452-4d01-bb97-417cb08a1002");
             public static readonly Guid BranchAdminsCreate =
                 Guid.Parse("12000000-0000-0000-0000-000000000004");
 
@@ -442,6 +446,8 @@ internal static class SeedConstants
 
         public static readonly IReadOnlyCollection<PermissionSeedItem> Permissions =
         [
+            new PermissionSeedItem(SeedIds.Permissions.BranchesViewEvaluationSettings, PermissionNames.BranchesViewEvaluationSettings),
+            new PermissionSeedItem(SeedIds.Permissions.BranchesManageEvaluationSettings, PermissionNames.BranchesManageEvaluationSettings),
             new PermissionSeedItem(SeedIds.Permissions.SuperAdminsCreate, PermissionNames.SuperAdminsCreate),
 
             new PermissionSeedItem(SeedIds.Permissions.BranchesCreate, PermissionNames.BranchesCreate),
@@ -580,6 +586,8 @@ internal static class SeedConstants
 
             Guid[] permissionIds =
             [
+                SeedIds.Permissions.BranchesViewEvaluationSettings,
+                SeedIds.Permissions.BranchesManageEvaluationSettings,
                 SeedIds.Permissions.BranchesViewDetails,
 
                 SeedIds.Permissions.BranchUsersCreate,

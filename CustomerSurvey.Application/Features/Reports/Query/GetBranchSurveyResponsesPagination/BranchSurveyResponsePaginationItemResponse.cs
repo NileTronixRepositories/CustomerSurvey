@@ -2,6 +2,9 @@
 
 public sealed record BranchSurveyResponsePaginationItemResponse
 {
+    public bool RequestedModeAvailable { get; init; } = true;
+    public string ScoreDerivation { get; init; } = string.Empty;
+
     public Guid SurveyResponseId { get; init; }
 
     public Guid TemplateId { get; init; }

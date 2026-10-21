@@ -6,6 +6,12 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyRespo
 public sealed class GetSystemSurveyResponsesPaginationQuery
     : SearchParameters, IQuery<Pagination<SystemSurveyResponsePaginationItemResponse>>
 {
+    public bool ComplaintItemsOnly { get; init; }
+
+    public bool ScoreIncludedOnly { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; } = CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions;
+
     public DateOnly? From { get; set; }
 
     public DateOnly? To { get; set; }

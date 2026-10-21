@@ -1,4 +1,4 @@
-using BuildingBlock.Application.Abstraction;
+﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.Specification;
@@ -22,6 +22,7 @@ internal sealed class GetSurveyDashboardQueryHandler
     private const int MaxSegmentsPerCustomInput = 10;
     private const int CriticalCustomInputsPreviewCount = 5;
 
+    private readonly CustomerSurvey.Application.Abstraction.Reports.ITemplateAvailabilityReader? _availabilityReader;
     private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
     private readonly IWriteReadRepository<Branch> _branchReadRepository;
     private readonly IWriteReadRepository<Template> _templateReadRepository;
@@ -59,8 +60,10 @@ internal sealed class GetSurveyDashboardQueryHandler
         IWriteReadRepository<QuestionOption> questionOptionReadRepository,
         ISurveyReportScoringService surveyReportScoringService,
         ICurrentBranchScopeResolver currentBranchScopeResolver,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        CustomerSurvey.Application.Abstraction.Reports.ITemplateAvailabilityReader? availabilityReader = null)
     {
+        _availabilityReader = availabilityReader;
         _superAdminReadRepository = superAdminReadRepository
             ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
         _branchReadRepository = branchReadRepository
@@ -302,6 +305,8 @@ internal sealed class GetSurveyDashboardQueryHandler
             questionOptions,
             request.ScoreCalculationMode);
 
+        templateQuestions = SnapshotScoring.HistoricalQuestions(responseScoreInput, templateQuestions).ToList();
+
         var questionScoreTokens = _surveyReportScoringService.CalculateQuestionScoreTokens(
             responseScoreInput,
             answerScoreInput,
@@ -337,6 +342,12 @@ internal sealed class GetSurveyDashboardQueryHandler
             customInputValues,
             templateQuestions,
             questionScoreTokens);
+
+        if (_availabilityReader is not null)
+            response = response with { Availability = await _availabilityReader.ReadAsync(scope.BranchId, appliedSource == SurveyDashboardSource.Internal ? 1 : appliedSource == SurveyDashboardSource.Anonymous ? 2 : null, templateFilter?.TemplateId,
+                fromUtc, toExclusiveUtc, cancellationToken) };
+
+        response = response with { Availability = response.Availability with { TemplatesWithResponsesCount = responses.Select(x => (x.Source, x.TemplateId)).Distinct().Count() } };
 
         return Result<SurveyDashboardResponse>.Ok(response);
     }
@@ -572,6 +583,9 @@ internal sealed class GetSurveyDashboardQueryHandler
     {
         return new ResponseFlatDto
         {
+            SnapshotPayload = response.SnapshotPayload,
+            OriginalMaxScore = response.MaxScore,
+            OriginalScorePercentage = response.ScorePercentage,
             ResponseId = response.ResponseId,
             TemplateId = response.TemplateId,
             TemplateKind = ToReportTemplateKind(response.Source),
@@ -616,6 +630,8 @@ internal sealed class GetSurveyDashboardQueryHandler
 
                 return response with
                 {
+                    RequestedModeAvailable = score.RequestedModeAvailable,
+                    ScoreDerivation = score.ScoreDerivation,
                     MaxScore = score.ScoredItemsCount,
                     ScorePercentage = score.ScorePercentage
                 };
@@ -692,6 +708,9 @@ internal sealed class GetSurveyDashboardQueryHandler
 
         return new SurveyDashboardResponse
         {
+            HasMixedClassificationCriteria = responses.Where(x => x.MaxScore > 0).Select(x => x.Criteria).Distinct().Skip(1).Any(),
+            StoredBaselineResponsesCount = responses.Count(x => x.ScoreDerivation == "StoredRootBaseline"),
+            RequestedModeAvailable = responses.All(x => x.RequestedModeAvailable),
             Period = new SurveyDashboardPeriodResponse
             {
                 From = fromUtc,
@@ -778,10 +797,12 @@ internal sealed class GetSurveyDashboardQueryHandler
 
             SummaryActions = new DashboardSummaryActionsResponse
             {
+                ScoredResponses = BuildSurveyResponsesNavigation(request, actor, scope, period, appliedSource, templateFilter, ("isScored", true)),
                 AllResponses = BuildSurveyResponsesNavigation(
                     request, actor, scope, period, appliedSource, templateFilter),
-                Complaints = BuildSurveyResponsesNavigation(
-                    request, actor, scope, period, appliedSource, templateFilter, ("hasComplaint", true)),
+                Complaints = DashboardDrillDownPathBuilder.Navigation("SurveyComplaints", "/api/reports/survey-dashboard/complaints",
+                    ("branchId", actor.IsSuperAdmin ? scope.BranchId : null), ("source", appliedSource),
+                    ("templateId", templateFilter?.TemplateId), ("from", period.From), ("to", period.To)),
                 VoiceAnswers = BuildSurveyResponsesNavigation(
                     request, actor, scope, period, appliedSource, templateFilter, ("hasVoice", true))
             },
@@ -846,6 +867,16 @@ internal sealed class GetSurveyDashboardQueryHandler
                 scope,
                 period,
                 templateFilter),
+
+            BestRatedQuestions = BuildLowestRatedQuestions(
+                questionScoreTokens,
+                internalTemplates.Concat(anonymousTemplates).ToArray(),
+                templateQuestions,
+                request,
+                actor,
+                scope,
+                period,
+                templateFilter, best: true),
 
             CustomInputSegments = BuildCustomInputSegments(
                 appliedSource,
@@ -938,6 +969,7 @@ internal sealed class GetSurveyDashboardQueryHandler
 
                 return new SurveyDashboardBranchSummaryResponse
                 {
+                    ScoredResponsesCount = scored.Length,
                     BranchId = branch.BranchId,
                     BranchNameEn = branch.BranchNameEn,
                     BranchNameAr = branch.BranchNameAr,
@@ -992,6 +1024,7 @@ internal sealed class GetSurveyDashboardQueryHandler
 
                 return new SurveyDashboardTrendItemResponse
                 {
+                    ScoredResponsesCount = scored.Length,
                     Period = x.Key,
                     ResponsesCount = x.Count(),
                     InternalResponses = x.Count(r => r.Source == SurveyDashboardSource.Internal),
@@ -1008,7 +1041,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                         templateFilter,
                         ("from", range.From),
                         ("to", range.To),
-                        ("isScored", true)))
+                        ("isScored", null)))
                 };
             })
             .ToArray();
@@ -1068,7 +1101,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                     AverageScorePercentage = average,
                     ComplaintsCount = complaintsCount,
                     VoiceAnswersCount = voiceAnswersCount,
-                    RiskLevel = ResolveRiskLevel(average),
+                    RiskLevel = EvaluationCriteria.Combine(scored.Select(x => x.Criteria)).Risk(scored.Length == 0 ? null : average),
                     DetailsNavigation = ToSurveyNavigation(BuildSurveyResponsesNavigation(
                         request,
                         actor,
@@ -1094,7 +1127,7 @@ internal sealed class GetSurveyDashboardQueryHandler
         CurrentSurveyDashboardActor actor,
         ResolvedSurveyDashboardScope scope,
         ResolvedSurveyDashboardPeriod period,
-        ResolvedSurveyDashboardTemplateFilter? templateFilter)
+        ResolvedSurveyDashboardTemplateFilter? templateFilter, bool best = false)
     {
         var templatesByKey = templates
             .GroupBy(x => new
@@ -1141,6 +1174,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                 continue;
             }
 
+            var historical = scoreGroup.Select(x => x.HistoricalQuestion).FirstOrDefault(x => x is not null);
             var averageValue = Round(scoreGroup.Average(x => x.ScoreValue));
 
             result.Add(new SurveyDashboardLowestRatedQuestionItemResponse
@@ -1153,10 +1187,10 @@ internal sealed class GetSurveyDashboardQueryHandler
                 BranchNameEn = template.BranchNameEn,
                 BranchNameAr = template.BranchNameAr,
                 QuestionId = scoreGroup.Key.QuestionId,
-                QuestionTextEn = question.QuestionTextEn,
-                QuestionTextAr = question.QuestionTextAr,
-                QuestionType = question.QuestionType,
-                QuestionTypeName = question.QuestionType.ToString(),
+                QuestionTextEn = historical?.TextEn ?? question.QuestionTextEn,
+                QuestionTextAr = historical?.TextAr ?? question.QuestionTextAr,
+                QuestionType = historical?.Type ?? question.QuestionType,
+                QuestionTypeName = (historical?.Type ?? question.QuestionType).ToString(),
                 AnswersCount = scoreGroup.Count(),
                 AverageValue = averageValue,
                 AverageScorePercentage = Round(averageValue / 5m * 100m),
@@ -1170,13 +1204,16 @@ internal sealed class GetSurveyDashboardQueryHandler
                     ("source", scoreGroup.Key.Source),
                     ("templateId", scoreGroup.Key.Source == SurveyDashboardSource.Internal ? scoreGroup.Key.TemplateId : null),
                     ("anonymousTemplateId", scoreGroup.Key.Source == SurveyDashboardSource.Anonymous ? scoreGroup.Key.TemplateId : null),
-                    ("questionId", scoreGroup.Key.QuestionId)))
+                    ("questionId", scoreGroup.Key.QuestionId),
+                    ("scoreIncludedOnly", true)))
             });
         }
 
-        return result
-            .OrderBy(x => x.AverageScorePercentage)
+        return (best ? result.Where(x => x.AverageScorePercentage >= 70m).OrderByDescending(x => x.AverageScorePercentage)
+                : result.OrderBy(x => x.AverageScorePercentage))
             .ThenByDescending(x => x.AnswersCount)
+            .ThenBy(x => x.TemplateId)
+            .ThenBy(x => x.QuestionId)
             .Take(request.TopQuestionsCount)
             .ToArray();
     }
@@ -1358,7 +1395,7 @@ internal sealed class GetSurveyDashboardQueryHandler
         return SatisfactionCategoryRule.Matches(
             response.MaxScore,
             response.ScorePercentage,
-            SatisfactionCategory.Satisfied);
+            SatisfactionCategory.Satisfied, response.Criteria);
     }
 
     private static bool IsNeutral(SurveyDashboardResponseRow response)
@@ -1366,7 +1403,7 @@ internal sealed class GetSurveyDashboardQueryHandler
         return SatisfactionCategoryRule.Matches(
             response.MaxScore,
             response.ScorePercentage,
-            SatisfactionCategory.Neutral);
+            SatisfactionCategory.Neutral, response.Criteria);
     }
 
     private static bool IsUnhappy(SurveyDashboardResponseRow response)
@@ -1374,7 +1411,7 @@ internal sealed class GetSurveyDashboardQueryHandler
         return SatisfactionCategoryRule.Matches(
             response.MaxScore,
             response.ScorePercentage,
-            SatisfactionCategory.Unhappy);
+            SatisfactionCategory.Unhappy, response.Criteria);
     }
 
     private static bool IsComplaint(SurveyDashboardAnswerRow answer)
@@ -1406,20 +1443,6 @@ internal sealed class GetSurveyDashboardQueryHandler
             : Round(scoredResponses.Average(x => x.ScorePercentage));
     }
 
-    private static string ResolveRiskLevel(decimal averageScorePercentage)
-    {
-        if (averageScorePercentage < 50m)
-        {
-            return "HighRisk";
-        }
-
-        if (averageScorePercentage < 75m)
-        {
-            return "MediumRisk";
-        }
-
-        return "Healthy";
-    }
 
     private static DashboardDetailsNavigationResponse BuildSurveyResponsesNavigation(
         GetSurveyDashboardQuery request,

@@ -2886,4 +2886,6 @@
   <data name="RestoreOperator_AlreadyActive" xml:space="preserve">
     <value>Operator is already active.</value>
   </data>
+  <data name="BranchEvaluationSettings_Forbidden" xml:space="preserve"><value>Only the assigned BranchAdmin can manage branch evaluation settings.</value></data>
+  <data name="BranchEvaluationSettings_InvalidThresholds" xml:space="preserve"><value>Each lower threshold must be below its upper threshold, within 0 to 100.</value></data>
 </root>

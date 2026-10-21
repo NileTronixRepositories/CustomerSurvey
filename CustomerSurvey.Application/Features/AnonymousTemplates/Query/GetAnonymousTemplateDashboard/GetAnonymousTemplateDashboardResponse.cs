@@ -1,9 +1,19 @@
-using CustomerSurvey.Domain.Enums;
+﻿using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateDashboard;
 
 public sealed record GetAnonymousTemplateDashboardResponse
 {
+    public string ClassificationPolicy => "CurrentBranchCriteria;AggregatesWeightedByScoredResponses";
+    public bool HasMixedClassificationCriteria { get; init; }
+
+    public CustomerSurvey.Application.Abstraction.Reports.TemplateAvailabilityMetrics Availability { get; init; } = new();
+
+    public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; }
+    public int StoredBaselineResponsesCount { get; init; }
+    public bool HasCompleteQuestionScoreData => StoredBaselineResponsesCount == 0;
+    public bool RequestedModeAvailable { get; init; } = true;
+
     public AnonymousTemplateDashboardPeriodResponse Period { get; init; } = new();
 
     public AnonymousTemplateDashboardSummaryResponse Summary { get; init; } = new();
@@ -19,6 +29,9 @@ public sealed record GetAnonymousTemplateDashboardResponse
         = Array.Empty<AnonymousTemplateDashboardPerformanceResponse>();
 
     public IReadOnlyCollection<AnonymousTemplateDashboardQuestionInsightResponse> LowestRatedQuestions { get; init; }
+        = Array.Empty<AnonymousTemplateDashboardQuestionInsightResponse>();
+
+    public IReadOnlyCollection<AnonymousTemplateDashboardQuestionInsightResponse> BestRatedQuestions { get; init; }
         = Array.Empty<AnonymousTemplateDashboardQuestionInsightResponse>();
 
     public IReadOnlyCollection<AnonymousTemplateDashboardCustomInputSegmentResponse> CustomInputSegments { get; init; }
@@ -41,6 +54,8 @@ public sealed record AnonymousTemplateDashboardPeriodResponse
 
 public sealed record AnonymousTemplateDashboardSummaryResponse
 {
+    public bool HasScoreData => ScoredResponses > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public Guid BranchId { get; init; }
 
     public string BranchNameEn { get; init; } = string.Empty;
@@ -74,6 +89,8 @@ public sealed record AnonymousTemplateDashboardSummaryResponse
 
 public sealed record AnonymousTemplateDashboardTrendPointResponse
 {
+    public bool HasScoreData => ResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public string Period { get; init; } = string.Empty;
 
     public int ResponsesCount { get; init; }
@@ -85,6 +102,8 @@ public sealed record AnonymousTemplateDashboardTrendPointResponse
 
 public sealed record AnonymousTemplateDashboardPerformanceResponse
 {
+    public bool HasScoreData => ScoredResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public Guid AnonymousTemplateId { get; init; }
 
     public Guid BranchId { get; init; }

@@ -1,9 +1,13 @@
-using CustomerSurvey.Domain.Enums;
+﻿using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateDashboard;
 
 internal sealed record AnonymousDashboardSurveyAnswerDto
 {
+    public DateTime SubmittedOnUtc { get; init; }
+
+    public decimal? ReportScoreValue { get; init; }
+
     public Guid AnonymousSurveyResponseId { get; init; }
 
     public Guid AnonymousTemplateId { get; init; }

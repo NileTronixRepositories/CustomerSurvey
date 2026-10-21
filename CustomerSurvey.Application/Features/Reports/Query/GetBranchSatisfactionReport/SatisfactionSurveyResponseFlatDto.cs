@@ -8,6 +8,9 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 {
     internal sealed record SatisfactionSurveyResponseFlatDto
     {
+        public string? SnapshotPayload { get; init; }
+        public CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria Criteria { get; init; } = new();
+
         public Guid SurveyResponseId { get; init; }
 
         public Guid TemplateId { get; init; }

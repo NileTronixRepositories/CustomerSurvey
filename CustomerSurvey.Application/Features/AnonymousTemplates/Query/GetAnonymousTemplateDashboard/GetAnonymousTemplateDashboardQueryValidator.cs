@@ -1,4 +1,4 @@
-using CustomerSurvey.Domain.Resources;
+﻿using CustomerSurvey.Domain.Resources;
 using FluentValidation;
 
 namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateDashboard;
@@ -8,6 +8,7 @@ internal sealed class GetAnonymousTemplateDashboardQueryValidator
 {
     public GetAnonymousTemplateDashboardQueryValidator()
     {
+        RuleFor(x => x.ScoreCalculationMode).IsInEnum();
         RuleFor(x => x)
             .Must(x =>
                 !x.From.HasValue ||

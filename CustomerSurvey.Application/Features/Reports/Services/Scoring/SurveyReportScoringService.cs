@@ -1,4 +1,4 @@
-using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
+﻿using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Reports.Services.Scoring;
@@ -38,7 +38,7 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
             questionOptions,
             scoreCalculationMode);
 
-        return scoreTokens
+        var calculated = scoreTokens
             .GroupBy(x => new
             {
                 x.TemplateKind,
@@ -61,6 +61,19 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
                 };
             })
             .ToArray();
+        var historicalFallbacks = responses.Where(x => x.OriginalMaxScore.HasValue &&
+                !(SnapshotScoring.Read(x.SnapshotPayload)?.IsHistoricallyVerified ?? false) && x.OriginalMaxScore > 0)
+            .Select(x => new CalculatedResponseScore
+            {
+                ResponseId = x.ResponseId, TemplateId = x.TemplateId, TemplateKind = x.TemplateKind,
+                ScoredItemsCountIsExact = false,
+                ScoredItemsCount = Math.Max(1, x.OriginalMaxScore!.Value / 5),
+                AverageScoreValue = ReportScoreRounding.Round(x.OriginalScorePercentage / 20m),
+                ScorePercentage = x.OriginalScorePercentage,
+                RequestedModeAvailable = scoreCalculationMode == ScoreCalculationMode.RootQuestions,
+                ScoreDerivation = "StoredRootBaseline"
+            });
+        return calculated.Concat(historicalFallbacks).ToArray();
     }
 
     public IReadOnlyCollection<QuestionScoreToken> CalculateQuestionScoreTokens(
@@ -71,7 +84,7 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
         IReadOnlyCollection<QuestionOptionFlatDto> questionOptions,
         ScoreCalculationMode scoreCalculationMode)
     {
-        if (responses.Count == 0 || templateQuestions.Count == 0 || answers.Count == 0)
+        if (responses.Count == 0)
         {
             return Array.Empty<QuestionScoreToken>();
         }
@@ -116,6 +129,15 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
 
         foreach (var response in responses)
         {
+            var snapshot = SnapshotScoring.Read(response.SnapshotPayload);
+            if (snapshot is not null && snapshot.IsHistoricallyVerified)
+            {
+                result.AddRange(SnapshotScoring.Tokens(snapshot, scoreCalculationMode));
+                continue;
+            }
+            // Unknown historical hierarchy/options cannot establish exact alternate-mode tokens.
+            if (response.OriginalMaxScore.HasValue) continue;
+
             if (!templateQuestionsByTemplate.TryGetValue(
                     (response.TemplateKind, response.TemplateId),
                     out var currentTemplateQuestions))
@@ -134,6 +156,13 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
                 .Where(x => !childIds.Contains(x.TemplateQuestionId))
                 .OrderBy(x => x.Order)
                 .ToArray();
+
+            if (scoreCalculationMode == ScoreCalculationMode.AllAnsweredQuestions)
+            {
+                foreach (var question in currentTemplateQuestions)
+                    AddRootScoreTokenIfPossible(response, question, answersByResponseAndQuestion, questionOptionsById, result);
+                continue;
+            }
 
             foreach (var rootQuestion in rootQuestions)
             {

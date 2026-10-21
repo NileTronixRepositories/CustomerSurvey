@@ -1,3 +1,4 @@
+﻿using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Reports;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
@@ -71,6 +72,12 @@ internal sealed class SurveyDashboardComplaintReadService : ISurveyDashboardComp
             .Take(request.PageSize)
             .ToArrayAsync(cancellationToken);
 
+        items = items.Select(item =>
+        {
+            var saved = SnapshotScoring.Read(item.SnapshotPayload)?.Questions.FirstOrDefault(x => x.QuestionId == item.QuestionId);
+            return saved is null ? item : item with { QuestionTextEn = saved.TextEn, QuestionTextAr = saved.TextAr };
+        }).ToArray();
+
         var totalResponses = await BuildResponseQuery(request).CountAsync(cancellationToken);
 
         return new SurveyDashboardComplaintReadResult(
@@ -109,6 +116,7 @@ internal sealed class SurveyDashboardComplaintReadService : ISurveyDashboardComp
 
             result = query.Select(x => new SurveyDashboardComplaintReadItem
             {
+                SnapshotPayload = x.SurveyResponse.Snapshot == null ? null : x.SurveyResponse.Snapshot.Payload,
                 ComplaintId = x.Id,
                 Source = SurveyDashboardSource.Internal,
                 ResponseId = x.SurveyResponseId,
@@ -157,6 +165,7 @@ internal sealed class SurveyDashboardComplaintReadService : ISurveyDashboardComp
 
             var projected = query.Select(x => new SurveyDashboardComplaintReadItem
             {
+                SnapshotPayload = x.AnonymousSurveyResponse.Snapshot == null ? null : x.AnonymousSurveyResponse.Snapshot.Payload,
                 ComplaintId = x.Id,
                 Source = SurveyDashboardSource.Anonymous,
                 ResponseId = x.AnonymousSurveyResponseId,

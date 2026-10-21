@@ -1,4 +1,4 @@
-using CustomerSurvey.Domain.Resources;
+﻿using CustomerSurvey.Domain.Resources;
 using FluentValidation;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
@@ -8,6 +8,7 @@ internal sealed class GetDepartmentDashboardQueryValidator
 {
     public GetDepartmentDashboardQueryValidator()
     {
+        RuleFor(x => x.ScoreCalculationMode).IsInEnum();
         RuleFor(x => x)
             .Must(x =>
                 !x.From.HasValue ||

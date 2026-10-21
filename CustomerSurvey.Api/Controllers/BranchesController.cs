@@ -26,6 +26,18 @@ namespace CustomerSurvey.Api.Controllers
             this.sender = sender;
         }
 
+        [HttpGet("{branchId:guid}/evaluation-settings")]
+        [Permission("Branches.ViewEvaluationSettings")]
+        public async Task<IActionResult> GetEvaluationSettings(Guid branchId, CancellationToken ct)
+            => (await sender.Send(new CustomerSurvey.Application.Features.Branches.EvaluationSettings.GetBranchEvaluationSettingsQuery(branchId), ct)).ToIActionResult();
+
+        [HttpPut("{branchId:guid}/evaluation-settings")]
+        [Permission("Branches.ManageEvaluationSettings")]
+        public async Task<IActionResult> UpdateEvaluationSettings(Guid branchId,
+            [FromBody] CustomerSurvey.Application.Features.Branches.EvaluationSettings.UpdateBranchEvaluationSettingsCommand command,
+            CancellationToken ct)
+            => (await sender.Send(command with { BranchId = branchId }, ct)).ToIActionResult();
+
         [HttpGet]
         [Permission("Branches.ViewAll")]
         public async Task<IActionResult> GetPaginated(

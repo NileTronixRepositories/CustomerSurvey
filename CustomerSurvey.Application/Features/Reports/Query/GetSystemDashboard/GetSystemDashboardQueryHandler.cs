@@ -1,4 +1,7 @@
-﻿using BuildingBlock.Application.Abstraction;
+﻿using CustomerSurvey.Application.Abstraction.Reports;
+using CustomerSurvey.Application.Features.Reports.Services.Scoring;
+using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
+using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
@@ -17,6 +20,8 @@ internal sealed class GetSystemDashboardQueryHandler
     private const int MaxAllowedMonths = 12;
     private const int CriticalCustomInputsPreviewCount = 5;
 
+    private readonly IWriteReadRepository<OperatorTemplate>? _operatorTemplateRepository;
+    private readonly CustomerSurvey.Application.Abstraction.Reports.ITemplateAvailabilityReader? _availabilityReader;
     private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
     private readonly IWriteReadRepository<Branch> _branchReadRepository;
     private readonly IWriteReadRepository<Department> _departmentReadRepository;
@@ -36,8 +41,12 @@ internal sealed class GetSystemDashboardQueryHandler
         IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
         IWriteReadRepository<SurveyAnswer> surveyAnswerReadRepository,
         IWriteReadRepository<SurveyResponseCustomInputValue> customInputValueReadRepository,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        CustomerSurvey.Application.Abstraction.Reports.ITemplateAvailabilityReader? availabilityReader = null,
+        IWriteReadRepository<OperatorTemplate>? operatorTemplateRepository = null)
     {
+        _availabilityReader = availabilityReader;
+        _operatorTemplateRepository = operatorTemplateRepository;
         _superAdminReadRepository = superAdminReadRepository
             ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
 
@@ -150,6 +159,13 @@ internal sealed class GetSystemDashboardQueryHandler
                 request.DepartmentId),
             cancellationToken);
 
+        responses = responses.Select(x =>
+        {
+            var score = DashboardScoreSelection.Select(x.SnapshotPayload, x.MaxScore, x.ScorePercentage, request.ScoreCalculationMode);
+            return x with { MaxScore = score.MaxScore, ScorePercentage = score.ScorePercentage,
+                RequestedModeAvailable = score.RequestedModeAvailable, ScoreDerivation = score.ScoreDerivation };
+        }).ToList();
+
         var criticalResponseIds = responses
             .Where(x =>
                 x.MaxScore > 0 &&
@@ -183,6 +199,19 @@ internal sealed class GetSystemDashboardQueryHandler
             responses,
             answers,
             criticalCustomInputs);
+
+        if (_availabilityReader is not null)
+        {
+            if (request.DepartmentId.HasValue)
+            {
+                var historicalIds = await _surveyResponseReadRepository.ListAsync(new DepartmentHistoricalTemplateIdsSpec(request.DepartmentId.Value, request.BranchId), cancellationToken);
+                var assignedIds = _operatorTemplateRepository is null ? new List<Guid>() : await _operatorTemplateRepository.ListAsync(new DepartmentAssignedTemplateIdsSpec(request.DepartmentId.Value, request.BranchId), cancellationToken);
+                response = response with { Availability = await _availabilityReader.ReadTemplatesAsync(historicalIds.Concat(assignedIds), fromUtc, toExclusiveUtc, cancellationToken) };
+            }
+            else response = response with { Availability = await _availabilityReader.ReadAsync(request.BranchId, 1, null, fromUtc, toExclusiveUtc, cancellationToken) };
+        }
+
+        response = response with { Availability = response.Availability with { TemplatesWithResponsesCount = responses.Select(x => x.TemplateId).Distinct().Count() } };
 
         return Result<GetSystemDashboardResponse>.Ok(response);
     }
@@ -242,6 +271,10 @@ internal sealed class GetSystemDashboardQueryHandler
 
         return new GetSystemDashboardResponse
         {
+            HasMixedClassificationCriteria = responses.Where(x => x.MaxScore > 0).Select(x => x.Criteria).Distinct().Skip(1).Any(),
+            ScoreCalculationMode = request.ScoreCalculationMode,
+            StoredBaselineResponsesCount = responses.Count(x => x.ScoreDerivation == "StoredRootBaseline"),
+            RequestedModeAvailable = responses.All(x => x.RequestedModeAvailable),
             Period = new SystemDashboardPeriodResponse
             {
                 From = period.From,
@@ -269,11 +302,11 @@ internal sealed class GetSystemDashboardQueryHandler
                 AverageScorePercentage = averageScore,
 
                 SatisfiedResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
-                    x.MaxScore, x.ScorePercentage, SatisfactionCategory.Satisfied)),
+                    x.MaxScore, x.ScorePercentage, SatisfactionCategory.Satisfied, x.Criteria)),
                 NeutralResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
-                    x.MaxScore, x.ScorePercentage, SatisfactionCategory.Neutral)),
+                    x.MaxScore, x.ScorePercentage, SatisfactionCategory.Neutral, x.Criteria)),
                 UnhappyResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
-                    x.MaxScore, x.ScorePercentage, SatisfactionCategory.Unhappy)),
+                    x.MaxScore, x.ScorePercentage, SatisfactionCategory.Unhappy, x.Criteria)),
 
                 ComplaintsCount = complaintsCount,
                 VoiceAnswersCount = voiceAnswersCount
@@ -292,8 +325,9 @@ internal sealed class GetSystemDashboardQueryHandler
 
             SummaryActions = new DashboardSummaryActionsResponse
             {
+                ScoredResponses = BuildSystemResponsesNavigation(request, period, ("isScored", true)),
                 AllResponses = BuildSystemResponsesNavigation(request, period),
-                Complaints = BuildSystemResponsesNavigation(request, period, ("hasComplaint", true)),
+                Complaints = BuildSystemResponsesNavigation(request, period, ("hasComplaint", true), ("complaintItemsOnly", true)),
                 VoiceAnswers = BuildSystemResponsesNavigation(request, period, ("hasVoice", true))
             },
 
@@ -456,7 +490,7 @@ internal sealed class GetSystemDashboardQueryHandler
                     ComplaintsCount = complaintsCount,
                     VoiceAnswersCount = voiceAnswersCount,
                     ActiveTemplatesCount = activeTemplatesCount,
-                    RiskLevel = ResolveRiskLevel(average),
+                    RiskLevel = CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria.Combine(scored.Select(x => x.Criteria)).Risk(scored.Length == 0 ? null : average),
                     DetailsNavigation = BuildSystemResponsesNavigation(
                         request,
                         period,
@@ -570,7 +604,7 @@ internal sealed class GetSystemDashboardQueryHandler
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
                     ComplaintsCount = complaintsCount,
-                    RiskLevel = ResolveRiskLevel(average),
+                    RiskLevel = CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria.Combine(scored.Select(x => x.Criteria)).Risk(scored.Length == 0 ? null : average),
                     DetailsNavigation = BuildSystemResponsesNavigation(
                         request,
                         period,
@@ -676,6 +710,7 @@ internal sealed class GetSystemDashboardQueryHandler
     {
         var filters = new List<(string Name, object? Value)>
         {
+            ("scoreCalculationMode", request.ScoreCalculationMode),
             ("from", period.From),
             ("to", period.To),
             ("branchId", request.BranchId),
@@ -697,20 +732,6 @@ internal sealed class GetSystemDashboardQueryHandler
             filters.ToArray());
     }
 
-    private static string ResolveRiskLevel(decimal averageScorePercentage)
-    {
-        if (averageScorePercentage < 50m)
-        {
-            return "HighRisk";
-        }
-
-        if (averageScorePercentage < 75m)
-        {
-            return "MediumRisk";
-        }
-
-        return "Healthy";
-    }
 
     private static decimal Round(decimal value)
     {

@@ -4,6 +4,16 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchDashboard;
 
 public sealed record GetBranchDashboardResponse
 {
+    public string ClassificationPolicy => "CurrentBranchCriteria;AggregatesWeightedByScoredResponses";
+    public bool HasMixedClassificationCriteria { get; init; }
+
+    public CustomerSurvey.Application.Abstraction.Reports.TemplateAvailabilityMetrics Availability { get; init; } = new();
+
+    public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; }
+    public int StoredBaselineResponsesCount { get; init; }
+    public bool HasCompleteQuestionScoreData => StoredBaselineResponsesCount == 0;
+    public bool RequestedModeAvailable { get; init; } = true;
+
     public BranchDashboardPeriodResponse Period { get; init; } = new();
 
     public BranchDashboardSummaryResponse Summary { get; init; } = new();
@@ -19,6 +29,9 @@ public sealed record GetBranchDashboardResponse
         = Array.Empty<BranchDashboardTemplatePerformanceResponse>();
 
     public IReadOnlyCollection<BranchDashboardQuestionInsightResponse> LowestRatedQuestions { get; init; }
+        = Array.Empty<BranchDashboardQuestionInsightResponse>();
+
+    public IReadOnlyCollection<BranchDashboardQuestionInsightResponse> BestRatedQuestions { get; init; }
         = Array.Empty<BranchDashboardQuestionInsightResponse>();
 
     public IReadOnlyCollection<BranchDashboardCustomInputSegmentResponse> CustomInputSegments { get; init; }
@@ -41,6 +54,8 @@ public sealed record BranchDashboardPeriodResponse
 
 public sealed record BranchDashboardSummaryResponse
 {
+    public bool HasScoreData => ScoredResponses > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public Guid BranchId { get; init; }
 
     public string BranchNameEn { get; init; } = string.Empty;
@@ -72,6 +87,8 @@ public sealed record BranchDashboardSummaryResponse
 
 public sealed record BranchDashboardTrendPointResponse
 {
+    public bool HasScoreData => ResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public string Period { get; init; } = string.Empty;
 
     public int ResponsesCount { get; init; }
@@ -83,6 +100,8 @@ public sealed record BranchDashboardTrendPointResponse
 
 public sealed record BranchDashboardTemplatePerformanceResponse
 {
+    public bool HasScoreData => ScoredResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public Guid TemplateId { get; init; }
 
     public string TemplateNameEn { get; init; } = string.Empty;

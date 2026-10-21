@@ -1,3 +1,6 @@
+﻿using CustomerSurvey.Application.Abstraction.Reports;
+using CustomerSurvey.Application.Features.Reports.Services.Scoring;
+using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
@@ -20,6 +23,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
     private const int MaxCustomInputsToReturn = 5;
     private const int MaxSegmentsPerCustomInput = 10;
 
+    private readonly CustomerSurvey.Application.Abstraction.Reports.ITemplateAvailabilityReader? _availabilityReader;
     private readonly IWriteReadRepository<DepartmentAdmin> _departmentAdminReadRepository;
     private readonly IWriteReadRepository<DomainOperator> _operatorReadRepository;
     private readonly IWriteReadRepository<OperatorTemplate> _operatorTemplateReadRepository;
@@ -37,8 +41,10 @@ internal sealed class GetDepartmentDashboardQueryHandler
         IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
         IWriteReadRepository<SurveyAnswer> surveyAnswerReadRepository,
         IWriteReadRepository<SurveyResponseCustomInputValue> customInputValueReadRepository,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        CustomerSurvey.Application.Abstraction.Reports.ITemplateAvailabilityReader? availabilityReader = null)
     {
+        _availabilityReader = availabilityReader;
         _departmentAdminReadRepository = departmentAdminReadRepository
             ?? throw new ArgumentNullException(nameof(departmentAdminReadRepository));
 
@@ -120,7 +126,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
             cancellationToken);
 
         var assignedTemplates = await _operatorTemplateReadRepository.ListAsync(
-            new GetDepartmentDashboardAssignedTemplatesSpec(currentDepartmentAdmin.DepartmentId),
+            new GetDepartmentDashboardAssignedTemplatesSpec(currentDepartmentAdmin.DepartmentId, request.TemplateId),
             cancellationToken);
 
         var responses = await _surveyResponseReadRepository.ListAsync(
@@ -156,6 +162,17 @@ internal sealed class GetDepartmentDashboardQueryHandler
             responses,
             answers,
             customInputValues);
+
+        if (_availabilityReader is not null)
+        {
+            var historicalTemplateIds = await _surveyResponseReadRepository.ListAsync(
+                new DepartmentHistoricalTemplateIdsSpec(currentDepartmentAdmin.DepartmentId), cancellationToken);
+            response = response with { Availability = await _availabilityReader.ReadTemplatesAsync(
+                assignedTemplates.Select(x => x.TemplateId).Concat(historicalTemplateIds)
+                    .Where(x => !request.TemplateId.HasValue || x == request.TemplateId), fromUtc, toExclusiveUtc, cancellationToken) };
+        }
+
+        response = response with { Availability = response.Availability with { TemplatesWithResponsesCount = responses.Select(x => x.TemplateId).Distinct().Count() } };
 
         return Result<GetDepartmentDashboardResponse>.Ok(response);
     }
@@ -199,6 +216,27 @@ internal sealed class GetDepartmentDashboardQueryHandler
         IReadOnlyCollection<DepartmentDashboardSurveyAnswerDto> answers,
         IReadOnlyCollection<DepartmentDashboardCustomInputValueDto> customInputValues)
     {
+        responses = responses.Select(x =>
+        {
+            var selected = DashboardScoreSelection.Select(x.SnapshotPayload, x.MaxScore, x.ScorePercentage, request.ScoreCalculationMode);
+            return x with { MaxScore = selected.MaxScore, ScorePercentage = selected.ScorePercentage,
+                RequestedModeAvailable = selected.RequestedModeAvailable, ScoreDerivation = selected.ScoreDerivation };
+        }).ToArray();
+        var scoringResponses = responses.ToDictionary(x => x.SurveyResponseId);
+        customInputValues = customInputValues.Select(x =>
+        {
+            var scored = scoringResponses.GetValueOrDefault(x.SurveyResponseId);
+            return x with { MaxScore = scored?.MaxScore ?? 0, ScorePercentage = scored?.ScorePercentage ?? 0m };
+        }).ToArray();
+        answers = answers.Select(x =>
+        {
+            var saved = scoringResponses.GetValueOrDefault(x.SurveyResponseId);
+            var token = DashboardScoreSelection.Question(saved?.SnapshotPayload, x.QuestionId, request.ScoreCalculationMode);
+            var question = token?.HistoricalQuestion;
+            return x with { SubmittedOnUtc = saved?.SubmittedOnUtc ?? DateTime.MinValue, ReportScoreValue = token?.ScoreValue,
+                QuestionTextEn = question?.TextEn ?? x.QuestionTextEn, QuestionTextAr = question?.TextAr ?? x.QuestionTextAr };
+        }).ToArray();
+
         var assignedTemplates = assignedTemplateAssignments
             .GroupBy(x => x.TemplateId)
             .Select(x => x.First())
@@ -217,11 +255,11 @@ internal sealed class GetDepartmentDashboardQueryHandler
             : Round(scoredResponses.Average(x => x.ScorePercentage));
 
         var satisfiedResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
-            x.MaxScore, x.ScorePercentage, SatisfactionCategory.Satisfied));
+            x.MaxScore, x.ScorePercentage, SatisfactionCategory.Satisfied, x.Criteria));
         var neutralResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
-            x.MaxScore, x.ScorePercentage, SatisfactionCategory.Neutral));
+            x.MaxScore, x.ScorePercentage, SatisfactionCategory.Neutral, x.Criteria));
         var unhappyResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
-            x.MaxScore, x.ScorePercentage, SatisfactionCategory.Unhappy));
+            x.MaxScore, x.ScorePercentage, SatisfactionCategory.Unhappy, x.Criteria));
 
         var complaintsCount = answers.Count(x =>
             x.QuestionType == QuestionType.Complain &&
@@ -230,6 +268,10 @@ internal sealed class GetDepartmentDashboardQueryHandler
 
         return new GetDepartmentDashboardResponse
         {
+            HasMixedClassificationCriteria = responses.Where(x => x.MaxScore > 0).Select(x => x.Criteria).Distinct().Skip(1).Any(),
+            ScoreCalculationMode = request.ScoreCalculationMode,
+            StoredBaselineResponsesCount = responses.Count(x => x.ScoreDerivation == "StoredRootBaseline"),
+            RequestedModeAvailable = responses.All(x => x.RequestedModeAvailable),
             Period = new DepartmentDashboardPeriodResponse
             {
                 From = period.From,
@@ -279,8 +321,9 @@ internal sealed class GetDepartmentDashboardQueryHandler
 
             SummaryActions = new DashboardSummaryActionsResponse
             {
+                ScoredResponses = BuildDepartmentResponsesNavigation(request, period, ("isScored", true)),
                 AllResponses = BuildDepartmentResponsesNavigation(request, period),
-                Complaints = BuildDepartmentResponsesNavigation(request, period, ("hasComplaint", true)),
+                Complaints = BuildDepartmentResponsesNavigation(request, period, ("hasComplaint", true), ("complaintItemsOnly", true)),
                 VoiceAnswers = BuildDepartmentResponsesNavigation(request, period, ("hasVoice", true))
             },
 
@@ -307,6 +350,11 @@ internal sealed class GetDepartmentDashboardQueryHandler
                 answers,
                 request,
                 period),
+
+            BestRatedQuestions = BuildLowestRatedQuestions(
+                answers,
+                request,
+                period, best: true),
 
             CustomInputSegments = BuildCustomInputSegments(
                 customInputValues,
@@ -447,7 +495,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
                     LastResponseOnUtc = operatorResponses.Length == 0
                         ? null
                         : operatorResponses.Max(x => x.SubmittedOnUtc),
-                    RiskLevel = ResolveRiskLevel(average),
+                    RiskLevel = CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria.Combine(scored.Select(x => x.Criteria)).Risk(scored.Length == 0 ? null : average),
                     DetailsNavigation = BuildOperatorResponsesNavigation(
                         operatorId,
                         request,
@@ -528,7 +576,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
                     ComplaintsCount = complaintsCount,
-                    RiskLevel = ResolveRiskLevel(average),
+                    RiskLevel = CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria.Combine(scored.Select(x => x.Criteria)).Risk(scored.Length == 0 ? null : average),
                     DetailsNavigation = BuildDepartmentResponsesNavigation(
                         request,
                         period,
@@ -544,43 +592,32 @@ internal sealed class GetDepartmentDashboardQueryHandler
     private static IReadOnlyCollection<DepartmentDashboardQuestionInsightResponse> BuildLowestRatedQuestions(
         IReadOnlyCollection<DepartmentDashboardSurveyAnswerDto> answers,
         GetDepartmentDashboardQuery request,
-        ResolvedDepartmentDashboardPeriod period)
+        ResolvedDepartmentDashboardPeriod period, bool best = false)
     {
-        return answers
+        var ranked = answers.OrderByDescending(x => x.SubmittedOnUtc).ThenBy(x => x.SurveyResponseId)
             .Where(x =>
-                x.QuestionType == QuestionType.StarRating ||
-                x.QuestionType == QuestionType.Smiles)
+                x.ReportScoreValue.HasValue)
             .Select(x => new
             {
                 Answer = x,
-                Value = x.QuestionType == QuestionType.StarRating
-                    ? x.StarRatingValue
-                    : x.SmileValue
+                Value = x.ReportScoreValue
             })
             .Where(x => x.Value.HasValue)
-            .GroupBy(x => new
-            {
-                x.Answer.TemplateId,
-                x.Answer.TemplateNameEn,
-                x.Answer.TemplateNameAr,
-                x.Answer.QuestionId,
-                x.Answer.QuestionTextEn,
-                x.Answer.QuestionTextAr,
-                x.Answer.QuestionType
-            })
+            .GroupBy(x => new { x.Answer.TemplateId, x.Answer.QuestionId })
             .Select(x =>
             {
+                var sample = x.First().Answer;
                 var averageValue = Round(x.Average(a => (decimal)a.Value!.Value));
                 return new DepartmentDashboardQuestionInsightResponse
                 {
                     TemplateId = x.Key.TemplateId,
-                    TemplateNameEn = x.Key.TemplateNameEn,
-                    TemplateNameAr = x.Key.TemplateNameAr,
+                    TemplateNameEn = sample.TemplateNameEn,
+                    TemplateNameAr = sample.TemplateNameAr,
                     QuestionId = x.Key.QuestionId,
-                    QuestionTextEn = x.Key.QuestionTextEn,
-                    QuestionTextAr = x.Key.QuestionTextAr,
-                    QuestionType = x.Key.QuestionType,
-                    QuestionTypeName = x.Key.QuestionType.ToString(),
+                    QuestionTextEn = sample.QuestionTextEn,
+                    QuestionTextAr = sample.QuestionTextAr,
+                    QuestionType = sample.QuestionType,
+                    QuestionTypeName = sample.QuestionType.ToString(),
                     AnswersCount = x.Count(),
                     AverageValue = averageValue,
                     AverageScorePercentage = Round(averageValue / 5m * 100m),
@@ -588,11 +625,17 @@ internal sealed class GetDepartmentDashboardQueryHandler
                         request,
                         period,
                         ("templateId", x.Key.TemplateId),
-                        ("questionId", x.Key.QuestionId))
+                        ("questionId", x.Key.QuestionId),
+                        ("scoreIncludedOnly", true))
                 };
             })
-            .OrderBy(x => x.AverageScorePercentage)
+            .ToArray();
+        return (best
+                ? ranked.Where(x => x.AverageScorePercentage >= 70m).OrderByDescending(x => x.AverageScorePercentage)
+                : ranked.OrderBy(x => x.AverageScorePercentage))
             .ThenByDescending(x => x.AnswersCount)
+            .ThenBy(x => x.TemplateId)
+            .ThenBy(x => x.QuestionId)
             .Take(request.TopQuestionsCount)
             .ToArray();
     }
@@ -759,6 +802,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
     {
         var filters = new List<(string Name, object? Value)>
         {
+            ("scoreCalculationMode", request.ScoreCalculationMode),
             ("from", period.From),
             ("to", period.To),
             ("templateId", request.TemplateId)
@@ -775,20 +819,6 @@ internal sealed class GetDepartmentDashboardQueryHandler
         return DashboardDrillDownPathBuilder.Navigation(routeType, path, filters.ToArray());
     }
 
-    private static string ResolveRiskLevel(decimal averageScorePercentage)
-    {
-        if (averageScorePercentage < 50m)
-        {
-            return "HighRisk";
-        }
-
-        if (averageScorePercentage < 75m)
-        {
-            return "MediumRisk";
-        }
-
-        return "Healthy";
-    }
 
     private static decimal Round(decimal value)
     {

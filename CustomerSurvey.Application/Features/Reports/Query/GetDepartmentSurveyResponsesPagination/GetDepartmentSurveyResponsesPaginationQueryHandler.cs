@@ -1,4 +1,4 @@
-using BuildingBlock.Application.Abstraction;
+﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.SharedDto;
@@ -18,6 +18,7 @@ internal sealed class GetDepartmentSurveyResponsesPaginationQueryHandler
     private const int MaxAllowedMonths = 12;
     private const int CustomInputsPreviewCount = 3;
 
+    private readonly IWriteReadRepository<SurveyAnswer>? _complaintAnswerRepository;
     private readonly IWriteReadRepository<DepartmentAdmin> _departmentAdminReadRepository;
     private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
     private readonly IWriteReadRepository<SurveyResponseCustomInputValue> _customInputValueReadRepository;
@@ -27,8 +28,10 @@ internal sealed class GetDepartmentSurveyResponsesPaginationQueryHandler
         IWriteReadRepository<DepartmentAdmin> departmentAdminReadRepository,
         IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
         IWriteReadRepository<SurveyResponseCustomInputValue> customInputValueReadRepository,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IWriteReadRepository<SurveyAnswer>? complaintAnswerRepository = null)
     {
+        _complaintAnswerRepository = complaintAnswerRepository;
         _departmentAdminReadRepository = departmentAdminReadRepository;
         _surveyResponseReadRepository = surveyResponseReadRepository;
         _customInputValueReadRepository = customInputValueReadRepository;
@@ -71,6 +74,15 @@ internal sealed class GetDepartmentSurveyResponsesPaginationQueryHandler
             period.From.ToDateTime(TimeOnly.MinValue),
             period.To.AddDays(1).ToDateTime(TimeOnly.MinValue),
             request);
+
+        if (request.ComplaintItemsOnly)
+        {
+            var complaintSpec = new CustomerSurvey.Application.Features.Reports.Shared.ComplaintItemsSpecification<DepartmentSurveyResponsePaginationItemResponse>(
+                spec, request.PageNumber, request.PageSize, request.QuestionId);
+            var (complaintItems, complaintCount) = await _complaintAnswerRepository!.ListWithCountAsync(complaintSpec, cancellationToken);
+            return Result<Pagination<DepartmentSurveyResponsePaginationItemResponse>>.Ok(new Pagination<DepartmentSurveyResponsePaginationItemResponse>(
+                request.PageNumber, request.PageSize, complaintCount, complaintItems.ToArray()));
+        }
 
         var (items, totalCount) = await _surveyResponseReadRepository.ListWithCountAsync(spec, cancellationToken);
         var responseItems = items.ToArray();

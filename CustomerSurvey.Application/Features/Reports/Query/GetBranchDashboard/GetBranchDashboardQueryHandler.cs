@@ -1,4 +1,6 @@
-﻿using BuildingBlock.Application.Abstraction;
+﻿using CustomerSurvey.Application.Features.Reports.Services.Scoring;
+using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
+using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
@@ -19,6 +21,7 @@ internal sealed class GetBranchDashboardQueryHandler
     private const int MaxCustomInputsToReturn = 5;
     private const int MaxSegmentsPerCustomInput = 10;
 
+    private readonly CustomerSurvey.Application.Abstraction.Reports.ITemplateAvailabilityReader? _availabilityReader;
     private readonly IWriteReadRepository<Branch> _branchReadRepository;
     private readonly IWriteReadRepository<Template> _templateReadRepository;
     private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
@@ -34,8 +37,10 @@ internal sealed class GetBranchDashboardQueryHandler
         IWriteReadRepository<SurveyAnswer> surveyAnswerReadRepository,
         IWriteReadRepository<SurveyResponseCustomInputValue> customInputValueReadRepository,
         ICurrentBranchScopeResolver currentBranchScopeResolver,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        CustomerSurvey.Application.Abstraction.Reports.ITemplateAvailabilityReader? availabilityReader = null)
     {
+        _availabilityReader = availabilityReader;
         _branchReadRepository = branchReadRepository
             ?? throw new ArgumentNullException(nameof(branchReadRepository));
 
@@ -120,7 +125,7 @@ internal sealed class GetBranchDashboardQueryHandler
         var toExclusiveUtc = period.To.AddDays(1).ToDateTime(TimeOnly.MinValue);
 
         var templates = await _templateReadRepository.ListAsync(
-            new GetBranchTemplatesForDashboardSpec(currentActor.BranchId),
+            new GetBranchTemplatesForDashboardSpec(currentActor.BranchId, request.TemplateId),
             cancellationToken);
 
         var responses = await _surveyResponseReadRepository.ListAsync(
@@ -155,6 +160,12 @@ internal sealed class GetBranchDashboardQueryHandler
             responses,
             answers,
             customInputValues);
+
+        if (_availabilityReader is not null)
+            response = response with { Availability = await _availabilityReader.ReadAsync(currentActor.BranchId, 1, request.TemplateId,
+                fromUtc, toExclusiveUtc, cancellationToken) };
+
+        response = response with { Availability = response.Availability with { TemplatesWithResponsesCount = responses.Select(x => x.TemplateId).Distinct().Count() } };
 
         return Result<GetBranchDashboardResponse>.Ok(response);
     }
@@ -197,6 +208,27 @@ internal sealed class GetBranchDashboardQueryHandler
         IReadOnlyCollection<DashboardSurveyAnswerDto> answers,
         IReadOnlyCollection<DashboardCustomInputValueDto> customInputValues)
     {
+        responses = responses.Select(x =>
+        {
+            var selected = DashboardScoreSelection.Select(x.SnapshotPayload, x.MaxScore, x.ScorePercentage, request.ScoreCalculationMode);
+            return x with { MaxScore = selected.MaxScore, ScorePercentage = selected.ScorePercentage,
+                RequestedModeAvailable = selected.RequestedModeAvailable, ScoreDerivation = selected.ScoreDerivation };
+        }).ToArray();
+        var scoringResponses = responses.ToDictionary(x => x.SurveyResponseId);
+        customInputValues = customInputValues.Select(x =>
+        {
+            var scored = scoringResponses.GetValueOrDefault(x.SurveyResponseId);
+            return x with { MaxScore = scored?.MaxScore ?? 0, ScorePercentage = scored?.ScorePercentage ?? 0m };
+        }).ToArray();
+        answers = answers.Select(x =>
+        {
+            var saved = scoringResponses.GetValueOrDefault(x.SurveyResponseId);
+            var token = DashboardScoreSelection.Question(saved?.SnapshotPayload, x.QuestionId, request.ScoreCalculationMode);
+            var question = token?.HistoricalQuestion;
+            return x with { SubmittedOnUtc = saved?.SubmittedOnUtc ?? DateTime.MinValue, ReportScoreValue = token?.ScoreValue,
+                QuestionTextEn = question?.TextEn ?? x.QuestionTextEn, QuestionTextAr = question?.TextAr ?? x.QuestionTextAr };
+        }).ToArray();
+
         var scoredResponses = responses
             .Where(x => x.MaxScore > 0)
             .ToArray();
@@ -210,11 +242,11 @@ internal sealed class GetBranchDashboardQueryHandler
             : Round(scoredResponses.Average(x => x.ScorePercentage));
 
         var satisfiedResponses = scoredResponses.Count(x =>
-            SatisfactionCategoryRule.Matches(x.MaxScore, x.ScorePercentage, SatisfactionCategory.Satisfied));
+            SatisfactionCategoryRule.Matches(x.MaxScore, x.ScorePercentage, SatisfactionCategory.Satisfied, x.Criteria));
         var neutralResponses = scoredResponses.Count(x =>
-            SatisfactionCategoryRule.Matches(x.MaxScore, x.ScorePercentage, SatisfactionCategory.Neutral));
+            SatisfactionCategoryRule.Matches(x.MaxScore, x.ScorePercentage, SatisfactionCategory.Neutral, x.Criteria));
         var unhappyResponses = scoredResponses.Count(x =>
-            SatisfactionCategoryRule.Matches(x.MaxScore, x.ScorePercentage, SatisfactionCategory.Unhappy));
+            SatisfactionCategoryRule.Matches(x.MaxScore, x.ScorePercentage, SatisfactionCategory.Unhappy, x.Criteria));
 
         var complaintsCount = answers.Count(x =>
             x.QuestionType == QuestionType.Complain &&
@@ -223,6 +255,10 @@ internal sealed class GetBranchDashboardQueryHandler
 
         return new GetBranchDashboardResponse
         {
+            HasMixedClassificationCriteria = responses.Where(x => x.MaxScore > 0).Select(x => x.Criteria).Distinct().Skip(1).Any(),
+            ScoreCalculationMode = request.ScoreCalculationMode,
+            StoredBaselineResponsesCount = responses.Count(x => x.ScoreDerivation == "StoredRootBaseline"),
+            RequestedModeAvailable = responses.All(x => x.RequestedModeAvailable),
             Period = new BranchDashboardPeriodResponse
             {
                 From = period.From,
@@ -269,8 +305,10 @@ internal sealed class GetBranchDashboardQueryHandler
 
             SummaryActions = new DashboardSummaryActionsResponse
             {
+                ScoredResponses = BuildResponsesNavigation(request, period, ("isScored", true)),
                 AllResponses = BuildResponsesNavigation(request, period),
-                Complaints = BuildResponsesNavigation(request, period, ("hasComplaint", true)),
+                Complaints = DashboardDrillDownPathBuilder.Navigation("SurveyComplaints", "/api/reports/survey-dashboard/complaints",
+                    ("source", "Internal"), ("templateId", request.TemplateId), ("from", period.From), ("to", period.To)),
                 VoiceAnswers = BuildResponsesNavigation(request, period, ("hasVoice", true))
             },
 
@@ -289,6 +327,11 @@ internal sealed class GetBranchDashboardQueryHandler
                 answers,
                 request,
                 period),
+
+            BestRatedQuestions = BuildLowestRatedQuestions(
+                answers,
+                request,
+                period, best: true),
 
             CustomInputSegments = BuildCustomInputSegments(
                 customInputValues,
@@ -403,7 +446,7 @@ internal sealed class GetBranchDashboardQueryHandler
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
                     ComplaintsCount = complaintsCount,
-                    RiskLevel = ResolveRiskLevel(average),
+                    RiskLevel = CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria.Combine(scored.Select(x => x.Criteria)).Risk(scored.Length == 0 ? null : average),
                     DetailsNavigation = BuildResponsesNavigation(
                         request,
                         period,
@@ -418,43 +461,32 @@ internal sealed class GetBranchDashboardQueryHandler
     private static IReadOnlyCollection<BranchDashboardQuestionInsightResponse> BuildLowestRatedQuestions(
         IReadOnlyCollection<DashboardSurveyAnswerDto> answers,
         GetBranchDashboardQuery request,
-        ResolvedDashboardPeriod period)
+        ResolvedDashboardPeriod period, bool best = false)
     {
-        return answers
+        var ranked = answers.OrderByDescending(x => x.SubmittedOnUtc).ThenBy(x => x.SurveyResponseId)
             .Where(x =>
-                x.QuestionType == QuestionType.StarRating ||
-                x.QuestionType == QuestionType.Smiles)
+                x.ReportScoreValue.HasValue)
             .Select(x => new
             {
                 Answer = x,
-                Value = x.QuestionType == QuestionType.StarRating
-                    ? x.StarRatingValue
-                    : x.SmileValue
+                Value = x.ReportScoreValue
             })
             .Where(x => x.Value.HasValue)
-            .GroupBy(x => new
-            {
-                x.Answer.TemplateId,
-                x.Answer.TemplateNameEn,
-                x.Answer.TemplateNameAr,
-                x.Answer.QuestionId,
-                x.Answer.QuestionTextEn,
-                x.Answer.QuestionTextAr,
-                x.Answer.QuestionType
-            })
+            .GroupBy(x => new { x.Answer.TemplateId, x.Answer.QuestionId })
             .Select(x =>
             {
+                var sample = x.First().Answer;
                 var averageValue = Round(x.Average(a => (decimal)a.Value!.Value));
                 return new BranchDashboardQuestionInsightResponse
                 {
                     TemplateId = x.Key.TemplateId,
-                    TemplateNameEn = x.Key.TemplateNameEn,
-                    TemplateNameAr = x.Key.TemplateNameAr,
+                    TemplateNameEn = sample.TemplateNameEn,
+                    TemplateNameAr = sample.TemplateNameAr,
                     QuestionId = x.Key.QuestionId,
-                    QuestionTextEn = x.Key.QuestionTextEn,
-                    QuestionTextAr = x.Key.QuestionTextAr,
-                    QuestionType = x.Key.QuestionType,
-                    QuestionTypeName = x.Key.QuestionType.ToString(),
+                    QuestionTextEn = sample.QuestionTextEn,
+                    QuestionTextAr = sample.QuestionTextAr,
+                    QuestionType = sample.QuestionType,
+                    QuestionTypeName = sample.QuestionType.ToString(),
                     AnswersCount = x.Count(),
                     AverageValue = averageValue,
                     AverageScorePercentage = Round(averageValue / 5m * 100m),
@@ -462,11 +494,17 @@ internal sealed class GetBranchDashboardQueryHandler
                         request,
                         period,
                         ("templateId", x.Key.TemplateId),
-                        ("questionId", x.Key.QuestionId))
+                        ("questionId", x.Key.QuestionId),
+                        ("scoreIncludedOnly", true))
                 };
             })
-            .OrderBy(x => x.AverageScorePercentage)
+            .ToArray();
+        return (best
+                ? ranked.Where(x => x.AverageScorePercentage >= 70m).OrderByDescending(x => x.AverageScorePercentage)
+                : ranked.OrderBy(x => x.AverageScorePercentage))
             .ThenByDescending(x => x.AnswersCount)
+            .ThenBy(x => x.TemplateId)
+            .ThenBy(x => x.QuestionId)
             .Take(request.TopQuestionsCount)
             .ToArray();
     }
@@ -603,6 +641,7 @@ internal sealed class GetBranchDashboardQueryHandler
     {
         var filters = new List<(string Name, object? Value)>
         {
+            ("scoreCalculationMode", request.ScoreCalculationMode),
             ("from", period.From),
             ("to", period.To),
             ("templateId", request.TemplateId)
@@ -624,20 +663,6 @@ internal sealed class GetBranchDashboardQueryHandler
             filters.ToArray());
     }
 
-    private static string ResolveRiskLevel(decimal averageScorePercentage)
-    {
-        if (averageScorePercentage < 50m)
-        {
-            return "HighRisk";
-        }
-
-        if (averageScorePercentage < 75m)
-        {
-            return "MediumRisk";
-        }
-
-        return "Healthy";
-    }
 
     private static decimal Round(decimal value)
     {
