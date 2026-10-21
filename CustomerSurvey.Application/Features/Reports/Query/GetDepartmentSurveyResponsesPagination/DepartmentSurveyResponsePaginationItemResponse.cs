@@ -1,7 +1,13 @@
-namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentSurveyResponsesPagination;
+﻿namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentSurveyResponsesPagination;
 
 public sealed record DepartmentSurveyResponsePaginationItemResponse
 {
+    public Guid? ComplaintQuestionId { get; init; }
+    public string? ComplaintText { get; init; }
+
+    public bool RequestedModeAvailable { get; init; } = true;
+    public string ScoreDerivation { get; init; } = string.Empty;
+
     public Guid SurveyResponseId { get; init; }
 
     public Guid BranchId { get; init; }

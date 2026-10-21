@@ -1,4 +1,4 @@
-using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
+﻿using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 
 namespace CustomerSurvey.Application.Abstraction.Reports;
 
@@ -42,6 +42,8 @@ public sealed record SurveyDashboardComplaintTemplateReadGroup
 
 public sealed record SurveyDashboardComplaintReadItem
 {
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? SnapshotPayload { get; init; }
     public Guid ComplaintId { get; init; }
     public SurveyDashboardSource Source { get; init; }
     public Guid ResponseId { get; init; }

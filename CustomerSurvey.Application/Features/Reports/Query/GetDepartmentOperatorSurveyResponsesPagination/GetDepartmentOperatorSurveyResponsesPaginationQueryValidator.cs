@@ -1,4 +1,4 @@
-using CustomerSurvey.Domain.Resources;
+﻿using CustomerSurvey.Domain.Resources;
 using FluentValidation;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperatorSurveyResponsesPagination;
@@ -8,6 +8,7 @@ internal sealed class GetDepartmentOperatorSurveyResponsesPaginationQueryValidat
 {
     public GetDepartmentOperatorSurveyResponsesPaginationQueryValidator()
     {
+        RuleFor(x => x.ScoreCalculationMode).IsInEnum();
         RuleFor(x => x.OperatorId)
             .NotEmpty()
             .WithMessage(ErrorMessage.GetDepartmentOperatorSurveyResponsesPagination_OperatorId_Required);

@@ -2886,4 +2886,6 @@
   <data name="RestoreOperator_AlreadyActive" xml:space="preserve">
     <value>المشغل مفعل بالفعل.</value>
   </data>
+  <data name="BranchEvaluationSettings_Forbidden" xml:space="preserve"><value>يمكن لمسؤول الفرع المعين فقط تعديل إعدادات تقييم فرعه.</value></data>
+  <data name="BranchEvaluationSettings_InvalidThresholds" xml:space="preserve"><value>يجب أن يكون كل حد أدنى أقل من الحد الأعلى وأن تكون جميع الحدود بين 0 و100.</value></data>
 </root>

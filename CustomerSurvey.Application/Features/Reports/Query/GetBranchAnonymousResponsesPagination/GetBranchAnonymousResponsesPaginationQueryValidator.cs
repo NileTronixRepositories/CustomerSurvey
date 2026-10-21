@@ -1,4 +1,4 @@
-using CustomerSurvey.Domain.Resources;
+﻿using CustomerSurvey.Domain.Resources;
 using FluentValidation;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchAnonymousResponsesPagination;
@@ -8,6 +8,7 @@ internal sealed class GetBranchAnonymousResponsesPaginationQueryValidator
 {
     public GetBranchAnonymousResponsesPaginationQueryValidator()
     {
+        RuleFor(x => x.ScoreCalculationMode).IsInEnum();
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1)
             .WithMessage(ErrorMessage.GetBranchAnonymousResponses_PageNumber_Invalid);

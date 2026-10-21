@@ -12,6 +12,8 @@ namespace CustomerSurvey.Domain.Entities
         private readonly List<Template> _templates = new();
         private readonly List<QuestionGroup> _groups = new();
 
+        public BranchEvaluationSettings? EvaluationSettings { get; private set; }
+
         public string NameEn { get; private set; } = string.Empty;
         public string? NameAr { get; private set; }
         public string Code { get; private set; } = string.Empty;

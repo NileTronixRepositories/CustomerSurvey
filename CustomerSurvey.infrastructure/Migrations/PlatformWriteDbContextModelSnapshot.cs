@@ -491,6 +491,56 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.ToTable("Branch");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.BranchEvaluationSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BranchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("HealthyMinimum")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("MediumRiskMinimum")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("NeutralMinimum")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("SatisfiedMinimum")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<Guid>("UpdatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId")
+                        .IsUnique();
+
+                    b.ToTable("BranchEvaluationSettings", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_BranchEvaluation_Risk", "[MediumRiskMinimum] >= 0 AND [MediumRiskMinimum] < [HealthyMinimum] AND [HealthyMinimum] <= 100");
+
+                            t.HasCheckConstraint("CK_BranchEvaluation_Satisfaction", "[NeutralMinimum] >= 0 AND [NeutralMinimum] < [SatisfiedMinimum] AND [SatisfiedMinimum] <= 100");
+                        });
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Department", b =>
                 {
                     b.Property<Guid>("Id")
@@ -744,6 +794,100 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.ToTable("QuestionOption");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.ResponseSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AllQuestionIds")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("AllScorePercentage")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("AllScoredItemsCount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("AnonymousSurveyResponseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CapturedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LowestQuestionIds")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("LowestScorePercentage")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("LowestScoredItemsCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Provenance")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ResponseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RootQuestionIds")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("RootScorePercentage")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("RootScoredItemsCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SchemaVersion")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SurveyResponseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TemplateKind")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnonymousSurveyResponseId")
+                        .IsUnique()
+                        .HasFilter("[AnonymousSurveyResponseId] IS NOT NULL");
+
+                    b.HasIndex("SurveyResponseId")
+                        .IsUnique()
+                        .HasFilter("[SurveyResponseId] IS NOT NULL");
+
+                    b.HasIndex("TemplateKind", "ResponseId")
+                        .IsUnique();
+
+                    b.HasIndex("TemplateKind", "TemplateId");
+
+                    b.ToTable("ResponseSnapshots", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ResponseSnapshot_Source", "([TemplateKind] = 1 AND [SurveyResponseId] IS NOT NULL AND [SurveyResponseId] = [ResponseId] AND [AnonymousSurveyResponseId] IS NULL) OR ([TemplateKind] = 2 AND [AnonymousSurveyResponseId] IS NOT NULL AND [AnonymousSurveyResponseId] = [ResponseId] AND [SurveyResponseId] IS NULL)");
+                        });
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.SurveyAnswer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -964,6 +1108,72 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.HasIndex("BranchId", "TemplateFamilyId");
 
                     b.ToTable("Template");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.TemplateAvailabilityEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ActiveFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ActorApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("BranchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ChangedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime?>("ExpireTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsBaseline")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("PreviousActiveFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("PreviousExpireTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool?>("PreviousIsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TemplateKind")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId", "ChangedOnUtc");
+
+                    b.HasIndex("TemplateKind", "TemplateId", "ChangedOnUtc");
+
+                    b.HasIndex("TemplateKind", "TemplateId", "IsBaseline")
+                        .IsUnique()
+                        .HasFilter("[IsBaseline] = 1");
+
+                    b.ToTable("TemplateAvailabilityEvents", (string)null);
                 });
 
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.TemplateCustomInput", b =>
@@ -1688,6 +1898,15 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Navigation("SelectedQuestionOption");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.BranchEvaluationSettings", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Entities.Branch", null)
+                        .WithOne("EvaluationSettings")
+                        .HasForeignKey("CustomerSurvey.Domain.Entities.BranchEvaluationSettings", "BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.OperatorTemplate", b =>
                 {
                     b.HasOne("CustomerSurvey.Domain.Identity.Operator", "Operator")
@@ -1744,6 +1963,19 @@ namespace CustomerSurvey.infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.ResponseSnapshot", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Entities.AnonymousSurveyResponse", null)
+                        .WithOne("Snapshot")
+                        .HasForeignKey("CustomerSurvey.Domain.Entities.ResponseSnapshot", "AnonymousSurveyResponseId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.SurveyResponse", null)
+                        .WithOne("Snapshot")
+                        .HasForeignKey("CustomerSurvey.Domain.Entities.ResponseSnapshot", "SurveyResponseId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.SurveyAnswer", b =>
@@ -2045,6 +2277,8 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Navigation("Answers");
 
                     b.Navigation("CustomInputValues");
+
+                    b.Navigation("Snapshot");
                 });
 
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.AnonymousTemplate", b =>
@@ -2056,6 +2290,8 @@ namespace CustomerSurvey.infrastructure.Migrations
 
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Branch", b =>
                 {
+                    b.Navigation("EvaluationSettings");
+
                     b.Navigation("Groups");
 
                     b.Navigation("Templates");
@@ -2083,6 +2319,8 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Navigation("Answers");
 
                     b.Navigation("CustomInputValues");
+
+                    b.Navigation("Snapshot");
                 });
 
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Template", b =>

@@ -8,6 +8,7 @@ internal sealed class GetSystemDashboardQueryValidator
 {
     public GetSystemDashboardQueryValidator()
     {
+        RuleFor(x => x.ScoreCalculationMode).IsInEnum();
         RuleFor(x => x)
             .Must(x =>
                 !x.From.HasValue ||

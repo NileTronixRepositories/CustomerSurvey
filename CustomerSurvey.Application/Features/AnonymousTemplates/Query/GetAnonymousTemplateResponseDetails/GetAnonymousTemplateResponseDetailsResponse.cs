@@ -4,6 +4,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 {
     public sealed record GetAnonymousTemplateResponseDetailsResponse
     {
+        public CustomerSurvey.Domain.Entities.ResponseSnapshotDocument? HistoricalSurvey { get; init; }
+    public CustomerSurvey.Domain.Entities.SnapshotProvenance HistoricalDataProvenance => HistoricalSurvey?.Provenance ?? CustomerSurvey.Domain.Entities.SnapshotProvenance.LegacyIncomplete;
+    public bool IsHistoricalDataVerified => HistoricalSurvey?.IsHistoricallyVerified == true;
+
         public Guid AnonymousSurveyResponseId { get; init; }
 
         public Guid AnonymousTemplateId { get; init; }

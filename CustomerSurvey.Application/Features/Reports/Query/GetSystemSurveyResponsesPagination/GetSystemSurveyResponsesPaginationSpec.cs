@@ -7,12 +7,13 @@ using CustomerSurvey.Domain.Enums;
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponsesPagination;
 
 internal sealed class GetSystemSurveyResponsesPaginationSpec
-    : Specification<SurveyResponse, SystemSurveyResponsePaginationItemResponse>
+    : CustomerSurvey.Application.Features.Reports.Shared.ScoredResponseSpecification<SurveyResponse, SystemSurveyResponsePaginationItemResponse>
 {
     public GetSystemSurveyResponsesPaginationSpec(
         DateTime fromUtc,
         DateTime toExclusiveUtc,
         GetSystemSurveyResponsesPaginationQuery query)
+        : base(query.ScoreCalculationMode)
     {
         AddCriteria(x =>
             x.SubmittedOnUtc >= fromUtc &&
@@ -129,8 +130,12 @@ internal sealed class GetSystemSurveyResponsesPaginationSpec
             query.PageNumber,
             query.PageSize);
 
+        ApplyIncludedQuestionFilter(query.QuestionId, query.ScoreIncludedOnly);
+
         Select(x => new SystemSurveyResponsePaginationItemResponse
         {
+            RequestedModeAvailable = query.ScoreCalculationMode == CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions || (x.Snapshot != null && x.Snapshot.Provenance == SnapshotProvenance.CapturedAtSubmission),
+            ScoreDerivation = x.Snapshot != null && x.Snapshot.Provenance == SnapshotProvenance.CapturedAtSubmission ? "SubmissionSnapshot" : "StoredRootBaseline",
             SurveyResponseId = x.Id,
 
             BranchId = x.Template.BranchId,
@@ -179,16 +184,16 @@ internal sealed class GetSystemSurveyResponsesPaginationSpec
             switch (query.SatisfactionCategory.Value)
             {
                 case SatisfactionCategory.Satisfied:
-                    AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage >= SatisfactionCategoryRule.SatisfiedMinimum);
+                    AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage >= (x.Template == null || x.Template.Branch == null || x.Template.Branch.EvaluationSettings == null ? 80m : x.Template.Branch.EvaluationSettings.SatisfiedMinimum));
                     break;
                 case SatisfactionCategory.Neutral:
                     AddCriteria(x =>
                         x.MaxScore > 0 &&
-                        x.ScorePercentage >= SatisfactionCategoryRule.NeutralMinimum &&
-                        x.ScorePercentage < SatisfactionCategoryRule.SatisfiedMinimum);
+                        x.ScorePercentage >= (x.Template == null || x.Template.Branch == null || x.Template.Branch.EvaluationSettings == null ? 60m : x.Template.Branch.EvaluationSettings.NeutralMinimum) &&
+                        x.ScorePercentage < (x.Template == null || x.Template.Branch == null || x.Template.Branch.EvaluationSettings == null ? 80m : x.Template.Branch.EvaluationSettings.SatisfiedMinimum));
                     break;
                 case SatisfactionCategory.Unhappy:
-                    AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage < SatisfactionCategoryRule.NeutralMinimum);
+                    AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage < (x.Template == null || x.Template.Branch == null || x.Template.Branch.EvaluationSettings == null ? 60m : x.Template.Branch.EvaluationSettings.NeutralMinimum));
                     break;
             }
         }

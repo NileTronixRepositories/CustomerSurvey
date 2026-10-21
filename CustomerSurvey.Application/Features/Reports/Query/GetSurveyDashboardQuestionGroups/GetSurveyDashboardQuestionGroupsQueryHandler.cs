@@ -1,4 +1,4 @@
-using BuildingBlock.Application.Abstraction;
+﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
@@ -129,6 +129,7 @@ internal sealed class GetSurveyDashboardQuestionGroupsQueryHandler
 
         var responseDtos = responses.Select(x => new ResponseFlatDto
         {
+            SnapshotPayload = x.SnapshotPayload, OriginalMaxScore = x.MaxScore, OriginalScorePercentage = x.ScorePercentage,
             ResponseId = x.ResponseId,
             TemplateId = x.TemplateId,
             TemplateKind = ToReportKind(x.Source),
@@ -148,6 +149,8 @@ internal sealed class GetSurveyDashboardQuestionGroupsQueryHandler
             HasTextAnswer = !string.IsNullOrWhiteSpace(x.TextAnswer),
             HasVoiceAnswer = !string.IsNullOrWhiteSpace(x.VoiceFileName)
         }).ToArray();
+
+        templateQuestions = SnapshotScoring.HistoricalQuestions(responseDtos, templateQuestions, preserveGroupHistory: true).ToList();
 
         var tokens = _scoringService.CalculateQuestionScoreTokens(
             responseDtos,
@@ -182,11 +185,11 @@ internal sealed class GetSurveyDashboardQuestionGroupsQueryHandler
                     .SelectMany(question => tokensByQuestion.GetValueOrDefault(
                         (question.TemplateKind, question.TemplateId, question.TemplateQuestionId),
                         Array.Empty<QuestionScoreToken>()))
+                    .Where(x => x.HistoricalQuestion == null || x.HistoricalQuestion.GroupId == group.Key.QuestionGroupId)
                     .ToArray();
                 var templateKey = (group.Key.TemplateKind, group.Key.TemplateId);
-                var average = groupTokens.Length == 0
-                    ? (decimal?)null
-                    : ReportScoreRounding.Round(groupTokens.Average(x => x.ScoreValue));
+                var averagePercentage = ReportScoreAggregation.ResponseWeightedPercentage(groupTokens);
+                var average = averagePercentage.HasValue ? (decimal?)ReportScoreRounding.Round(averagePercentage.Value / 20m) : null;
                 var template = templatesByKey[templateKey];
 
                 return new SurveyDashboardQuestionGroupItemResponse
@@ -206,9 +209,7 @@ internal sealed class GetSurveyDashboardQuestionGroupsQueryHandler
                     ScoredResponsesCount = groupTokens.Select(x => x.ResponseId).Distinct().Count(),
                     ScoredItemsCount = groupTokens.Length,
                     AverageScoreValue = average,
-                    AverageScorePercentage = average.HasValue
-                        ? ReportScoreRounding.Round(average.Value / 5m * 100m)
-                        : null
+                    AverageScorePercentage = averagePercentage
                 };
             })
             .OrderBy(x => x.TemplateNameEn)
@@ -218,6 +219,8 @@ internal sealed class GetSurveyDashboardQuestionGroupsQueryHandler
 
         return Result<SurveyDashboardQuestionGroupsResponse>.Ok(new SurveyDashboardQuestionGroupsResponse
         {
+            RequestedModeAvailable = responseDtos.All(x => SnapshotScoring.Read(x.SnapshotPayload)?.IsHistoricallyVerified == true),
+            StoredBaselineResponsesCount = responseDtos.Count(x => !(SnapshotScoring.Read(x.SnapshotPayload)?.IsHistoricallyVerified ?? false)),
             AppliedFilters = new SurveyDashboardAppliedFiltersResponse
             {
                 BranchId = context.Scope.BranchId,

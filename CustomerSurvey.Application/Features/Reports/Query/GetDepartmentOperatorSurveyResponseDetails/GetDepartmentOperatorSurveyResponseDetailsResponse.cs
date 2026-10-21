@@ -1,9 +1,13 @@
-using CustomerSurvey.Domain.Enums;
+﻿using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperatorSurveyResponseDetails;
 
 public sealed record GetDepartmentOperatorSurveyResponseDetailsResponse
 {
+    public CustomerSurvey.Domain.Entities.ResponseSnapshotDocument? HistoricalSurvey { get; init; }
+    public CustomerSurvey.Domain.Entities.SnapshotProvenance HistoricalDataProvenance => HistoricalSurvey?.Provenance ?? CustomerSurvey.Domain.Entities.SnapshotProvenance.LegacyIncomplete;
+    public bool IsHistoricalDataVerified => HistoricalSurvey?.IsHistoricallyVerified == true;
+
     public Guid SurveyResponseId { get; init; }
 
     public DepartmentOperatorSurveyResponseBranchInfoResponse Branch { get; init; } = new();

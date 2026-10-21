@@ -1,4 +1,4 @@
-using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
+﻿using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 
 namespace CustomerSurvey.infrastructure.Reports;
 
@@ -28,15 +28,17 @@ internal static class BranchTemplatesQuestionRankBuilder
             ? scoredQuestions
                 .Where(x => x.SatisfactionPercentage <= worstQuestionsMaxScorePercentage)
                 .OrderBy(x => x.SatisfactionPercentage)
-                .ThenByDescending(x => x.Question.TotalAnswers)
+                .ThenByDescending(x => x.Question.ScoredAnswersCount ?? x.Question.TotalAnswers)
                 .ThenBy(x => x.Question.QuestionTextEn)
             : scoredQuestions
                 .Where(x => x.SatisfactionPercentage >= bestQuestionsMinScorePercentage)
                 .OrderByDescending(x => x.SatisfactionPercentage)
-                .ThenByDescending(x => x.Question.TotalAnswers)
+                .ThenByDescending(x => x.Question.ScoredAnswersCount ?? x.Question.TotalAnswers)
                 .ThenBy(x => x.Question.QuestionTextEn);
 
         return ordered
+            .ThenBy(x => x.Question.TemplateId)
+            .ThenBy(x => x.Question.TemplateQuestionId)
             .Take(count)
             .Select((rankedQuestion, index) =>
             {
@@ -54,7 +56,7 @@ internal static class BranchTemplatesQuestionRankBuilder
                     QuestionTextAr = question.QuestionTextAr,
                     IsRootQuestion = question.IsRootQuestion,
                     QuestionType = question.QuestionType,
-                    TotalAnswers = question.TotalAnswers,
+                    TotalAnswers = question.ScoredAnswersCount ?? question.TotalAnswers,
                     AverageScoreValue = question.ScoreAverageValue!.Value,
                     SatisfactionPercentage = rankedQuestion.SatisfactionPercentage
                 };

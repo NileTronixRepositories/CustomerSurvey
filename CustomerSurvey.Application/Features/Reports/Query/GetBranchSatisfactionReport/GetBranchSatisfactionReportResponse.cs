@@ -8,6 +8,9 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 {
     public sealed record GetBranchSatisfactionReportResponse
     {
+        public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; }
+        public bool RequestedModeAvailable { get; init; } = true;
+        public int StoredBaselineResponsesCount { get; init; }
         public SatisfactionReportPeriodResponse Period { get; init; } = new();
 
         public SatisfactionOverallResponse Overall { get; init; } = new();
@@ -37,6 +40,8 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 
     public sealed record SatisfactionOverallResponse
     {
+        public bool HasScoreData => ScoredResponses > 0;
+        public decimal? SatisfactionPercentage => HasScoreData ? Score : null;
         public decimal Score { get; init; }
 
         public int TotalResponses { get; init; }

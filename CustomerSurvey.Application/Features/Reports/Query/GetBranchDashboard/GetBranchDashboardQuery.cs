@@ -9,6 +9,8 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchDashboard
 {
     public sealed class GetBranchDashboardQuery : IQuery<GetBranchDashboardResponse>
     {
+        public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; } = CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions;
+
         public DateOnly? From { get; init; }
 
         public DateOnly? To { get; init; }

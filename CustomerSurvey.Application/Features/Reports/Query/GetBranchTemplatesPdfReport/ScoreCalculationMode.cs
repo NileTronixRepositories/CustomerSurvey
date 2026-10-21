@@ -4,5 +4,7 @@ public enum ScoreCalculationMode
 {
     RootQuestions = 1,
 
-    LowestConditionLevel = 2
+    LowestConditionLevel = 2,
+
+    AllAnsweredQuestions = 3
 }

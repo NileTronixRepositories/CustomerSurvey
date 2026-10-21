@@ -1,4 +1,4 @@
-using BuildingBlock.Domain.Specification;
+﻿using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 
@@ -35,14 +35,22 @@ internal sealed class GetSurveyDashboardAnonymousResponsesSpec
 
         Select(x => new SurveyDashboardResponseRow
         {
+            Criteria = new CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria
+            {
+                NeutralMinimum = x.AnonymousTemplate == null || x.AnonymousTemplate.Branch == null || x.AnonymousTemplate.Branch.EvaluationSettings == null ? 60m : x.AnonymousTemplate.Branch.EvaluationSettings.NeutralMinimum,
+                SatisfiedMinimum = x.AnonymousTemplate == null || x.AnonymousTemplate.Branch == null || x.AnonymousTemplate.Branch.EvaluationSettings == null ? 80m : x.AnonymousTemplate.Branch.EvaluationSettings.SatisfiedMinimum,
+                MediumRiskMinimum = x.AnonymousTemplate == null || x.AnonymousTemplate.Branch == null || x.AnonymousTemplate.Branch.EvaluationSettings == null ? 50m : x.AnonymousTemplate.Branch.EvaluationSettings.MediumRiskMinimum,
+                HealthyMinimum = x.AnonymousTemplate == null || x.AnonymousTemplate.Branch == null || x.AnonymousTemplate.Branch.EvaluationSettings == null ? 75m : x.AnonymousTemplate.Branch.EvaluationSettings.HealthyMinimum,
+            },
+            SnapshotPayload = x.Snapshot == null ? null : x.Snapshot.Payload,
             Source = SurveyDashboardSource.Anonymous,
             ResponseId = x.Id,
             TemplateId = x.AnonymousTemplateId,
-            TemplateNameEn = x.AnonymousTemplate.NameEn,
-            TemplateNameAr = x.AnonymousTemplate.NameAr,
-            BranchId = x.AnonymousTemplate.BranchId!.Value,
-            BranchNameEn = x.AnonymousTemplate.Branch!.NameEn,
-            BranchNameAr = x.AnonymousTemplate.Branch.NameAr,
+            TemplateNameEn = x.AnonymousTemplate!.NameEn,
+            TemplateNameAr = x.AnonymousTemplate!.NameAr,
+            BranchId = x.AnonymousTemplate!.BranchId!.Value,
+            BranchNameEn = x.AnonymousTemplate!.Branch!.NameEn,
+            BranchNameAr = x.AnonymousTemplate!.Branch.NameAr,
             OperatorId = null,
             OperatorNameEn = null,
             OperatorNameAr = null,

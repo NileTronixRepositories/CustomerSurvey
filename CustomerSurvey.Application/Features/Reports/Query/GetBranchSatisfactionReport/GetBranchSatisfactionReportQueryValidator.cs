@@ -13,6 +13,7 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
     {
         public GetBranchSatisfactionReportQueryValidator()
         {
+            RuleFor(x => x.ScoreCalculationMode).IsInEnum();
             RuleFor(x => x)
                 .Must(x =>
                     !x.From.HasValue ||

@@ -8,6 +8,7 @@ internal sealed class GetSystemSurveyResponsesPaginationQueryValidator
 {
     public GetSystemSurveyResponsesPaginationQueryValidator()
     {
+        RuleFor(x => x.ScoreCalculationMode).IsInEnum();
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1)
             .WithMessage(ErrorMessage.GetSystemSurveyResponsesPagination_PageNumber_Invalid);

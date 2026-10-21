@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentSurveyResponsesPagination;
 
@@ -7,6 +7,7 @@ internal sealed class GetDepartmentSurveyResponsesPaginationQueryValidator
 {
     public GetDepartmentSurveyResponsesPaginationQueryValidator()
     {
+        RuleFor(x => x.ScoreCalculationMode).IsInEnum();
         RuleFor(x => x.PageNumber).GreaterThanOrEqualTo(1);
         RuleFor(x => x.PageSize).InclusiveBetween(1, 100);
         RuleFor(x => x).Must(x => !x.From.HasValue || !x.To.HasValue || x.From <= x.To)

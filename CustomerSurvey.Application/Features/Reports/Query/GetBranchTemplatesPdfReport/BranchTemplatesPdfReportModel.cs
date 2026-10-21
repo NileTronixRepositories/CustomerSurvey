@@ -1,10 +1,16 @@
-using CustomerSurvey.Domain.Enums;
+﻿using CustomerSurvey.Domain.Enums;
 using System.Text.Json.Serialization;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 
 public sealed record BranchTemplatesPdfReportModel
 {
+    public CustomerSurvey.Application.Abstraction.Reports.TemplateAvailabilityMetrics Availability { get; init; } = new();
+    public CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria CurrentClassificationCriteria { get; init; } = new();
+    public bool RequestedModeAvailable { get; init; } = true;
+    public int StoredBaselineResponsesCount { get; init; }
+    public bool HasCompleteQuestionScoreData => StoredBaselineResponsesCount == 0;
+
     public string Language { get; init; } = "en";
 
     public bool IsArabic =>
@@ -67,11 +73,9 @@ public sealed record BranchTemplatesPdfReportModel
     [JsonIgnore]
     public BranchTemplatesReportGraphics Graphics { get; init; } = new();
 
-    [JsonIgnore]
     public IReadOnlyCollection<BranchTemplatesReportQuestionGroupAnalytics> QuestionGroupAnalytics { get; init; }
         = Array.Empty<BranchTemplatesReportQuestionGroupAnalytics>();
 
-    [JsonIgnore]
     public BranchTemplatesReportComplaintAnalytics ComplaintAnalytics { get; init; } = new();
 
     public IReadOnlyCollection<BranchTemplatesPdfTemplateSummary> TemplatesWithoutResponses =>
@@ -82,6 +86,13 @@ public sealed record BranchTemplatesPdfReportModel
 
 public sealed record BranchTemplatesPdfExecutiveSummary
 {
+    public int ScoredResponsesCount { get; init; }
+    public bool HasScoreData => ScoredResponsesCount > 0;
+    public int SatisfiedResponses { get; init; }
+    public int NeutralResponses { get; init; }
+    public int UnhappyResponses { get; init; }
+    public string RiskLevel { get; init; } = "NoData";
+
     public int TotalNormalTemplates { get; init; }
 
     public int TotalAnonymousTemplates { get; init; }
@@ -166,6 +177,7 @@ public sealed record BranchTemplatesPdfTemplateSummary
 
 public sealed record BranchTemplatesPdfQuestionAnalytics
 {
+    public int? ScoredAnswersCount { get; init; }
     private const decimal MaxScoreValue = 5m;
 
     public Guid TemplateId { get; init; }
@@ -502,6 +514,11 @@ public sealed record BranchTemplatesReportCustomInputDefinition
 
 public sealed record BranchTemplatesReportResponse
 {
+    public bool ScoredItemsCountIsExact { get; init; } = true;
+    public CustomerSurvey.Domain.Entities.ResponseSnapshotDocument? HistoricalSurvey { get; init; }
+    public bool RequestedModeAvailable { get; init; } = true;
+    public string ScoreDerivation { get; init; } = string.Empty;
+
     public Guid ResponseId { get; init; }
 
     public Guid TemplateId { get; init; }

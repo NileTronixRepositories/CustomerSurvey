@@ -1,9 +1,14 @@
-using CustomerSurvey.Domain.Enums;
+﻿using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateDashboard;
 
-internal sealed record AnonymousDashboardSurveyResponseDto
+internal sealed record AnonymousDashboardSurveyResponseDto : CustomerSurvey.Application.Features.Reports.Shared.IEvaluatedResponse
 {
+    public string? SnapshotPayload { get; init; }
+    public CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria Criteria { get; init; } = new();
+    public bool RequestedModeAvailable { get; init; } = true;
+    public string ScoreDerivation { get; init; } = "SubmissionSnapshot";
+
     public Guid AnonymousSurveyResponseId { get; init; }
 
     public Guid AnonymousTemplateId { get; init; }

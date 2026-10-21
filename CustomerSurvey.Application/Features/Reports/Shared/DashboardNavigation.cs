@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace CustomerSurvey.Application.Features.Reports.Shared;
 
@@ -30,6 +30,7 @@ public sealed record SatisfactionDistributionItemResponse
 
 public sealed record DashboardSummaryActionsResponse
 {
+    public DashboardDetailsNavigationResponse ScoredResponses { get; init; } = new();
     public DashboardDetailsNavigationResponse AllResponses { get; init; } = new();
 
     public DashboardDetailsNavigationResponse Complaints { get; init; } = new();
@@ -53,7 +54,7 @@ internal static class SatisfactionDistributionBuilder
                     SatisfactionCategoryRule.Matches(
                         maxScore: 1,
                         scoreSelector(response),
-                        category));
+                        category, (response as IEvaluatedResponse)?.Criteria));
 
                 return new SatisfactionDistributionItemResponse
                 {

@@ -1,10 +1,19 @@
-using CustomerSurvey.Domain.Enums;
+﻿using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 
 public sealed record SurveyDashboardResponse
 {
+    public string ClassificationPolicy => "CurrentBranchCriteria;AggregatesWeightedByScoredResponses";
+    public bool HasMixedClassificationCriteria { get; init; }
+
+    public int StoredBaselineResponsesCount { get; init; }
+    public bool HasCompleteQuestionScoreData => StoredBaselineResponsesCount == 0;
+    public bool RequestedModeAvailable { get; init; } = true;
+
+    public CustomerSurvey.Application.Abstraction.Reports.TemplateAvailabilityMetrics Availability { get; init; } = new();
+
     public SurveyDashboardPeriodResponse Period { get; init; } = new();
 
     public SurveyDashboardScopeResponse Scope { get; init; } = new();
@@ -31,6 +40,9 @@ public sealed record SurveyDashboardResponse
         = Array.Empty<SurveyDashboardTemplatePerformanceItemResponse>();
 
     public IReadOnlyCollection<SurveyDashboardLowestRatedQuestionItemResponse> LowestRatedQuestions { get; init; }
+        = Array.Empty<SurveyDashboardLowestRatedQuestionItemResponse>();
+
+    public IReadOnlyCollection<SurveyDashboardLowestRatedQuestionItemResponse> BestRatedQuestions { get; init; }
         = Array.Empty<SurveyDashboardLowestRatedQuestionItemResponse>();
 
     public IReadOnlyCollection<SurveyDashboardCustomInputSegmentResponse> CustomInputSegments { get; init; }
@@ -104,6 +116,8 @@ public sealed record SurveyDashboardAppliedFiltersResponse
 
 public sealed record SurveyDashboardSummaryResponse
 {
+    public bool HasScoreData => ScoredResponses > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public int TotalResponses { get; init; }
 
     public int ScoredResponses { get; init; }
@@ -150,6 +164,8 @@ public sealed record SurveyDashboardSourceBreakdownResponse
 
 public sealed record SurveyDashboardSourceSummaryResponse
 {
+    public bool HasScoreData => ScoredResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public int ResponsesCount { get; init; }
 
     public int ScoredResponsesCount { get; init; }
@@ -171,6 +187,9 @@ public sealed record SurveyDashboardSourceSummaryResponse
 
 public sealed record SurveyDashboardBranchSummaryResponse
 {
+    public int ScoredResponsesCount { get; init; }
+    public bool HasScoreData => ScoredResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public Guid BranchId { get; init; }
 
     public string BranchNameEn { get; init; } = string.Empty;
@@ -194,6 +213,9 @@ public sealed record SurveyDashboardBranchSummaryResponse
 
 public sealed record SurveyDashboardTrendItemResponse
 {
+    public int ScoredResponsesCount { get; init; }
+    public bool HasScoreData => ScoredResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public string Period { get; init; } = string.Empty;
 
     public int ResponsesCount { get; init; }
@@ -213,6 +235,8 @@ public sealed record SurveyDashboardTrendItemResponse
 
 public sealed record SurveyDashboardTemplatePerformanceItemResponse
 {
+    public bool HasScoreData => ScoredResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public SurveyDashboardSource Source { get; init; }
 
     public Guid TemplateId { get; init; }
@@ -400,8 +424,13 @@ internal sealed record SurveyDashboardTemplateRow
     public bool IsActive { get; init; }
 }
 
-internal sealed record SurveyDashboardResponseRow
+internal sealed record SurveyDashboardResponseRow : CustomerSurvey.Application.Features.Reports.Shared.IEvaluatedResponse
 {
+    public CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria Criteria { get; init; } = new();
+    public string? SnapshotPayload { get; init; }
+    public bool RequestedModeAvailable { get; init; } = true;
+    public string ScoreDerivation { get; init; } = "SubmissionSnapshot";
+
     public SurveyDashboardSource Source { get; init; }
 
     public Guid ResponseId { get; init; }

@@ -1,4 +1,4 @@
-using BuildingBlock.Domain.Specification;
+﻿using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 
@@ -7,8 +7,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 internal sealed class GetBranchAnonymousTemplatesForDashboardSpec
     : Specification<AnonymousTemplate, AnonymousTemplateDashboardItemDto>
 {
-    public GetBranchAnonymousTemplatesForDashboardSpec(Guid branchId)
+    public GetBranchAnonymousTemplatesForDashboardSpec(Guid branchId, Guid? templateId = null)
     {
+        if (templateId.HasValue) AddCriteria(x => x.Id == templateId);
+
         AddCriteria(x =>
             x.Scope == AnonymousTemplateScope.Branch &&
             x.BranchId == branchId);

@@ -1,4 +1,4 @@
-using BuildingBlock.Application.Abstraction;
+﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.SharedDto;
@@ -15,7 +15,8 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchAnonymousRe
 internal sealed class GetBranchAnonymousResponsesPaginationQueryHandler
     : IQueryHandler<GetBranchAnonymousResponsesPaginationQuery, Pagination<BranchAnonymousResponsePaginationItemResponse>>
 {
-    private readonly IWriteReadRepository<AnonymousTemplate> _anonymousTemplateReadRepository;
+    private readonly IWriteReadRepository<AnonymousSurveyAnswer>? _complaintAnswerRepository;
+        private readonly IWriteReadRepository<AnonymousTemplate> _anonymousTemplateReadRepository;
     private readonly IWriteReadRepository<AnonymousSurveyResponse> _anonymousSurveyResponseReadRepository;
     private readonly ICurrentBranchScopeResolver _currentBranchScopeResolver;
     private readonly ICurrentUser _currentUser;
@@ -24,8 +25,10 @@ internal sealed class GetBranchAnonymousResponsesPaginationQueryHandler
         IWriteReadRepository<AnonymousTemplate> anonymousTemplateReadRepository,
         IWriteReadRepository<AnonymousSurveyResponse> anonymousSurveyResponseReadRepository,
         ICurrentBranchScopeResolver currentBranchScopeResolver,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+            IWriteReadRepository<AnonymousSurveyAnswer>? complaintAnswerRepository = null)
     {
+        _complaintAnswerRepository = complaintAnswerRepository;
         _anonymousTemplateReadRepository = anonymousTemplateReadRepository
             ?? throw new ArgumentNullException(nameof(anonymousTemplateReadRepository));
 
@@ -88,6 +91,13 @@ internal sealed class GetBranchAnonymousResponsesPaginationQueryHandler
             period.FromUtc,
             period.ToExclusiveUtc,
             request);
+
+        if (request.ComplaintItemsOnly)
+        {
+            var complaintSpec = new CustomerSurvey.Application.Features.Reports.Shared.AnonymousComplaintItemsSpecification<BranchAnonymousResponsePaginationItemResponse>(spec, request.PageNumber, request.PageSize, request.QuestionId);
+            var (complaints, complaintCount) = await _complaintAnswerRepository!.ListWithCountAsync(complaintSpec, cancellationToken);
+            return Result<Pagination<BranchAnonymousResponsePaginationItemResponse>>.Ok(new Pagination<BranchAnonymousResponsePaginationItemResponse>(request.PageNumber, request.PageSize, complaintCount, complaints.ToArray()));
+        }
 
         var (items, totalCount) = await _anonymousSurveyResponseReadRepository.ListWithCountAsync(
             spec,

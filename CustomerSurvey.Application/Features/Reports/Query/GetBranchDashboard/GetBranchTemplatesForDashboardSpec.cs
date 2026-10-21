@@ -6,8 +6,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchDashboard;
 internal sealed class GetBranchTemplatesForDashboardSpec
     : Specification<Template, TemplateDashboardItemDto>
 {
-    public GetBranchTemplatesForDashboardSpec(Guid branchId)
+    public GetBranchTemplatesForDashboardSpec(Guid branchId, Guid? templateId = null)
     {
+        if (templateId.HasValue) AddCriteria(x => x.Id == templateId);
+
         AddCriteria(x => x.BranchId == branchId);
 
         Select(x => new TemplateDashboardItemDto

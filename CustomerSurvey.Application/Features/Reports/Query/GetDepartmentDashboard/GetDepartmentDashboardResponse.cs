@@ -1,9 +1,19 @@
-using CustomerSurvey.Domain.Enums;
+﻿using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
 
 public sealed record GetDepartmentDashboardResponse
 {
+    public string ClassificationPolicy => "CurrentBranchCriteria;AggregatesWeightedByScoredResponses";
+    public bool HasMixedClassificationCriteria { get; init; }
+
+    public CustomerSurvey.Application.Abstraction.Reports.TemplateAvailabilityMetrics Availability { get; init; } = new();
+
+    public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; }
+    public int StoredBaselineResponsesCount { get; init; }
+    public bool HasCompleteQuestionScoreData => StoredBaselineResponsesCount == 0;
+    public bool RequestedModeAvailable { get; init; } = true;
+
     public DepartmentDashboardPeriodResponse Period { get; init; } = new();
 
     public DepartmentDashboardSummaryResponse Summary { get; init; } = new();
@@ -22,6 +32,9 @@ public sealed record GetDepartmentDashboardResponse
         = Array.Empty<DepartmentDashboardTemplatePerformanceResponse>();
 
     public IReadOnlyCollection<DepartmentDashboardQuestionInsightResponse> LowestRatedQuestions { get; init; }
+        = Array.Empty<DepartmentDashboardQuestionInsightResponse>();
+
+    public IReadOnlyCollection<DepartmentDashboardQuestionInsightResponse> BestRatedQuestions { get; init; }
         = Array.Empty<DepartmentDashboardQuestionInsightResponse>();
 
     public IReadOnlyCollection<DepartmentDashboardCustomInputSegmentResponse> CustomInputSegments { get; init; }
@@ -44,6 +57,8 @@ public sealed record DepartmentDashboardPeriodResponse
 
 public sealed record DepartmentDashboardSummaryResponse
 {
+    public bool HasScoreData => ScoredResponses > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public Guid DepartmentId { get; init; }
 
     public string DepartmentNameEn { get; init; } = string.Empty;
@@ -81,6 +96,8 @@ public sealed record DepartmentDashboardSummaryResponse
 
 public sealed record DepartmentDashboardTrendPointResponse
 {
+    public bool HasScoreData => ResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public string Period { get; init; } = string.Empty;
 
     public int ResponsesCount { get; init; }
@@ -92,6 +109,8 @@ public sealed record DepartmentDashboardTrendPointResponse
 
 public sealed record DepartmentDashboardOperatorPerformanceResponse
 {
+    public bool HasScoreData => ScoredResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public Guid OperatorId { get; init; }
 
     public string OperatorNameEn { get; init; } = string.Empty;
@@ -119,6 +138,8 @@ public sealed record DepartmentDashboardOperatorPerformanceResponse
 
 public sealed record DepartmentDashboardTemplatePerformanceResponse
 {
+    public bool HasScoreData => ScoredResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public Guid TemplateId { get; init; }
 
     public string TemplateNameEn { get; init; } = string.Empty;

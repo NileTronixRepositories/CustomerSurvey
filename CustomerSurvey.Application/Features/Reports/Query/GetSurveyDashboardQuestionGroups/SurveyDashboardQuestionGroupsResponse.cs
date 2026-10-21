@@ -1,10 +1,14 @@
-using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
+﻿using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardQuestionGroups;
 
 public sealed record SurveyDashboardQuestionGroupsResponse
 {
+    public bool RequestedModeAvailable { get; init; } = true;
+    public int StoredBaselineResponsesCount { get; init; }
+    public bool HasCompleteQuestionScoreData => StoredBaselineResponsesCount == 0;
+
     public SurveyDashboardAppliedFiltersResponse AppliedFilters { get; init; } = new();
 
     public IReadOnlyCollection<SurveyDashboardQuestionGroupItemResponse> QuestionGroups { get; init; }

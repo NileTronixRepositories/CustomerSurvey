@@ -1,4 +1,4 @@
-# CustomerSurvey — Source of Truth
+﻿# CustomerSurvey — Source of Truth
 
 ## 1. Project Identity
 
@@ -2113,3 +2113,20 @@ Dashboards & PDF Reports
 الـ Architecture الحالية هي الأساس الرسمي للمراحل القادمة.
 
 أي Feature جديدة يجب أن تمتد فوق النظام الحالي بدون تغيير Versions أو إعادة بناء Architecture إلا بقرار منفصل وصريح.
+
+
+# Approved Reporting and Historical Data Addendum — 2026-10-21
+
+This addendum supersedes earlier scoring/reporting descriptions where they conflict.
+
+* ScoreCalculationMode: RootQuestions=1 (default), LowestConditionLevel=2 (existing matched-path semantics), AllAnsweredQuestions=3 (all answered scorable questions).
+* SingleChoice, StarRating and Smiles use a fixed maximum of 5. Overall and question-group satisfaction give each scored response equal weight.
+* Original ActualScore, MaxScore and ScorePercentage are immutable. Newly saved responses capture immutable snapshots in the same Unit of Work, including historical questions, available options, condition paths, media references and custom-input definitions. Custom-input values continue using existing immutable value rows.
+* Legacy reconstruction never proves historical mutable definitions. Reports expose provenance and mode availability; uncertain alternate modes use the explicitly identified original root-score baseline, and unavailable historical question tokens are excluded.
+* Selected TemplateId is exact and source-aware; TemplateFamilyId remains copy metadata and never expands reporting selection. Excel still requires one exact template.
+* Current branch settings classify individual responses (NeutralMinimum=60, SatisfiedMinimum=80 by default) and aggregate risk (MediumRiskMinimum=50, HealthyMinimum=75). Settings changes reclassify historical views without changing scores or snapshots. Mixed-branch aggregate criteria are weighted by scored response contributions.
+* No scored responses means NoData and nullable SatisfactionPercentage/HasScoreData. Existing nonnullable average fields are retained for compatibility.
+* BestRatedQuestions uses the existing rankings and TopQuestionsCount, with a default minimum of 70%, descending average, descending answer count and deterministic identity ties.
+* Availability history records creation, copies/assignment, activation, deactivation and schedule changes atomically. Historical metrics intersect recorded state/schedule/report intervals. Legacy baselines establish coverage only from capture time, never historical creation. Expiration is inferred from ExpireTo.
+* TotalComplaints counts nonblank Complain answers; ResponsesWithComplaints counts distinct source-aware responses. ComplaintRate uses ResponsesWithComplaints/TotalResponses. Complaint-answer navigation pages complaint items; ordinary response navigation retains response counts.
+* Bounded offline maintenance: run the API with --backfill-survey-history after migrations. Each invocation processes at most 100 records of each supported category and reports MayHaveMore. Repeat until false. No production backfill runs inside schema migrations.

@@ -18,6 +18,16 @@ namespace CustomerSurvey.Domain.Entities
         public Guid TemplateId { get; private set; }
         public Template Template { get; private set; } = null!;
 
+        public ResponseSnapshot? Snapshot { get; private set; }
+
+        public void CaptureSnapshot(ResponseSnapshotDocument document)
+        {
+            if (Snapshot is not null) throw new InvalidOperationException("Response snapshots are immutable.");
+            if (document.ResponseId != Id || document.TemplateKind != 1 || document.TemplateId != TemplateId ||
+                document.ActualScore != ActualScore || document.MaxScore != MaxScore || document.ScorePercentage != ScorePercentage) throw new ArgumentException("Snapshot response identity mismatch.");
+            Snapshot = ResponseSnapshot.Create(document);
+        }
+
         public DateTime SubmittedOnUtc { get; private set; }
 
         public int ActualScore { get; private set; }

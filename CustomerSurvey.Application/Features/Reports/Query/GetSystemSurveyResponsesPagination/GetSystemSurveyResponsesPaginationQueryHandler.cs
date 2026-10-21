@@ -17,6 +17,7 @@ internal sealed class GetSystemSurveyResponsesPaginationQueryHandler
     private const int MaxAllowedMonths = 12;
     private const int CustomInputsPreviewCount = 3;
 
+    private readonly IWriteReadRepository<SurveyAnswer>? _complaintAnswerRepository;
     private readonly IWriteReadRepository<SuperAdmin> _superAdminReadRepository;
     private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
     private readonly IWriteReadRepository<SurveyResponseCustomInputValue> _customInputValueReadRepository;
@@ -26,8 +27,10 @@ internal sealed class GetSystemSurveyResponsesPaginationQueryHandler
         IWriteReadRepository<SuperAdmin> superAdminReadRepository,
         IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
         IWriteReadRepository<SurveyResponseCustomInputValue> customInputValueReadRepository,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IWriteReadRepository<SurveyAnswer>? complaintAnswerRepository = null)
     {
+        _complaintAnswerRepository = complaintAnswerRepository;
         _superAdminReadRepository = superAdminReadRepository
             ?? throw new ArgumentNullException(nameof(superAdminReadRepository));
 
@@ -82,6 +85,15 @@ internal sealed class GetSystemSurveyResponsesPaginationQueryHandler
             fromUtc,
             toExclusiveUtc,
             request);
+
+        if (request.ComplaintItemsOnly)
+        {
+            var complaintSpec = new CustomerSurvey.Application.Features.Reports.Shared.ComplaintItemsSpecification<SystemSurveyResponsePaginationItemResponse>(
+                spec, request.PageNumber, request.PageSize, request.QuestionId);
+            var (complaintItems, complaintCount) = await _complaintAnswerRepository!.ListWithCountAsync(complaintSpec, cancellationToken);
+            return Result<Pagination<SystemSurveyResponsePaginationItemResponse>>.Ok(new Pagination<SystemSurveyResponsePaginationItemResponse>(
+                request.PageNumber, request.PageSize, complaintCount, complaintItems.ToArray()));
+        }
 
         var (items, totalCount) = await _surveyResponseReadRepository.ListWithCountAsync(
             spec,

@@ -178,6 +178,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
             var selectedOptionsById = selectedOptions.ToDictionary(x => x.OptionId);
 
+            var historicalSurvey = (await _anonymousSurveyResponseReadRepository.FirstOrDefaultAsync(
+                new CustomerSurvey.Application.Features.Reports.Shared.GetAnonymousResponseSnapshotSpec(request.ResponseId),
+                cancellationToken))?.Read();
+
             var hydratedAnswers = answers
                 .Select(answer =>
                 {
@@ -194,17 +198,18 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                             out selectedOption);
                     }
 
+                    var saved = historicalSurvey?.Questions.FirstOrDefault(x => x.QuestionId == answer.QuestionId);
                     return answer with
                     {
-                        QuestionTextEn = question?.QuestionTextEn ?? string.Empty,
-                        QuestionTextAr = question?.QuestionTextAr,
-                        QuestionType = question?.QuestionType ?? answer.QuestionType,
-                        QuestionTypeName = (question?.QuestionType ?? answer.QuestionType).ToString(),
-                        QuestionOrder = question?.QuestionOrder ?? 0,
+                        QuestionTextEn = saved?.TextEn ?? question?.QuestionTextEn ?? string.Empty,
+                        QuestionTextAr = saved is not null ? saved.TextAr : question?.QuestionTextAr,
+                        QuestionType = saved?.Type ?? question?.QuestionType ?? answer.QuestionType,
+                        QuestionTypeName = (saved?.Type ?? question?.QuestionType ?? answer.QuestionType).ToString(),
+                        QuestionOrder = saved?.Order ?? question?.QuestionOrder ?? 0,
 
-                        SelectedOptionTextEn = selectedOption?.TextEn,
-                        SelectedOptionTextAr = selectedOption?.TextAr,
-                        SelectedOptionValue = selectedOption?.Value,
+                        SelectedOptionTextEn = saved?.SelectedOptionTextEn ?? selectedOption?.TextEn,
+                        SelectedOptionTextAr = saved is not null ? saved.SelectedOptionTextAr : selectedOption?.TextAr,
+                        SelectedOptionValue = saved?.SelectedOptionValue ?? selectedOption?.Value,
                         ImageFileUrl = !string.IsNullOrWhiteSpace(answer.ImageFileName)
                             ? $"{SurveyAnswerImagesBasePath}/{answer.ImageFileName}"
                             : null
@@ -215,6 +220,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
             var response = new GetAnonymousTemplateResponseDetailsResponse
             {
+                HistoricalSurvey = historicalSurvey,
                 AnonymousSurveyResponseId = responseBasic.AnonymousSurveyResponseId,
                 AnonymousTemplateId = responseBasic.AnonymousTemplateId,
                 SubmittedOnUtc = responseBasic.SubmittedOnUtc,

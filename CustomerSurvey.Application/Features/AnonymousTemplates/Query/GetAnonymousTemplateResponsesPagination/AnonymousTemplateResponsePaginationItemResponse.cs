@@ -2,6 +2,12 @@
 {
     public sealed record AnonymousTemplateResponsePaginationItemResponse
     {
+    public Guid? ComplaintQuestionId { get; init; }
+    public string? ComplaintText { get; init; }
+
+    public bool RequestedModeAvailable { get; init; } = true;
+    public string ScoreDerivation { get; init; } = string.Empty;
+
         public Guid AnonymousSurveyResponseId { get; init; }
 
         public Guid AnonymousTemplateId { get; init; }

@@ -4,6 +4,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyRespo
 
 public sealed record GetSystemSurveyResponseDetailsResponse
 {
+    public CustomerSurvey.Domain.Entities.ResponseSnapshotDocument? HistoricalSurvey { get; init; }
+    public CustomerSurvey.Domain.Entities.SnapshotProvenance HistoricalDataProvenance => HistoricalSurvey?.Provenance ?? CustomerSurvey.Domain.Entities.SnapshotProvenance.LegacyIncomplete;
+    public bool IsHistoricalDataVerified => HistoricalSurvey?.IsHistoricallyVerified == true;
+
     public Guid SurveyResponseId { get; init; }
 
     public SystemSurveyResponseBranchInfoResponse Branch { get; init; } = new();

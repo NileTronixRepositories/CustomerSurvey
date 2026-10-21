@@ -6,6 +6,12 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
     public sealed class GetAnonymousTemplateResponsesPaginationQuery
         : SearchParameters, IQuery<Pagination<AnonymousTemplateResponsePaginationItemResponse>>
     {
+    public bool ComplaintItemsOnly { get; init; }
+
+    public bool ScoreIncludedOnly { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; } = CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions;
+
         public Guid AnonymousTemplateId { get; init; }
 
         public DateTime? FromDate { get; init; }

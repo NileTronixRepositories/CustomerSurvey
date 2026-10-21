@@ -1,4 +1,4 @@
-using BuildingBlock.Application.Abstraction;
+﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Features.Reports.Shared;
 using CustomerSurvey.Domain.Enums;
@@ -8,6 +8,12 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentSurveyR
 public sealed class GetDepartmentSurveyResponsesPaginationQuery
     : SearchParameters, IQuery<Pagination<DepartmentSurveyResponsePaginationItemResponse>>
 {
+    public bool ComplaintItemsOnly { get; init; }
+
+    public bool ScoreIncludedOnly { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; } = CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions;
+
     public DateOnly? From { get; init; }
 
     public DateOnly? To { get; init; }

@@ -2,6 +2,16 @@
 
 public sealed record GetSystemDashboardResponse
 {
+    public string ClassificationPolicy => "CurrentBranchCriteria;AggregatesWeightedByScoredResponses";
+    public bool HasMixedClassificationCriteria { get; init; }
+
+    public CustomerSurvey.Application.Abstraction.Reports.TemplateAvailabilityMetrics Availability { get; init; } = new();
+
+    public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; }
+    public int StoredBaselineResponsesCount { get; init; }
+    public bool HasCompleteQuestionScoreData => StoredBaselineResponsesCount == 0;
+    public bool RequestedModeAvailable { get; init; } = true;
+
     public SystemDashboardPeriodResponse Period { get; init; } = new();
 
     public SystemDashboardSummaryResponse Summary { get; init; } = new();
@@ -39,6 +49,8 @@ public sealed record SystemDashboardPeriodResponse
 
 public sealed record SystemDashboardSummaryResponse
 {
+    public bool HasScoreData => ScoredResponses > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public int TotalBranches { get; init; }
 
     public int ActiveBranches { get; init; }
@@ -76,6 +88,8 @@ public sealed record SystemDashboardSummaryResponse
 
 public sealed record SystemDashboardTrendPointResponse
 {
+    public bool HasScoreData => ResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public string Period { get; init; } = string.Empty;
 
     public int ResponsesCount { get; init; }
@@ -87,6 +101,8 @@ public sealed record SystemDashboardTrendPointResponse
 
 public sealed record SystemDashboardBranchPerformanceResponse
 {
+    public bool HasScoreData => ScoredResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public Guid BranchId { get; init; }
 
     public string BranchNameEn { get; init; } = string.Empty;
@@ -131,6 +147,8 @@ public sealed record SystemDashboardDepartmentActivityResponse
 
 public sealed record SystemDashboardTopTemplateResponse
 {
+    public bool HasScoreData => ScoredResponsesCount > 0;
+    public decimal? SatisfactionPercentage => HasScoreData ? AverageScorePercentage : null;
     public Guid TemplateId { get; init; }
 
     public string TemplateNameEn { get; init; } = string.Empty;

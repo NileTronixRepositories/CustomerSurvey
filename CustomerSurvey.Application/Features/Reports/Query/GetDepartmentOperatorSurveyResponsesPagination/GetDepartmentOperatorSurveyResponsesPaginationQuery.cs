@@ -1,4 +1,4 @@
-using BuildingBlock.Application.Abstraction;
+﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Domain.SharedDto;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperatorSurveyResponsesPagination;
@@ -6,6 +6,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperato
 public sealed class GetDepartmentOperatorSurveyResponsesPaginationQuery
     : SearchParameters, IQuery<Pagination<DepartmentOperatorSurveyResponsePaginationItemResponse>>
 {
+    public bool ScoreIncludedOnly { get; init; }
+
+    public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; } = CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions;
+
     public Guid OperatorId { get; set; }
 
     public DateOnly? From { get; init; }
