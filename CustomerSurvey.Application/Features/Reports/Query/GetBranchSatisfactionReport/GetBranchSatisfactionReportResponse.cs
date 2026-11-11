@@ -21,6 +21,9 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
         public IReadOnlyCollection<SatisfactionByTemplateItemResponse> ByTemplate { get; init; }
             = Array.Empty<SatisfactionByTemplateItemResponse>();
 
+        public IReadOnlyCollection<SatisfactionFeedbackByTemplateItemResponse> FeedbackByTemplate { get; init; }
+            = Array.Empty<SatisfactionFeedbackByTemplateItemResponse>();
+
         public IReadOnlyCollection<SatisfactionTrendItemResponse> Trend { get; init; }
             = Array.Empty<SatisfactionTrendItemResponse>();
 
@@ -99,6 +102,15 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
         public int SuggestionsCount { get; init; }
         public int CommentsCount { get; init; }
     }
+
+    public sealed record SatisfactionFeedbackByTemplateItemResponse(
+        Guid TemplateId,
+        string TemplateNameEn,
+        string? TemplateNameAr,
+        int ResponsesCount,
+        int ComplaintsCount,
+        int SuggestionsCount,
+        int CommentsCount);
 
     public sealed record SatisfactionTrendItemResponse
     {

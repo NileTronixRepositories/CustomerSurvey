@@ -9,7 +9,7 @@ internal sealed class FlagOfficerProfileValidator : AbstractValidator<FlagOffice
         RuleFor(x => x.NameEn).NotEmpty().MaximumLength(200);
         RuleFor(x => x.NameAr).MaximumLength(200);
         RuleFor(x => x.Email).NotEmpty().MaximumLength(200).EmailAddress();
-        RuleFor(x => x.PhoneNumber).MaximumLength(50);
+        RuleFor(x => x.PhoneNumber).MaximumLength(30);
     }
 }
 

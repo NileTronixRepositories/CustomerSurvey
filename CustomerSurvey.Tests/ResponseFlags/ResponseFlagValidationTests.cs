@@ -1,8 +1,10 @@
 using System.Reflection;
 using BuildingBlock.Domain.Results;
+using BuildingBlock.Application.Behaviors;
 using CustomerSurvey.Api.Contracts.Operators;
 using CustomerSurvey.Api.Controllers;
 using CustomerSurvey.Application.Features.ResponseFlags;
+using CustomerSurvey.Application.Features.FlagOfficers;
 using CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOperatorTemplateResponse;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
@@ -101,6 +103,38 @@ public sealed class ResponseFlagValidationTests
         await controller.SubmitTemplateResponse(Guid.NewGuid(), request, default);
         Assert.Null(Assert.Single(Assert.IsType<SubmitOperatorTemplateResponseCommand>(
             ((OperatorSender)(object)sender).Request).Flags).Brief);
+    }
+
+    [Theory]
+    [InlineData(null, true)]
+    [InlineData(30, true)]
+    [InlineData(31, false)]
+    public async Task OfficerCreateAndUpdateValidatePhoneBeforePersistence(int? length, bool accepted)
+    {
+        var profile = new FlagOfficerProfile("Flag Officer", null, "officer@example.test",
+            length.HasValue ? new string('1', length.Value) : null);
+        var create = new CreateFlagOfficerCommand(Guid.NewGuid(), "officer", "TestPassword123", profile);
+        var update = new UpdateFlagOfficerCommand(Guid.NewGuid(), profile);
+        var handlerCalls = 0;
+        Task<Result<FlagOfficerChange>> Persist(CancellationToken ct)
+        {
+            handlerCalls++;
+            return Task.FromResult(Result<FlagOfficerChange>.Ok(new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), true)));
+        }
+
+        var createResult = await new ValidationBehavior<CreateFlagOfficerCommand, Result<FlagOfficerChange>>(
+            [new CreateFlagOfficerValidator()]).Handle(create, Persist, default);
+        var updateResult = await new ValidationBehavior<UpdateFlagOfficerCommand, Result<FlagOfficerChange>>(
+            [new UpdateFlagOfficerValidator()]).Handle(update, Persist, default);
+
+        Assert.Equal(accepted, createResult.IsSuccess);
+        Assert.Equal(accepted, updateResult.IsSuccess);
+        Assert.Equal(accepted ? 2 : 0, handlerCalls);
+        if (!accepted)
+        {
+            Assert.Equal(ErrorType.Validation, Assert.Single(createResult.Errors).Type);
+            Assert.Equal(ErrorType.Validation, Assert.Single(updateResult.Errors).Type);
+        }
     }
 
     private static SubmitOperatorTemplateResponseCommand SubmitRequest(params SubmitSurveyFlagCommandItem[] flags)

@@ -15,6 +15,7 @@ using CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponsesPagination;
 using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
+using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardComplaints;
 using CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponseDetails;
 using CustomerSurvey.Application.Features.Reports.Shared;
 using CustomerSurvey.Application.Features.ResponseFlags;
@@ -65,7 +66,8 @@ public sealed class ResponseFlagsSqlTests
         db.AddRange(anonymous, anonLink);
         await db.SaveChangesAsync();
         var anonymousResponse = AnonymousSurveyResponse.Create(anonymous.Id, 0, 0, 0);
-        anonymousResponse.AddAnswer(AnonymousSurveyAnswer.CreateComplain(anonymousResponse.Id, anonLink.Id, question.Id, "Anonymous complaint"));
+        var anonymousComplaint = new string('a', 4000);
+        anonymousResponse.AddAnswer(AnonymousSurveyAnswer.CreateComplain(anonymousResponse.Id, anonLink.Id, question.Id, anonymousComplaint));
         db.Add(anonymousResponse);
         await db.SaveChangesAsync();
 
@@ -73,10 +75,11 @@ public sealed class ResponseFlagsSqlTests
             store.Read<OperatorTemplate>(), store.Read<TemplateQuestion>(), store.Read<TemplateCustomInput>(),
             store.Read<QuestionOption>(), store.Read<TemplateQuestionCondition>(), store.Write<SurveyResponse>(),
             new SubmissionMedia(), new TestCurrentUser(user.Id), store.Unit, store.Permissions);
+        var authorizedComplaint = new string('q', 4000);
         var request = new SubmitOperatorTemplateResponseCommand
         {
             TemplateId = first.Id,
-            Answers = [new SubmitOperatorTemplateAnswerCommandItem { QuestionId = question.Id, TextAnswer = "Complaint answer" }]
+            Answers = [new SubmitOperatorTemplateAnswerCommandItem { QuestionId = question.Id, TextAnswer = authorizedComplaint }]
         };
         var noFlags = await submission.Handle(request, default);
         Assert.True(noFlags.IsSuccess, string.Join(", ", noFlags.Errors));
@@ -153,10 +156,11 @@ public sealed class ResponseFlagsSqlTests
         Assert.NotNull(details.Response.HistoricalSurvey);
 
         Assert.True((await edit.Handle(new WriteResponseFlagAnswerCommand(originalFlag.Id, "First answer"), default)).IsSuccess);
-        Assert.True((await edit.Handle(new WriteResponseFlagAnswerCommand(originalFlag.Id, "New answer"), default)).IsSuccess);
+        var fullAnswer = new string('r', SurveyResponseFlag.MaxAnswerLength);
+        Assert.True((await edit.Handle(new WriteResponseFlagAnswerCommand(originalFlag.Id, fullAnswer), default)).IsSuccess);
         var answered = (await queries.Handle(new GetResponseFlagQuery(originalFlag.Id), default)).Value;
         Assert.Null(answered.Brief);
-        Assert.Equal("New answer", answered.Answer);
+        Assert.Equal(fullAnswer, answered.Answer);
         Assert.Equal(officer.ApplicationUserId, answered.AnsweredBy!.ApplicationUserId);
         Assert.NotNull(answered.AnsweredOnUtc);
         Assert.Equal(user.Id, answered.CreatedBy.ApplicationUserId);
@@ -167,10 +171,11 @@ public sealed class ResponseFlagsSqlTests
 
         await store.Grant(officer, FlagAccess.ViewRole, FlagAccess.CreateRole, FlagAccess.EditBriefRole);
         Assert.True((await create.Handle(new CreateResponseFlagCommand(responseId, SurveyResponseFlagType.Comment, "Brief", "Unauthorized"), default)).IsFailure);
-        Assert.True((await edit.Handle(new UpdateResponseFlagBriefCommand(originalFlag.Id, "New brief"), default)).IsSuccess);
+        var fullBrief = new string('b', SurveyResponseFlag.MaxBriefLength);
+        Assert.True((await edit.Handle(new UpdateResponseFlagBriefCommand(originalFlag.Id, fullBrief), default)).IsSuccess);
         var updated = (await queries.Handle(new GetResponseFlagQuery(originalFlag.Id), default)).Value;
-        Assert.Equal("New brief", updated.Brief);
-        Assert.Equal("New answer", updated.Answer);
+        Assert.Equal(fullBrief, updated.Brief);
+        Assert.Equal(fullAnswer, updated.Answer);
         Assert.Equal(SurveyResponseFlagType.Complaint, updated.Type);
         Assert.Equal(officer.ApplicationUserId, updated.BriefUpdatedBy!.ApplicationUserId);
         Assert.Equal(snapshot.Payload, (await db.Set<ResponseSnapshot>().AsNoTracking().SingleAsync(x => x.SurveyResponseId == responseId)).Payload);
@@ -182,8 +187,59 @@ public sealed class ResponseFlagsSqlTests
         var complaints = await reader.ReadAsync(filters, default);
         Assert.Equal(5, complaints.TotalComplaints);
         Assert.Equal(3, complaints.ResponsesWithComplaints);
-        Assert.Single(complaints.PageItems, x => x.Source == SurveyDashboardSource.Anonymous);
-        Assert.Single(complaints.PageItems, x => x.FlagId.HasValue && x.Brief is null && x.QuestionId is null);
+        Assert.Equal(3, complaints.TotalResponses);
+        var complaintGroups = complaints.TemplateGroups.ToDictionary(x => x.TemplateId);
+        Assert.Equal(2, complaintGroups.Count);
+        Assert.Equal((4, 2), (complaintGroups[first.Id].TotalComplaints, complaintGroups[first.Id].ResponsesWithComplaints));
+        Assert.Equal((1, 1), (complaintGroups[anonymous.Id].TotalComplaints, complaintGroups[anonymous.Id].ResponsesWithComplaints));
+
+        var items = complaints.PageItems.Select(x => GetSurveyDashboardComplaintsQueryHandler.MapItem(x, false)).ToArray();
+        var questionItems = items.Where(x => x.ItemKind == "QuestionAnswer").ToArray();
+        Assert.Equal(3, questionItems.Length);
+        Assert.All(questionItems, x =>
+        {
+            Assert.Equal(question.Id, x.QuestionId);
+            Assert.Null(x.FlagId);
+            Assert.Equal(x.Source == SurveyDashboardSource.Anonymous ? anonymousComplaint : authorizedComplaint, x.ComplaintText);
+        });
+        Assert.Single(questionItems, x => x.Source == SurveyDashboardSource.Anonymous);
+
+        var flagItems = items.Where(x => x.ItemKind == "ResponseFlag").ToArray();
+        Assert.Equal(2, flagItems.Length);
+        Assert.All(flagItems, x =>
+        {
+            Assert.Equal(SurveyDashboardSource.Internal, x.Source);
+            Assert.Null(x.QuestionId);
+            Assert.NotNull(x.FlagId);
+        });
+        var answeredFlag = Assert.Single(flagItems, x => x.FlagId == originalFlag.Id);
+        Assert.Equal(fullBrief, answeredFlag.Brief);
+        Assert.Equal(fullBrief, answeredFlag.ComplaintText);
+        Assert.Equal(fullAnswer, answeredFlag.Answer);
+        Assert.Single(flagItems, x => x.Brief is null && x.Answer is null);
+
+        var expectedPageOrder = complaints.PageItems.Select(x => x.ComplaintId).ToArray();
+        for (var pageNumber = 1; pageNumber <= expectedPageOrder.Length; pageNumber++)
+        {
+            var result = await reader.ReadAsync(filters with { PageNumber = pageNumber, PageSize = 1 }, default);
+            Assert.Equal(expectedPageOrder.Length, result.TotalComplaints);
+            Assert.Equal(expectedPageOrder[pageNumber - 1], Assert.Single(result.PageItems).ComplaintId);
+        }
+        var otherBranch = await reader.ReadAsync(filters with { BranchId = secondBranch.Id }, default);
+        Assert.Equal(crossBranch.Id, Assert.Single(otherBranch.PageItems).ResponseId);
+        var internalOnly = await reader.ReadAsync(filters with { IncludeAnonymous = false, InternalTemplateId = first.Id }, default);
+        Assert.Equal(4, internalOnly.TotalComplaints);
+        Assert.All(internalOnly.PageItems, x => Assert.Equal(first.Id, x.TemplateId));
+        var anonymousOnly = await reader.ReadAsync(filters with { IncludeInternal = false, AnonymousTemplateId = anonymous.Id }, default);
+        Assert.Equal(anonymousResponse.Id, Assert.Single(anonymousOnly.PageItems).ResponseId);
+        var otherTemplate = await reader.ReadAsync(filters with { IncludeAnonymous = false, InternalTemplateId = second.Id }, default);
+        Assert.Equal(0, otherTemplate.TotalComplaints);
+        var outsideDate = await reader.ReadAsync(filters with
+        {
+            FromUtc = filters.ToExclusiveUtc,
+            ToExclusiveUtc = filters.ToExclusiveUtc.AddDays(1)
+        }, default);
+        Assert.Equal(0, outsideDate.TotalComplaints);
         var suggestions = await reader.ReadAsync(filters with { FlagType = SurveyResponseFlagType.Suggestion }, default);
         Assert.Equal(2, suggestions.TotalComplaints);
         Assert.Equal(1, suggestions.ResponsesWithComplaints);
@@ -200,12 +256,28 @@ public sealed class ResponseFlagsSqlTests
         var scopedSpec = new GetDepartmentSurveyResponsesPaginationSpec(store.Department.Id, filters.FromUtc, filters.ToExclusiveUtc,
             new GetDepartmentSurveyResponsesPaginationQuery { TemplateId = first.Id, HasComplaint = true });
         var scoped = new AuthorizedFeedbackItems(store.Read<SurveyResponse>(), store.Read<SurveyResponseFlag>());
-        var page = await scoped.PageAsync(scopedSpec, new BuildingBlock.Domain.SharedDto.SearchParameters(),
-            SurveyResponseFlagType.Complaint, null, default, row => row.SurveyResponseId, (row, item, flag) =>
-                row with { FlagId = flag?.FlagId, ComplaintQuestionId = item.QuestionId });
-        Assert.Equal(4, page.TotalItems);
-        Assert.Equal(2, page.Data.Count(x => x.FlagId.HasValue));
-        Assert.Equal(2, page.Data.Count(x => x.ComplaintQuestionId.HasValue));
+        var paging = new BuildingBlock.Domain.SharedDto.SearchParameters { PageSize = 1 };
+        var scopedItems = new List<DepartmentSurveyResponsePaginationItemResponse>();
+        for (var pageNumber = 1; pageNumber <= 4; pageNumber++)
+        {
+            paging.PageNumber = pageNumber;
+            var page = await scoped.PageAsync(scopedSpec, paging, SurveyResponseFlagType.Complaint,
+                null, default, row => row.SurveyResponseId, (row, item, flag) => row with
+                {
+                    FlagId = item.FlagId, Flag = flag, ComplaintQuestionId = item.QuestionId, ComplaintText = item.Text
+                });
+            Assert.Equal(4, page.TotalItems);
+            scopedItems.Add(Assert.Single(page.Data));
+        }
+
+        Assert.Equal(4, scopedItems.Select(x => (x.SurveyResponseId, x.FlagId, x.ComplaintQuestionId)).Distinct().Count());
+        Assert.Equal(2, scopedItems.Count(x => x.FlagId.HasValue));
+        Assert.All(scopedItems.Where(x => x.ComplaintQuestionId.HasValue), x => Assert.Equal(authorizedComplaint, x.ComplaintText));
+        var scopedFlag = Assert.Single(scopedItems, x => x.FlagId == originalFlag.Id);
+        Assert.Equal(fullBrief, scopedFlag.ComplaintText);
+        Assert.Equal(fullAnswer, scopedFlag.Flag?.Answer);
+        Assert.Equal(2, scopedItems.Count(x => x.ComplaintQuestionId == question.Id));
+        Assert.Single(scopedItems, x => x.FlagId.HasValue && x.ComplaintText is null);
 
         var flagOnly = new GetSystemSurveyResponsesPaginationSpec(filters.FromUtc, filters.ToExclusiveUtc,
             new GetSystemSurveyResponsesPaginationQuery { BranchId = secondBranch.Id, HasComplaint = true });
@@ -214,7 +286,59 @@ public sealed class ResponseFlagsSqlTests
             new GetSystemSurveyResponsesPaginationQuery { BranchId = secondBranch.Id, HasComplaint = false });
         Assert.Equal(unflagged.Id, Assert.Single(await store.Read<SurveyResponse>().ListAsync(noComplaint)).SurveyResponseId);
         await VerifyDashboardsAsync(store, firstBranch.Id, first.Id);
+        await VerifySatisfactionBreakdownAsync(store, op, first, group.Id);
         await VerifyFailedMediaSubmissionAsync(store, op, second);
+    }
+
+    private static async Task VerifySatisfactionBreakdownAsync(
+        FlagStore store, Operator op, Template unscoredTemplate, Guid questionGroupId)
+    {
+        var actor = store.Admin.Id;
+        var branchId = unscoredTemplate.BranchId;
+        var template = Template.Create(branchId, "Scored", null, null, DateTime.UtcNow.AddDays(-1), null, actor);
+        var rating = Question.Create(branchId, questionGroupId, "Rating", null, QuestionType.StarRating, actor);
+        store.Db.AddRange(template, rating, TemplateQuestion.Create(template.Id, rating.Id, 1, actor));
+        await store.Db.SaveChangesAsync();
+
+        foreach (var score in new[] { 1, 3, 5 })
+        {
+            var response = SurveyResponse.Create(op.Id, template.Id, op.ApplicationUserId, score, 5, score * 20m);
+            response.AddAnswer(SurveyAnswer.CreateStarRating(response.Id, rating.Id, score));
+            if (score == 1)
+            {
+                response.AddSubmittedFlag(SurveyResponseFlagType.Complaint, null);
+                response.AddSubmittedFlag(SurveyResponseFlagType.Complaint, null);
+                response.AddSubmittedFlag(SurveyResponseFlagType.Suggestion, null);
+            }
+
+            store.Db.Add(response);
+        }
+
+        await store.Db.SaveChangesAsync();
+        var handler = new GetBranchSatisfactionReportQueryHandler(store.Read<Template>(), store.Read<SurveyResponse>(),
+            store.Read<SurveyAnswer>(), new TestBranchScope(branchId, actor), new TestCurrentUser(actor));
+        var report = (await handler.Handle(new GetBranchSatisfactionReportQuery(), default)).Value;
+
+        var scored = Assert.Single(report.ByTemplate);
+        Assert.Equal(template.Id, scored.TemplateId);
+        Assert.Equal((60m, 3, 3), (scored.Score, scored.ResponsesCount, scored.ScoredAnswersCount));
+        Assert.Equal((2, 1, 0), (scored.ComplaintsCount, scored.SuggestionsCount, scored.CommentsCount));
+
+        var feedback = report.FeedbackByTemplate.ToDictionary(x => x.TemplateId);
+        Assert.Equal(2, feedback.Count);
+        var unscoredFeedback = feedback[unscoredTemplate.Id];
+        Assert.Equal((2, 4, 2, 2), (unscoredFeedback.ResponsesCount, unscoredFeedback.ComplaintsCount,
+            unscoredFeedback.SuggestionsCount, unscoredFeedback.CommentsCount));
+        var scoredFeedback = feedback[template.Id];
+        Assert.Equal((3, 2, 1, 0), (scoredFeedback.ResponsesCount, scoredFeedback.ComplaintsCount,
+            scoredFeedback.SuggestionsCount, scoredFeedback.CommentsCount));
+
+        Assert.Equal(60m, report.Overall.SatisfactionPercentage);
+        Assert.Equal(report.Overall.TotalResponses, feedback.Values.Sum(x => x.ResponsesCount));
+        Assert.Equal(report.Overall.ComplaintsCount, feedback.Values.Sum(x => x.ComplaintsCount));
+        Assert.Equal(report.Overall.SuggestionsCount, feedback.Values.Sum(x => x.SuggestionsCount));
+        Assert.Equal(report.Overall.CommentsCount, feedback.Values.Sum(x => x.CommentsCount));
+        Assert.Equal(3, report.Complaints.ResponsesWithComplaints);
     }
 
     private static async Task VerifyFailedMediaSubmissionAsync(FlagStore store, Operator op, Template template)

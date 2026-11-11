@@ -40,10 +40,10 @@ All administration routes require an active SuperAdmin or DepartmentAdmin profil
 
 | Method and route | Permission | Request and response |
 | --- | --- | --- |
-| `POST /api/flag-officers` | `FlagOfficers.Create` | Send `departmentId?`, `userName`, `password`, `nameEn`, `nameAr?`, `email`, and `phoneNumber?`. Returns `flagOfficerId`, `applicationUserId`, `departmentId`, and `isActive`. |
+| `POST /api/flag-officers` | `FlagOfficers.Create` | Send `departmentId?`, `userName`, `password`, `nameEn`, `nameAr?`, `email`, and `phoneNumber?` (up to 30 characters). Returns `flagOfficerId`, `applicationUserId`, `departmentId`, and `isActive`. |
 | `GET /api/flag-officers` | `FlagOfficers.ViewAll` | Supports `pageNumber`, `pageSize`, `orderSort`, `searchText`, and optional `departmentId`. Returns paginated profiles. |
 | `GET /api/flag-officers/{flagOfficerId}` | `FlagOfficers.ViewDetails` | Returns the profile, Department, active state, creator ID, creation timestamp, and assigned capability roles. |
-| `PUT /api/flag-officers/{flagOfficerId}` | `FlagOfficers.Update` | Send `nameEn`, `nameAr?`, `email`, and `phoneNumber?`. Returns the same fields as creation. |
+| `PUT /api/flag-officers/{flagOfficerId}` | `FlagOfficers.Update` | Send `nameEn`, `nameAr?`, `email`, and `phoneNumber?` (up to 30 characters). Returns the same fields as creation. |
 | `PUT /api/flag-officers/{flagOfficerId}/deactivate` | `FlagOfficers.Deactivate` | Returns the same fields as creation with `isActive=false`. |
 | `PUT /api/flag-officers/{flagOfficerId}/restore` | `FlagOfficers.Restore` | Returns the same fields as creation with `isActive=true`. |
 | `GET /api/flag-officers/roles-selection` | `FlagOfficers.AssignRoles` | Returns the four capability roles with `roleId`, `name`, and `permission`. |
@@ -70,7 +70,7 @@ Use the existing pagination envelope. Validation and permission failures use the
 | `GET /api/reports/department-dashboard` | `Reports.ViewDepartmentReports` | Adds Flag counts to summary, Operator activity, and template performance and adds suggestion and comment links to summary actions. |
 | `GET /api/reports/system-dashboard` | `Reports.ViewSystemDashboard` | Adds Flag counts to summary, Branch and template performance, and Department activity and adds suggestion and comment links to summary actions. |
 | `GET /api/reports/survey-dashboard` | `Reports.ViewBranchReports` | Adds Flag counts to summary, source breakdown, Branch summary, and template performance and adds suggestion and comment links to summary actions. |
-| `GET /api/reports/branch/satisfaction` | `Reports.ViewBranchReports` | Adds Flag counts to overall and template totals, a distinct `responsesWithComplaints` count, and feedback drill-down links. |
+| `GET /api/reports/branch/satisfaction` | `Reports.ViewBranchReports` | Adds Flag counts to overall and scored template totals, a distinct `responsesWithComplaints` count, and feedback drill-down links. `feedbackByTemplate` includes all templates with responses in scope and returns template identity, total `responsesCount`, and the three feedback counts. `byTemplate` continues to report scored responses and satisfaction scores. |
 | `GET /api/reports/survey-dashboard/complaints` | `Reports.ViewBranchReports` | Paginates Authorized and Anonymous complaint-question answers together with Authorized Complaint Flags. The total counts items. `responsesWithComplaints` and `complaintRate` use distinct responses. |
 | `GET /api/reports/survey-dashboard/suggestions` | `Reports.ViewBranchReports` | Returns `appliedFilters`, `totalItems`, `responsesWithFlags`, and `page` of Suggestion Flag details. |
 | `GET /api/reports/survey-dashboard/comments` | `Reports.ViewBranchReports` | Same contract as suggestions, for Comment Flags. |

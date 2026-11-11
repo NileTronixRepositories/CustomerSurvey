@@ -260,8 +260,18 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 
             var distribution = BuildDistribution(distributionValues);
 
-            var responsesByTemplate = responses.ToLookup(x => x.TemplateId);
             var questionComplaintsByTemplate = questionComplaints.ToLookup(x => x.TemplateId);
+            var feedbackByTemplate = responses.GroupBy(x => x.TemplateId).ToDictionary(
+                group => group.Key,
+                group =>
+                {
+                    var template = group.First();
+                    return new SatisfactionFeedbackByTemplateItemResponse(
+                        group.Key, template.TemplateNameEn, template.TemplateNameAr, group.Count(),
+                        questionComplaintsByTemplate[group.Key].Count() + group.Sum(x => x.ComplaintFlagsCount),
+                        group.Sum(x => x.SuggestionsCount),
+                        group.Sum(x => x.CommentsCount));
+                });
             var responsesWithComplaints = questionComplaints.Select(x => x.SurveyResponseId)
                 .Concat(responses.Where(x => x.ComplaintFlagsCount > 0).Select(x => x.SurveyResponseId))
                 .Distinct().Count();
@@ -280,10 +290,9 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                     TemplateNameAr = x.Key.TemplateNameAr,
                     Score = Round(x.Average(response => response.ScorePercentage)),
                     ResponsesCount = x.Count(),
-                    ComplaintsCount = questionComplaintsByTemplate[x.Key.TemplateId].Count() +
-                        responsesByTemplate[x.Key.TemplateId].Sum(r => r.ComplaintFlagsCount),
-                    SuggestionsCount = responsesByTemplate[x.Key.TemplateId].Sum(r => r.SuggestionsCount),
-                    CommentsCount = responsesByTemplate[x.Key.TemplateId].Sum(r => r.CommentsCount),
+                    ComplaintsCount = feedbackByTemplate[x.Key.TemplateId].ComplaintsCount,
+                    SuggestionsCount = feedbackByTemplate[x.Key.TemplateId].SuggestionsCount,
+                    CommentsCount = feedbackByTemplate[x.Key.TemplateId].CommentsCount,
                     ScoredAnswersCount = x.Sum(response => response.MaxScore / 5)
                 })
                 .OrderByDescending(x => x.Score)
@@ -344,6 +353,7 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 
                 Distribution = distribution,
                 ByTemplate = byTemplate,
+                FeedbackByTemplate = feedbackByTemplate.Values.OrderBy(x => x.TemplateNameEn).ThenBy(x => x.TemplateId).ToArray(),
                 Trend = trend,
 
                 SuggestionsNavigation = FeedbackNavigation("suggestions", request.TemplateId, period.From, period.To),
