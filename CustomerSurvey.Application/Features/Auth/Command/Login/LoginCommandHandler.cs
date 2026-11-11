@@ -1,4 +1,4 @@
-﻿using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Security;
@@ -31,6 +31,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
         private readonly IWriteReadRepository<BranchAreaBranch> _branchAreaBranchReadRepository;
         private readonly IWriteReadRepository<DepartmentAdmin> _departmentAdminReadRepository;
         private readonly IWriteReadRepository<Operator> _operatorReadRepository;
+        private readonly IWriteReadRepository<FlagOfficer> _flagOfficers;
 
         private readonly IJwtProvider _jwtProvider;
         private readonly PasswordPolicyOptions _passwordPolicyOptions;
@@ -47,6 +48,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
             IWriteReadRepository<BranchAreaBranch> branchAreaBranchReadRepository,
             IWriteReadRepository<DepartmentAdmin> departmentAdminReadRepository,
             IWriteReadRepository<Operator> operatorReadRepository,
+            IWriteReadRepository<FlagOfficer> flagOfficers,
             IJwtProvider jwtProvider,
             IOptions<PasswordPolicyOptions> passwordPolicyOptions)
         {
@@ -77,6 +79,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
             _departmentAdminReadRepository = departmentAdminReadRepository
                 ?? throw new ArgumentNullException(nameof(departmentAdminReadRepository));
 
+            _flagOfficers = flagOfficers;
             _operatorReadRepository = operatorReadRepository
                 ?? throw new ArgumentNullException(nameof(operatorReadRepository));
 
@@ -241,6 +244,10 @@ namespace CustomerSurvey.Application.Features.Auth.Command.Login
                     cancellationToken),
 
                 UserType.DepartmentAdmin => await _departmentAdminReadRepository.AnyAsync(
+                    x => x.ApplicationUserId == applicationUserId,
+                    cancellationToken),
+
+                UserType.FlagOfficer => await _flagOfficers.AnyAsync(
                     x => x.ApplicationUserId == applicationUserId,
                     cancellationToken),
 

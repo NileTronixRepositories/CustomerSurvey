@@ -1,4 +1,5 @@
-﻿using BuildingBlock.Api;
+using CustomerSurvey.Domain.Enums;
+using BuildingBlock.Api;
 using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchDashboard;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchAnonymousResponsesPagination;
@@ -191,6 +192,18 @@ namespace CustomerSurvey.Api.Controllers
             var result = await sender.Send(query, cancellationToken);
             return result.ToIActionResult();
         }
+
+        [HttpGet("survey-dashboard/suggestions")]
+        [Permission("Reports.ViewBranchReports")]
+        public async Task<IActionResult> GetSurveyDashboardSuggestions(
+            [FromQuery] SurveyDashboardFlagFeedbackFilters filters, CancellationToken ct)
+            => (await sender.Send(new GetSurveyDashboardFlagFeedbackQuery(SurveyResponseFlagType.Suggestion, filters), ct)).ToIActionResult();
+
+        [HttpGet("survey-dashboard/comments")]
+        [Permission("Reports.ViewBranchReports")]
+        public async Task<IActionResult> GetSurveyDashboardComments(
+            [FromQuery] SurveyDashboardFlagFeedbackFilters filters, CancellationToken ct)
+            => (await sender.Send(new GetSurveyDashboardFlagFeedbackQuery(SurveyResponseFlagType.Comment, filters), ct)).ToIActionResult();
 
         [HttpGet("survey-dashboard/question-groups")]
         [Permission("Reports.ViewBranchReports")]

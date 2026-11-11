@@ -1,4 +1,4 @@
-﻿using CustomerSurvey.Application.Features.Reports.Shared;
+using CustomerSurvey.Application.Features.Reports.Shared;
 using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
@@ -248,9 +248,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
             var neutralResponses = scoredResponses.Count(x => x.ScorePercentage >= x.Criteria.NeutralMinimum && x.ScorePercentage < x.Criteria.SatisfiedMinimum);
             var unsatisfiedResponses = scoredResponses.Count(x => x.ScorePercentage < x.Criteria.NeutralMinimum);
 
-            var complaintsCount = answers.Count(x =>
+            var questionComplaints = answers.Where(x =>
                 x.QuestionType == QuestionType.Complain &&
-                !string.IsNullOrWhiteSpace(x.TextAnswer));
+                !string.IsNullOrWhiteSpace(x.TextAnswer)).ToArray();
+            var complaintsCount = questionComplaints.Length + responses.Sum(x => x.ComplaintFlagsCount);
             var voiceAnswersCount = answers.Count(x => x.QuestionType == QuestionType.Voice);
 
             var distributionValues = scoredResponses
@@ -258,6 +259,22 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                 .ToArray();
 
             var distribution = BuildDistribution(distributionValues);
+
+            var questionComplaintsByTemplate = questionComplaints.ToLookup(x => x.TemplateId);
+            var feedbackByTemplate = responses.GroupBy(x => x.TemplateId).ToDictionary(
+                group => group.Key,
+                group =>
+                {
+                    var template = group.First();
+                    return new SatisfactionFeedbackByTemplateItemResponse(
+                        group.Key, template.TemplateNameEn, template.TemplateNameAr, group.Count(),
+                        questionComplaintsByTemplate[group.Key].Count() + group.Sum(x => x.ComplaintFlagsCount),
+                        group.Sum(x => x.SuggestionsCount),
+                        group.Sum(x => x.CommentsCount));
+                });
+            var responsesWithComplaints = questionComplaints.Select(x => x.SurveyResponseId)
+                .Concat(responses.Where(x => x.ComplaintFlagsCount > 0).Select(x => x.SurveyResponseId))
+                .Distinct().Count();
 
             var byTemplate = scoredResponses
                 .GroupBy(x => new
@@ -273,6 +290,9 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                     TemplateNameAr = x.Key.TemplateNameAr,
                     Score = Round(x.Average(response => response.ScorePercentage)),
                     ResponsesCount = x.Count(),
+                    ComplaintsCount = feedbackByTemplate[x.Key.TemplateId].ComplaintsCount,
+                    SuggestionsCount = feedbackByTemplate[x.Key.TemplateId].SuggestionsCount,
+                    CommentsCount = feedbackByTemplate[x.Key.TemplateId].CommentsCount,
                     ScoredAnswersCount = x.Sum(response => response.MaxScore / 5)
                 })
                 .OrderByDescending(x => x.Score)
@@ -326,16 +346,23 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                     NeutralResponses = neutralResponses,
                     UnsatisfiedResponses = unsatisfiedResponses,
                     ComplaintsCount = complaintsCount,
+                    SuggestionsCount = responses.Sum(response => response.SuggestionsCount),
+                    CommentsCount = responses.Sum(response => response.CommentsCount),
                     VoiceAnswersCount = voiceAnswersCount
                 },
 
                 Distribution = distribution,
                 ByTemplate = byTemplate,
+                FeedbackByTemplate = feedbackByTemplate.Values.OrderBy(x => x.TemplateNameEn).ThenBy(x => x.TemplateId).ToArray(),
                 Trend = trend,
 
+                SuggestionsNavigation = FeedbackNavigation("suggestions", request.TemplateId, period.From, period.To),
+                CommentsNavigation = FeedbackNavigation("comments", request.TemplateId, period.From, period.To),
                 Complaints = new SatisfactionComplaintsResponse
                 {
                     Count = complaintsCount,
+                    ResponsesWithComplaints = responsesWithComplaints,
+                    DetailsNavigation = FeedbackNavigation("complaints", request.TemplateId, period.From, period.To),
                     PercentageOfResponses = complaintsPercentage
                 }
             };
@@ -390,6 +417,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 
             return 5;
         }
+
+        private static DashboardDetailsNavigationResponse FeedbackNavigation(string route, Guid? templateId, DateOnly from, DateOnly to)
+            => DashboardDrillDownPathBuilder.Navigation("SurveyFeedback", $"/api/reports/survey-dashboard/{route}",
+                ("source", "Internal"), ("templateId", templateId), ("from", from), ("to", to));
 
         private static decimal Round(decimal value)
         {

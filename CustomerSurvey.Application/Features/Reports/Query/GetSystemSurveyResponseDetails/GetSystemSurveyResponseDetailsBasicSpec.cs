@@ -1,4 +1,4 @@
-﻿using BuildingBlock.Domain.Specification;
+using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponseDetails;
@@ -6,9 +6,11 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyRespo
 internal sealed class GetSystemSurveyResponseDetailsBasicSpec
     : Specification<SurveyResponse, SystemSurveyResponseDetailsBasicDto>
 {
-    public GetSystemSurveyResponseDetailsBasicSpec(Guid surveyResponseId)
+    public GetSystemSurveyResponseDetailsBasicSpec(Guid surveyResponseId, bool requireFlags = false)
     {
         AddCriteria(x => x.Id == surveyResponseId);
+        if (requireFlags)
+            AddCriteria(x => x.Flags.Any());
 
         Select(x => new SystemSurveyResponseDetailsBasicDto
         {

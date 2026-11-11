@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentSurveyResponsesPagination;
 
@@ -29,6 +29,8 @@ internal sealed class GetDepartmentSurveyResponsesPaginationQueryValidator
             .WithMessage("CustomInputValue must be a valid integer for an Integer custom input.");
 
         RuleFor(x => x.DateBasis).IsInEnum();
+        RuleFor(x => x.FlagType).IsInEnum();
+        RuleFor(x => x.PageNumber).LessThanOrEqualTo(int.MaxValue / 100);
 
         RuleFor(x => x.CustomInputValue)
             .Must(value => CustomInputDate.TryParse(value?.Trim(), out _))

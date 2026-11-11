@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,10 +21,16 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
         public IReadOnlyCollection<SatisfactionByTemplateItemResponse> ByTemplate { get; init; }
             = Array.Empty<SatisfactionByTemplateItemResponse>();
 
+        public IReadOnlyCollection<SatisfactionFeedbackByTemplateItemResponse> FeedbackByTemplate { get; init; }
+            = Array.Empty<SatisfactionFeedbackByTemplateItemResponse>();
+
         public IReadOnlyCollection<SatisfactionTrendItemResponse> Trend { get; init; }
             = Array.Empty<SatisfactionTrendItemResponse>();
 
         public SatisfactionComplaintsResponse Complaints { get; init; } = new();
+
+        public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? SuggestionsNavigation { get; init; }
+        public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? CommentsNavigation { get; init; }
     }
 
     public sealed record SatisfactionReportPeriodResponse
@@ -59,6 +65,8 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
         public int UnsatisfiedResponses { get; init; }
 
         public int ComplaintsCount { get; init; }
+        public int SuggestionsCount { get; init; }
+        public int CommentsCount { get; init; }
 
         public int VoiceAnswersCount { get; init; }
     }
@@ -89,7 +97,20 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
         public int ResponsesCount { get; init; }
 
         public int ScoredAnswersCount { get; init; }
+
+        public int ComplaintsCount { get; init; }
+        public int SuggestionsCount { get; init; }
+        public int CommentsCount { get; init; }
     }
+
+    public sealed record SatisfactionFeedbackByTemplateItemResponse(
+        Guid TemplateId,
+        string TemplateNameEn,
+        string? TemplateNameAr,
+        int ResponsesCount,
+        int ComplaintsCount,
+        int SuggestionsCount,
+        int CommentsCount);
 
     public sealed record SatisfactionTrendItemResponse
     {
@@ -105,6 +126,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
     public sealed record SatisfactionComplaintsResponse
     {
         public int Count { get; init; }
+
+        public int ResponsesWithComplaints { get; init; }
+
+        public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 
         public decimal PercentageOfResponses { get; init; }
     }

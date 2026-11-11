@@ -1,4 +1,4 @@
-﻿using CustomerSurvey.Domain.Enums;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
@@ -141,6 +141,8 @@ public sealed record SurveyDashboardSummaryResponse
     public int UnhappyResponses { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public int VoiceAnswersCount { get; init; }
 
@@ -179,6 +181,8 @@ public sealed record SurveyDashboardSourceSummaryResponse
     public int UnhappyResponses { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public int VoiceAnswersCount { get; init; }
 
@@ -205,6 +209,8 @@ public sealed record SurveyDashboardBranchSummaryResponse
     public decimal AverageScorePercentage { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public int VoiceAnswersCount { get; init; }
 
@@ -258,6 +264,8 @@ public sealed record SurveyDashboardTemplatePerformanceItemResponse
     public decimal AverageScorePercentage { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public int VoiceAnswersCount { get; init; }
 
@@ -457,6 +465,10 @@ internal sealed record SurveyDashboardResponseRow : CustomerSurvey.Application.F
 
     public DateTime SubmittedOnUtc { get; init; }
     public DateOnly? VisitDate { get; init; }
+
+    public int ComplaintFlagsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public int MaxScore { get; init; }
 

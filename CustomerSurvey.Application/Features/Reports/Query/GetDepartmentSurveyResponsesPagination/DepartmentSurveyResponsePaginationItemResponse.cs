@@ -1,9 +1,16 @@
-﻿namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentSurveyResponsesPagination;
+using CustomerSurvey.Application.Features.Reports.Shared;
+using CustomerSurvey.Application.Features.ResponseFlags;
+
+namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentSurveyResponsesPagination;
 
 public sealed record DepartmentSurveyResponsePaginationItemResponse
 {
     public Guid? ComplaintQuestionId { get; init; }
     public string? ComplaintText { get; init; }
+    public string? ItemKind { get; init; }
+    public Guid? FlagId { get; init; }
+    public ResponseFlagDetails? Flag { get; init; }
+    public DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
 
     public bool RequestedModeAvailable { get; init; } = true;
     public string ScoreDerivation { get; init; } = string.Empty;

@@ -1,4 +1,4 @@
-﻿using CustomerSurvey.Application.Features.Reports.Services.Scoring;
+using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
@@ -301,7 +301,9 @@ internal sealed class GetBranchDashboardQueryHandler
                     .Distinct()
                     .Count(),
 
-                ComplaintsCount = complaintsCount,
+                ComplaintsCount = complaintsCount + responses.Sum(response => response.ComplaintFlagsCount),
+                SuggestionsCount = responses.Sum(response => response.SuggestionsCount),
+                CommentsCount = responses.Sum(response => response.CommentsCount),
                 VoiceAnswersCount = voiceAnswersCount
             },
 
@@ -321,6 +323,10 @@ internal sealed class GetBranchDashboardQueryHandler
                 ScoredResponses = BuildResponsesNavigation(request, period, ("isScored", true)),
                 AllResponses = BuildResponsesNavigation(request, period),
                 Complaints = DashboardDrillDownPathBuilder.Navigation("SurveyComplaints", "/api/reports/survey-dashboard/complaints",
+                    ("source", "Internal"), ("templateId", request.TemplateId), ("from", period.From), ("to", period.To)),
+                Suggestions = DashboardDrillDownPathBuilder.Navigation("SurveySuggestions", "/api/reports/survey-dashboard/suggestions",
+                    ("source", "Internal"), ("templateId", request.TemplateId), ("from", period.From), ("to", period.To)),
+                Comments = DashboardDrillDownPathBuilder.Navigation("SurveyComments", "/api/reports/survey-dashboard/comments",
                     ("source", "Internal"), ("templateId", request.TemplateId), ("from", period.From), ("to", period.To)),
                 VoiceAnswers = BuildResponsesNavigation(request, period, ("hasVoice", true))
             },
@@ -460,7 +466,9 @@ internal sealed class GetBranchDashboardQueryHandler
                     ResponsesCount = x.Count(),
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
-                    ComplaintsCount = complaintsCount,
+                    ComplaintsCount = complaintsCount + x.Sum(response => response.ComplaintFlagsCount),
+                    SuggestionsCount = x.Sum(response => response.SuggestionsCount),
+                    CommentsCount = x.Sum(response => response.CommentsCount),
                     RiskLevel = CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria.Combine(scored.Select(x => x.Criteria)).Risk(scored.Length == 0 ? null : average),
                     DetailsNavigation = BuildResponsesNavigation(
                         request,

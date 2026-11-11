@@ -1,4 +1,4 @@
-﻿using BuildingBlock.Application.Abstraction.Caching;
+using BuildingBlock.Application.Abstraction.Caching;
 using BuildingBlock.Application.Behaviors;
 using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Application.Features.Reports.Services.Scoring;
@@ -49,6 +49,11 @@ namespace CustomerSurvey.Application.Bootstrap
         public static IServiceCollection AddApplicationBootstrap(this IServiceCollection services)
         {
             services.AddFluentValidation();
+            services.AddScoped<CustomerSurvey.Application.Features.Reports.Shared.AuthorizedFeedbackItems>();
+            services.AddScoped<CustomerSurvey.Application.Features.Reports.Query.GetSystemSurveyResponseDetails.AuthorizedResponseDetailsReader>();
+            services.AddScoped<CustomerSurvey.Application.Features.ResponseFlags.FlagOfficerAccess>();
+            services.AddScoped<CustomerSurvey.Application.Shared.FlagPermissions>();
+            services.AddScoped<CustomerSurvey.Application.Features.FlagOfficers.FlagOfficerAdministrationScopeResolver>();
             services.AddScoped<ICurrentBranchScopeResolver, CurrentBranchScopeResolver>();
             services.AddScoped<ISurveyReportScoringService, SurveyReportScoringService>();
             services.AddScoped<ISurveyDashboardRequestResolver, SurveyDashboardRequestResolver>();

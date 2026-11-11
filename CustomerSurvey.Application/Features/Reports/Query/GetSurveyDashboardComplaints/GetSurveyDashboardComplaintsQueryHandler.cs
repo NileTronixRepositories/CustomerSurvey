@@ -4,6 +4,7 @@ using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Abstraction.Reports;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 using CustomerSurvey.Application.Features.Reports.Services.Scoring;
+using CustomerSurvey.Application.Features.ResponseFlags;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardComplaints;
 
@@ -95,7 +96,7 @@ internal sealed class GetSurveyDashboardComplaintsQueryHandler
         });
     }
 
-    private static SurveyDashboardComplaintItemResponse MapItem(
+    internal static SurveyDashboardComplaintItemResponse MapItem(
         SurveyDashboardComplaintReadItem item,
         bool isSuperAdmin)
         => new()
@@ -106,6 +107,17 @@ internal sealed class GetSurveyDashboardComplaintsQueryHandler
             TemplateNameEn = item.TemplateNameEn,
             TemplateNameAr = item.TemplateNameAr,
             QuestionId = item.QuestionId,
+            ItemKind = item.FlagId.HasValue ? "ResponseFlag" : "QuestionAnswer",
+            FlagId = item.FlagId,
+            Type = item.FlagType,
+            Brief = item.Brief,
+            Answer = item.Answer,
+            CreatedBy = MapActor(item.CreatedById, item.CreatedByNameEn, item.CreatedByNameAr),
+            CreatedOnUtc = item.CreatedOnUtc,
+            BriefUpdatedBy = MapActor(item.BriefUpdatedById, item.BriefUpdatedByNameEn, item.BriefUpdatedByNameAr),
+            BriefUpdatedOnUtc = item.BriefUpdatedOnUtc,
+            AnsweredBy = MapActor(item.AnsweredById, item.AnsweredByNameEn, item.AnsweredByNameAr),
+            AnsweredOnUtc = item.AnsweredOnUtc,
             QuestionTextEn = item.QuestionTextEn,
             QuestionTextAr = item.QuestionTextAr,
             ComplaintText = item.ComplaintText,
@@ -119,6 +131,9 @@ internal sealed class GetSurveyDashboardComplaintsQueryHandler
             OperatorNameAr = item.OperatorNameAr,
             DetailsNavigation = BuildNavigation(item, isSuperAdmin)
         };
+
+    private static ResponseFlagActor? MapActor(Guid? id, string? nameEn, string? nameAr)
+        => id is { } userId ? new ResponseFlagActor(userId, nameEn ?? string.Empty, nameAr) : null;
 
     private static SurveyDashboardDetailsNavigationResponse BuildNavigation(
         SurveyDashboardComplaintReadItem item,

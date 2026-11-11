@@ -1,6 +1,7 @@
-﻿using BuildingBlock.Domain.Enums;
+using BuildingBlock.Domain.Enums;
 using BuildingBlock.Domain.SharedDto;
 using BuildingBlock.Domain.Specification;
+using CustomerSurvey.Domain.Identity;
 
 namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagination
 {
@@ -50,6 +51,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagina
             Select(x => new OperatorPaginationItemDto
             {
                 OperatorId = x.Id,
+                CanCreateFlagsOnSubmit = x.ApplicationUser.UserRoles.Any(role =>
+                    role.Role.RolePermissions.Any(grant => grant.Permission.Name == FlagAccess.ResponseFlagsCreateOnSubmit)),
                 ApplicationUserId = x.ApplicationUserId,
                 DepartmentId = x.DepartmentId,
                 DepartmentNameEn = x.Department.NameEn,

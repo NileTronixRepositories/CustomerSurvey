@@ -1,4 +1,6 @@
 using BuildingBlock.Domain.SharedDto;
+using CustomerSurvey.Application.Features.ResponseFlags;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardComplaints;
@@ -38,10 +40,21 @@ public sealed record SurveyDashboardComplaintItemResponse
     public SurveyDashboardTemplateKind TemplateKind { get; init; }
     public string TemplateNameEn { get; init; } = string.Empty;
     public string? TemplateNameAr { get; init; }
-    public Guid QuestionId { get; init; }
+    public Guid? QuestionId { get; init; }
+    public string ItemKind { get; init; } = "QuestionAnswer";
+    public Guid? FlagId { get; init; }
+    public SurveyResponseFlagType? Type { get; init; }
+    public string? Brief { get; init; }
+    public string? Answer { get; init; }
+    public ResponseFlagActor? CreatedBy { get; init; }
+    public DateTime? CreatedOnUtc { get; init; }
+    public ResponseFlagActor? BriefUpdatedBy { get; init; }
+    public DateTime? BriefUpdatedOnUtc { get; init; }
+    public ResponseFlagActor? AnsweredBy { get; init; }
+    public DateTime? AnsweredOnUtc { get; init; }
     public string QuestionTextEn { get; init; } = string.Empty;
     public string? QuestionTextAr { get; init; }
-    public string ComplaintText { get; init; } = string.Empty;
+    public string? ComplaintText { get; init; }
     public DateTime SubmittedOnUtc { get; init; }
     public Guid BranchId { get; init; }
     public string BranchNameEn { get; init; } = string.Empty;

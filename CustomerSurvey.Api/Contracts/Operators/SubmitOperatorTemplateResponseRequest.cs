@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
+using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Api.Contracts.Operators
 {
@@ -6,7 +7,15 @@ namespace CustomerSurvey.Api.Contracts.Operators
     {
         public List<SubmitOperatorTemplateCustomInputRequest> CustomInputs { get; init; } = new();
 
+        public List<SubmitSurveyFlagRequest> Flags { get; init; } = new();
+
         public List<SubmitOperatorTemplateAnswerRequest> Answers { get; init; } = new();
+    }
+
+    public sealed class SubmitSurveyFlagRequest
+    {
+        public SurveyResponseFlagType Type { get; init; }
+        public string? Brief { get; init; }
     }
 
     public sealed class SubmitOperatorTemplateCustomInputRequest

@@ -1,4 +1,4 @@
-﻿using BuildingBlock.Domain.Enums;
+using BuildingBlock.Domain.Enums;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Application.Features.Reports.Shared;
 using CustomerSurvey.Domain.Entities;
@@ -21,7 +21,7 @@ internal sealed class GetDepartmentSurveyResponsesPaginationSpec
         AddCriteria(x =>
             x.Operator.DepartmentId == departmentId);
 
-        AddCriteria(ResponseDateFilter.ForSurvey(query.DateBasis, fromUtc, toExclusiveUtc));
+        AddCriteria(ResponseDateFilter.ForSurvey(query.FlagType.HasValue ? ResponseDateBasis.SubmittedOnUtc : query.DateBasis, fromUtc, toExclusiveUtc));
 
         if (query.TemplateId.HasValue)
         {
@@ -65,11 +65,11 @@ internal sealed class GetDepartmentSurveyResponsesPaginationSpec
         if (query.HasComplaint.HasValue)
         {
             AddCriteria(query.HasComplaint.Value
-                ? x => x.Answers.Any(answer =>
+                ? x => x.Flags.Any(flag => flag.Type == SurveyResponseFlagType.Complaint) || x.Answers.Any(answer =>
                     answer.QuestionType == QuestionType.Complain &&
                     answer.TextAnswer != null &&
                     answer.TextAnswer.Trim() != string.Empty)
-                : x => !x.Answers.Any(answer =>
+                : x => !x.Flags.Any(flag => flag.Type == SurveyResponseFlagType.Complaint) && !x.Answers.Any(answer =>
                     answer.QuestionType == QuestionType.Complain &&
                     answer.TextAnswer != null &&
                     answer.TextAnswer.Trim() != string.Empty));
@@ -141,7 +141,7 @@ internal sealed class GetDepartmentSurveyResponsesPaginationSpec
             MaxScore = x.MaxScore,
             ScorePercentage = x.ScorePercentage,
             IsScored = x.MaxScore > 0,
-            HasComplaint = x.Answers.Any(answer =>
+            HasComplaint = x.Flags.Any(flag => flag.Type == SurveyResponseFlagType.Complaint) || x.Answers.Any(answer =>
                 answer.QuestionType == QuestionType.Complain &&
                 answer.TextAnswer != null &&
                 answer.TextAnswer.Trim() != string.Empty),

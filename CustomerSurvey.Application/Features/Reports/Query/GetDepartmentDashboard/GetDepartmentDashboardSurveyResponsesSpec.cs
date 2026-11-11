@@ -1,4 +1,4 @@
-﻿using CustomerSurvey.Domain.Enums;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Application.Features.Reports.Shared;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
@@ -55,6 +55,12 @@ internal sealed class GetDepartmentDashboardSurveyResponsesSpec
                     .FirstOrDefault()
                 : null,
             ActualScore = x.ActualScore,
+            ComplaintFlagsCount = dateBasis == ResponseDateBasis.SubmittedOnUtc
+                ? x.Flags.Count(flag => flag.Type == SurveyResponseFlagType.Complaint) : 0,
+            SuggestionsCount = dateBasis == ResponseDateBasis.SubmittedOnUtc
+                ? x.Flags.Count(flag => flag.Type == SurveyResponseFlagType.Suggestion) : 0,
+            CommentsCount = dateBasis == ResponseDateBasis.SubmittedOnUtc
+                ? x.Flags.Count(flag => flag.Type == SurveyResponseFlagType.Comment) : 0,
             MaxScore = x.MaxScore,
             ScorePercentage = x.ScorePercentage
         });

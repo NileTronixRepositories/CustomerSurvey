@@ -1,4 +1,4 @@
-﻿namespace CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
+namespace CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
 
 internal sealed record SystemDashboardSurveyResponseDto : CustomerSurvey.Application.Features.Reports.Shared.IEvaluatedResponse
 {
@@ -34,6 +34,10 @@ internal sealed record SystemDashboardSurveyResponseDto : CustomerSurvey.Applica
     public DateOnly? VisitDate { get; init; }
 
     public int ActualScore { get; init; }
+
+    public int ComplaintFlagsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public int MaxScore { get; init; }
 

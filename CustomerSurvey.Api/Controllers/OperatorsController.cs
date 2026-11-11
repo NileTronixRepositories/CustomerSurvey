@@ -1,6 +1,9 @@
-﻿using BuildingBlock.Api;
+using BuildingBlock.Api;
+using BuildingBlock.Domain.Results;
+using System.Text.RegularExpressions;
 using CustomerSurvey.Api.Attribute;
 using CustomerSurvey.Api.Contracts.Operators;
+using CustomerSurvey.Application.Features.FlagOfficers;
 using CustomerSurvey.Application.Features.Operators.Command.AssignTemplatesToOperator;
 using CustomerSurvey.Application.Features.Operators.Command.CreateOperator;
 using CustomerSurvey.Application.Features.Operators.Command.DeactivateOperator;
@@ -155,6 +158,12 @@ namespace CustomerSurvey.Api.Controllers
             return result.ToIActionResult();
         }
 
+        [HttpPut("{operatorId:guid}/flag-submission")]
+        [Permission("Operators.Update")]
+        public async Task<IActionResult> SetFlagSubmission(
+            Guid operatorId, [FromBody] SetOperatorFlagSubmissionRequest request, CancellationToken cancellationToken)
+            => (await sender.Send(new SetOperatorFlagSubmissionCommand(operatorId, request.Enabled), cancellationToken)).ToIActionResult();
+
         [HttpGet("my-templates")]
         [Permission("OperatorTemplates.ViewMine")]
         public async Task<IActionResult> GetMyTemplates(
@@ -174,9 +183,24 @@ namespace CustomerSurvey.Api.Controllers
      [FromForm] SubmitOperatorTemplateResponseRequest request,
      CancellationToken cancellationToken)
         {
+            if (Request.HasFormContentType)
+            {
+                var form = await Request.ReadFormAsync(cancellationToken);
+                if (form.Keys.Concat(form.Files.Select(file => file.Name)).Any(key =>
+                        Regex.IsMatch(key, @"^(request\.)?Flags(?:\[.*?\]|\.[^.]+)(?:\.Answer|\[Answer\])$",
+                            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)))
+                {
+                    return Result<SubmitOperatorTemplateResponseResponse>.Fail(new Error(
+                        Code: "ResponseFlags.AnswerNotAllowedOnSubmit",
+                        Message: "Operators cannot submit a flag answer.",
+                        Type: ErrorType.Validation)).ToIActionResult();
+                }
+            }
+
             var command = new SubmitOperatorTemplateResponseCommand
             {
                 TemplateId = templateId,
+                Flags = request.Flags.Select(x => new SubmitSurveyFlagCommandItem(x.Type, x.Brief)).ToArray(),
 
                 CustomInputs = (request.CustomInputs ?? new List<SubmitOperatorTemplateCustomInputRequest>())
                     .Select(x => new SubmitOperatorTemplateCustomInputCommandItem

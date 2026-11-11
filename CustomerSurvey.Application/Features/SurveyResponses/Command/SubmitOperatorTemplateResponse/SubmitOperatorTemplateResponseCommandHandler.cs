@@ -1,9 +1,12 @@
-﻿using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Media;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Shared.Validation;
+using CustomerSurvey.Application.Shared;
+using CustomerSurvey.Domain.Identity;
+using UserType = CustomerSurvey.Domain.Enums.UserType;
 using CustomerSurvey.Domain.Common;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
@@ -36,6 +39,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         private readonly IMediaService _mediaService;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly FlagPermissions _flagPermissions;
 
         public SubmitOperatorTemplateResponseCommandHandler(
             IWriteReadRepository<DomainOperator> operatorReadRepository,
@@ -47,7 +51,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             IWriteRepository<SurveyResponse> surveyResponseWriteRepository,
             IMediaService mediaService,
             ICurrentUser currentUser,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            FlagPermissions flagPermissions)
         {
             _operatorReadRepository = operatorReadRepository
                 ?? throw new ArgumentNullException(nameof(operatorReadRepository));
@@ -76,6 +81,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
 
+            _flagPermissions = flagPermissions;
             _unitOfWork = unitOfWork
                 ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
@@ -104,6 +110,15 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     Code: "SurveyResponses.Submit.CurrentOperatorNotFound",
                     Message: ErrorMessage.SubmitOperatorTemplateResponse_CurrentOperator_NotFound,
                     Type: ErrorType.NotFound));
+            }
+
+            if (request.Flags.Count > 0 && !await _flagPermissions.HasAsync(
+                    currentApplicationUserId, UserType.Operator, FlagAccess.ResponseFlagsCreateOnSubmit, cancellationToken))
+            {
+                return Result<SubmitOperatorTemplateResponseResponse>.Fail(new Error(
+                    Code: FlagAccess.ResponseFlagsCreateOnSubmit,
+                    Message: "You do not have permission to submit response flags.",
+                    Type: ErrorType.Security));
             }
 
             var assignedTemplate = await _operatorTemplateReadRepository.FirstOrDefaultAsync(
@@ -304,6 +319,11 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             foreach (var customInputValue in customInputValues)
             {
                 surveyResponse.AddCustomInputValue(customInputValue);
+            }
+
+            foreach (var flag in request.Flags)
+            {
+                surveyResponse.AddSubmittedFlag(flag.Type, flag.Brief);
             }
 
             var savedVoiceFileNames = new List<string>();

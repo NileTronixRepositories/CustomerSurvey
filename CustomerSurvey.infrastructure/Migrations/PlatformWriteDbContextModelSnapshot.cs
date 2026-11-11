@@ -1074,6 +1074,62 @@ namespace CustomerSurvey.infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.SurveyResponseFlag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Answer")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<Guid?>("AnsweredByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("AnsweredOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Brief")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid?>("BriefUpdatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("BriefUpdatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("SurveyResponseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnsweredByApplicationUserId");
+
+                    b.HasIndex("BriefUpdatedByApplicationUserId");
+
+                    b.HasIndex("CreatedByApplicationUserId");
+
+                    b.HasIndex("SurveyResponseId", "Type");
+
+                    b.HasIndex("Type", "SurveyResponseId");
+
+                    b.ToTable("SurveyResponseFlags", (string)null);
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Template", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1610,6 +1666,39 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.ToTable("DepartmentAdmin");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Identity.FlagOfficer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedByApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId")
+                        .IsUnique();
+
+                    b.HasIndex("CreatedByApplicationUserId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("FlagOfficers", (string)null);
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Identity.Operator", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2076,6 +2165,39 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Navigation("TemplateCustomInput");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Entities.SurveyResponseFlag", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Identity.ApplicationUser", "AnsweredBy")
+                        .WithMany()
+                        .HasForeignKey("AnsweredByApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CustomerSurvey.Domain.Identity.ApplicationUser", "BriefUpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("BriefUpdatedByApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CustomerSurvey.Domain.Identity.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.SurveyResponse", "SurveyResponse")
+                        .WithMany("Flags")
+                        .HasForeignKey("SurveyResponseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AnsweredBy");
+
+                    b.Navigation("BriefUpdatedBy");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("SurveyResponse");
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Entities.Template", b =>
                 {
                     b.HasOne("CustomerSurvey.Domain.Entities.Branch", "Branch")
@@ -2238,6 +2360,31 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Navigation("Department");
                 });
 
+            modelBuilder.Entity("CustomerSurvey.Domain.Identity.FlagOfficer", b =>
+                {
+                    b.HasOne("CustomerSurvey.Domain.Identity.ApplicationUser", "ApplicationUser")
+                        .WithOne()
+                        .HasForeignKey("CustomerSurvey.Domain.Identity.FlagOfficer", "ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSurvey.Domain.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Department");
+                });
+
             modelBuilder.Entity("CustomerSurvey.Domain.Identity.Operator", b =>
                 {
                     b.HasOne("CustomerSurvey.Domain.Identity.ApplicationUser", "ApplicationUser")
@@ -2353,6 +2500,8 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Navigation("Answers");
 
                     b.Navigation("CustomInputValues");
+
+                    b.Navigation("Flags");
 
                     b.Navigation("Snapshot");
                 });

@@ -1,5 +1,6 @@
-﻿using BuildingBlock.Domain.Specification;
+using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Identity;
+using CustomerSurvey.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
     {
         public GetCurrentOperatorForSubmitResponseSpec(Guid applicationUserId)
         {
-            AddCriteria(x => x.ApplicationUserId == applicationUserId);
+            AddCriteria(x => x.ApplicationUserId == applicationUserId &&
+                x.ApplicationUser.UserType == UserType.Operator && x.ApplicationUser.IsActive);
 
             Select(x => new CurrentOperatorForSubmitResponseDto
             {

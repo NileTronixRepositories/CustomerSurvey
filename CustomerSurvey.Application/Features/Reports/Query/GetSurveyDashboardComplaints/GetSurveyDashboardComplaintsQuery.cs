@@ -4,7 +4,7 @@ using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboardComplaints;
 
-public sealed class GetSurveyDashboardComplaintsQuery
+public class GetSurveyDashboardComplaintsQuery
     : SearchParameters, IQuery<SurveyDashboardComplaintsResponse>, ISurveyDashboardFilterRequest
 {
     public Guid? BranchId { get; init; }

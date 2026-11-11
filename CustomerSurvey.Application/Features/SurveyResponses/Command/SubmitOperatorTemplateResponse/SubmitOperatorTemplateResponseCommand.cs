@@ -1,5 +1,6 @@
-﻿using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction;
 using Microsoft.AspNetCore.Http;
+using CustomerSurvey.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,16 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
     {
         public Guid TemplateId { get; init; }
 
+        public IReadOnlyCollection<SubmitSurveyFlagCommandItem> Flags { get; init; } = [];
+
         public IReadOnlyCollection<SubmitOperatorTemplateCustomInputCommandItem> CustomInputs { get; init; }
             = Array.Empty<SubmitOperatorTemplateCustomInputCommandItem>();
 
         public IReadOnlyCollection<SubmitOperatorTemplateAnswerCommandItem> Answers { get; init; }
             = Array.Empty<SubmitOperatorTemplateAnswerCommandItem>();
     }
+
+    public sealed record SubmitSurveyFlagCommandItem(SurveyResponseFlagType Type, string? Brief);
 
     public sealed record SubmitOperatorTemplateCustomInputCommandItem
     {

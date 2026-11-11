@@ -1,4 +1,4 @@
-﻿using CustomerSurvey.Application.Abstraction.Reports;
+using CustomerSurvey.Application.Abstraction.Reports;
 using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using BuildingBlock.Application.Abstraction;
@@ -317,7 +317,9 @@ internal sealed class GetDepartmentDashboardQueryHandler
                 NeutralResponses = neutralResponses,
                 UnhappyResponses = unhappyResponses,
 
-                ComplaintsCount = complaintsCount,
+                ComplaintsCount = complaintsCount + responses.Sum(response => response.ComplaintFlagsCount),
+                SuggestionsCount = responses.Sum(response => response.SuggestionsCount),
+                CommentsCount = responses.Sum(response => response.CommentsCount),
                 VoiceAnswersCount = voiceAnswersCount
             },
 
@@ -337,6 +339,8 @@ internal sealed class GetDepartmentDashboardQueryHandler
                 ScoredResponses = BuildDepartmentResponsesNavigation(request, period, ("isScored", true)),
                 AllResponses = BuildDepartmentResponsesNavigation(request, period),
                 Complaints = BuildDepartmentResponsesNavigation(request, period, ("hasComplaint", true), ("complaintItemsOnly", true)),
+                Suggestions = BuildDepartmentResponsesNavigation(request, period, ("flagType", SurveyResponseFlagType.Suggestion)),
+                Comments = BuildDepartmentResponsesNavigation(request, period, ("flagType", SurveyResponseFlagType.Comment)),
                 VoiceAnswers = BuildDepartmentResponsesNavigation(request, period, ("hasVoice", true))
             },
 
@@ -505,7 +509,9 @@ internal sealed class GetDepartmentDashboardQueryHandler
                     ResponsesCount = operatorResponses.Length,
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
-                    ComplaintsCount = complaintsCount,
+                    ComplaintsCount = complaintsCount + operatorResponses.Sum(response => response.ComplaintFlagsCount),
+                    SuggestionsCount = operatorResponses.Sum(response => response.SuggestionsCount),
+                    CommentsCount = operatorResponses.Sum(response => response.CommentsCount),
                     VoiceAnswersCount = voiceAnswersCount,
                     LastResponseOnUtc = operatorResponses.Length == 0
                         ? null
@@ -590,7 +596,9 @@ internal sealed class GetDepartmentDashboardQueryHandler
                     ResponsesCount = templateResponses.Length,
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
-                    ComplaintsCount = complaintsCount,
+                    ComplaintsCount = complaintsCount + templateResponses.Sum(response => response.ComplaintFlagsCount),
+                    SuggestionsCount = templateResponses.Sum(response => response.SuggestionsCount),
+                    CommentsCount = templateResponses.Sum(response => response.CommentsCount),
                     RiskLevel = CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria.Combine(scored.Select(x => x.Criteria)).Risk(scored.Length == 0 ? null : average),
                     DetailsNavigation = BuildDepartmentResponsesNavigation(
                         request,

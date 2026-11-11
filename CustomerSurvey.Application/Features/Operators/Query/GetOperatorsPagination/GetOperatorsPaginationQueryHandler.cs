@@ -1,4 +1,4 @@
-﻿using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.SharedDto;
@@ -108,6 +108,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagina
                     return new OperatorPaginationItemResponse
                     {
                         OperatorId = x.OperatorId,
+                        CanCreateFlagsOnSubmit = x.CanCreateFlagsOnSubmit,
                         ApplicationUserId = x.ApplicationUserId,
                         DepartmentId = x.DepartmentId,
                         DepartmentNameEn = x.DepartmentNameEn,

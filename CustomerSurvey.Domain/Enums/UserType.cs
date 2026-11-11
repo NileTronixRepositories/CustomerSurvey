@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +13,7 @@ namespace CustomerSurvey.Domain.Enums
         BranchUser = 3,
         DepartmentAdmin = 4,
         Operator = 5,
-        BranchArea = 6
+        BranchArea = 6,
+        FlagOfficer = 7
     }
 }
