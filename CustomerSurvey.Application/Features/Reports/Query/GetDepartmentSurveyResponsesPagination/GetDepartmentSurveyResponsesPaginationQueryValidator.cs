@@ -27,6 +27,14 @@ internal sealed class GetDepartmentSurveyResponsesPaginationQueryValidator
                 x.CustomInputType == CustomerSurvey.Domain.Enums.TemplateCustomInputType.Integer &&
                 !string.IsNullOrWhiteSpace(x.CustomInputValue))
             .WithMessage("CustomInputValue must be a valid integer for an Integer custom input.");
+
+        RuleFor(x => x.DateBasis).IsInEnum();
+
+        RuleFor(x => x.CustomInputValue)
+            .Must(value => CustomInputDate.TryParse(value?.Trim(), out _))
+            .When(x => x.CustomInputType == CustomerSurvey.Domain.Enums.TemplateCustomInputType.Date &&
+                       !string.IsNullOrWhiteSpace(x.CustomInputValue))
+            .WithMessage(_ => CustomerSurvey.Domain.Resources.ErrorMessage.SubmitTemplateResponse_CustomInput_Date_Invalid);
         RuleFor(x => x.SatisfactionCategory).IsInEnum()
             .When(x => x.SatisfactionCategory.HasValue)
             .WithMessage("SatisfactionCategory is invalid.");

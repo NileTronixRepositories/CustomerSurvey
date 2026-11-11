@@ -2888,4 +2888,10 @@
   </data>
   <data name="BranchEvaluationSettings_Forbidden" xml:space="preserve"><value>يمكن لمسؤول الفرع المعين فقط تعديل إعدادات تقييم فرعه.</value></data>
   <data name="BranchEvaluationSettings_InvalidThresholds" xml:space="preserve"><value>يجب أن يكون كل حد أدنى أقل من الحد الأعلى وأن تكون جميع الحدود بين 0 و100.</value></data>
+  <data name="Template_SystemCustomInput_Protected" xml:space="preserve">
+    <value>حقل تاريخ الزيارة مُدار من النظام ولا يمكن تغيير تعريفه.</value>
+  </data>
+  <data name="SubmitTemplateResponse_CustomInput_Date_Invalid" xml:space="preserve">
+    <value>أدخل تاريخًا صالحًا بالصيغة yyyy-MM-dd في حقل التاريخ فقط.</value>
+  </data>
 </root>

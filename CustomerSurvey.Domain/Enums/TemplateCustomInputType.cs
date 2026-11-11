@@ -9,6 +9,7 @@ namespace CustomerSurvey.Domain.Enums
     public enum TemplateCustomInputType
     {
         String = 1,
-        Integer = 2
+        Integer = 2,
+        Date = 3
     }
 }

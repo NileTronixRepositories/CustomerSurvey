@@ -21,6 +21,8 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
 
         public DateTime SubmittedOnUtc { get; init; }
 
+        public DateOnly? VisitDate { get; init; }
+
         public int ActualScore { get; init; }
 
         public int MaxScore { get; init; }

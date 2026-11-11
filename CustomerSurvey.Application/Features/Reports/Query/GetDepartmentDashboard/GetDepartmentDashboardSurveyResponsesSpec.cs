@@ -1,4 +1,6 @@
-﻿using BuildingBlock.Domain.Specification;
+﻿using CustomerSurvey.Domain.Enums;
+using CustomerSurvey.Application.Features.Reports.Shared;
+using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
@@ -10,12 +12,13 @@ internal sealed class GetDepartmentDashboardSurveyResponsesSpec
         Guid departmentId,
         DateTime fromUtc,
         DateTime toExclusiveUtc,
-        Guid? templateId)
+        Guid? templateId,
+        ResponseDateBasis dateBasis = ResponseDateBasis.SubmittedOnUtc)
     {
         AddCriteria(x =>
-            x.Operator.DepartmentId == departmentId &&
-            x.SubmittedOnUtc >= fromUtc &&
-            x.SubmittedOnUtc < toExclusiveUtc);
+            x.Operator.DepartmentId == departmentId);
+
+        AddCriteria(ResponseDateFilter.ForSurvey(dateBasis, fromUtc, toExclusiveUtc));
 
         if (templateId.HasValue)
         {
@@ -45,6 +48,12 @@ internal sealed class GetDepartmentDashboardSurveyResponsesSpec
             OperatorNameEn = x.Operator.ApplicationUser.NameEn,
             OperatorNameAr = x.Operator.ApplicationUser.NameAr,
             SubmittedOnUtc = x.SubmittedOnUtc,
+            VisitDate = dateBasis == ResponseDateBasis.VisitTime
+                ? x.CustomInputValues
+                    .Where(value => value.TemplateCustomInput.SystemFieldKey == TemplateCustomInputSystemField.VisitTime)
+                    .Select(value => value.DateValue)
+                    .FirstOrDefault()
+                : null,
             ActualScore = x.ActualScore,
             MaxScore = x.MaxScore,
             ScorePercentage = x.ScorePercentage

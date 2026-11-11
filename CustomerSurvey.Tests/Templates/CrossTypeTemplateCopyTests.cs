@@ -76,7 +76,10 @@ public sealed class CrossTypeTemplateCopyTests
         Assert.NotEqual(source.Id, target.Id);
         Assert.Equal(source.TemplateFamilyId, target.TemplateFamilyId);
         Assert.NotNull(target.TemplateFamilyId);
-        var copiedInput = Assert.Single(target.CustomInputs);
+        var copiedInput = Assert.Single(target.CustomInputs, x => !x.SystemFieldKey.HasValue);
+        var visitTime = Assert.Single(target.CustomInputs, x => x.SystemFieldKey == TemplateCustomInputSystemField.VisitTime);
+        Assert.NotEqual(copiedInput.Order, visitTime.Order);
+        Assert.False(visitTime.IsRequired);
         Assert.Equal("Phone", copiedInput.LabelEn);
         Assert.Null(copiedInput.LabelAr);
         Assert.Equal(TemplateCustomInputType.String, copiedInput.Type);
@@ -159,7 +162,10 @@ public sealed class CrossTypeTemplateCopyTests
         Assert.NotEqual(source.Id, target.Id);
         Assert.Equal(source.TemplateFamilyId, target.TemplateFamilyId);
         Assert.NotNull(target.TemplateFamilyId);
-        var copiedInput = Assert.Single(target.CustomInputs);
+        var copiedInput = Assert.Single(target.CustomInputs, x => !x.SystemFieldKey.HasValue);
+        var visitTime = Assert.Single(target.CustomInputs, x => x.SystemFieldKey == TemplateCustomInputSystemField.VisitTime);
+        Assert.NotEqual(copiedInput.Order, visitTime.Order);
+        Assert.False(visitTime.IsRequired);
         Assert.Equal("Phone", copiedInput.LabelEn);
         Assert.Null(copiedInput.LabelAr);
         Assert.Equal(TemplateCustomInputType.String, copiedInput.Type);

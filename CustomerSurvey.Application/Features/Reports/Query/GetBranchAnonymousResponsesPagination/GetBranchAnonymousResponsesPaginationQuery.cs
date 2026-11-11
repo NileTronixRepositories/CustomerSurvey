@@ -1,6 +1,8 @@
 ﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Domain.SharedDto;
 
+using CustomerSurvey.Application.Features.Reports.Shared;
+
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchAnonymousResponsesPagination;
 
 public sealed class GetBranchAnonymousResponsesPaginationQuery
@@ -13,6 +15,8 @@ public sealed class GetBranchAnonymousResponsesPaginationQuery
     public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; } = CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions;
 
     public Guid? AnonymousTemplateId { get; init; }
+
+    public ResponseDateBasis DateBasis { get; init; }
 
     public DateTime? From { get; init; }
 

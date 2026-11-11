@@ -22,6 +22,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
         public string? StringValue { get; init; }
 
         public int? IntegerValue { get; init; }
+
+        public string? DateValue { get; init; }
     }
 
     public sealed record SubmitAnonymousTemplateAnswerCommandItem

@@ -280,6 +280,26 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                     customInput = null;
                 }
 
+                if (customInput?.SystemFieldKey is not null)
+                {
+                    if (!finalActiveCustomInputIds.Add(customInput.Id) ||
+                        customInput.Type != requestedCustomInput.Type ||
+                        customInput.LabelEn != requestedCustomInput.LabelEn ||
+                        customInput.LabelAr != requestedCustomInput.LabelAr ||
+                        requestedCustomInput.IsRequired ||
+                        requestedCustomInput.MinLength.HasValue || requestedCustomInput.MaxLength.HasValue ||
+                        requestedCustomInput.MinValue.HasValue || requestedCustomInput.MaxValue.HasValue ||
+                        requestedCustomInput.StartWith is not null)
+                    {
+                        return ApplyCustomInputsUpdateResult.Fail(new Error(
+                            Code: "AnonymousTemplates.Update.SystemCustomInputProtected",
+                            Message: ErrorMessage.Template_SystemCustomInput_Protected,
+                            Type: ErrorType.Validation));
+                    }
+
+                    continue;
+                }
+
                 if (customInput is not null)
                 {
                     if (customInput.Type != requestedCustomInput.Type)
@@ -328,10 +348,26 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
 
             foreach (var existingCustomInput in existingCustomInputsList)
             {
-                if (existingCustomInput.IsActive &&
+                if (!existingCustomInput.SystemFieldKey.HasValue &&
+                    existingCustomInput.IsActive &&
                     !finalActiveCustomInputIds.Contains(existingCustomInput.Id))
                 {
                     existingCustomInput.Deactivate();
+                }
+            }
+
+            var visitTime = existingCustomInputsList.SingleOrDefault(
+                x => x.SystemFieldKey == TemplateCustomInputSystemField.VisitTime);
+            if (visitTime is not null)
+            {
+                var activeOrders = existingCustomInputsList.Concat(newCustomInputs)
+                    .Where(x => x.IsActive && !x.SystemFieldKey.HasValue)
+                    .Select(x => x.Order)
+                    .ToArray();
+
+                if (activeOrders.Contains(visitTime.Order))
+                {
+                    visitTime.ChangeOrder(VisitTimeCustomInput.GetAvailableOrder(activeOrders));
                 }
             }
 
@@ -355,8 +391,12 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                 return false;
             }
 
-            var existing = existingCustomInputs.Where(x => x.IsActive).OrderBy(x => x.Order).ToArray();
             var requested = (request.CustomInputs ?? Array.Empty<UpdateAnonymousTemplateCustomInputCommandItem>())
+                .OrderBy(x => x.Order)
+                .ToArray();
+            var existing = existingCustomInputs
+                .Where(x => x.IsActive &&
+                    (!x.SystemFieldKey.HasValue || requested.Any(input => input.CustomInputId == x.Id)))
                 .OrderBy(x => x.Order)
                 .ToArray();
 
@@ -407,6 +447,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.UpdateA
                         LabelAr = x.LabelAr,
                         Type = x.Type,
                         TypeName = x.Type.ToString(),
+                        SystemFieldKey = x.SystemFieldKey.HasValue ? x.SystemFieldKey.Value.ToString() : null,
                         IsRequired = x.IsRequired,
                         MinLength = x.MinLength,
                         MaxLength = x.MaxLength,

@@ -1,4 +1,6 @@
-﻿using BuildingBlock.Domain.Specification;
+﻿using CustomerSurvey.Domain.Enums;
+using CustomerSurvey.Application.Features.Reports.Shared;
+using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
@@ -10,11 +12,10 @@ internal sealed class GetSystemDashboardSurveyResponsesSpec
         DateTime fromUtc,
         DateTime toExclusiveUtc,
         Guid? branchId,
-        Guid? departmentId)
+        Guid? departmentId,
+        ResponseDateBasis dateBasis = ResponseDateBasis.SubmittedOnUtc)
     {
-        AddCriteria(x =>
-            x.SubmittedOnUtc >= fromUtc &&
-            x.SubmittedOnUtc < toExclusiveUtc);
+        AddCriteria(ResponseDateFilter.ForSurvey(dateBasis, fromUtc, toExclusiveUtc));
 
         if (branchId.HasValue)
         {
@@ -54,6 +55,12 @@ internal sealed class GetSystemDashboardSurveyResponsesSpec
             DepartmentId = x.Operator.DepartmentId,
 
             SubmittedOnUtc = x.SubmittedOnUtc,
+            VisitDate = dateBasis == ResponseDateBasis.VisitTime
+                ? x.CustomInputValues
+                    .Where(value => value.TemplateCustomInput.SystemFieldKey == TemplateCustomInputSystemField.VisitTime)
+                    .Select(value => value.DateValue)
+                    .FirstOrDefault()
+                : null,
             ActualScore = x.ActualScore,
             MaxScore = x.MaxScore,
             ScorePercentage = x.ScorePercentage

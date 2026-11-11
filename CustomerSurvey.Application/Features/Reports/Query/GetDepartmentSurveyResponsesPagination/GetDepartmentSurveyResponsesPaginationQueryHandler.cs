@@ -160,10 +160,12 @@ internal sealed class GetDepartmentSurveyResponsesPaginationQueryHandler
             CustomInputId = value.CustomInputId,
             LabelEnSnapshot = value.LabelEnSnapshot,
             LabelArSnapshot = value.LabelArSnapshot,
+            DateValue = value.DateValue,
             Value = value.TypeSnapshot switch
             {
                 TemplateCustomInputType.String => value.StringValue ?? string.Empty,
                 TemplateCustomInputType.Integer => value.IntegerValue?.ToString() ?? string.Empty,
+                TemplateCustomInputType.Date => CustomInputDate.Format(value.DateValue),
                 _ => string.Empty
             }
         };

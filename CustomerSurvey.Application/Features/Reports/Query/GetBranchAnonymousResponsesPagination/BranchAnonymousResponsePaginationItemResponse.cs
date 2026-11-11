@@ -38,5 +38,13 @@ public sealed record BranchAnonymousResponseCustomInputPreviewResponse
 
     public string? LabelArSnapshot { get; init; }
 
-    public string Value { get; init; } = string.Empty;
+    public DateOnly? DateValue { get; init; }
+
+    private readonly string _value = string.Empty;
+
+    public string Value
+    {
+        get => DateValue.HasValue ? CustomInputDate.Format(DateValue) : _value;
+        init => _value = value;
+    }
 }

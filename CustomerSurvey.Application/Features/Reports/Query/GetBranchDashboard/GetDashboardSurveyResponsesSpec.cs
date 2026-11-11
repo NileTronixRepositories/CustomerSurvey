@@ -1,4 +1,6 @@
-﻿using BuildingBlock.Domain.Specification;
+﻿using CustomerSurvey.Domain.Enums;
+using CustomerSurvey.Application.Features.Reports.Shared;
+using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchDashboard;
@@ -10,12 +12,13 @@ internal sealed class GetDashboardSurveyResponsesSpec
         Guid branchId,
         DateTime fromUtc,
         DateTime toExclusiveUtc,
-        Guid? templateId)
+        Guid? templateId,
+        ResponseDateBasis dateBasis = ResponseDateBasis.SubmittedOnUtc)
     {
         AddCriteria(x =>
-            x.Template.BranchId == branchId &&
-            x.SubmittedOnUtc >= fromUtc &&
-            x.SubmittedOnUtc < toExclusiveUtc);
+            x.Template.BranchId == branchId);
+
+        AddCriteria(ResponseDateFilter.ForSurvey(dateBasis, fromUtc, toExclusiveUtc));
 
         if (templateId.HasValue)
         {
@@ -39,6 +42,12 @@ internal sealed class GetDashboardSurveyResponsesSpec
             TemplateNameEn = x.Template!.NameEn,
             TemplateNameAr = x.Template!.NameAr,
             SubmittedOnUtc = x.SubmittedOnUtc,
+            VisitDate = dateBasis == ResponseDateBasis.VisitTime
+                ? x.CustomInputValues
+                    .Where(value => value.TemplateCustomInput.SystemFieldKey == TemplateCustomInputSystemField.VisitTime)
+                    .Select(value => value.DateValue)
+                    .FirstOrDefault()
+                : null,
             ActualScore = x.ActualScore,
             MaxScore = x.MaxScore,
             ScorePercentage = x.ScorePercentage

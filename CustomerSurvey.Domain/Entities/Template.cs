@@ -1,4 +1,6 @@
 ﻿using BuildingBlock.Domain.EntitiesHelper;
+using CustomerSurvey.Domain.Enums;
+
 namespace CustomerSurvey.Domain.Entities
 {
     public sealed class Template : AggregateRoot<Guid>
@@ -44,7 +46,7 @@ namespace CustomerSurvey.Domain.Entities
             Guid? templateFamilyId = null,
             Guid? originTemplateId = null)
         {
-            return new Template
+            var template = new Template
             {
                 Id = Guid.NewGuid(),
                 BranchId = branchId,
@@ -58,6 +60,9 @@ namespace CustomerSurvey.Domain.Entities
                 OriginTemplateId = originTemplateId,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
+
+            template._customInputs.Add(TemplateCustomInput.CreateVisitTime(template.Id, createdByApplicationUserId));
+            return template;
         }
 
         public void Update(
@@ -83,7 +88,18 @@ namespace CustomerSurvey.Domain.Entities
 
         public void AddCustomInput(TemplateCustomInput customInput)
         {
+            if (customInput.SystemFieldKey.HasValue)
+            {
+                throw new InvalidOperationException("System custom inputs are created with the template.");
+            }
+
             _customInputs.Add(customInput);
+            var visitTime = _customInputs.FirstOrDefault(x => x.SystemFieldKey == TemplateCustomInputSystemField.VisitTime);
+            if (visitTime is not null && customInput.Order >= visitTime.Order)
+            {
+                visitTime.ChangeOrder(VisitTimeCustomInput.GetAvailableOrder(
+                    _customInputs.Where(x => !x.SystemFieldKey.HasValue).Select(x => x.Order)));
+            }
         }
 
         public void SetLogoPath(string logoPath)

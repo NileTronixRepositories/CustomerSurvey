@@ -1,4 +1,5 @@
-﻿using BuildingBlock.Domain.Specification;
+﻿using CustomerSurvey.Application.Features.Reports.Shared;
+using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 
@@ -11,13 +12,12 @@ internal sealed class GetSurveyDashboardInternalResponsesSpec
         Guid? branchId,
         DateTime fromUtc,
         DateTime toExclusiveUtc,
-        Guid? templateId)
+        Guid? templateId,
+        ResponseDateBasis dateBasis = ResponseDateBasis.SubmittedOnUtc)
     {
         UseNoTracking();
 
-        AddCriteria(x =>
-            x.SubmittedOnUtc >= fromUtc &&
-            x.SubmittedOnUtc < toExclusiveUtc);
+        AddCriteria(ResponseDateFilter.ForSurvey(dateBasis, fromUtc, toExclusiveUtc));
 
         if (branchId.HasValue)
         {
@@ -53,6 +53,12 @@ internal sealed class GetSurveyDashboardInternalResponsesSpec
             OperatorNameEn = x.Operator.ApplicationUser.NameEn,
             OperatorNameAr = x.Operator.ApplicationUser.NameAr,
             SubmittedOnUtc = x.SubmittedOnUtc,
+            VisitDate = dateBasis == ResponseDateBasis.VisitTime
+                ? x.CustomInputValues
+                    .Where(value => value.TemplateCustomInput.SystemFieldKey == TemplateCustomInputSystemField.VisitTime)
+                    .Select(value => value.DateValue)
+                    .FirstOrDefault()
+                : null,
             MaxScore = x.MaxScore,
             ScorePercentage = x.ScorePercentage,
             HasComplaint = x.Answers.Any(answer =>
@@ -74,13 +80,20 @@ internal sealed class GetSurveyDashboardInternalAnswersSpec
         Guid? branchId,
         DateTime fromUtc,
         DateTime toExclusiveUtc,
-        Guid? templateId)
+        Guid? templateId,
+        Guid[]? responseIds = null)
     {
         UseNoTracking();
 
-        AddCriteria(x =>
-            x.SurveyResponse.SubmittedOnUtc >= fromUtc &&
-            x.SurveyResponse.SubmittedOnUtc < toExclusiveUtc);
+        if (responseIds is not null)
+        {
+            AddCriteria(x => responseIds.Contains(x.SurveyResponseId));
+        }
+        else
+        {
+            AddCriteria(x => x.SurveyResponse.SubmittedOnUtc >= fromUtc &&
+                             x.SurveyResponse.SubmittedOnUtc < toExclusiveUtc);
+        }
 
         if (branchId.HasValue)
         {
@@ -125,13 +138,20 @@ internal sealed class GetSurveyDashboardInternalCustomInputValuesSpec
         Guid? branchId,
         DateTime fromUtc,
         DateTime toExclusiveUtc,
-        Guid? templateId)
+        Guid? templateId,
+        Guid[]? responseIds = null)
     {
         UseNoTracking();
 
-        AddCriteria(x =>
-            x.SurveyResponse.SubmittedOnUtc >= fromUtc &&
-            x.SurveyResponse.SubmittedOnUtc < toExclusiveUtc);
+        if (responseIds is not null)
+        {
+            AddCriteria(x => responseIds.Contains(x.SurveyResponseId));
+        }
+        else
+        {
+            AddCriteria(x => x.SurveyResponse.SubmittedOnUtc >= fromUtc &&
+                             x.SurveyResponse.SubmittedOnUtc < toExclusiveUtc);
+        }
 
         if (branchId.HasValue)
         {
@@ -154,6 +174,8 @@ internal sealed class GetSurveyDashboardInternalCustomInputValuesSpec
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue,
+            DateValue = x.DateValue,
+            IsSystemField = x.TemplateCustomInput.SystemFieldKey.HasValue,
             ScorePercentage = x.SurveyResponse.ScorePercentage,
             MaxScore = x.SurveyResponse.MaxScore
         });

@@ -8215,5 +8215,15 @@ namespace CustomerSurvey.Domain.Resources {
                 return ResourceManager.GetString("RestoreOperator_AlreadyActive", resourceCulture);
             }
         }
+        public static string Template_SystemCustomInput_Protected {
+            get {
+                return ResourceManager.GetString("Template_SystemCustomInput_Protected", resourceCulture);
+            }
+        }
+        public static string SubmitTemplateResponse_CustomInput_Date_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitTemplateResponse_CustomInput_Date_Invalid", resourceCulture);
+            }
+        }
     }
 }

@@ -59,6 +59,10 @@ namespace CustomerSurvey.infrastructure.Configurations
 
             builder.HasIndex(x => x.AnonymousTemplateId);
 
+            builder.HasIndex(x => new { x.AnonymousTemplateId, x.SystemFieldKey })
+                .IsUnique()
+                .HasFilter("[SystemFieldKey] IS NOT NULL");
+
             builder.HasIndex(x => new { x.AnonymousTemplateId, x.IsActive, x.Order });
 
             builder.HasOne(x => x.AnonymousTemplate)
@@ -85,6 +89,11 @@ namespace CustomerSurvey.infrastructure.Configurations
                 table.HasCheckConstraint(
                     "CK_AnonymousTemplateCustomInput_StartWith_StringOnly",
                     $"([Type] = {(int)TemplateCustomInputType.String}) OR ([StartWith] IS NULL)");
+
+                table.HasCheckConstraint(
+                    "CK_AnonymousTemplateCustomInput_Date_Validation",
+                    $"([Type] <> {(int)TemplateCustomInputType.Date}) OR " +
+                    "([MinLength] IS NULL AND [MaxLength] IS NULL AND [MinValue] IS NULL AND [MaxValue] IS NULL)");
 
                 table.HasCheckConstraint(
                     "CK_AnonymousTemplateCustomInput_Length_Range",

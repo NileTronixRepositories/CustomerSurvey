@@ -129,14 +129,18 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
             var templates = await _templateReadRepository.ListAsync(
                 new GetSurveyDashboardTemplatesSpec(scopeResult.BranchId, internalTemplateId),
                 cancellationToken);
-            responses.AddRange(await _surveyResponseReadRepository.ListAsync(
-                new GetSurveyDashboardInternalResponsesSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, internalTemplateId),
-                cancellationToken));
+            var sourceResponses = await _surveyResponseReadRepository.ListAsync(
+                new GetSurveyDashboardInternalResponsesSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, internalTemplateId, request.DateBasis),
+                cancellationToken);
+            responses.AddRange(sourceResponses);
+            var visitResponseIds = request.DateBasis == ResponseDateBasis.VisitTime
+                ? sourceResponses.Select(x => x.ResponseId).ToArray()
+                : null;
             answers.AddRange(await _surveyAnswerReadRepository.ListAsync(
-                new GetSurveyDashboardInternalAnswersSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, internalTemplateId),
+                new GetSurveyDashboardInternalAnswersSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, internalTemplateId, visitResponseIds),
                 cancellationToken));
             customInputs.AddRange(await _surveyCustomInputValueReadRepository.ListAsync(
-                new GetSurveyDashboardInternalCustomInputValuesSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, internalTemplateId),
+                new GetSurveyDashboardInternalCustomInputValuesSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, internalTemplateId, visitResponseIds),
                 cancellationToken));
 
             var templateIds = templates.Select(x => x.TemplateId).ToArray();
@@ -154,14 +158,18 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
             var templates = await _anonymousTemplateReadRepository.ListAsync(
                 new GetSurveyDashboardAnonymousTemplatesSpec(scopeResult.BranchId, anonymousTemplateId),
                 cancellationToken);
-            responses.AddRange(await _anonymousSurveyResponseReadRepository.ListAsync(
-                new GetSurveyDashboardAnonymousResponsesSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, anonymousTemplateId),
-                cancellationToken));
+            var sourceResponses = await _anonymousSurveyResponseReadRepository.ListAsync(
+                new GetSurveyDashboardAnonymousResponsesSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, anonymousTemplateId, request.DateBasis),
+                cancellationToken);
+            responses.AddRange(sourceResponses);
+            var visitResponseIds = request.DateBasis == ResponseDateBasis.VisitTime
+                ? sourceResponses.Select(x => x.ResponseId).ToArray()
+                : null;
             answers.AddRange(await _anonymousSurveyAnswerReadRepository.ListAsync(
-                new GetSurveyDashboardAnonymousAnswersSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, anonymousTemplateId),
+                new GetSurveyDashboardAnonymousAnswersSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, anonymousTemplateId, visitResponseIds),
                 cancellationToken));
             customInputs.AddRange(await _anonymousCustomInputValueReadRepository.ListAsync(
-                new GetSurveyDashboardAnonymousCustomInputValuesSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, anonymousTemplateId),
+                new GetSurveyDashboardAnonymousCustomInputValuesSpec(scopeResult.BranchId, fromUtc, toExclusiveUtc, anonymousTemplateId, visitResponseIds),
                 cancellationToken));
 
             var templateIds = templates.Select(x => x.TemplateId).ToArray();
@@ -462,6 +470,7 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
         {
             TemplateCustomInputType.Integer => int.TryParse(requested, out var number) && value.IntegerValue == number,
             TemplateCustomInputType.String => value.StringValue?.Trim() == requested,
+            TemplateCustomInputType.Date => CustomInputDate.TryParse(requested, out var date) && value.DateValue == date,
             _ => false
         };
     }
@@ -505,10 +514,12 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
             CustomInputId = value.CustomInputId,
             LabelEnSnapshot = value.LabelEnSnapshot,
             LabelArSnapshot = value.LabelArSnapshot,
+            DateValue = value.DateValue,
             Value = value.TypeSnapshot switch
             {
                 TemplateCustomInputType.String => value.StringValue?.Trim() ?? string.Empty,
                 TemplateCustomInputType.Integer => value.IntegerValue?.ToString() ?? string.Empty,
+                TemplateCustomInputType.Date => CustomInputDate.Format(value.DateValue),
                 _ => string.Empty
             }
         };

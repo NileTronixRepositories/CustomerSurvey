@@ -13,6 +13,8 @@ namespace CustomerSurvey.Domain.Entities
 
         public TemplateCustomInputType Type { get; private set; }
 
+        public TemplateCustomInputSystemField? SystemFieldKey { get; private set; }
+
         public bool IsRequired { get; private set; }
 
         public int? MinLength { get; private set; }
@@ -31,6 +33,25 @@ namespace CustomerSurvey.Domain.Entities
 
         private AnonymousTemplateCustomInput()
         {
+        }
+
+        internal static AnonymousTemplateCustomInput CreateVisitTime(Guid templateId, Guid createdByApplicationUserId)
+        {
+            var input = Create(
+                templateId,
+                VisitTimeCustomInput.LabelEn,
+                VisitTimeCustomInput.LabelAr,
+                TemplateCustomInputType.Date,
+                isRequired: false,
+                minLength: null,
+                maxLength: null,
+                minValue: null,
+                maxValue: null,
+                startWith: null,
+                order: 1,
+                createdByApplicationUserId);
+            input.SystemFieldKey = TemplateCustomInputSystemField.VisitTime;
+            return input;
         }
 
         public static AnonymousTemplateCustomInput Create(
@@ -86,6 +107,11 @@ namespace CustomerSurvey.Domain.Entities
             string? startWith,
             int order)
         {
+            if (SystemFieldKey.HasValue)
+            {
+                throw new InvalidOperationException("System custom inputs are managed by the template.");
+            }
+
             var normalizedValidation = NormalizeValidationByType(
                 type,
                 minLength,
@@ -113,6 +139,11 @@ namespace CustomerSurvey.Domain.Entities
 
         public void Deactivate()
         {
+            if (SystemFieldKey.HasValue)
+            {
+                throw new InvalidOperationException("System custom inputs cannot be deactivated.");
+            }
+
             IsActive = false;
         }
 

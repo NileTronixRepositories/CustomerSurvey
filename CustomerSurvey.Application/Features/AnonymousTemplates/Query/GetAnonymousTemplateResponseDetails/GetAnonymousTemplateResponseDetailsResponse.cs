@@ -50,6 +50,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
         public string? StringValue { get; init; }
 
         public int? IntegerValue { get; init; }
+
+        public DateOnly? DateValue { get; init; }
     }
 
     public sealed record AnonymousTemplateResponseAnswerDetailsResponse

@@ -19,9 +19,9 @@ internal sealed class GetDepartmentOperatorSurveyResponsesPaginationSpec
     {
         AddCriteria(x =>
             x.OperatorId == operatorId &&
-            x.Operator.DepartmentId == departmentId &&
-            x.SubmittedOnUtc >= fromUtc &&
-            x.SubmittedOnUtc < toExclusiveUtc);
+            x.Operator.DepartmentId == departmentId);
+
+        AddCriteria(ResponseDateFilter.ForSurvey(query.DateBasis, fromUtc, toExclusiveUtc));
 
         if (query.TemplateId.HasValue)
         {
@@ -212,6 +212,14 @@ internal sealed class GetDepartmentOperatorSurveyResponsesPaginationSpec
                     (!hasCustomInputId || value.TemplateCustomInputId == customInputId.Value) &&
                     value.TypeSnapshot == TemplateCustomInputType.String &&
                     value.StringValue == customInputValue));
+            }
+            else if (query.CustomInputType == TemplateCustomInputType.Date && hasValue)
+            {
+                var validDate = CustomInputDate.TryParse(customInputValue, out var date);
+                AddCriteria(x => validDate && x.CustomInputValues.Any(value =>
+                    (!hasCustomInputId || value.TemplateCustomInputId == customInputId) &&
+                    value.TypeSnapshot == TemplateCustomInputType.Date &&
+                    value.DateValue == date));
             }
             else
             {

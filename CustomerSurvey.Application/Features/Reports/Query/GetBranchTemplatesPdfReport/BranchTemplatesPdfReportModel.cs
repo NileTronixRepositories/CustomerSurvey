@@ -586,10 +586,13 @@ public sealed record BranchTemplatesReportCustomInputValue
 
     public int? IntegerValue { get; init; }
 
+    public DateOnly? DateValue { get; init; }
+
     public string DisplayValue => Type switch
     {
         TemplateCustomInputType.String => StringValue ?? string.Empty,
         TemplateCustomInputType.Integer => IntegerValue?.ToString() ?? string.Empty,
+        TemplateCustomInputType.Date => CustomInputDate.Format(DateValue),
         _ => string.Empty
     };
 

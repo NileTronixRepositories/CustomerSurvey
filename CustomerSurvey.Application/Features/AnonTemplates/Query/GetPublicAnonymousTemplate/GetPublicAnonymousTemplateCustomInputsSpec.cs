@@ -21,6 +21,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
                 LabelAr = x.LabelAr,
                 Type = x.Type,
                 TypeName = x.Type.ToString(),
+                SystemFieldKey = x.SystemFieldKey.HasValue ? x.SystemFieldKey.Value.ToString() : null,
                 IsRequired = x.IsRequired,
                 MinLength = x.MinLength,
                 MaxLength = x.MaxLength,

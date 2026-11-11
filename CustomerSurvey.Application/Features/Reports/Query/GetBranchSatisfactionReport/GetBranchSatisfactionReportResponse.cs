@@ -95,6 +95,8 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
     {
         public DateOnly Date { get; init; }
 
+        public CustomerSurvey.Application.Features.Reports.Shared.DashboardDetailsNavigationResponse? DetailsNavigation { get; init; }
+
         public decimal Score { get; init; }
 
         public int ResponsesCount { get; init; }

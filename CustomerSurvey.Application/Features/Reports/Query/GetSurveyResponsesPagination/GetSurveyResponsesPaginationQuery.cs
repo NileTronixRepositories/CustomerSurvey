@@ -20,6 +20,8 @@ public sealed class GetSurveyResponsesPaginationQuery
 
     public Guid? AnonymousTemplateId { get; init; }
 
+    public ResponseDateBasis DateBasis { get; init; }
+
     public DateTime? From { get; init; }
 
     public DateTime? To { get; init; }

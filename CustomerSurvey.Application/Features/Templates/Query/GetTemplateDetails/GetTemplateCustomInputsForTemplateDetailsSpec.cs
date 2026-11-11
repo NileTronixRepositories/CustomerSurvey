@@ -26,6 +26,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 LabelEn = x.LabelEn,
                 LabelAr = x.LabelAr,
                 Type = x.Type,
+                SystemFieldKey = x.SystemFieldKey,
                 IsRequired = x.IsRequired,
                 MinLength = x.MinLength,
                 MaxLength = x.MaxLength,

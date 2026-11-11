@@ -58,7 +58,7 @@ namespace CustomerSurvey.Domain.Entities
             Guid? sourceGlobalAnonymousTemplateId = null,
             Guid? originAnonymousTemplateId = null)
         {
-            return new AnonymousTemplate
+            var template = new AnonymousTemplate
             {
                 Id = Guid.NewGuid(),
                 BranchId = branchId,
@@ -75,6 +75,9 @@ namespace CustomerSurvey.Domain.Entities
                 OriginAnonymousTemplateId = originAnonymousTemplateId,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
+
+            template._customInputs.Add(AnonymousTemplateCustomInput.CreateVisitTime(template.Id, createdByApplicationUserId));
+            return template;
         }
 
         public static AnonymousTemplate CreateGlobalTemplate(
@@ -85,7 +88,7 @@ namespace CustomerSurvey.Domain.Entities
             DateTime? expireTo,
             Guid createdByApplicationUserId)
         {
-            return new AnonymousTemplate
+            var template = new AnonymousTemplate
             {
                 Id = Guid.NewGuid(),
                 BranchId = null,
@@ -102,6 +105,9 @@ namespace CustomerSurvey.Domain.Entities
                 LogoPath = null,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
+
+            template._customInputs.Add(AnonymousTemplateCustomInput.CreateVisitTime(template.Id, createdByApplicationUserId));
+            return template;
         }
 
         public void Update(
@@ -133,7 +139,18 @@ namespace CustomerSurvey.Domain.Entities
 
         public void AddCustomInput(AnonymousTemplateCustomInput customInput)
         {
+            if (customInput.SystemFieldKey.HasValue)
+            {
+                throw new InvalidOperationException("System custom inputs are created with the template.");
+            }
+
             _customInputs.Add(customInput);
+            var visitTime = _customInputs.FirstOrDefault(x => x.SystemFieldKey == TemplateCustomInputSystemField.VisitTime);
+            if (visitTime is not null && customInput.Order >= visitTime.Order)
+            {
+                visitTime.ChangeOrder(VisitTimeCustomInput.GetAvailableOrder(
+                    _customInputs.Where(x => !x.SystemFieldKey.HasValue).Select(x => x.Order)));
+            }
         }
 
         public void SetLogoPath(string logoPath)

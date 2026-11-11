@@ -189,6 +189,7 @@ internal sealed class GetSystemSurveyResponsesPaginationQueryHandler
         {
             TemplateCustomInputType.String => value.StringValue ?? string.Empty,
             TemplateCustomInputType.Integer => value.IntegerValue?.ToString() ?? string.Empty,
+            TemplateCustomInputType.Date => CustomInputDate.Format(value.DateValue),
             _ => string.Empty
         };
 
@@ -197,6 +198,7 @@ internal sealed class GetSystemSurveyResponsesPaginationQueryHandler
             CustomInputId = value.CustomInputId,
             LabelEnSnapshot = value.LabelEnSnapshot,
             LabelArSnapshot = value.LabelArSnapshot,
+            DateValue = value.DateValue,
             Value = displayValue
         };
     }

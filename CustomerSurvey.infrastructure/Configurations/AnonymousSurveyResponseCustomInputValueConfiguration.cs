@@ -42,6 +42,11 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.IntegerValue)
                 .IsRequired(false);
 
+            builder.Property(x => x.DateValue).HasColumnType("date");
+
+            builder.HasIndex(x => new { x.AnonymousTemplateCustomInputId, x.DateValue, x.AnonymousSurveyResponseId })
+                .HasFilter("[DateValue] IS NOT NULL");
+
             builder.HasIndex(x => x.AnonymousSurveyResponseId);
 
             builder.HasIndex(x => x.AnonymousTemplateCustomInputId);
@@ -74,6 +79,12 @@ namespace CustomerSurvey.infrastructure.Configurations
                     "CK_ASRCIV_Integer_Value",
                     $"([TypeSnapshot] <> {(int)TemplateCustomInputType.Integer}) OR " +
                     "([IntegerValue] IS NOT NULL AND [StringValue] IS NULL)");
+
+                table.HasCheckConstraint(
+                    "CK_ASRCIV_Date_Value",
+                    $"([TypeSnapshot] = {(int)TemplateCustomInputType.Date} AND " +
+                    " [DateValue] IS NOT NULL AND [StringValue] IS NULL AND [IntegerValue] IS NULL) OR " +
+                    $"([TypeSnapshot] <> {(int)TemplateCustomInputType.Date} AND [DateValue] IS NULL)");
             });
         }
     }

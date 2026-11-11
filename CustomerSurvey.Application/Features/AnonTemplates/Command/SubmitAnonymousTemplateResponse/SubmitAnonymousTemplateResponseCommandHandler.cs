@@ -202,7 +202,16 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                     ScorePercentage = anonymousSurveyResponse.ScorePercentage,
                     VisibleQuestionsCount = answerValidationResult.VisibleQuestions.Count,
                     AnswersCount = anonymousSurveyResponse.Answers.Count,
-                    CustomInputValuesCount = anonymousSurveyResponse.CustomInputValues.Count
+                    CustomInputValuesCount = anonymousSurveyResponse.CustomInputValues.Count,
+                    CustomInputValues = anonymousSurveyResponse.CustomInputValues
+                        .Select(x => new SubmittedAnonymousCustomInputValueResponse
+                        {
+                            CustomInputId = x.AnonymousTemplateCustomInputId,
+                            StringValue = x.StringValue,
+                            IntegerValue = x.IntegerValue,
+                            DateValue = x.DateValue
+                        })
+                        .ToArray()
                 });
         }
 
@@ -256,8 +265,17 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
 
             var customInputsById = customInputs.ToDictionary(x => x.CustomInputId);
 
+            var submittedValuesByInputId = new Dictionary<Guid, SubmitAnonymousTemplateCustomInputValueCommandItem>();
             foreach (var submittedValue in submittedValues)
             {
+                if (!submittedValuesByInputId.TryAdd(submittedValue.CustomInputId, submittedValue))
+                {
+                    return ValidationResult.Fail(new Error(
+                        Code: "AnonTemplates.Submit.CustomInputDuplicated",
+                        Message: ErrorMessage.SubmitAnonymousTemplateResponse_CustomInput_Duplicated,
+                        Type: ErrorType.Validation));
+                }
+
                 if (!customInputsById.ContainsKey(submittedValue.CustomInputId))
                 {
                     return ValidationResult.Fail(new Error(
@@ -266,8 +284,6 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                         Type: ErrorType.Validation));
                 }
             }
-
-            var submittedValuesByInputId = submittedValues.ToDictionary(x => x.CustomInputId);
 
             foreach (var customInput in customInputs)
             {
@@ -313,6 +329,9 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 TemplateCustomInputType.Integer =>
                     ValidateIntegerCustomInputValue(customInput, submittedValue),
 
+                TemplateCustomInputType.Date =>
+                    ValidateDateCustomInputValue(customInput, submittedValue),
+
                 _ => ValidationResult.Fail(new Error(
                     Code: "AnonTemplates.Submit.CustomInputTypeInvalid",
                     Message: ErrorMessage.SubmitAnonymousTemplateResponse_CustomInput_Type_Invalid,
@@ -320,11 +339,41 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
             };
         }
 
+        private static ValidationResult ValidateDateCustomInputValue(
+            AnonymousTemplateCustomInputForSubmitDto customInput,
+            SubmitAnonymousTemplateCustomInputValueCommandItem submittedValue)
+        {
+            if (submittedValue.IntegerValue.HasValue || !string.IsNullOrWhiteSpace(submittedValue.StringValue))
+            {
+                return ValidationResult.Fail(new Error(
+                    Code: "AnonTemplates.Submit.CustomInputDateShapeInvalid",
+                    Message: ErrorMessage.SubmitTemplateResponse_CustomInput_Date_Invalid,
+                    Type: ErrorType.Validation));
+            }
+
+            if (string.IsNullOrWhiteSpace(submittedValue.DateValue))
+            {
+                return customInput.IsRequired
+                    ? ValidationResult.Fail(new Error(
+                        Code: "AnonTemplates.Submit.CustomInputRequired",
+                        Message: ErrorMessage.SubmitAnonymousTemplateResponse_CustomInput_Required,
+                        Type: ErrorType.Validation))
+                    : ValidationResult.Ok();
+            }
+
+            return CustomInputDate.TryParse(submittedValue.DateValue, out _)
+                ? ValidationResult.Ok()
+                : ValidationResult.Fail(new Error(
+                    Code: "AnonTemplates.Submit.CustomInputDateInvalid",
+                    Message: ErrorMessage.SubmitTemplateResponse_CustomInput_Date_Invalid,
+                    Type: ErrorType.Validation));
+        }
+
         private static ValidationResult ValidateStringCustomInputValue(
             AnonymousTemplateCustomInputForSubmitDto customInput,
             SubmitAnonymousTemplateCustomInputValueCommandItem submittedValue)
         {
-            if (submittedValue.IntegerValue.HasValue)
+            if (submittedValue.IntegerValue.HasValue || !string.IsNullOrWhiteSpace(submittedValue.DateValue))
             {
                 return ValidationResult.Fail(new Error(
                     Code: "AnonTemplates.Submit.CustomInputStringShapeInvalid",
@@ -381,7 +430,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
             AnonymousTemplateCustomInputForSubmitDto customInput,
             SubmitAnonymousTemplateCustomInputValueCommandItem submittedValue)
         {
-            if (!string.IsNullOrWhiteSpace(submittedValue.StringValue))
+            if (!string.IsNullOrWhiteSpace(submittedValue.StringValue) ||
+                !string.IsNullOrWhiteSpace(submittedValue.DateValue))
             {
                 return ValidationResult.Fail(new Error(
                     Code: "AnonTemplates.Submit.CustomInputIntegerShapeInvalid",
@@ -911,7 +961,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
         {
             var customInputsById = customInputs.ToDictionary(x => x.CustomInputId);
 
-            foreach (var submittedValue in submittedValues)
+            foreach (var submittedValue in submittedValues ?? [])
             {
                 if (!customInputsById.TryGetValue(
                         submittedValue.CustomInputId,
@@ -942,6 +992,18 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                             labelEnSnapshot: customInput.LabelEn,
                             labelArSnapshot: customInput.LabelAr,
                             value: submittedValue.IntegerValue.Value));
+                }
+
+                if (customInput.Type == TemplateCustomInputType.Date &&
+                    CustomInputDate.TryParse(submittedValue.DateValue, out var date))
+                {
+                    response.AddCustomInputValue(
+                        AnonymousSurveyResponseCustomInputValue.CreateDateValue(
+                            anonymousSurveyResponseId: response.Id,
+                            anonymousTemplateCustomInputId: customInput.CustomInputId,
+                            labelEnSnapshot: customInput.LabelEn,
+                            labelArSnapshot: customInput.LabelAr,
+                            value: date));
                 }
             }
         }

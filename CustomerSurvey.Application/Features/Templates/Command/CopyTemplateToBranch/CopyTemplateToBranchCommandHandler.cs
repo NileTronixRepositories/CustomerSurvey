@@ -254,7 +254,7 @@ internal sealed class CopyTemplateToBranchCommandHandler
 
         foreach (var sourceInput in sourceTemplate.CustomInputs.OrderBy(x => x.Order))
         {
-            if (!sourceInput.IsActive)
+            if (!sourceInput.IsActive || sourceInput.SystemFieldKey.HasValue)
             {
                 continue;
             }
@@ -476,7 +476,7 @@ internal sealed class CopyTemplateToBranchCommandHandler
 
         foreach (var sourceInput in sourceTemplate.CustomInputs.OrderBy(x => x.Order))
         {
-            if (!sourceInput.IsActive)
+            if (!sourceInput.IsActive || sourceInput.SystemFieldKey.HasValue)
             {
                 continue;
             }

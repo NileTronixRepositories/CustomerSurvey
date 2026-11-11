@@ -43,13 +43,39 @@ public sealed class CopyTemplateToBranchEnhancementTests
         Assert.Null(target.LogoPath);
         Assert.Null(target.TemplateFamilyId);
         Assert.Equal(source.Id, target.OriginTemplateId);
-        var copiedInput = Assert.Single(target.CustomInputs);
+        var copiedInput = Assert.Single(target.CustomInputs, x => !x.SystemFieldKey.HasValue);
+        var visitTime = Assert.Single(target.CustomInputs, x => x.SystemFieldKey == TemplateCustomInputSystemField.VisitTime);
+        Assert.NotEqual(copiedInput.Order, visitTime.Order);
+        Assert.False(visitTime.IsRequired);
         Assert.NotEqual(input.Id, copiedInput.Id);
         Assert.Equal(input.LabelEn, copiedInput.LabelEn);
         Assert.Equal(input.LabelAr, copiedInput.LabelAr);
         Assert.Equal(input.StartWith, copiedInput.StartWith);
         Assert.Equal(input.MinLength, copiedInput.MinLength);
         Assert.Equal(input.MaxLength, copiedInput.MaxLength);
+    }
+
+    [Fact]
+    public async Task Handle_CopiesAnonymousTemplateWithExactlyOneVisitTime()
+    {
+        var context = CreateContext();
+        var source = AnonymousTemplate.CreateBranchTemplate(
+            context.SourceBranch.Id, "Anonymous source", null, null, DateTime.UtcNow, null, context.UserId);
+        var date = AnonymousTemplateCustomInput.Create(source.Id, "Booking Date", null, TemplateCustomInputType.Date,
+            true, null, null, null, null, null, 1, context.UserId);
+        source.AddCustomInput(date);
+        context.AnonymousTemplates.Add(source);
+
+        var result = await context.CopyAsync(source.Id);
+
+        Assert.True(result.IsSuccess);
+        var target = Assert.Single(context.AnonymousTemplateWrites.AddedEntities);
+        var visitTime = Assert.Single(target.CustomInputs, x => x.SystemFieldKey == TemplateCustomInputSystemField.VisitTime);
+        var ordinaryDate = Assert.Single(target.CustomInputs, x => !x.SystemFieldKey.HasValue);
+        Assert.NotEqual(Assert.Single(source.CustomInputs, x => x.SystemFieldKey.HasValue).Id, visitTime.Id);
+        Assert.NotEqual(ordinaryDate.Order, visitTime.Order);
+        Assert.False(visitTime.IsRequired);
+        Assert.Equal((date.LabelEn, date.Type, date.IsRequired), (ordinaryDate.LabelEn, ordinaryDate.Type, ordinaryDate.IsRequired));
     }
 
     [Fact]
@@ -219,6 +245,7 @@ public sealed class CopyTemplateToBranchEnhancementTests
         var questions = new InMemoryReadRepository<Question>();
         var options = new InMemoryReadRepository<QuestionOption>();
         var templateWrites = new InMemoryWriteRepository<Template>();
+        var anonymousTemplateWrites = new InMemoryWriteRepository<AnonymousTemplate>();
         var templateQuestionWrites = new InMemoryWriteRepository<TemplateQuestion>();
         var templateConditionWrites = new InMemoryWriteRepository<TemplateQuestionCondition>();
         var groupWrites = new InMemoryWriteRepository<QuestionGroup>();
@@ -238,7 +265,7 @@ public sealed class CopyTemplateToBranchEnhancementTests
             templateWrites,
             templateQuestionWrites,
             templateConditionWrites,
-            new InMemoryWriteRepository<AnonymousTemplate>(),
+            anonymousTemplateWrites,
             new InMemoryWriteRepository<AnonymousTemplateQuestion>(),
             new InMemoryWriteRepository<AnonymousTemplateQuestionCondition>(),
             groupWrites,
@@ -251,8 +278,8 @@ public sealed class CopyTemplateToBranchEnhancementTests
 
         return new CopyContext(
             handler, userId, sourceBranch, targetBranch,
-            templates, templateConditions, groups, questions, options,
-            templateWrites, templateQuestionWrites, templateConditionWrites,
+            templates, anonymousTemplates, templateConditions, groups, questions, options,
+            templateWrites, anonymousTemplateWrites, templateQuestionWrites, templateConditionWrites,
             groupWrites, questionWrites, optionWrites);
     }
 
@@ -334,11 +361,13 @@ public sealed class CopyTemplateToBranchEnhancementTests
         Branch SourceBranch,
         Branch TargetBranch,
         InMemoryReadRepository<Template> Templates,
+        InMemoryReadRepository<AnonymousTemplate> AnonymousTemplates,
         InMemoryReadRepository<TemplateQuestionCondition> TemplateConditions,
         InMemoryReadRepository<QuestionGroup> Groups,
         InMemoryReadRepository<Question> Questions,
         InMemoryReadRepository<QuestionOption> Options,
         InMemoryWriteRepository<Template> TemplateWrites,
+        InMemoryWriteRepository<AnonymousTemplate> AnonymousTemplateWrites,
         InMemoryWriteRepository<TemplateQuestion> TemplateQuestionWrites,
         InMemoryWriteRepository<TemplateQuestionCondition> TemplateConditionWrites,
         InMemoryWriteRepository<QuestionGroup> GroupWrites,

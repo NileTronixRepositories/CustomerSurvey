@@ -64,6 +64,8 @@ public sealed record BranchSurveyResponseCustomInputResponse
 
     public int? IntegerValue { get; init; }
 
+    public DateOnly? DateValue { get; init; }
+
     public string DisplayValue { get; init; } = string.Empty;
 }
 

@@ -62,5 +62,7 @@ public sealed record SystemSurveyResponseCustomInputPreviewResponse
 
     public string? LabelArSnapshot { get; init; }
 
+    public DateOnly? DateValue { get; init; }
+
     public string Value { get; init; } = string.Empty;
 }

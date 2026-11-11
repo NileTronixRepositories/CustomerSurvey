@@ -1,4 +1,5 @@
-﻿using BuildingBlock.Domain.Specification;
+﻿using CustomerSurvey.Application.Features.Reports.Shared;
+using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 
@@ -11,15 +12,16 @@ internal sealed class GetSurveyDashboardAnonymousResponsesSpec
         Guid? branchId,
         DateTime fromUtc,
         DateTime toExclusiveUtc,
-        Guid? anonymousTemplateId)
+        Guid? anonymousTemplateId,
+        ResponseDateBasis dateBasis = ResponseDateBasis.SubmittedOnUtc)
     {
         UseNoTracking();
 
         AddCriteria(x =>
             x.AnonymousTemplate.Scope == AnonymousTemplateScope.Branch &&
-            x.AnonymousTemplate.BranchId != null &&
-            x.SubmittedOnUtc >= fromUtc &&
-            x.SubmittedOnUtc < toExclusiveUtc);
+            x.AnonymousTemplate.BranchId != null);
+
+        AddCriteria(ResponseDateFilter.ForAnonymous(dateBasis, fromUtc, toExclusiveUtc));
 
         if (branchId.HasValue)
         {
@@ -55,6 +57,12 @@ internal sealed class GetSurveyDashboardAnonymousResponsesSpec
             OperatorNameEn = null,
             OperatorNameAr = null,
             SubmittedOnUtc = x.SubmittedOnUtc,
+            VisitDate = dateBasis == ResponseDateBasis.VisitTime
+                ? x.CustomInputValues
+                    .Where(value => value.AnonymousTemplateCustomInput.SystemFieldKey == TemplateCustomInputSystemField.VisitTime)
+                    .Select(value => value.DateValue)
+                    .FirstOrDefault()
+                : null,
             MaxScore = x.MaxScore,
             ScorePercentage = x.ScorePercentage,
             HasComplaint = x.Answers.Any(answer =>
@@ -76,15 +84,24 @@ internal sealed class GetSurveyDashboardAnonymousAnswersSpec
         Guid? branchId,
         DateTime fromUtc,
         DateTime toExclusiveUtc,
-        Guid? anonymousTemplateId)
+        Guid? anonymousTemplateId,
+        Guid[]? responseIds = null)
     {
         UseNoTracking();
 
         AddCriteria(x =>
             x.AnonymousSurveyResponse.AnonymousTemplate.Scope == AnonymousTemplateScope.Branch &&
-            x.AnonymousSurveyResponse.AnonymousTemplate.BranchId != null &&
-            x.AnonymousSurveyResponse.SubmittedOnUtc >= fromUtc &&
-            x.AnonymousSurveyResponse.SubmittedOnUtc < toExclusiveUtc);
+            x.AnonymousSurveyResponse.AnonymousTemplate.BranchId != null);
+
+        if (responseIds is not null)
+        {
+            AddCriteria(x => responseIds.Contains(x.AnonymousSurveyResponseId));
+        }
+        else
+        {
+            AddCriteria(x => x.AnonymousSurveyResponse.SubmittedOnUtc >= fromUtc &&
+                             x.AnonymousSurveyResponse.SubmittedOnUtc < toExclusiveUtc);
+        }
 
         if (branchId.HasValue)
         {
@@ -129,15 +146,24 @@ internal sealed class GetSurveyDashboardAnonymousCustomInputValuesSpec
         Guid? branchId,
         DateTime fromUtc,
         DateTime toExclusiveUtc,
-        Guid? anonymousTemplateId)
+        Guid? anonymousTemplateId,
+        Guid[]? responseIds = null)
     {
         UseNoTracking();
 
         AddCriteria(x =>
             x.AnonymousSurveyResponse.AnonymousTemplate.Scope == AnonymousTemplateScope.Branch &&
-            x.AnonymousSurveyResponse.AnonymousTemplate.BranchId != null &&
-            x.AnonymousSurveyResponse.SubmittedOnUtc >= fromUtc &&
-            x.AnonymousSurveyResponse.SubmittedOnUtc < toExclusiveUtc);
+            x.AnonymousSurveyResponse.AnonymousTemplate.BranchId != null);
+
+        if (responseIds is not null)
+        {
+            AddCriteria(x => responseIds.Contains(x.AnonymousSurveyResponseId));
+        }
+        else
+        {
+            AddCriteria(x => x.AnonymousSurveyResponse.SubmittedOnUtc >= fromUtc &&
+                             x.AnonymousSurveyResponse.SubmittedOnUtc < toExclusiveUtc);
+        }
 
         if (branchId.HasValue)
         {
@@ -160,6 +186,8 @@ internal sealed class GetSurveyDashboardAnonymousCustomInputValuesSpec
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue,
+            DateValue = x.DateValue,
+            IsSystemField = x.AnonymousTemplateCustomInput.SystemFieldKey.HasValue,
             ScorePercentage = x.AnonymousSurveyResponse.ScorePercentage,
             MaxScore = x.AnonymousSurveyResponse.MaxScore
         });

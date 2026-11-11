@@ -45,6 +45,12 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
 
         public TemplateCustomInputType Type { get; init; }
 
+        public string TypeName => Type.ToString();
+
+        public string? SystemFieldKey { get; init; }
+
+        public bool IsSystemField => SystemFieldKey is not null;
+
         public bool IsRequired { get; init; }
 
         public int? MinLength { get; init; }

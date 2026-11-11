@@ -360,7 +360,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                         Type = x.TypeSnapshot,
                         TypeName = x.TypeSnapshot.ToString(),
                         StringValue = x.StringValue,
-                        IntegerValue = x.IntegerValue
+                        IntegerValue = x.IntegerValue,
+                        DateValue = x.DateValue
                     })
                     .ToArray()
             };
@@ -435,6 +436,13 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     TemplateCustomInputType.Integer => ValidateIntegerCustomInput(
                         templateCustomInput,
                         value),
+
+                    TemplateCustomInputType.Date => CustomInputDate.TryParse(value, out _)
+                        ? null
+                        : new Error(
+                            Code: "SurveyResponses.Submit.CustomInputDateInvalid",
+                            Message: ErrorMessage.SubmitTemplateResponse_CustomInput_Date_Invalid,
+                            Type: ErrorType.Validation),
 
                     _ => new Error(
                         Code: "SurveyResponses.Submit.CustomInputTypeInvalid",
@@ -574,6 +582,16 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                         labelEnSnapshot: templateCustomInput.LabelEn,
                         labelArSnapshot: templateCustomInput.LabelAr,
                         value: integerValue));
+                }
+                else if (templateCustomInput.Type == TemplateCustomInputType.Date &&
+                         CustomInputDate.TryParse(submittedCustomInput.Value, out var date))
+                {
+                    values.Add(SurveyResponseCustomInputValue.CreateDateValue(
+                        surveyResponseId: surveyResponseId,
+                        templateCustomInputId: templateCustomInput.CustomInputId,
+                        labelEnSnapshot: templateCustomInput.LabelEn,
+                        labelArSnapshot: templateCustomInput.LabelAr,
+                        value: date));
                 }
             }
 

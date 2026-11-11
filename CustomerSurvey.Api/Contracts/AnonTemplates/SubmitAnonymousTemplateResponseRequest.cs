@@ -16,6 +16,8 @@ namespace CustomerSurvey.Api.Contracts.AnonTemplates
         public string? StringValue { get; init; }
 
         public int? IntegerValue { get; init; }
+
+        public string? DateValue { get; init; }
     }
 
     public sealed record SubmitAnonymousTemplateAnswerRequest

@@ -287,6 +287,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.CreateA
                         LabelAr = x.LabelAr,
                         Type = x.Type,
                         TypeName = x.Type.ToString(),
+                        SystemFieldKey = x.SystemFieldKey.HasValue ? x.SystemFieldKey.Value.ToString() : null,
                         IsRequired = x.IsRequired,
                         MinLength = x.MinLength,
                         MaxLength = x.MaxLength,

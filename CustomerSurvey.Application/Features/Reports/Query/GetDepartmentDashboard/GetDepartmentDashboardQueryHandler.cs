@@ -137,6 +137,15 @@ internal sealed class GetDepartmentDashboardQueryHandler
                 request.TemplateId),
             cancellationToken);
 
+        var trendResponses = await _surveyResponseReadRepository.ListAsync(
+            new GetDepartmentDashboardSurveyResponsesSpec(
+                currentDepartmentAdmin.DepartmentId,
+                fromUtc,
+                toExclusiveUtc,
+                request.TemplateId,
+                ResponseDateBasis.VisitTime),
+            cancellationToken);
+
         var answers = await _surveyAnswerReadRepository.ListAsync(
             new GetDepartmentDashboardSurveyAnswersSpec(
                 currentDepartmentAdmin.DepartmentId,
@@ -160,6 +169,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
             operators,
             assignedTemplates,
             responses,
+            trendResponses,
             answers,
             customInputValues);
 
@@ -213,15 +223,18 @@ internal sealed class GetDepartmentDashboardQueryHandler
         IReadOnlyCollection<DepartmentDashboardOperatorDto> operators,
         IReadOnlyCollection<DepartmentDashboardAssignedTemplateDto> assignedTemplateAssignments,
         IReadOnlyCollection<DepartmentDashboardSurveyResponseDto> responses,
+        IReadOnlyCollection<DepartmentDashboardSurveyResponseDto> trendResponses,
         IReadOnlyCollection<DepartmentDashboardSurveyAnswerDto> answers,
         IReadOnlyCollection<DepartmentDashboardCustomInputValueDto> customInputValues)
     {
-        responses = responses.Select(x =>
+        DepartmentDashboardSurveyResponseDto SelectScore(DepartmentDashboardSurveyResponseDto x)
         {
             var selected = DashboardScoreSelection.Select(x.SnapshotPayload, x.MaxScore, x.ScorePercentage, request.ScoreCalculationMode);
             return x with { MaxScore = selected.MaxScore, ScorePercentage = selected.ScorePercentage,
                 RequestedModeAvailable = selected.RequestedModeAvailable, ScoreDerivation = selected.ScoreDerivation };
-        }).ToArray();
+        }
+
+        responses = responses.Select(SelectScore).ToArray();
         var scoringResponses = responses.ToDictionary(x => x.SurveyResponseId);
         customInputValues = customInputValues.Select(x =>
         {
@@ -328,7 +341,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
             },
 
             SatisfactionTrend = BuildTrend(
-                scoredResponses,
+                trendResponses.Select(SelectScore).Where(x => x.VisitDate.HasValue && x.MaxScore > 0).ToArray(),
                 request,
                 period),
 
@@ -380,8 +393,8 @@ internal sealed class GetDepartmentDashboardQueryHandler
             return scoredResponses
                 .GroupBy(x => new
                 {
-                    x.SubmittedOnUtc.Year,
-                    x.SubmittedOnUtc.Month
+                    x.VisitDate!.Value.Year,
+                    x.VisitDate!.Value.Month
                 })
                 .OrderBy(x => x.Key.Year)
                 .ThenBy(x => x.Key.Month)
@@ -399,6 +412,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
                             period,
                             ("from", range.From),
                             ("to", range.To),
+                            ("dateBasis", ResponseDateBasis.VisitTime),
                             ("isScored", true))
                     };
                 })
@@ -406,11 +420,11 @@ internal sealed class GetDepartmentDashboardQueryHandler
         }
 
         return scoredResponses
-            .GroupBy(x => DateOnly.FromDateTime(x.SubmittedOnUtc))
+            .GroupBy(x => x.VisitDate!.Value)
             .OrderBy(x => x.Key)
             .Select(x => new DepartmentDashboardTrendPointResponse
             {
-                Period = x.Key.ToString("yyyy-MM-dd"),
+                Period = CustomInputDate.Format(x.Key),
                 ResponsesCount = x.Count(),
                 AverageScorePercentage = Round(x.Average(r => r.ScorePercentage)),
                 DetailsNavigation = BuildDepartmentResponsesNavigation(
@@ -418,6 +432,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
                     period,
                     ("from", x.Key),
                     ("to", x.Key),
+                    ("dateBasis", ResponseDateBasis.VisitTime),
                     ("isScored", true))
             })
             .ToArray();
@@ -646,7 +661,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
         ResolvedDepartmentDashboardPeriod period)
     {
         return customInputValues
-            .Where(x => x.MaxScore > 0)
+            .Where(x => x.MaxScore > 0 && !x.IsSystemField)
             .GroupBy(x => new
             {
                 x.CustomInputId,
@@ -715,6 +730,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
                         CustomInputId = value.CustomInputId,
                         LabelEnSnapshot = value.LabelEnSnapshot,
                         LabelArSnapshot = value.LabelArSnapshot,
+                        DateValue = value.DateValue,
                         Value = GetCustomInputValueText(value)
                     })
                     .Where(value => !string.IsNullOrWhiteSpace(value.Value))
@@ -767,6 +783,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
         {
             TemplateCustomInputType.String => value.StringValue?.Trim() ?? string.Empty,
             TemplateCustomInputType.Integer => value.IntegerValue?.ToString() ?? string.Empty,
+            TemplateCustomInputType.Date => CustomInputDate.Format(value.DateValue),
             _ => string.Empty
         };
     }

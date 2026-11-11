@@ -17,6 +17,8 @@ internal sealed record DashboardSurveyResponseDto : CustomerSurvey.Application.F
 
     public DateTime SubmittedOnUtc { get; init; }
 
+    public DateOnly? VisitDate { get; init; }
+
     public int ActualScore { get; init; }
 
     public int MaxScore { get; init; }

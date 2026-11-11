@@ -151,6 +151,15 @@ internal sealed class GetSystemDashboardQueryHandler
                 request.DepartmentId),
             cancellationToken);
 
+        var trendResponses = await _surveyResponseReadRepository.ListAsync(
+            new GetSystemDashboardSurveyResponsesSpec(
+                fromUtc,
+                toExclusiveUtc,
+                request.BranchId,
+                request.DepartmentId,
+                ResponseDateBasis.VisitTime),
+            cancellationToken);
+
         var answers = await _surveyAnswerReadRepository.ListAsync(
             new GetSystemDashboardSurveyAnswersSpec(
                 fromUtc,
@@ -159,12 +168,14 @@ internal sealed class GetSystemDashboardQueryHandler
                 request.DepartmentId),
             cancellationToken);
 
-        responses = responses.Select(x =>
+        SystemDashboardSurveyResponseDto SelectScore(SystemDashboardSurveyResponseDto x)
         {
             var score = DashboardScoreSelection.Select(x.SnapshotPayload, x.MaxScore, x.ScorePercentage, request.ScoreCalculationMode);
             return x with { MaxScore = score.MaxScore, ScorePercentage = score.ScorePercentage,
                 RequestedModeAvailable = score.RequestedModeAvailable, ScoreDerivation = score.ScoreDerivation };
-        }).ToList();
+        }
+
+        responses = responses.Select(SelectScore).ToList();
 
         var criticalResponseIds = responses
             .Where(x =>
@@ -197,6 +208,7 @@ internal sealed class GetSystemDashboardQueryHandler
             operators,
             templates,
             responses,
+            trendResponses.Select(SelectScore).ToArray(),
             answers,
             criticalCustomInputs);
 
@@ -253,6 +265,7 @@ internal sealed class GetSystemDashboardQueryHandler
         IReadOnlyCollection<SystemDashboardOperatorDto> operators,
         IReadOnlyCollection<SystemDashboardTemplateDto> templates,
         IReadOnlyCollection<SystemDashboardSurveyResponseDto> responses,
+        IReadOnlyCollection<SystemDashboardSurveyResponseDto> trendResponses,
         IReadOnlyCollection<SystemDashboardSurveyAnswerDto> answers,
         IReadOnlyCollection<SystemDashboardCustomInputPreviewDto> criticalCustomInputs)
     {
@@ -332,7 +345,7 @@ internal sealed class GetSystemDashboardQueryHandler
             },
 
             SatisfactionTrend = BuildTrend(
-                scoredResponses,
+                trendResponses.Where(x => x.VisitDate.HasValue && x.MaxScore > 0).ToArray(),
                 request,
                 period),
 
@@ -377,8 +390,8 @@ internal sealed class GetSystemDashboardQueryHandler
             return scoredResponses
                 .GroupBy(x => new
                 {
-                    x.SubmittedOnUtc.Year,
-                    x.SubmittedOnUtc.Month
+                    x.VisitDate!.Value.Year,
+                    x.VisitDate!.Value.Month
                 })
                 .OrderBy(x => x.Key.Year)
                 .ThenBy(x => x.Key.Month)
@@ -396,6 +409,7 @@ internal sealed class GetSystemDashboardQueryHandler
                             period,
                             ("from", range.From),
                             ("to", range.To),
+                            ("dateBasis", ResponseDateBasis.VisitTime),
                             ("isScored", true))
                     };
                 })
@@ -403,11 +417,11 @@ internal sealed class GetSystemDashboardQueryHandler
         }
 
         return scoredResponses
-            .GroupBy(x => DateOnly.FromDateTime(x.SubmittedOnUtc))
+            .GroupBy(x => x.VisitDate!.Value)
             .OrderBy(x => x.Key)
             .Select(x => new SystemDashboardTrendPointResponse
             {
-                Period = x.Key.ToString("yyyy-MM-dd"),
+                Period = CustomInputDate.Format(x.Key),
                 ResponsesCount = x.Count(),
                 AverageScorePercentage = Round(x.Average(r => r.ScorePercentage)),
                 DetailsNavigation = BuildSystemResponsesNavigation(
@@ -415,6 +429,7 @@ internal sealed class GetSystemDashboardQueryHandler
                     period,
                     ("from", x.Key),
                     ("to", x.Key),
+                    ("dateBasis", ResponseDateBasis.VisitTime),
                     ("isScored", true))
             })
             .ToArray();
@@ -691,6 +706,7 @@ internal sealed class GetSystemDashboardQueryHandler
         {
             TemplateCustomInputType.String => value.StringValue ?? string.Empty,
             TemplateCustomInputType.Integer => value.IntegerValue?.ToString() ?? string.Empty,
+            TemplateCustomInputType.Date => CustomInputDate.Format(value.DateValue),
             _ => string.Empty
         };
 
@@ -699,6 +715,7 @@ internal sealed class GetSystemDashboardQueryHandler
             CustomInputId = value.CustomInputId,
             LabelEnSnapshot = value.LabelEnSnapshot,
             LabelArSnapshot = value.LabelArSnapshot,
+            DateValue = value.DateValue,
             Value = displayValue
         };
     }

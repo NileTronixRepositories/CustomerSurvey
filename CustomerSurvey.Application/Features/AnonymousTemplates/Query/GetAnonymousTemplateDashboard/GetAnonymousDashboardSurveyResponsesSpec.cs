@@ -1,4 +1,5 @@
-﻿using BuildingBlock.Domain.Specification;
+﻿using CustomerSurvey.Application.Features.Reports.Shared;
+using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 
@@ -11,13 +12,14 @@ internal sealed class GetAnonymousDashboardSurveyResponsesSpec
         Guid branchId,
         DateTime fromUtc,
         DateTime toExclusiveUtc,
-        Guid? anonymousTemplateId)
+        Guid? anonymousTemplateId,
+        ResponseDateBasis dateBasis = ResponseDateBasis.SubmittedOnUtc)
     {
         AddCriteria(x =>
             x.AnonymousTemplate.Scope == AnonymousTemplateScope.Branch &&
-            x.AnonymousTemplate.BranchId == branchId &&
-            x.SubmittedOnUtc >= fromUtc &&
-            x.SubmittedOnUtc < toExclusiveUtc);
+            x.AnonymousTemplate.BranchId == branchId);
+
+        AddCriteria(ResponseDateFilter.ForAnonymous(dateBasis, fromUtc, toExclusiveUtc));
 
         if (anonymousTemplateId.HasValue)
         {
@@ -49,6 +51,12 @@ internal sealed class GetAnonymousDashboardSurveyResponsesSpec
             PublicUrl = x.AnonymousTemplate!.PublicUrl,
             QrCode = x.AnonymousTemplate!.QrCode,
             SubmittedOnUtc = x.SubmittedOnUtc,
+            VisitDate = dateBasis == ResponseDateBasis.VisitTime
+                ? x.CustomInputValues
+                    .Where(value => value.AnonymousTemplateCustomInput.SystemFieldKey == TemplateCustomInputSystemField.VisitTime)
+                    .Select(value => value.DateValue)
+                    .FirstOrDefault()
+                : null,
             ActualScore = x.ActualScore,
             MaxScore = x.MaxScore,
             ScorePercentage = x.ScorePercentage

@@ -289,6 +289,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                             LabelAr = customInput.LabelAr,
                             Type = customInput.Type,
                             TypeName = customInput.Type.ToString(),
+                            SystemFieldKey = customInput.SystemFieldKey.HasValue ? customInput.SystemFieldKey.Value.ToString() : null,
                             IsRequired = customInput.IsRequired,
                             MinLength = customInput.MinLength,
                             MaxLength = customInput.MaxLength,
@@ -527,7 +528,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                             Type = customInputValue.Type,
                             TypeName = customInputValue.Type.ToString(),
                             StringValue = customInputValue.StringValue,
-                            IntegerValue = customInputValue.IntegerValue
+                            IntegerValue = customInputValue.IntegerValue,
+                            DateValue = customInputValue.DateValue
                         })
                         .ToArray());
         }

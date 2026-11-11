@@ -15,15 +15,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
         {
             AddCriteria(x => x.AnonymousTemplateId == request.AnonymousTemplateId);
 
-            if (request.FromDate.HasValue)
-            {
-                AddCriteria(x => x.SubmittedOnUtc >= request.FromDate.Value);
-            }
-
-            if (request.ToDate.HasValue)
-            {
-                AddCriteria(x => x.SubmittedOnUtc < request.ToDate.Value);
-            }
+            AddCriteria(ResponseDateFilter.ForAnonymous(request.DateBasis, request.FromDate, request.ToDate));
 
             if (request.MinScorePercentage.HasValue)
             {
@@ -125,6 +117,14 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                         (!hasCustomInputId || value.AnonymousTemplateCustomInputId == customInputId.Value) &&
                         value.TypeSnapshot == TemplateCustomInputType.String &&
                         value.StringValue == customInputValue));
+                }
+                else if (query.CustomInputType == TemplateCustomInputType.Date && hasValue)
+                {
+                    var validDate = CustomInputDate.TryParse(customInputValue, out var date);
+                    AddCriteria(x => validDate && x.CustomInputValues.Any(value =>
+                        (!hasCustomInputId || value.AnonymousTemplateCustomInputId == customInputId) &&
+                        value.TypeSnapshot == TemplateCustomInputType.Date &&
+                        value.DateValue == date));
                 }
                 else
                 {

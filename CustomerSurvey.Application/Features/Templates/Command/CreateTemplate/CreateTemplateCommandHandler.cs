@@ -147,6 +147,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.CreateTemplate
                         LabelEn = x.LabelEn,
                         LabelAr = x.LabelAr,
                         Type = x.Type,
+                        SystemFieldKey = x.SystemFieldKey.HasValue ? x.SystemFieldKey.Value.ToString() : null,
                         IsRequired = x.IsRequired,
                         MinLength = x.MinLength,
                         MaxLength = x.MaxLength,

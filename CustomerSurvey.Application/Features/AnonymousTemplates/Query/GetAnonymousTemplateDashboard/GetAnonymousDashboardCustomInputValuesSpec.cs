@@ -33,6 +33,8 @@ internal sealed class GetAnonymousDashboardCustomInputValuesSpec
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue,
+            DateValue = x.DateValue,
+            IsSystemField = x.AnonymousTemplateCustomInput.SystemFieldKey.HasValue,
             ScorePercentage = x.AnonymousSurveyResponse.ScorePercentage,
             MaxScore = x.AnonymousSurveyResponse.MaxScore
         });

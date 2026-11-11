@@ -2888,4 +2888,10 @@
   </data>
   <data name="BranchEvaluationSettings_Forbidden" xml:space="preserve"><value>Only the assigned BranchAdmin can manage branch evaluation settings.</value></data>
   <data name="BranchEvaluationSettings_InvalidThresholds" xml:space="preserve"><value>Each lower threshold must be below its upper threshold, within 0 to 100.</value></data>
+  <data name="Template_SystemCustomInput_Protected" xml:space="preserve">
+    <value>Visit Time is managed by the system and its definition cannot be changed.</value>
+  </data>
+  <data name="SubmitTemplateResponse_CustomInput_Date_Invalid" xml:space="preserve">
+    <value>Enter a valid date in yyyy-MM-dd format using only the date value.</value>
+  </data>
 </root>

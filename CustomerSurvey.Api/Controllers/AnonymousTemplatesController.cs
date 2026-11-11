@@ -340,6 +340,7 @@ namespace CustomerSurvey.Api.Controllers
                 PageSize = query.PageSize,
                 SearchText = query.SearchText,
                 OrderSort = query.OrderSort,
+                DateBasis = query.DateBasis,
                 FromDate = query.FromDate,
                 ToDate = query.ToDate,
                 MinScorePercentage = query.MinScorePercentage,

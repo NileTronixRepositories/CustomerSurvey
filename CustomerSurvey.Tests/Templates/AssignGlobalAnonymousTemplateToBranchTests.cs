@@ -71,7 +71,10 @@ public sealed class AssignGlobalAnonymousTemplateToBranchTests
         Assert.Equal("Media/TemplateLogos/saved.png", target.LogoPath);
         Assert.Equal($"https://survey.test/{target.Id}", target.PublicUrl);
         Assert.Equal($"qr::{target.PublicUrl}", target.QrCode);
-        Assert.Single(target.CustomInputs);
+        var copiedInput = Assert.Single(target.CustomInputs, x => !x.SystemFieldKey.HasValue);
+        var visitTime = Assert.Single(target.CustomInputs, x => x.SystemFieldKey == TemplateCustomInputSystemField.VisitTime);
+        Assert.NotEqual(copiedInput.Order, visitTime.Order);
+        Assert.False(visitTime.IsRequired);
 
         Assert.Equal(2, context.QuestionWriteRepository.AddedEntities.Count);
         Assert.Equal(

@@ -30,6 +30,8 @@ namespace CustomerSurvey.Domain.Entities
 
         public int? IntegerValue { get; private set; }
 
+        public DateOnly? DateValue { get; private set; }
+
         private SurveyResponseCustomInputValue()
         {
         }
@@ -73,6 +75,26 @@ namespace CustomerSurvey.Domain.Entities
                 TypeSnapshot = TemplateCustomInputType.Integer,
                 StringValue = null,
                 IntegerValue = value
+            };
+        }
+
+        public static SurveyResponseCustomInputValue CreateDateValue(
+            Guid surveyResponseId,
+            Guid templateCustomInputId,
+            string? labelEnSnapshot,
+            string? labelArSnapshot,
+            DateOnly value)
+        {
+            return new SurveyResponseCustomInputValue
+            {
+                Id = Guid.NewGuid(),
+                SurveyResponseId = surveyResponseId,
+                TemplateCustomInputId = templateCustomInputId,
+                NameSnapshot = ResolveLegacyNameSnapshot(labelEnSnapshot, labelArSnapshot),
+                LabelEnSnapshot = NormalizeLabel(labelEnSnapshot),
+                LabelArSnapshot = NormalizeLabel(labelArSnapshot),
+                TypeSnapshot = TemplateCustomInputType.Date,
+                DateValue = value
             };
         }
 

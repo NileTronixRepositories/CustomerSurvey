@@ -19,9 +19,9 @@ internal sealed class GetDepartmentSurveyResponsesPaginationSpec
         UseNoTracking();
 
         AddCriteria(x =>
-            x.Operator.DepartmentId == departmentId &&
-            x.SubmittedOnUtc >= fromUtc &&
-            x.SubmittedOnUtc < toExclusiveUtc);
+            x.Operator.DepartmentId == departmentId);
+
+        AddCriteria(ResponseDateFilter.ForSurvey(query.DateBasis, fromUtc, toExclusiveUtc));
 
         if (query.TemplateId.HasValue)
         {
@@ -180,6 +180,15 @@ internal sealed class GetDepartmentSurveyResponsesPaginationSpec
                 value.StringValue == valueText));
             return;
         }
+        if (query.CustomInputType == TemplateCustomInputType.Date && hasValue)
+        {
+            var validDate = CustomInputDate.TryParse(valueText, out var date);
+            AddCriteria(x => validDate && x.CustomInputValues.Any(value =>
+                (!hasCustomInputId || value.TemplateCustomInputId == customInputId) &&
+                value.TypeSnapshot == TemplateCustomInputType.Date &&
+                value.DateValue == date));
+            return;
+        }
 
         AddCriteria(x => x.CustomInputValues.Any(value =>
             (!hasCustomInputId || value.TemplateCustomInputId == customInputId.Value) &&
@@ -196,6 +205,8 @@ internal sealed record DepartmentSurveyResponseCustomInputPreviewDto
     public TemplateCustomInputType TypeSnapshot { get; init; }
     public string? StringValue { get; init; }
     public int? IntegerValue { get; init; }
+
+    public DateOnly? DateValue { get; init; }
 }
 
 internal sealed class GetDepartmentSurveyResponseCustomInputPreviewsSpec
@@ -216,7 +227,8 @@ internal sealed class GetDepartmentSurveyResponseCustomInputPreviewsSpec
             LabelArSnapshot = x.LabelArSnapshot,
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
-            IntegerValue = x.IntegerValue
+            IntegerValue = x.IntegerValue,
+            DateValue = x.DateValue
         });
     }
 }

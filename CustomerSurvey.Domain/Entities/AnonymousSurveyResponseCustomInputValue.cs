@@ -25,6 +25,8 @@ namespace CustomerSurvey.Domain.Entities
 
         public int? IntegerValue { get; private set; }
 
+        public DateOnly? DateValue { get; private set; }
+
         private AnonymousSurveyResponseCustomInputValue()
         {
         }
@@ -68,6 +70,26 @@ namespace CustomerSurvey.Domain.Entities
                 TypeSnapshot = TemplateCustomInputType.Integer,
                 StringValue = null,
                 IntegerValue = value
+            };
+        }
+
+        public static AnonymousSurveyResponseCustomInputValue CreateDateValue(
+            Guid anonymousSurveyResponseId,
+            Guid anonymousTemplateCustomInputId,
+            string? labelEnSnapshot,
+            string? labelArSnapshot,
+            DateOnly value)
+        {
+            return new AnonymousSurveyResponseCustomInputValue
+            {
+                Id = Guid.NewGuid(),
+                AnonymousSurveyResponseId = anonymousSurveyResponseId,
+                AnonymousTemplateCustomInputId = anonymousTemplateCustomInputId,
+                NameSnapshot = ResolveLegacyNameSnapshot(labelEnSnapshot, labelArSnapshot),
+                LabelEnSnapshot = NormalizeLabel(labelEnSnapshot),
+                LabelArSnapshot = NormalizeLabel(labelArSnapshot),
+                TypeSnapshot = TemplateCustomInputType.Date,
+                DateValue = value
             };
         }
 

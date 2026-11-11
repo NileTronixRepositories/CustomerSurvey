@@ -84,6 +84,14 @@ public sealed class BranchTemplateExcelReportServiceTests
             Assert.True(answers.Column(14).IsHidden);
             Assert.True(customInputs.Column(6).IsHidden);
 
+            var visitTimeColumn = Assert.Single(matrix.Row(3).CellsUsed(), cell => cell.GetString().Contains("Visit Time")).Address.ColumnNumber;
+            var matrixDate = matrix.Cell(4, visitTimeColumn);
+            var inputSheetDate = Assert.Single(customInputs.RowsUsed().SelectMany(row => row.CellsUsed()),
+                cell => cell.DataType == XLDataType.DateTime && cell.GetDateTime() == new DateTime(2026, 9, 8));
+            Assert.Equal(new DateTime(2026, 9, 8), matrixDate.GetDateTime());
+            Assert.Equal("yyyy-mm-dd", matrixDate.Style.NumberFormat.Format);
+            Assert.Equal("yyyy-mm-dd", inputSheetDate.Style.NumberFormat.Format);
+
             var matrixHeaders = matrix.Row(3).CellsUsed().Select(x => x.GetString()).ToArray();
             Assert.DoesNotContain("Template Kind", matrixHeaders);
             Assert.DoesNotContain("Operator Id", matrixHeaders);
@@ -279,6 +287,7 @@ public sealed class BranchTemplateExcelReportServiceTests
         var questionId = Guid.NewGuid();
         var templateQuestionId = Guid.NewGuid();
         var customInputId = Guid.NewGuid();
+        var visitTimeId = Guid.NewGuid();
         var scoredResponseId = Guid.NewGuid();
         var unscoredResponseId = Guid.NewGuid();
 
@@ -380,6 +389,19 @@ public sealed class BranchTemplateExcelReportServiceTests
             StringValue = "01012345678"
         };
 
+        var visitTimeValue = new BranchTemplatesReportCustomInputValue
+        {
+            ResponseId = scoredResponseId,
+            TemplateId = templateId,
+            TemplateKind = ReportTemplateKind.Normal,
+            CustomInputId = visitTimeId,
+            LabelEnSnapshot = "Visit Time",
+            LabelArSnapshot = "تاريخ الزيارة",
+            Type = TemplateCustomInputType.Date,
+            Order = 2,
+            DateValue = new DateOnly(2026, 9, 8)
+        };
+
         return CreateBaseModel(templateId) with
         {
             ExecutiveSummary = new BranchTemplatesPdfExecutiveSummary
@@ -469,6 +491,16 @@ public sealed class BranchTemplateExcelReportServiceTests
                     LabelEn = "Phone",
                     Type = TemplateCustomInputType.String,
                     Order = 1
+                },
+                new BranchTemplatesReportCustomInputDefinition
+                {
+                    TemplateId = templateId,
+                    TemplateKind = ReportTemplateKind.Normal,
+                    CustomInputId = visitTimeId,
+                    LabelEn = "Visit Time",
+                    LabelAr = "تاريخ الزيارة",
+                    Type = TemplateCustomInputType.Date,
+                    Order = 2
                 }
             },
             Responses = new[]
@@ -486,7 +518,7 @@ public sealed class BranchTemplateExcelReportServiceTests
                     ScoredItemsCount = 1,
                     AverageScoreValue = 5m,
                     ScorePercentage = 100m,
-                    CustomInputs = new[] { phoneValue },
+                    CustomInputs = new[] { phoneValue, visitTimeValue },
                     Answers = new[] { scoredAnswer }
                 },
                 new BranchTemplatesReportResponse

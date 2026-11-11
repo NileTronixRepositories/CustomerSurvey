@@ -85,9 +85,10 @@ public sealed class BranchTemplatesPdfRazorReportTests
                         TemplateKind = ReportTemplateKind.Normal,
                         CustomInputId = Guid.NewGuid(),
                         LabelEnSnapshot = $"Custom Input {inputIndex}",
-                        Type = TemplateCustomInputType.String,
+                        Type = inputIndex == 2 ? TemplateCustomInputType.Date : TemplateCustomInputType.String,
                         Order = inputIndex,
-                        StringValue = inputIndex == 1 ? "01012345678" : $"Historical value {inputIndex}"
+                        StringValue = inputIndex == 2 ? null : inputIndex == 1 ? "01012345678" : $"Historical value {inputIndex}",
+                        DateValue = inputIndex == 2 ? new DateOnly(2026, 9, 8) : null
                     })
                     .ToArray();
                 var answers = Enumerable.Range(1, 24)
@@ -228,6 +229,7 @@ public sealed class BranchTemplatesPdfRazorReportTests
         Assert.Contains("Response #1", html);
         Assert.Contains("Operator 1", html);
         Assert.Contains("01012345678", html);
+        Assert.Contains("2026-09-08", html);
         Assert.Contains("Question 1: Please describe your experience", html);
         Assert.Contains("Excellent free text feedback.", html);
         Assert.Contains("Included In Score", html);

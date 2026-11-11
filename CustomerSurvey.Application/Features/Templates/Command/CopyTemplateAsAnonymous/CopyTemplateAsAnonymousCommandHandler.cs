@@ -106,7 +106,7 @@ internal sealed class CopyTemplateAsAnonymousCommandHandler
             templateFamilyId: familyId);
 
         foreach (var sourceInput in source.CustomInputs
-                     .Where(x => x.IsActive)
+                     .Where(x => x.IsActive && !x.SystemFieldKey.HasValue)
                      .OrderBy(x => x.Order))
         {
             target.AddCustomInput(AnonymousTemplateCustomInput.Create(

@@ -1170,6 +1170,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
                 break;
             case DateOnly dateOnly:
                 cell.Value = dateOnly.ToDateTime(TimeOnly.MinValue);
+                cell.Style.NumberFormat.Format = "yyyy-mm-dd";
                 break;
             case ExcelHyperlinkValue hyperlink:
                 cell.Value = hyperlink.DisplayText;
@@ -1188,9 +1189,12 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
             return null;
         }
 
-        return value.Type == TemplateCustomInputType.Integer
-            ? value.IntegerValue
-            : value.StringValue;
+        return value.Type switch
+        {
+            TemplateCustomInputType.Integer => value.IntegerValue,
+            TemplateCustomInputType.Date => value.DateValue,
+            _ => value.StringValue
+        };
     }
 
     private static object? ResolveLocalizedAnswerValue(

@@ -1545,7 +1545,8 @@ namespace CustomerSurvey.infrastructure.Reports
                     LabelArSnapshot = x.LabelArSnapshot,
                     Type = x.TypeSnapshot,
                     StringValue = x.StringValue,
-                    IntegerValue = x.IntegerValue
+                    IntegerValue = x.IntegerValue,
+                    DateValue = x.DateValue
                 })
                 .ToArrayAsync(cancellationToken);
 
@@ -1586,7 +1587,8 @@ namespace CustomerSurvey.infrastructure.Reports
                     LabelArSnapshot = x.LabelArSnapshot,
                     Type = x.TypeSnapshot,
                     StringValue = x.StringValue,
-                    IntegerValue = x.IntegerValue
+                    IntegerValue = x.IntegerValue,
+                    DateValue = x.DateValue
                 })
                 .ToArrayAsync(cancellationToken);
 

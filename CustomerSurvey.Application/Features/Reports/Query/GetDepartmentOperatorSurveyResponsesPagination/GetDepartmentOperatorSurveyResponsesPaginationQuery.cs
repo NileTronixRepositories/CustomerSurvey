@@ -1,6 +1,8 @@
 ﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Domain.SharedDto;
 
+using CustomerSurvey.Application.Features.Reports.Shared;
+
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentOperatorSurveyResponsesPagination;
 
 public sealed class GetDepartmentOperatorSurveyResponsesPaginationQuery
@@ -11,6 +13,8 @@ public sealed class GetDepartmentOperatorSurveyResponsesPaginationQuery
     public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; } = CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions;
 
     public Guid OperatorId { get; set; }
+
+    public ResponseDateBasis DateBasis { get; init; }
 
     public DateOnly? From { get; init; }
 

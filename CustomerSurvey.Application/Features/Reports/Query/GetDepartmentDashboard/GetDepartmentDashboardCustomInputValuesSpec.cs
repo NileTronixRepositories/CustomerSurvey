@@ -31,6 +31,8 @@ internal sealed class GetDepartmentDashboardCustomInputValuesSpec
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
             IntegerValue = x.IntegerValue,
+            DateValue = x.DateValue,
+            IsSystemField = x.TemplateCustomInput.SystemFieldKey.HasValue,
             ScorePercentage = x.SurveyResponse.ScorePercentage,
             MaxScore = x.SurveyResponse.MaxScore
         });

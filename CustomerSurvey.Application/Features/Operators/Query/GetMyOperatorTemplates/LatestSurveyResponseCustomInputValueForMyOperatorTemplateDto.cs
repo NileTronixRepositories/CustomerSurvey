@@ -22,5 +22,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public string? StringValue { get; init; }
 
         public int? IntegerValue { get; init; }
+
+        public DateOnly? DateValue { get; init; }
     }
 }

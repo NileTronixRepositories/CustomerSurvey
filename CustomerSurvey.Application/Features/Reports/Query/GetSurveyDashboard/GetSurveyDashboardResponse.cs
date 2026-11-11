@@ -382,6 +382,8 @@ public sealed record SurveyDashboardCustomInputPreviewResponse
 
     public string? LabelArSnapshot { get; init; }
 
+    public DateOnly? DateValue { get; init; }
+
     public string Value { get; init; } = string.Empty;
 }
 
@@ -454,6 +456,7 @@ internal sealed record SurveyDashboardResponseRow : CustomerSurvey.Application.F
     public string? OperatorNameAr { get; init; }
 
     public DateTime SubmittedOnUtc { get; init; }
+    public DateOnly? VisitDate { get; init; }
 
     public int MaxScore { get; init; }
 
@@ -522,6 +525,9 @@ internal sealed record SurveyDashboardCustomInputValueRow
     public string? StringValue { get; init; }
 
     public int? IntegerValue { get; init; }
+
+    public DateOnly? DateValue { get; init; }
+    public bool IsSystemField { get; init; }
 
     public decimal ScorePercentage { get; init; }
 

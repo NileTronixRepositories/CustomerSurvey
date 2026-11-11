@@ -1,6 +1,5 @@
 ﻿using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Domain.Entities;
-using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonymousTemplateResponseDetails
 {
@@ -18,16 +17,12 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                 LabelEnSnapshot = x.LabelEnSnapshot,
                 LabelArSnapshot = x.LabelArSnapshot,
 
-                Type = x.IntegerValue.HasValue
-                    ? TemplateCustomInputType.Integer
-                    : TemplateCustomInputType.String,
-
-                TypeName = x.IntegerValue.HasValue
-                    ? TemplateCustomInputType.Integer.ToString()
-                    : TemplateCustomInputType.String.ToString(),
+                Type = x.TypeSnapshot,
+                TypeName = x.TypeSnapshot.ToString(),
 
                 StringValue = x.StringValue,
-                IntegerValue = x.IntegerValue
+                IntegerValue = x.IntegerValue,
+                DateValue = x.DateValue
             });
         }
     }

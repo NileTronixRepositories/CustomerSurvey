@@ -175,11 +175,14 @@ public sealed class ManagedGlobalCopyRestrictionTests
     public async Task SuperAdmin_CanUpdateScheduleButCannotChangeProtectedContent()
     {
         var context = CreateContext(isSuperAdmin: true);
+        var customInputs = new InMemoryReadRepository<AnonymousTemplateCustomInput>();
+        customInputs.AddRange(context.Template.CustomInputs);
+        var visitTime = Assert.Single(context.Template.CustomInputs);
         var handler = new UpdateAnonymousTemplateCommandHandler(
             context.Templates,
             context.TemplateWrites,
             new InMemoryReadRepository<Branch>(),
-            new InMemoryReadRepository<AnonymousTemplateCustomInput>(),
+            customInputs,
             new InMemoryWriteRepository<AnonymousTemplateCustomInput>(),
             context.SuperAdmins,
             context.ScopeResolver,
@@ -203,6 +206,8 @@ public sealed class ManagedGlobalCopyRestrictionTests
         Assert.True(scheduleResult.IsSuccess);
         Assert.Equal(newActiveFrom, context.Template.ActiveFrom);
         Assert.Equal(newExpireTo, context.Template.ExpireTo);
+        Assert.Equal(visitTime.Id, Assert.Single(scheduleResult.Value.CustomInputs).CustomInputId);
+        Assert.True(visitTime.IsActive);
 
         var protectedContentResult = await handler.Handle(new UpdateAnonymousTemplateCommand
         {

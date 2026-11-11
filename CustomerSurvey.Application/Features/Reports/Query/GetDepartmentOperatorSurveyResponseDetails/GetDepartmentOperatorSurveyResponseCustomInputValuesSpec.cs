@@ -17,7 +17,8 @@ internal sealed class GetDepartmentOperatorSurveyResponseCustomInputValuesSpec
             LabelArSnapshot = x.LabelArSnapshot,
             TypeSnapshot = x.TypeSnapshot,
             StringValue = x.StringValue,
-            IntegerValue = x.IntegerValue
+            IntegerValue = x.IntegerValue,
+            DateValue = x.DateValue
         });
     }
 }

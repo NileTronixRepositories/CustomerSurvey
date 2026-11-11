@@ -19,6 +19,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public TemplateCustomInputType Type { get; init; }
 
+        public TemplateCustomInputSystemField? SystemFieldKey { get; init; }
+
         public bool IsRequired { get; init; }
 
         public int? MinLength { get; init; }

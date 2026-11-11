@@ -29,15 +29,7 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
             AddCriteria(x => x.AnonymousTemplateId == query.AnonymousTemplateId.Value);
         }
 
-        if (fromUtc.HasValue)
-        {
-            AddCriteria(x => x.SubmittedOnUtc >= fromUtc.Value);
-        }
-
-        if (toExclusiveUtc.HasValue)
-        {
-            AddCriteria(x => x.SubmittedOnUtc < toExclusiveUtc.Value);
-        }
+        AddCriteria(ResponseDateFilter.ForAnonymous(query.DateBasis, fromUtc, toExclusiveUtc));
 
         if (query.MinScorePercentage.HasValue)
         {
@@ -160,6 +152,7 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
                     CustomInputId = value.AnonymousTemplateCustomInputId,
                     LabelEnSnapshot = value.LabelEnSnapshot,
                     LabelArSnapshot = value.LabelArSnapshot,
+                    DateValue = value.DateValue,
                     Value = value.TypeSnapshot == TemplateCustomInputType.String
                         ? value.StringValue ?? string.Empty
                         : value.TypeSnapshot == TemplateCustomInputType.Integer && value.IntegerValue.HasValue
@@ -227,6 +220,14 @@ internal sealed class GetBranchAnonymousResponsesPaginationSpec
                     (!hasCustomInputId || value.AnonymousTemplateCustomInputId == customInputId.Value) &&
                     value.TypeSnapshot == TemplateCustomInputType.String &&
                     value.StringValue == customInputValue));
+            }
+            else if (query.CustomInputType == TemplateCustomInputType.Date && hasValue)
+            {
+                var validDate = CustomInputDate.TryParse(customInputValue, out var date);
+                AddCriteria(x => validDate && x.CustomInputValues.Any(value =>
+                    (!hasCustomInputId || value.AnonymousTemplateCustomInputId == customInputId) &&
+                    value.TypeSnapshot == TemplateCustomInputType.Date &&
+                    value.DateValue == date));
             }
             else
             {

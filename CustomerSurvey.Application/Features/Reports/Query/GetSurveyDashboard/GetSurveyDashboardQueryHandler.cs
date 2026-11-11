@@ -177,6 +177,7 @@ internal sealed class GetSurveyDashboardQueryHandler
         var templates = Array.Empty<SurveyDashboardTemplateRow>() as IReadOnlyCollection<SurveyDashboardTemplateRow>;
         var anonymousTemplates = Array.Empty<SurveyDashboardTemplateRow>() as IReadOnlyCollection<SurveyDashboardTemplateRow>;
         var responses = new List<SurveyDashboardResponseRow>();
+        var trendResponses = new List<SurveyDashboardResponseRow>();
         var answers = new List<SurveyDashboardAnswerRow>();
         var customInputValues = new List<SurveyDashboardCustomInputValueRow>();
         var templateQuestions = new List<TemplateQuestionFlatDto>();
@@ -196,6 +197,15 @@ internal sealed class GetSurveyDashboardQueryHandler
                     fromUtc,
                     toExclusiveUtc,
                     internalTemplateId),
+                cancellationToken));
+
+            trendResponses.AddRange(await _surveyResponseReadRepository.ListAsync(
+                new GetSurveyDashboardInternalResponsesSpec(
+                    scope.BranchId,
+                    fromUtc,
+                    toExclusiveUtc,
+                    internalTemplateId,
+                    ResponseDateBasis.VisitTime),
                 cancellationToken));
 
             answers.AddRange(await _surveyAnswerReadRepository.ListAsync(
@@ -244,6 +254,15 @@ internal sealed class GetSurveyDashboardQueryHandler
                     fromUtc,
                     toExclusiveUtc,
                     anonymousTemplateId),
+                cancellationToken));
+
+            trendResponses.AddRange(await _anonymousSurveyResponseReadRepository.ListAsync(
+                new GetSurveyDashboardAnonymousResponsesSpec(
+                    scope.BranchId,
+                    fromUtc,
+                    toExclusiveUtc,
+                    anonymousTemplateId,
+                    ResponseDateBasis.VisitTime),
                 cancellationToken));
 
             answers.AddRange(await _anonymousSurveyAnswerReadRepository.ListAsync(
@@ -324,6 +343,14 @@ internal sealed class GetSurveyDashboardQueryHandler
             responses,
             calculatedScoresByResponse);
 
+        // The scoring service uses the captured snapshot or stored baseline for persisted responses.
+        var trendScores = _surveyReportScoringService.CalculateResponseScores(
+            trendResponses.Select(MapResponseForScoring).ToArray(),
+            [], [], [], [],
+            request.ScoreCalculationMode);
+        trendResponses = ApplyCalculatedScores(trendResponses, trendScores.ToDictionary(
+            x => (Source: ToDashboardSource(x.TemplateKind), x.ResponseId), x => x));
+
         customInputValues = ApplyCalculatedScores(
             customInputValues,
             calculatedScoresByResponse);
@@ -338,6 +365,7 @@ internal sealed class GetSurveyDashboardQueryHandler
             templates,
             anonymousTemplates,
             responses,
+            trendResponses,
             answers,
             customInputValues,
             templateQuestions,
@@ -686,6 +714,7 @@ internal sealed class GetSurveyDashboardQueryHandler
         IReadOnlyCollection<SurveyDashboardTemplateRow> internalTemplates,
         IReadOnlyCollection<SurveyDashboardTemplateRow> anonymousTemplates,
         IReadOnlyCollection<SurveyDashboardResponseRow> responses,
+        IReadOnlyCollection<SurveyDashboardResponseRow> trendResponses,
         IReadOnlyCollection<SurveyDashboardAnswerRow> answers,
         IReadOnlyCollection<SurveyDashboardCustomInputValueRow> customInputValues,
         IReadOnlyCollection<TemplateQuestionFlatDto> templateQuestions,
@@ -841,7 +870,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                 templateFilter),
 
             SatisfactionTrend = BuildTrend(
-                responses,
+                trendResponses,
                 request,
                 actor,
                 scope,
@@ -1004,7 +1033,8 @@ internal sealed class GetSurveyDashboardQueryHandler
         ResolvedSurveyDashboardTemplateFilter? templateFilter)
     {
         return responses
-            .GroupBy(x => GetPeriodKey(x.SubmittedOnUtc, request.GroupBy))
+            .Where(x => x.VisitDate.HasValue)
+            .GroupBy(x => GetPeriodKey(x.VisitDate!.Value, request.GroupBy))
             .OrderBy(x => x.Key)
             .Select(x =>
             {
@@ -1041,6 +1071,7 @@ internal sealed class GetSurveyDashboardQueryHandler
                         templateFilter,
                         ("from", range.From),
                         ("to", range.To),
+                        ("dateBasis", ResponseDateBasis.VisitTime),
                         ("isScored", null)))
                 };
             })
@@ -1228,7 +1259,7 @@ internal sealed class GetSurveyDashboardQueryHandler
         ResolvedSurveyDashboardTemplateFilter? templateFilter)
     {
         return customInputValues
-            .Where(x => x.MaxScore > 0)
+            .Where(x => x.MaxScore > 0 && !x.IsSystemField)
             .Select(x => new
             {
                 Value = x,
@@ -1364,6 +1395,7 @@ internal sealed class GetSurveyDashboardQueryHandler
             CustomInputId = value.CustomInputId,
             LabelEnSnapshot = value.LabelEnSnapshot,
             LabelArSnapshot = value.LabelArSnapshot,
+            DateValue = value.DateValue,
             Value = GetCustomInputValueText(value)
         };
     }
@@ -1374,15 +1406,16 @@ internal sealed class GetSurveyDashboardQueryHandler
         {
             TemplateCustomInputType.String => value.StringValue?.Trim() ?? string.Empty,
             TemplateCustomInputType.Integer => value.IntegerValue?.ToString() ?? string.Empty,
+            TemplateCustomInputType.Date => CustomInputDate.Format(value.DateValue),
             _ => string.Empty
         };
     }
 
-    private static string GetPeriodKey(DateTime submittedOnUtc, DashboardGroupBy groupBy)
+    private static string GetPeriodKey(DateOnly visitDate, DashboardGroupBy groupBy)
     {
         return groupBy == DashboardGroupBy.Month
-            ? $"{submittedOnUtc.Year:D4}-{submittedOnUtc.Month:D2}"
-            : DateOnly.FromDateTime(submittedOnUtc).ToString("yyyy-MM-dd");
+            ? $"{visitDate.Year:D4}-{visitDate.Month:D2}"
+            : CustomInputDate.Format(visitDate);
     }
 
     private static bool IsScored(SurveyDashboardResponseRow response)

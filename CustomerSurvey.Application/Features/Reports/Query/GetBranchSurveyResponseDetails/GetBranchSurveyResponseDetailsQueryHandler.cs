@@ -192,6 +192,7 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
         {
             TemplateCustomInputType.String => customInput.StringValue ?? string.Empty,
             TemplateCustomInputType.Integer => customInput.IntegerValue?.ToString() ?? string.Empty,
+            TemplateCustomInputType.Date => CustomInputDate.Format(customInput.DateValue),
             _ => string.Empty
         };
 
@@ -204,6 +205,7 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
             TypeName = customInput.TypeSnapshot.ToString(),
             StringValue = customInput.StringValue,
             IntegerValue = customInput.IntegerValue,
+            DateValue = customInput.DateValue,
             DisplayValue = displayValue
         };
     }

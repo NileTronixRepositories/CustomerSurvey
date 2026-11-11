@@ -49,7 +49,8 @@ namespace CustomerSurvey.Api.Controllers
                     {
                         CustomInputId = x.CustomInputId,
                         StringValue = x.StringValue,
-                        IntegerValue = x.IntegerValue
+                        IntegerValue = x.IntegerValue,
+                        DateValue = x.DateValue
                     })
                     .ToArray(),
                 Answers = request.Answers

@@ -14,6 +14,8 @@ public sealed class GetDepartmentSurveyResponsesPaginationQuery
 
     public CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode ScoreCalculationMode { get; init; } = CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport.ScoreCalculationMode.RootQuestions;
 
+    public ResponseDateBasis DateBasis { get; init; }
+
     public DateOnly? From { get; init; }
 
     public DateOnly? To { get; init; }

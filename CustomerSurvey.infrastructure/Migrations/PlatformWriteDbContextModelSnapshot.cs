@@ -135,6 +135,9 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<DateTime>("CreatedOnUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateOnly?>("DateValue")
+                        .HasColumnType("date");
+
                     b.Property<int?>("IntegerValue")
                         .HasColumnType("int");
 
@@ -170,8 +173,13 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.HasIndex("AnonymousSurveyResponseId", "AnonymousTemplateCustomInputId")
                         .IsUnique();
 
+                    b.HasIndex("AnonymousTemplateCustomInputId", "DateValue", "AnonymousSurveyResponseId")
+                        .HasFilter("[DateValue] IS NOT NULL");
+
                     b.ToTable("AnonymousSurveyResponseCustomInputValue", null, t =>
                         {
+                            t.HasCheckConstraint("CK_ASRCIV_Date_Value", "([TypeSnapshot] = 3 AND  [DateValue] IS NOT NULL AND [StringValue] IS NULL AND [IntegerValue] IS NULL) OR ([TypeSnapshot] <> 3 AND [DateValue] IS NULL)");
+
                             t.HasCheckConstraint("CK_ASRCIV_Integer_Value", "([TypeSnapshot] <> 2) OR ([IntegerValue] IS NOT NULL AND [StringValue] IS NULL)");
 
                             t.HasCheckConstraint("CK_ASRCIV_String_Value", "([TypeSnapshot] <> 1) OR ([StringValue] IS NOT NULL AND [IntegerValue] IS NULL)");
@@ -314,6 +322,9 @@ namespace CustomerSurvey.infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("SystemFieldKey")
+                        .HasColumnType("int");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
@@ -321,10 +332,16 @@ namespace CustomerSurvey.infrastructure.Migrations
 
                     b.HasIndex("AnonymousTemplateId");
 
+                    b.HasIndex("AnonymousTemplateId", "SystemFieldKey")
+                        .IsUnique()
+                        .HasFilter("[SystemFieldKey] IS NOT NULL");
+
                     b.HasIndex("AnonymousTemplateId", "IsActive", "Order");
 
                     b.ToTable("AnonymousTemplateCustomInput", null, t =>
                         {
+                            t.HasCheckConstraint("CK_AnonymousTemplateCustomInput_Date_Validation", "([Type] <> 3) OR ([MinLength] IS NULL AND [MaxLength] IS NULL AND [MinValue] IS NULL AND [MaxValue] IS NULL)");
+
                             t.HasCheckConstraint("CK_AnonymousTemplateCustomInput_Integer_Validation", "([Type] <> 2) OR ([MinLength] IS NULL AND [MaxLength] IS NULL)");
 
                             t.HasCheckConstraint("CK_AnonymousTemplateCustomInput_Length_Range", "([MinLength] IS NULL OR [MaxLength] IS NULL OR [MaxLength] >= [MinLength])");
@@ -1000,6 +1017,9 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<DateTime>("CreatedOnUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateOnly?>("DateValue")
+                        .HasColumnType("date");
+
                     b.Property<int?>("IntegerValue")
                         .HasColumnType("int");
 
@@ -1041,8 +1061,13 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.HasIndex("SurveyResponseId", "TemplateCustomInputId")
                         .IsUnique();
 
+                    b.HasIndex("TemplateCustomInputId", "DateValue", "SurveyResponseId")
+                        .HasFilter("[DateValue] IS NOT NULL");
+
                     b.ToTable("SurveyResponseCustomInputValue", null, t =>
                         {
+                            t.HasCheckConstraint("CK_SRCIV_Date_Value", "([TypeSnapshot] = 3 AND  [DateValue] IS NOT NULL AND [StringValue] IS NULL AND [IntegerValue] IS NULL) OR ([TypeSnapshot] <> 3 AND [DateValue] IS NULL)");
+
                             t.HasCheckConstraint("CK_SRCIV_Integer_Value", "([TypeSnapshot] <> 2) OR ([IntegerValue] IS NOT NULL AND [StringValue] IS NULL)");
 
                             t.HasCheckConstraint("CK_SRCIV_String_Value", "([TypeSnapshot] <> 1) OR ([StringValue] IS NOT NULL AND [IntegerValue] IS NULL)");
@@ -1226,6 +1251,9 @@ namespace CustomerSurvey.infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("SystemFieldKey")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("TemplateId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1238,10 +1266,16 @@ namespace CustomerSurvey.infrastructure.Migrations
 
                     b.HasIndex("TemplateId");
 
+                    b.HasIndex("TemplateId", "SystemFieldKey")
+                        .IsUnique()
+                        .HasFilter("[SystemFieldKey] IS NOT NULL");
+
                     b.HasIndex("TemplateId", "IsActive", "Order");
 
                     b.ToTable("TemplateCustomInput", null, t =>
                         {
+                            t.HasCheckConstraint("CK_TemplateCustomInput_Date_Validation", "([Type] <> 3) OR ([MinLength] IS NULL AND [MaxLength] IS NULL AND [MinValue] IS NULL AND [MaxValue] IS NULL)");
+
                             t.HasCheckConstraint("CK_TemplateCustomInput_Integer_Validation", "([Type] <> 2) OR ([MinLength] IS NULL AND [MaxLength] IS NULL)");
 
                             t.HasCheckConstraint("CK_TemplateCustomInput_Length_Range", "([MinLength] IS NULL OR [MaxLength] IS NULL OR [MaxLength] >= [MinLength])");

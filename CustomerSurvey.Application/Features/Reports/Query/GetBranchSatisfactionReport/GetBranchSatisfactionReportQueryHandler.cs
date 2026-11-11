@@ -1,4 +1,5 @@
-﻿using BuildingBlock.Application.Abstraction;
+﻿using CustomerSurvey.Application.Features.Reports.Shared;
+using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
@@ -109,6 +110,15 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                     templateId: request.TemplateId),
                 cancellationToken);
 
+            var trendResponses = await _surveyResponseReadRepository.ListAsync(
+                new GetSatisfactionSurveyResponsesForBranchReportSpec(
+                    branchId: branchId,
+                    fromUtc: fromUtc,
+                    toExclusiveUtc: toExclusiveUtc,
+                    templateId: request.TemplateId,
+                    dateBasis: ResponseDateBasis.VisitTime),
+                cancellationToken);
+
             var answers = await _surveyAnswerReadRepository.ListAsync(
                 new GetSatisfactionAnswersForBranchReportSpec(
                     branchId: branchId,
@@ -117,15 +127,19 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                     templateId: request.TemplateId),
                 cancellationToken);
 
-            responses = responses.Select(x =>
+            SatisfactionSurveyResponseFlatDto SelectScore(SatisfactionSurveyResponseFlatDto x)
             {
                 var score = CustomerSurvey.Application.Features.Reports.Services.Scoring.DashboardScoreSelection.Select(
                     x.SnapshotPayload, x.MaxScore, x.ScorePercentage, request.ScoreCalculationMode);
                 return x with { MaxScore = score.MaxScore, ScorePercentage = score.ScorePercentage };
-            }).ToList();
+            }
+
+            responses = responses.Select(SelectScore).ToList();
             var response = BuildResponse(
+                request: request,
                 period: period,
                 responses: responses,
+                trendResponses: trendResponses.Select(SelectScore).ToArray(),
                 answers: answers);
 
             response = response with
@@ -212,8 +226,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
         }
 
         private static GetBranchSatisfactionReportResponse BuildResponse(
+            GetBranchSatisfactionReportQuery request,
             ResolvedSatisfactionPeriod period,
             IReadOnlyCollection<SatisfactionSurveyResponseFlatDto> responses,
+            IReadOnlyCollection<SatisfactionSurveyResponseFlatDto> trendResponses,
             IReadOnlyCollection<SatisfactionAnswerFlatDto> answers)
         {
             var scoredResponses = responses
@@ -263,13 +279,24 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
                 .ThenBy(x => x.TemplateNameEn)
                 .ToArray();
 
-            var trend = scoredResponses
-                .GroupBy(x => DateOnly.FromDateTime(x.SubmittedOnUtc))
+            var trend = trendResponses
+                .Where(x => x.VisitDate.HasValue && x.MaxScore > 0)
+                .GroupBy(x => x.VisitDate!.Value)
                 .Select(x => new SatisfactionTrendItemResponse
                 {
                     Date = x.Key,
                     Score = Round(x.Average(response => response.ScorePercentage)),
-                    ResponsesCount = x.Count()
+                    ResponsesCount = x.Count(),
+                    DetailsNavigation = DashboardDrillDownPathBuilder.Navigation(
+                        "BranchResponses", "/api/reports/branch-responses",
+                        ("templateId", request.TemplateId),
+                        ("scoreCalculationMode", request.ScoreCalculationMode),
+                        ("dateBasis", ResponseDateBasis.VisitTime),
+                        ("from", x.Key),
+                        ("to", x.Key),
+                        ("isScored", true),
+                        ("pageNumber", 1),
+                        ("pageSize", 10))
                 })
                 .OrderBy(x => x.Date)
                 .ToArray();

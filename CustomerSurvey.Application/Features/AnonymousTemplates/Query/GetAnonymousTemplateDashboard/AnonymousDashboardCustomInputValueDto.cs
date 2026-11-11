@@ -18,6 +18,9 @@ internal sealed record AnonymousDashboardCustomInputValueDto
 
     public int? IntegerValue { get; init; }
 
+    public DateOnly? DateValue { get; init; }
+    public bool IsSystemField { get; init; }
+
     public decimal ScorePercentage { get; init; }
 
     public int MaxScore { get; init; }

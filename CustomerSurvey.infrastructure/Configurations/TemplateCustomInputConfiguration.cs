@@ -64,6 +64,10 @@ namespace CustomerSurvey.infrastructure.Configurations
 
             builder.HasIndex(x => x.TemplateId);
 
+            builder.HasIndex(x => new { x.TemplateId, x.SystemFieldKey })
+                .IsUnique()
+                .HasFilter("[SystemFieldKey] IS NOT NULL");
+
             builder.HasIndex(x => new
             {
                 x.TemplateId,
@@ -97,6 +101,11 @@ namespace CustomerSurvey.infrastructure.Configurations
                 table.HasCheckConstraint(
                     "CK_TemplateCustomInput_StartWith_StringOnly",
                     $"([Type] = {(int)TemplateCustomInputType.String}) OR ([StartWith] IS NULL)");
+
+                table.HasCheckConstraint(
+                    "CK_TemplateCustomInput_Date_Validation",
+                    $"([Type] <> {(int)TemplateCustomInputType.Date}) OR " +
+                    "([MinLength] IS NULL AND [MaxLength] IS NULL AND [MinValue] IS NULL AND [MaxValue] IS NULL)");
 
                 table.HasCheckConstraint(
                     "CK_TemplateCustomInput_Length_Range",

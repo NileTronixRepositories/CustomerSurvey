@@ -77,6 +77,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
         public string TypeName { get; init; } = string.Empty;
 
+        public string? SystemFieldKey { get; init; }
+
+        public bool IsSystemField => SystemFieldKey is not null;
+
         public bool IsRequired { get; init; }
 
         public int? MinLength { get; init; }

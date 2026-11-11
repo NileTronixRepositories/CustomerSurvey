@@ -19,5 +19,16 @@
         public int AnswersCount { get; init; }
 
         public int CustomInputValuesCount { get; init; }
+
+        public IReadOnlyCollection<SubmittedAnonymousCustomInputValueResponse> CustomInputValues { get; init; } = [];
+    }
+
+    public sealed record SubmittedAnonymousCustomInputValueResponse
+    {
+        public Guid CustomInputId { get; init; }
+        public string? StringValue { get; init; }
+        public int? IntegerValue { get; init; }
+
+        public DateOnly? DateValue { get; init; }
     }
 }
