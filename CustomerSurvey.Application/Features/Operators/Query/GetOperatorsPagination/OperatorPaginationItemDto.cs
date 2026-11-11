@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +13,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagina
         public Guid ApplicationUserId { get; init; }
 
         public Guid DepartmentId { get; init; }
+
+        public bool CanCreateFlagsOnSubmit { get; init; }
 
         public string DepartmentNameEn { get; init; } = string.Empty;
 

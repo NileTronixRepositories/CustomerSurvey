@@ -1,4 +1,4 @@
-﻿using BuildingBlock.Domain.Enums;
+using BuildingBlock.Domain.Enums;
 using BuildingBlock.Domain.Specification;
 using CustomerSurvey.Application.Features.Reports.Shared;
 using CustomerSurvey.Domain.Entities;
@@ -15,7 +15,7 @@ internal sealed class GetSystemSurveyResponsesPaginationSpec
         GetSystemSurveyResponsesPaginationQuery query)
         : base(query.ScoreCalculationMode)
     {
-        AddCriteria(ResponseDateFilter.ForSurvey(query.DateBasis, fromUtc, toExclusiveUtc));
+        AddCriteria(ResponseDateFilter.ForSurvey(query.FlagType.HasValue ? ResponseDateBasis.SubmittedOnUtc : query.DateBasis, fromUtc, toExclusiveUtc));
 
         if (query.BranchId.HasValue)
         {
@@ -53,6 +53,7 @@ internal sealed class GetSystemSurveyResponsesPaginationSpec
             if (query.HasComplaint.Value)
             {
                 AddCriteria(x =>
+                    x.Flags.Any(flag => flag.Type == SurveyResponseFlagType.Complaint) ||
                     x.Answers.Any(answer =>
                         answer.QuestionType == QuestionType.Complain &&
                         answer.TextAnswer != null &&
@@ -61,6 +62,7 @@ internal sealed class GetSystemSurveyResponsesPaginationSpec
             else
             {
                 AddCriteria(x =>
+                    !x.Flags.Any(flag => flag.Type == SurveyResponseFlagType.Complaint) &&
                     !x.Answers.Any(answer =>
                         answer.QuestionType == QuestionType.Complain &&
                         answer.TextAnswer != null &&
@@ -160,7 +162,7 @@ internal sealed class GetSystemSurveyResponsesPaginationSpec
             ScorePercentage = x.ScorePercentage,
             IsScored = x.MaxScore > 0,
 
-            HasComplaint = x.Answers.Any(answer =>
+            HasComplaint = x.Flags.Any(flag => flag.Type == SurveyResponseFlagType.Complaint) || x.Answers.Any(answer =>
                 answer.QuestionType == QuestionType.Complain &&
                 answer.TextAnswer != null &&
                 answer.TextAnswer.Trim() != string.Empty),

@@ -1,4 +1,4 @@
-﻿namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagination
+namespace CustomerSurvey.Application.Features.Operators.Query.GetOperatorsPagination
 {
     public sealed record OperatorPaginationItemResponse
     {
@@ -7,6 +7,8 @@
         public Guid ApplicationUserId { get; init; }
 
         public Guid DepartmentId { get; init; }
+
+        public bool CanCreateFlagsOnSubmit { get; init; }
 
         public string DepartmentNameEn { get; init; } = string.Empty;
 

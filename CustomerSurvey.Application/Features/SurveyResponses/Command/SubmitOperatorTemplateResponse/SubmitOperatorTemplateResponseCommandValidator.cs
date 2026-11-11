@@ -1,4 +1,5 @@
-﻿using CustomerSurvey.Domain.Resources;
+using CustomerSurvey.Domain.Resources;
+using CustomerSurvey.Domain.Entities;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,13 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             RuleFor(x => x.Answers)
                 .NotEmpty()
                 .WithMessage(ErrorMessage.SubmitOperatorTemplateResponse_Answers_Required);
+
+            RuleForEach(x => x.Flags).ChildRules(flag =>
+            {
+                flag.RuleFor(x => x.Type).IsInEnum();
+                flag.RuleFor(x => x.Brief).MaximumLength(SurveyResponseFlag.MaxBriefLength)
+                    .When(x => !string.IsNullOrWhiteSpace(x.Brief));
+            });
 
             RuleForEach(x => x.Answers)
                 .ChildRules(answer =>

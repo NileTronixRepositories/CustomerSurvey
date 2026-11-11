@@ -126,10 +126,14 @@ public sealed class SurveyHistorySqlTests
             var departmentSpec = new CustomerSurvey.Application.Features.Reports.Query.GetDepartmentSurveyResponsesPagination.GetDepartmentSurveyResponsesPaginationSpec(
                 department.Id, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1),
                 new CustomerSurvey.Application.Features.Reports.Query.GetDepartmentSurveyResponsesPagination.GetDepartmentSurveyResponsesPaginationQuery());
-            var complaintSpec = new ComplaintItemsSpecification<CustomerSurvey.Application.Features.Reports.Query.GetDepartmentSurveyResponsesPagination.DepartmentSurveyResponsePaginationItemResponse>(departmentSpec, 1, 10, null);
-            var complaintRows = await db.Set<SurveyAnswer>().Where(complaintSpec.Criteria).Select(complaintSpec.Selector).ToListAsync();
-            Assert.Equal(2, complaintRows.Count);
-            Assert.Single(complaintRows.Select(x => x.SurveyResponseId).Distinct());
+            var scopedFeedback = new AuthorizedFeedbackItems(
+                new CustomerSurvey.infrastructure.Repositories.PlatformWriteReadRepository<SurveyResponse>(resolver),
+                new CustomerSurvey.infrastructure.Repositories.PlatformWriteReadRepository<SurveyResponseFlag>(resolver));
+            var complaintRows = await scopedFeedback.PageAsync(departmentSpec, new BuildingBlock.Domain.SharedDto.SearchParameters(),
+                SurveyResponseFlagType.Complaint, null, CancellationToken.None, row => row.SurveyResponseId, (row, item, _) =>
+                    row with { ComplaintQuestionId = item.QuestionId });
+            Assert.Equal(2, complaintRows.TotalItems);
+            Assert.Single(complaintRows.Data.Select(x => x.SurveyResponseId).Distinct());
 
             using var services = new ServiceCollection()
                 .AddSingleton<BuildingBlock.Application.Abstraction.Persistence.IDbContextResolver<CustomerSurvey.Application.Abstraction.Presistence.PlatformWriteReadMarker>>(resolver)

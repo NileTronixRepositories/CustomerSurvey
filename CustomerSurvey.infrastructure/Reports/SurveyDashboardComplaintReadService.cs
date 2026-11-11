@@ -1,4 +1,4 @@
-﻿using CustomerSurvey.Application.Features.Reports.Services.Scoring;
+using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Reports;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
@@ -31,6 +31,12 @@ internal sealed class SurveyDashboardComplaintReadService : ISurveyDashboardComp
         SurveyDashboardComplaintReadRequest request,
         CancellationToken cancellationToken)
     {
+        if (!request.IncludeInternal && (!request.IncludeAnonymous || request.FlagType != SurveyResponseFlagType.Complaint))
+        {
+            var responses = await BuildResponseQuery(request).CountAsync(cancellationToken);
+            return new SurveyDashboardComplaintReadResult(0, 0, responses, [], []);
+        }
+
         var complaintQuery = BuildComplaintQuery(request);
         var totalComplaints = await complaintQuery.CountAsync(cancellationToken);
         var responsesWithComplaints = await complaintQuery
@@ -93,7 +99,7 @@ internal sealed class SurveyDashboardComplaintReadService : ISurveyDashboardComp
     {
         IQueryable<SurveyDashboardComplaintReadItem>? result = null;
 
-        if (request.IncludeInternal)
+        if (request.IncludeInternal && request.FlagType == SurveyResponseFlagType.Complaint)
         {
             var query = _surveyAnswerRepository.Query()
                 .AsNoTracking()
@@ -118,6 +124,22 @@ internal sealed class SurveyDashboardComplaintReadService : ISurveyDashboardComp
             {
                 SnapshotPayload = x.SurveyResponse.Snapshot == null ? null : x.SurveyResponse.Snapshot.Payload,
                 ComplaintId = x.Id,
+                FlagId = null,
+                FlagType = null,
+                Brief = null,
+                Answer = null,
+                CreatedById = null,
+                CreatedByNameEn = null,
+                CreatedByNameAr = null,
+                CreatedOnUtc = null,
+                BriefUpdatedById = null,
+                BriefUpdatedByNameEn = null,
+                BriefUpdatedByNameAr = null,
+                BriefUpdatedOnUtc = null,
+                AnsweredById = null,
+                AnsweredByNameEn = null,
+                AnsweredByNameAr = null,
+                AnsweredOnUtc = null,
                 Source = SurveyDashboardSource.Internal,
                 ResponseId = x.SurveyResponseId,
                 TemplateId = x.SurveyResponse.TemplateId,
@@ -138,7 +160,7 @@ internal sealed class SurveyDashboardComplaintReadService : ISurveyDashboardComp
             });
         }
 
-        if (request.IncludeAnonymous)
+        if (request.IncludeAnonymous && request.FlagType == SurveyResponseFlagType.Complaint)
         {
             var query = _anonymousSurveyAnswerRepository.Query()
                 .AsNoTracking()
@@ -167,6 +189,22 @@ internal sealed class SurveyDashboardComplaintReadService : ISurveyDashboardComp
             {
                 SnapshotPayload = x.AnonymousSurveyResponse.Snapshot == null ? null : x.AnonymousSurveyResponse.Snapshot.Payload,
                 ComplaintId = x.Id,
+                FlagId = null,
+                FlagType = null,
+                Brief = null,
+                Answer = null,
+                CreatedById = null,
+                CreatedByNameEn = null,
+                CreatedByNameAr = null,
+                CreatedOnUtc = null,
+                BriefUpdatedById = null,
+                BriefUpdatedByNameEn = null,
+                BriefUpdatedByNameAr = null,
+                BriefUpdatedOnUtc = null,
+                AnsweredById = null,
+                AnsweredByNameEn = null,
+                AnsweredByNameAr = null,
+                AnsweredOnUtc = null,
                 Source = SurveyDashboardSource.Anonymous,
                 ResponseId = x.AnonymousSurveyResponseId,
                 TemplateId = x.AnonymousSurveyResponse.AnonymousTemplateId,
@@ -189,9 +227,76 @@ internal sealed class SurveyDashboardComplaintReadService : ISurveyDashboardComp
             result = result is null ? projected : result.Concat(projected);
         }
 
+        if (request.IncludeInternal)
+        {
+            var flags = BuildFlagQuery(request);
+            result = result is null ? flags : result.Concat(flags);
+        }
+
         return result ?? _surveyAnswerRepository.Query()
             .Where(_ => false)
             .Select(x => new SurveyDashboardComplaintReadItem());
+    }
+
+    private IQueryable<SurveyDashboardComplaintReadItem> BuildFlagQuery(SurveyDashboardComplaintReadRequest request)
+    {
+        var responses = _surveyResponseRepository.Query().AsNoTracking()
+            .Where(x => x.SubmittedOnUtc >= request.FromUtc && x.SubmittedOnUtc < request.ToExclusiveUtc);
+        if (request.BranchId is { } branchId)
+            responses = responses.Where(x => x.Template.BranchId == branchId);
+        if (request.InternalTemplateId is { } templateId)
+            responses = responses.Where(x => x.TemplateId == templateId);
+
+        var flags = responses.SelectMany(x => x.Flags).Where(x => x.Type == request.FlagType);
+        if (request.Answered is { } answered)
+            flags = flags.Where(x => (x.Answer != null) == answered);
+        if (request.FlagId is { } flagId)
+            flags = flags.Where(x => x.Id == flagId);
+        if (!string.IsNullOrWhiteSpace(request.SearchText))
+        {
+            var search = request.SearchText.Trim();
+            flags = flags.Where(x => (x.Brief != null && x.Brief.Contains(search)) ||
+                (x.Answer != null && x.Answer.Contains(search)));
+        }
+
+        return flags.Select(x => new SurveyDashboardComplaintReadItem
+        {
+            SnapshotPayload = null,
+            ComplaintId = x.Id,
+            FlagId = x.Id,
+            FlagType = x.Type,
+            Brief = x.Brief,
+            Answer = x.Answer,
+            CreatedById = x.CreatedByApplicationUserId,
+            CreatedByNameEn = x.CreatedBy.NameEn,
+            CreatedByNameAr = x.CreatedBy.NameAr,
+            CreatedOnUtc = x.CreatedOnUtc,
+            BriefUpdatedById = x.BriefUpdatedByApplicationUserId,
+            BriefUpdatedByNameEn = x.BriefUpdatedBy == null ? null : x.BriefUpdatedBy.NameEn,
+            BriefUpdatedByNameAr = x.BriefUpdatedBy == null ? null : x.BriefUpdatedBy.NameAr,
+            BriefUpdatedOnUtc = x.BriefUpdatedOnUtc,
+            AnsweredById = x.AnsweredByApplicationUserId,
+            AnsweredByNameEn = x.AnsweredBy == null ? null : x.AnsweredBy.NameEn,
+            AnsweredByNameAr = x.AnsweredBy == null ? null : x.AnsweredBy.NameAr,
+            AnsweredOnUtc = x.AnsweredOnUtc,
+            Source = SurveyDashboardSource.Internal,
+            ResponseId = x.SurveyResponseId,
+            TemplateId = x.SurveyResponse.TemplateId,
+            TemplateKind = SurveyDashboardTemplateKind.Authorized,
+            TemplateNameEn = x.SurveyResponse.Template.NameEn,
+            TemplateNameAr = x.SurveyResponse.Template.NameAr,
+            QuestionId = null,
+            QuestionTextEn = string.Empty,
+            QuestionTextAr = null,
+            ComplaintText = x.Brief,
+            SubmittedOnUtc = x.SurveyResponse.SubmittedOnUtc,
+            BranchId = x.SurveyResponse.Template.BranchId,
+            BranchNameEn = x.SurveyResponse.Template.Branch.NameEn,
+            BranchNameAr = x.SurveyResponse.Template.Branch.NameAr,
+            OperatorId = x.SurveyResponse.OperatorId,
+            OperatorNameEn = x.SurveyResponse.Operator.ApplicationUser.NameEn,
+            OperatorNameAr = x.SurveyResponse.Operator.ApplicationUser.NameAr
+        });
     }
 
     private IQueryable<ComplaintResponseKey> BuildResponseQuery(SurveyDashboardComplaintReadRequest request)

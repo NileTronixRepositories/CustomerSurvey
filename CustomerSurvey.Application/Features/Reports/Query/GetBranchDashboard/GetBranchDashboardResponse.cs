@@ -1,4 +1,4 @@
-﻿using CustomerSurvey.Domain.Enums;
+using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchDashboard;
 
@@ -81,6 +81,8 @@ public sealed record BranchDashboardSummaryResponse
     public int TemplatesWithResponsesCount { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public int VoiceAnswersCount { get; init; }
 }
@@ -115,6 +117,8 @@ public sealed record BranchDashboardTemplatePerformanceResponse
     public decimal AverageScorePercentage { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public string RiskLevel { get; init; } = string.Empty;
 

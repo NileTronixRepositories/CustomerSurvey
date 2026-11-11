@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 namespace CustomerSurvey.Application.Features.Reports.Shared;
 
@@ -34,6 +34,8 @@ public sealed record DashboardSummaryActionsResponse
     public DashboardDetailsNavigationResponse AllResponses { get; init; } = new();
 
     public DashboardDetailsNavigationResponse Complaints { get; init; } = new();
+    public DashboardDetailsNavigationResponse? Suggestions { get; init; }
+    public DashboardDetailsNavigationResponse? Comments { get; init; }
 
     public DashboardDetailsNavigationResponse VoiceAnswers { get; init; } = new();
 }

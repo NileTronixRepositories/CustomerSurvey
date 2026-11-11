@@ -23,6 +23,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
         private readonly IWriteReadRepository<DepartmentAdmin> _departmentAdminReadRepository;
         private readonly IWriteReadRepository<BranchUser> _branchUserReadRepository;
         private readonly IWriteReadRepository<DomainOperator> _operatorReadRepository;
+        private readonly IWriteReadRepository<FlagOfficer> _flagOfficers;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
         private readonly PasswordHasher<ApplicationUser> _passwordHasher;
@@ -36,6 +37,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
             IWriteReadRepository<DepartmentAdmin> departmentAdminReadRepository,
             IWriteReadRepository<BranchUser> branchUserReadRepository,
             IWriteReadRepository<DomainOperator> operatorReadRepository,
+            IWriteReadRepository<FlagOfficer> flagOfficers,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork)
         {
@@ -55,6 +57,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
                 ?? throw new ArgumentNullException(nameof(branchUserReadRepository));
             _operatorReadRepository = operatorReadRepository
                 ?? throw new ArgumentNullException(nameof(operatorReadRepository));
+            _flagOfficers = flagOfficers;
             _currentUser = currentUser
                 ?? throw new ArgumentNullException(nameof(currentUser));
             _unitOfWork = unitOfWork
@@ -221,6 +224,16 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
                         ? UnsupportedTargetProfile()
                         : Result<TargetProfile>.Ok(TargetProfile.DepartmentAdmin());
 
+                case DomainUserType.FlagOfficer:
+                    var flagOfficer = await _flagOfficers.GetByPropertyAsync(
+                        x => x.ApplicationUserId == targetApplicationUser.Id,
+                        cancellationToken);
+
+                    return flagOfficer is null
+                        ? UnsupportedTargetProfile()
+                        : Result<TargetProfile>.Ok(new TargetProfile(
+                            TargetType.FlagOfficer, DepartmentId: flagOfficer.DepartmentId));
+
                 case DomainUserType.Operator:
                     var operatorProfile = await _operatorReadRepository.FirstOrDefaultAsync(
                         new GetOperatorProfileForResetUserPasswordSpec(targetApplicationUser.Id),
@@ -257,6 +270,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
                     or TargetType.BranchArea
                     or TargetType.DepartmentAdmin
                     or TargetType.Operator
+                    or TargetType.FlagOfficer
                     or TargetType.BranchUser
                     ? null
                     : ForbiddenTargetType();
@@ -276,7 +290,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
 
             if (actorProfile.Type == ActorType.DepartmentAdmin)
             {
-                if (targetProfile.Type != TargetType.Operator)
+                if (targetProfile.Type is not (TargetType.Operator or TargetType.FlagOfficer))
                 {
                     return ForbiddenTargetType();
                 }
@@ -327,6 +341,7 @@ namespace CustomerSurvey.Application.Features.Auth.Command.ResetUserPassword
             BranchArea,
             DepartmentAdmin,
             Operator,
+            FlagOfficer,
             BranchUser
         }
 

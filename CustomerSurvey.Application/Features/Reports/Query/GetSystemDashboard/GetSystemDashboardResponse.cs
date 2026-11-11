@@ -1,4 +1,4 @@
-﻿namespace CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
+namespace CustomerSurvey.Application.Features.Reports.Query.GetSystemDashboard;
 
 public sealed record GetSystemDashboardResponse
 {
@@ -82,6 +82,8 @@ public sealed record SystemDashboardSummaryResponse
     public int UnhappyResponses { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public int VoiceAnswersCount { get; init; }
 }
@@ -118,6 +120,8 @@ public sealed record SystemDashboardBranchPerformanceResponse
     public decimal AverageScorePercentage { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public int VoiceAnswersCount { get; init; }
 
@@ -139,6 +143,10 @@ public sealed record SystemDashboardDepartmentActivityResponse
     public int OperatorsCount { get; init; }
 
     public int ResponsesCount { get; init; }
+
+    public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public DateTime? LastResponseOnUtc { get; init; }
 
@@ -168,6 +176,8 @@ public sealed record SystemDashboardTopTemplateResponse
     public decimal AverageScorePercentage { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public string RiskLevel { get; init; } = string.Empty;
 

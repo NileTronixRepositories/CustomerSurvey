@@ -1,4 +1,5 @@
-﻿using BuildingBlock.Domain.EntitiesHelper;
+using BuildingBlock.Domain.EntitiesHelper;
+using CustomerSurvey.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace CustomerSurvey.Domain.Entities
 {
     public sealed class SurveyResponse : AggregateRoot<Guid>
     {
+        private readonly List<SurveyResponseFlag> _flags = new();
         private readonly List<SurveyAnswer> _answers = new();
         private readonly List<SurveyResponseCustomInputValue> _customInputValues = new();
 
@@ -66,6 +68,13 @@ namespace CustomerSurvey.Domain.Entities
                 ScorePercentage = scorePercentage,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
+        }
+
+        public IReadOnlyCollection<SurveyResponseFlag> Flags => _flags.AsReadOnly();
+
+        public void AddSubmittedFlag(SurveyResponseFlagType type, string? brief)
+        {
+            _flags.Add(SurveyResponseFlag.CreateOnSubmit(Id, type, brief, CreatedByApplicationUserId));
         }
 
         public void AddAnswer(SurveyAnswer answer)

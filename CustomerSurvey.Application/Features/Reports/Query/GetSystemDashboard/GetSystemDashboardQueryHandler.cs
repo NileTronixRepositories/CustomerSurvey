@@ -1,4 +1,4 @@
-﻿using CustomerSurvey.Application.Abstraction.Reports;
+using CustomerSurvey.Application.Abstraction.Reports;
 using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using BuildingBlock.Application.Abstraction;
@@ -321,7 +321,9 @@ internal sealed class GetSystemDashboardQueryHandler
                 UnhappyResponses = scoredResponses.Count(x => SatisfactionCategoryRule.Matches(
                     x.MaxScore, x.ScorePercentage, SatisfactionCategory.Unhappy, x.Criteria)),
 
-                ComplaintsCount = complaintsCount,
+                ComplaintsCount = complaintsCount + responses.Sum(response => response.ComplaintFlagsCount),
+                SuggestionsCount = responses.Sum(response => response.SuggestionsCount),
+                CommentsCount = responses.Sum(response => response.CommentsCount),
                 VoiceAnswersCount = voiceAnswersCount
             },
 
@@ -341,6 +343,8 @@ internal sealed class GetSystemDashboardQueryHandler
                 ScoredResponses = BuildSystemResponsesNavigation(request, period, ("isScored", true)),
                 AllResponses = BuildSystemResponsesNavigation(request, period),
                 Complaints = BuildSystemResponsesNavigation(request, period, ("hasComplaint", true), ("complaintItemsOnly", true)),
+                Suggestions = BuildSystemResponsesNavigation(request, period, ("flagType", SurveyResponseFlagType.Suggestion)),
+                Comments = BuildSystemResponsesNavigation(request, period, ("flagType", SurveyResponseFlagType.Comment)),
                 VoiceAnswers = BuildSystemResponsesNavigation(request, period, ("hasVoice", true))
             },
 
@@ -361,6 +365,7 @@ internal sealed class GetSystemDashboardQueryHandler
                 departments,
                 operators,
                 responses,
+                answers,
                 request,
                 period),
 
@@ -502,7 +507,9 @@ internal sealed class GetSystemDashboardQueryHandler
                     ResponsesCount = branchResponses.Length,
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
-                    ComplaintsCount = complaintsCount,
+                    ComplaintsCount = complaintsCount + branchResponses.Sum(response => response.ComplaintFlagsCount),
+                    SuggestionsCount = branchResponses.Sum(response => response.SuggestionsCount),
+                    CommentsCount = branchResponses.Sum(response => response.CommentsCount),
                     VoiceAnswersCount = voiceAnswersCount,
                     ActiveTemplatesCount = activeTemplatesCount,
                     RiskLevel = CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria.Combine(scored.Select(x => x.Criteria)).Risk(scored.Length == 0 ? null : average),
@@ -521,6 +528,7 @@ internal sealed class GetSystemDashboardQueryHandler
         IReadOnlyCollection<SystemDashboardDepartmentDto> departments,
         IReadOnlyCollection<SystemDashboardOperatorDto> operators,
         IReadOnlyCollection<SystemDashboardSurveyResponseDto> responses,
+        IReadOnlyCollection<SystemDashboardSurveyAnswerDto> answers,
         GetSystemDashboardQuery request,
         ResolvedSystemDashboardPeriod period)
     {
@@ -535,6 +543,10 @@ internal sealed class GetSystemDashboardQueryHandler
             .ToDictionary(
                 x => x.Key,
                 x => x.ToArray());
+
+        var questionComplaintsByDepartment = answers
+            .Where(x => x.QuestionType == QuestionType.Complain && !string.IsNullOrWhiteSpace(x.TextAnswer))
+            .ToLookup(x => x.DepartmentId);
 
         return departments
             .Select(department =>
@@ -556,6 +568,10 @@ internal sealed class GetSystemDashboardQueryHandler
                     DepartmentNameAr = department.NameAr,
                     OperatorsCount = operatorsCount,
                     ResponsesCount = departmentResponses.Length,
+                    ComplaintsCount = questionComplaintsByDepartment[department.DepartmentId].Count() +
+                        departmentResponses.Sum(x => x.ComplaintFlagsCount),
+                    SuggestionsCount = departmentResponses.Sum(x => x.SuggestionsCount),
+                    CommentsCount = departmentResponses.Sum(x => x.CommentsCount),
                     LastResponseOnUtc = departmentResponses.Length == 0
                         ? null
                         : departmentResponses.Max(x => x.SubmittedOnUtc),
@@ -618,7 +634,9 @@ internal sealed class GetSystemDashboardQueryHandler
                     ResponsesCount = x.Count(),
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
-                    ComplaintsCount = complaintsCount,
+                    ComplaintsCount = complaintsCount + x.Sum(response => response.ComplaintFlagsCount),
+                    SuggestionsCount = x.Sum(response => response.SuggestionsCount),
+                    CommentsCount = x.Sum(response => response.CommentsCount),
                     RiskLevel = CustomerSurvey.Application.Features.Reports.Shared.EvaluationCriteria.Combine(scored.Select(x => x.Criteria)).Risk(scored.Length == 0 ? null : average),
                     DetailsNavigation = BuildSystemResponsesNavigation(
                         request,

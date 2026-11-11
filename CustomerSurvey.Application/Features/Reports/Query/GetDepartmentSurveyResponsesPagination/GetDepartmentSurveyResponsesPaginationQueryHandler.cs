@@ -1,8 +1,9 @@
-﻿using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Abstraction.Presistence;
+using CustomerSurvey.Application.Features.Reports.Shared;
 using CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
 using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
@@ -18,7 +19,7 @@ internal sealed class GetDepartmentSurveyResponsesPaginationQueryHandler
     private const int MaxAllowedMonths = 12;
     private const int CustomInputsPreviewCount = 3;
 
-    private readonly IWriteReadRepository<SurveyAnswer>? _complaintAnswerRepository;
+    private readonly AuthorizedFeedbackItems? _feedbackItems;
     private readonly IWriteReadRepository<DepartmentAdmin> _departmentAdminReadRepository;
     private readonly IWriteReadRepository<SurveyResponse> _surveyResponseReadRepository;
     private readonly IWriteReadRepository<SurveyResponseCustomInputValue> _customInputValueReadRepository;
@@ -29,9 +30,9 @@ internal sealed class GetDepartmentSurveyResponsesPaginationQueryHandler
         IWriteReadRepository<SurveyResponse> surveyResponseReadRepository,
         IWriteReadRepository<SurveyResponseCustomInputValue> customInputValueReadRepository,
         ICurrentUser currentUser,
-        IWriteReadRepository<SurveyAnswer>? complaintAnswerRepository = null)
+        AuthorizedFeedbackItems? feedbackItems = null)
     {
-        _complaintAnswerRepository = complaintAnswerRepository;
+        _feedbackItems = feedbackItems;
         _departmentAdminReadRepository = departmentAdminReadRepository;
         _surveyResponseReadRepository = surveyResponseReadRepository;
         _customInputValueReadRepository = customInputValueReadRepository;
@@ -75,13 +76,22 @@ internal sealed class GetDepartmentSurveyResponsesPaginationQueryHandler
             period.To.AddDays(1).ToDateTime(TimeOnly.MinValue),
             request);
 
-        if (request.ComplaintItemsOnly)
+        if (request.ComplaintItemsOnly || request.FlagType.HasValue)
         {
-            var complaintSpec = new CustomerSurvey.Application.Features.Reports.Shared.ComplaintItemsSpecification<DepartmentSurveyResponsePaginationItemResponse>(
-                spec, request.PageNumber, request.PageSize, request.QuestionId);
-            var (complaintItems, complaintCount) = await _complaintAnswerRepository!.ListWithCountAsync(complaintSpec, cancellationToken);
-            return Result<Pagination<DepartmentSurveyResponsePaginationItemResponse>>.Ok(new Pagination<DepartmentSurveyResponsePaginationItemResponse>(
-                request.PageNumber, request.PageSize, complaintCount, complaintItems.ToArray()));
+            var page = await _feedbackItems!.PageAsync(spec, request,
+                request.FlagType ?? SurveyResponseFlagType.Complaint, request.QuestionId, cancellationToken,
+                response => response.SurveyResponseId,
+                (response, item, flag) => response with
+                {
+                    ComplaintQuestionId = item.QuestionId,
+                    ComplaintText = item.Text,
+                    ItemKind = item.FlagId.HasValue ? "ResponseFlag" : "QuestionAnswer",
+                    FlagId = item.FlagId,
+                    Flag = flag,
+                    DetailsNavigation = DashboardDrillDownPathBuilder.Navigation(
+                        "DepartmentOperatorResponseDetails", $"/api/reports/department-operators/{response.OperatorId}/responses/{response.SurveyResponseId}")
+                });
+            return Result<Pagination<DepartmentSurveyResponsePaginationItemResponse>>.Ok(page);
         }
 
         var (items, totalCount) = await _surveyResponseReadRepository.ListWithCountAsync(spec, cancellationToken);

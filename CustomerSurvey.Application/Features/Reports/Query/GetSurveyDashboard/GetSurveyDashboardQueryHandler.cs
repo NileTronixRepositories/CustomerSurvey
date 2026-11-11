@@ -1,4 +1,4 @@
-﻿using BuildingBlock.Application.Abstraction;
+using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
 using BuildingBlock.Domain.Specification;
@@ -794,7 +794,9 @@ internal sealed class GetSurveyDashboardQueryHandler
                 SatisfiedResponses = scoredResponses.Count(IsSatisfied),
                 NeutralResponses = scoredResponses.Count(IsNeutral),
                 UnhappyResponses = scoredResponses.Count(IsUnhappy),
-                ComplaintsCount = CountComplaints(answers),
+                ComplaintsCount = CountComplaints(answers) + responses.Sum(response => response.ComplaintFlagsCount),
+                SuggestionsCount = responses.Sum(response => response.SuggestionsCount),
+                CommentsCount = responses.Sum(response => response.CommentsCount),
                 VoiceAnswersCount = CountVoiceAnswers(answers),
                 ActiveInternalTemplatesCount = internalTemplates.Count(x => x.IsActive),
                 ActiveAnonymousTemplatesCount = anonymousTemplates.Count(x => x.IsActive),
@@ -830,6 +832,12 @@ internal sealed class GetSurveyDashboardQueryHandler
                 AllResponses = BuildSurveyResponsesNavigation(
                     request, actor, scope, period, appliedSource, templateFilter),
                 Complaints = DashboardDrillDownPathBuilder.Navigation("SurveyComplaints", "/api/reports/survey-dashboard/complaints",
+                    ("branchId", actor.IsSuperAdmin ? scope.BranchId : null), ("source", appliedSource),
+                    ("templateId", templateFilter?.TemplateId), ("from", period.From), ("to", period.To)),
+                Suggestions = DashboardDrillDownPathBuilder.Navigation("SurveySuggestions", "/api/reports/survey-dashboard/suggestions",
+                    ("branchId", actor.IsSuperAdmin ? scope.BranchId : null), ("source", appliedSource),
+                    ("templateId", templateFilter?.TemplateId), ("from", period.From), ("to", period.To)),
+                Comments = DashboardDrillDownPathBuilder.Navigation("SurveyComments", "/api/reports/survey-dashboard/comments",
                     ("branchId", actor.IsSuperAdmin ? scope.BranchId : null), ("source", appliedSource),
                     ("templateId", templateFilter?.TemplateId), ("from", period.From), ("to", period.To)),
                 VoiceAnswers = BuildSurveyResponsesNavigation(
@@ -946,7 +954,9 @@ internal sealed class GetSurveyDashboardQueryHandler
             SatisfiedResponses = scored.Count(IsSatisfied),
             NeutralResponses = scored.Count(IsNeutral),
             UnhappyResponses = scored.Count(IsUnhappy),
-            ComplaintsCount = CountComplaints(answersArray),
+            ComplaintsCount = CountComplaints(answersArray) + responses.Sum(response => response.ComplaintFlagsCount),
+            SuggestionsCount = responses.Sum(response => response.SuggestionsCount),
+            CommentsCount = responses.Sum(response => response.CommentsCount),
             VoiceAnswersCount = CountVoiceAnswers(answersArray),
             DetailsNavigation = responses.Count == 0
                 ? null
@@ -1006,7 +1016,9 @@ internal sealed class GetSurveyDashboardQueryHandler
                     InternalResponses = branchResponses.Count(x => x.Source == SurveyDashboardSource.Internal),
                     AnonymousResponses = branchResponses.Count(x => x.Source == SurveyDashboardSource.Anonymous),
                     AverageScorePercentage = AverageScore(scored),
-                    ComplaintsCount = complaintsCount,
+                    ComplaintsCount = complaintsCount + branchResponses.Sum(response => response.ComplaintFlagsCount),
+                    SuggestionsCount = branchResponses.Sum(response => response.SuggestionsCount),
+                    CommentsCount = branchResponses.Sum(response => response.CommentsCount),
                     VoiceAnswersCount = voiceAnswersCount,
                     DetailsNavigation = ToSurveyNavigation(BuildSurveyResponsesNavigation(
                         request,
@@ -1130,7 +1142,9 @@ internal sealed class GetSurveyDashboardQueryHandler
                     ResponsesCount = x.Count(),
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
-                    ComplaintsCount = complaintsCount,
+                    ComplaintsCount = complaintsCount + x.Sum(response => response.ComplaintFlagsCount),
+                    SuggestionsCount = x.Sum(response => response.SuggestionsCount),
+                    CommentsCount = x.Sum(response => response.CommentsCount),
                     VoiceAnswersCount = voiceAnswersCount,
                     RiskLevel = EvaluationCriteria.Combine(scored.Select(x => x.Criteria)).Risk(scored.Length == 0 ? null : average),
                     DetailsNavigation = ToSurveyNavigation(BuildSurveyResponsesNavigation(

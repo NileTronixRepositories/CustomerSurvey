@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +24,10 @@ namespace CustomerSurvey.Application.Features.Reports.Query.GetBranchSatisfactio
         public DateOnly? VisitDate { get; init; }
 
         public int ActualScore { get; init; }
+
+        public int ComplaintFlagsCount { get; init; }
+        public int SuggestionsCount { get; init; }
+        public int CommentsCount { get; init; }
 
         public int MaxScore { get; init; }
 

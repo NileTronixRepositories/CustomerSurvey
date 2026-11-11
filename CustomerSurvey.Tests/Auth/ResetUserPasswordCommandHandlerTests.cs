@@ -147,6 +147,7 @@ public sealed class ResetUserPasswordCommandHandlerTests
             departmentAdmins,
             branchUsers,
             operators,
+            new InMemoryReadRepository<FlagOfficer>(),
             currentUser,
             unitOfWork);
 

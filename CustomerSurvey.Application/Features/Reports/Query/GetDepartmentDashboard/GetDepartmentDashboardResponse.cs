@@ -1,4 +1,4 @@
-﻿using CustomerSurvey.Domain.Enums;
+using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Reports.Query.GetDepartmentDashboard;
 
@@ -90,6 +90,8 @@ public sealed record DepartmentDashboardSummaryResponse
     public int UnhappyResponses { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public int VoiceAnswersCount { get; init; }
 }
@@ -126,6 +128,8 @@ public sealed record DepartmentDashboardOperatorPerformanceResponse
     public decimal AverageScorePercentage { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public int VoiceAnswersCount { get; init; }
 
@@ -161,6 +165,8 @@ public sealed record DepartmentDashboardTemplatePerformanceResponse
     public decimal AverageScorePercentage { get; init; }
 
     public int ComplaintsCount { get; init; }
+    public int SuggestionsCount { get; init; }
+    public int CommentsCount { get; init; }
 
     public string RiskLevel { get; init; } = string.Empty;
 

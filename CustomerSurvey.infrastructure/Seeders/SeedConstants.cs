@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using CustomerSurvey.Domain.Identity;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -144,6 +145,13 @@ internal static class SeedConstants
     {
         public static class Roles
         {
+            public static readonly Guid FlagOfficer = new("a56adbaa-6785-52ba-b72e-dee7c337bca4");
+            public static readonly Guid CreateOnSubmit = new("14c15463-114f-57f3-9a1a-2a567d0fbb34");
+            public static readonly Guid View = new("f265b4bd-ab39-51db-9391-6ea174c3e3f5");
+            public static readonly Guid Create = new("1736bf9b-f35f-5617-aa7a-ed63719f827d");
+            public static readonly Guid Answer = new("510fdf34-0343-5c0a-a04c-00bdc8302fb1");
+            public static readonly Guid EditBrief = new("23f2b63a-dd6b-563c-93b2-c9e042f5695e");
+
             public static readonly Guid SystemAdministrator =
                 Guid.Parse("11000000-0000-0000-0000-000000000001");
 
@@ -171,6 +179,19 @@ internal static class SeedConstants
 
         public static class Permissions
         {
+            public static readonly Guid ResponseFlagsCreateOnSubmit = new("696b5bf9-942b-557d-9725-4c883636f7e7");
+            public static readonly Guid ResponseFlagsView = new("ad576a4e-fff1-54cf-ac25-f1e4a6ae1284");
+            public static readonly Guid ResponseFlagsCreate = new("fb7bdc54-cded-59e6-9c24-377ca3319c42");
+            public static readonly Guid ResponseFlagsAnswer = new("4455b1ee-b9c9-5a62-b37a-a869d14e1144");
+            public static readonly Guid ResponseFlagsEditBrief = new("9375570e-7837-5098-99c4-b9405eefcfe5");
+            public static readonly Guid FlagOfficersCreate = new("ad2d3860-c142-58f3-bd0b-7d3009c6a31d");
+            public static readonly Guid FlagOfficersViewAll = new("20cd0276-8578-54a8-9dbf-ea141689799a");
+            public static readonly Guid FlagOfficersViewDetails = new("a7e0784c-d49b-5541-89e3-b709ef123f5a");
+            public static readonly Guid FlagOfficersUpdate = new("f095e5ce-10f3-58e3-b907-d2d2a44ed30a");
+            public static readonly Guid FlagOfficersDeactivate = new("5cc32654-f9e9-598f-b7e9-ea16984c1aad");
+            public static readonly Guid FlagOfficersRestore = new("5002f881-8bca-5aff-8872-165893f8e87d");
+            public static readonly Guid FlagOfficersAssignRoles = new("99516b28-961b-5316-8ff4-7f539437f14b");
+
             public static readonly Guid BranchesCreate =
                 Guid.Parse("12000000-0000-0000-0000-000000000001");
 
@@ -441,7 +462,13 @@ internal static class SeedConstants
             new RoleSeedItem(SeedIds.Roles.TemplateEditor, RoleNames.TemplateEditor),
             new RoleSeedItem(SeedIds.Roles.ReportViewer, RoleNames.ReportViewer),
             new RoleSeedItem(SeedIds.Roles.QuestionEditor, RoleNames.QuestionEditor),
-            new RoleSeedItem(SeedIds.Roles.Operator, RoleNames.Operator)
+            new RoleSeedItem(SeedIds.Roles.Operator, RoleNames.Operator),
+            new RoleSeedItem(SeedIds.Roles.FlagOfficer, FlagAccess.FlagOfficerRole),
+            new RoleSeedItem(SeedIds.Roles.CreateOnSubmit, FlagAccess.CreateOnSubmitRole),
+            new RoleSeedItem(SeedIds.Roles.View, FlagAccess.ViewRole),
+            new RoleSeedItem(SeedIds.Roles.Create, FlagAccess.CreateRole),
+            new RoleSeedItem(SeedIds.Roles.Answer, FlagAccess.AnswerRole),
+            new RoleSeedItem(SeedIds.Roles.EditBrief, FlagAccess.EditBriefRole)
         };
 
         public static readonly IReadOnlyCollection<PermissionSeedItem> Permissions =
@@ -546,7 +573,19 @@ internal static class SeedConstants
             new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesAssignQuestions, PermissionNames.AnonymousTemplatesAssignQuestions),
             new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesManageQuestionConditions, PermissionNames.AnonymousTemplatesManageQuestionConditions),
             new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesViewResponses, PermissionNames.AnonymousTemplatesViewResponses),
-            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesAssignGlobalToBranch, PermissionNames.AnonymousTemplatesAssignGlobalToBranch)
+            new PermissionSeedItem(SeedIds.Permissions.AnonymousTemplatesAssignGlobalToBranch, PermissionNames.AnonymousTemplatesAssignGlobalToBranch),
+            new PermissionSeedItem(SeedIds.Permissions.ResponseFlagsCreateOnSubmit, FlagAccess.ResponseFlagsCreateOnSubmit),
+            new PermissionSeedItem(SeedIds.Permissions.ResponseFlagsView, FlagAccess.ResponseFlagsView),
+            new PermissionSeedItem(SeedIds.Permissions.ResponseFlagsCreate, FlagAccess.ResponseFlagsCreate),
+            new PermissionSeedItem(SeedIds.Permissions.ResponseFlagsAnswer, FlagAccess.ResponseFlagsAnswer),
+            new PermissionSeedItem(SeedIds.Permissions.ResponseFlagsEditBrief, FlagAccess.ResponseFlagsEditBrief),
+            new PermissionSeedItem(SeedIds.Permissions.FlagOfficersCreate, FlagAccess.FlagOfficersCreate),
+            new PermissionSeedItem(SeedIds.Permissions.FlagOfficersViewAll, FlagAccess.FlagOfficersViewAll),
+            new PermissionSeedItem(SeedIds.Permissions.FlagOfficersViewDetails, FlagAccess.FlagOfficersViewDetails),
+            new PermissionSeedItem(SeedIds.Permissions.FlagOfficersUpdate, FlagAccess.FlagOfficersUpdate),
+            new PermissionSeedItem(SeedIds.Permissions.FlagOfficersDeactivate, FlagAccess.FlagOfficersDeactivate),
+            new PermissionSeedItem(SeedIds.Permissions.FlagOfficersRestore, FlagAccess.FlagOfficersRestore),
+            new PermissionSeedItem(SeedIds.Permissions.FlagOfficersAssignRoles, FlagAccess.FlagOfficersAssignRoles)
         ];
 
         public static readonly IReadOnlyCollection<RolePermissionSeedItem> RolePermissions =
@@ -564,6 +603,11 @@ internal static class SeedConstants
             AddQuestionEditorPermissions(result);
             AddReportViewerPermissions(result);
             AddOperatorPermissions(result);
+            result.Add(new RolePermissionSeedItem(SeedIds.Roles.CreateOnSubmit, SeedIds.Permissions.ResponseFlagsCreateOnSubmit));
+            result.Add(new RolePermissionSeedItem(SeedIds.Roles.View, SeedIds.Permissions.ResponseFlagsView));
+            result.Add(new RolePermissionSeedItem(SeedIds.Roles.Create, SeedIds.Permissions.ResponseFlagsCreate));
+            result.Add(new RolePermissionSeedItem(SeedIds.Roles.Answer, SeedIds.Permissions.ResponseFlagsAnswer));
+            result.Add(new RolePermissionSeedItem(SeedIds.Roles.EditBrief, SeedIds.Permissions.ResponseFlagsEditBrief));
 
             return result
                 .Distinct()
@@ -708,7 +752,15 @@ internal static class SeedConstants
                 SeedIds.Permissions.OperatorsDeactivate,
                 SeedIds.Permissions.OperatorsRestore,
                 SeedIds.Permissions.TemplatesViewSelection,
-                SeedIds.Permissions.ReportsViewDepartmentReports
+                SeedIds.Permissions.ReportsViewDepartmentReports,
+                SeedIds.Permissions.UsersResetPassword,
+                SeedIds.Permissions.FlagOfficersCreate,
+                SeedIds.Permissions.FlagOfficersViewAll,
+                SeedIds.Permissions.FlagOfficersViewDetails,
+                SeedIds.Permissions.FlagOfficersUpdate,
+                SeedIds.Permissions.FlagOfficersDeactivate,
+                SeedIds.Permissions.FlagOfficersRestore,
+                SeedIds.Permissions.FlagOfficersAssignRoles
             ];
 
             foreach (var permissionId in permissionIds)
