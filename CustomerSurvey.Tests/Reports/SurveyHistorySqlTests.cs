@@ -22,7 +22,7 @@ public sealed class SqlHistoryFactAttribute : FactAttribute
     }
 }
 
-public sealed class SurveyHistorySqlTests
+public sealed partial class SurveyHistorySqlTests
 {
     [SqlHistoryFact]
     public async Task Capture_history_backfill_and_score_filters_roundtrip_atomically_in_sql_server()
@@ -72,6 +72,8 @@ public sealed class SurveyHistorySqlTests
             var snapshot = response.Snapshot!;
             var payload = snapshot.Payload;
             Assert.Equal(SnapshotProvenance.CapturedAtSubmission, snapshot.Provenance);
+            Assert.Equal(1, snapshot.SchemaVersion);
+            Assert.Equal(1, snapshot.Read().SchemaVersion);
             Assert.Equal(4, snapshot.Read().Questions.Count);
             Assert.Equal(2, snapshot.Read().Questions.Single(x => x.QuestionId == question.Id).Options.Count);
             Assert.Single(snapshot.Read().Conditions);
@@ -174,6 +176,7 @@ public sealed class SurveyHistorySqlTests
             var legacy = await maintenance.RunBatchAsync(10);
             Assert.Equal(1, legacy.AuthorizedSnapshots);
             var reconstructed = await db.Set<ResponseSnapshot>().SingleAsync(x => x.Provenance == SnapshotProvenance.LegacyIncomplete);
+            Assert.False(reconstructed.Read().IsHistoricallyVerified);
             Assert.Equal(100m, reconstructed.Read().ScorePercentage);
             Assert.Null(reconstructed.AllScorePercentage);
             Assert.False((await maintenance.RunBatchAsync(10)).MayHaveMore);

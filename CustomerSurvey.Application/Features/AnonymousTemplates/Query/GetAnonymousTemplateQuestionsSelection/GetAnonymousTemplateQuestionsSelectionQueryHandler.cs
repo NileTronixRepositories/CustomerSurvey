@@ -178,6 +178,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                     {
                         AnonymousTemplateQuestionId = selectedQuestion?.AnonymousTemplateQuestionId,
                         IsSelected = selectedQuestion is not null,
+                        IsRequired = selectedQuestion?.IsRequired,
                         SelectedOrder = selectedQuestion?.Order,
                         Options = question.Type == QuestionType.SingleChoice
                             ? questionOptions ?? Array.Empty<AnonymousTemplateQuestionSelectionOptionResponse>()

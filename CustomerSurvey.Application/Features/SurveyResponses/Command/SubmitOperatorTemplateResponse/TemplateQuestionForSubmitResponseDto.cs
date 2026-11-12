@@ -18,6 +18,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
 
         public QuestionScope Scope { get; init; }
 
+        public bool IsRequired { get; init; } = true;
+
         public int Order { get; init; }
 
         public QuestionType Type { get; init; }

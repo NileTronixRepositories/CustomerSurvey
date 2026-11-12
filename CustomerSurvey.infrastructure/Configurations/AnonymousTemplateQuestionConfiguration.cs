@@ -21,6 +21,10 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.Order)
                 .IsRequired();
 
+            builder.Property(x => x.IsRequired)
+                .HasDefaultValue(true)
+                .ValueGeneratedNever();
+
             builder.Property(x => x.CreatedByApplicationUserId)
                 .IsRequired();
 

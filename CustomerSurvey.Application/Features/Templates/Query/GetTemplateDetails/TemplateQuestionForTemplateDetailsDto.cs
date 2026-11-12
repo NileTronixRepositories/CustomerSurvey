@@ -18,6 +18,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
         public QuestionScope Scope { get; init; }
 
+        public bool IsRequired { get; init; } = true;
+
         public int Order { get; init; }
 
         public string TextEn { get; init; } = string.Empty;

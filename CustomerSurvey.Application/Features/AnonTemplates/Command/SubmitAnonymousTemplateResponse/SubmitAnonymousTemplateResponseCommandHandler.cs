@@ -157,11 +157,19 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 request.Answers,
                 questionOptions);
 
+            var submissionStructure = new SnapshotSubmissionStructure(
+                answerValidationResult.VisibleQuestions.Select(x => new SnapshotVisibleQuestion(
+                    x.AnonymousTemplateQuestionId, x.IsRequired,
+                    answerValidationResult.RootQuestionIds.Contains(x.AnonymousTemplateQuestionId))).ToArray(),
+                validConditions.Select(x => new SnapshotCondition(x.ParentAnonymousTemplateQuestionId, x.ChildAnonymousTemplateQuestionId,
+                    x.TriggerType, x.SelectedQuestionOptionId, x.TriggerValue, x.Order)).ToArray());
+
             var anonymousSurveyResponse = AnonymousSurveyResponse.Create(
                 anonymousTemplateId: anonymousTemplate.AnonymousTemplateId,
                 actualScore: scoringResult.ActualScore,
                 maxScore: scoringResult.MaxScore,
-                scorePercentage: scoringResult.ScorePercentage);
+                scorePercentage: scoringResult.ScorePercentage,
+                submissionStructure: submissionStructure);
 
             AddCustomInputValuesToResponse(
                 anonymousSurveyResponse,
@@ -536,7 +544,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
 
             foreach (var visibleQuestionId in visibleQuestionIds)
             {
-                if (!submittedAnswersByTemplateQuestionId.ContainsKey(visibleQuestionId))
+                if (templateQuestionsById[visibleQuestionId].IsRequired &&
+                    !submittedAnswersByTemplateQuestionId.ContainsKey(visibleQuestionId))
                 {
                     return AnswerValidationResult.Fail(new Error(
                         Code: "AnonTemplates.Submit.VisibleQuestionMissingAnswer",
@@ -667,7 +676,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
         private static ValidationResult ValidateStarRatingAnswer(
             SubmitAnonymousTemplateAnswerCommandItem answer)
         {
-            if (answer.StarRatingValue is not >= 1 and <= 5 ||
+            if (answer.StarRatingValue is not (>= 1 and <= 5) ||
                 answer.SelectedQuestionOptionId.HasValue ||
                 answer.SmileValue.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
@@ -686,7 +695,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
         private static ValidationResult ValidateSmilesAnswer(
             SubmitAnonymousTemplateAnswerCommandItem answer)
         {
-            if (answer.SmileValue is not >= 1 and <= 5 ||
+            if (answer.SmileValue is not (>= 1 and <= 5) ||
                 answer.SelectedQuestionOptionId.HasValue ||
                 answer.StarRatingValue.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.TextAnswer) ||

@@ -1369,7 +1369,7 @@
     <value>Cyclic question conditions are not allowed.</value>
   </data>
   <data name="SubmitOperatorTemplateResponse_VisibleQuestions_Required" xml:space="preserve">
-    <value>Answers are required for all visible questions.</value>
+    <value>Answers are required for all visible required questions.</value>
   </data>
   <data name="SubmitOperatorTemplateResponse_HiddenQuestionAnswer_NotAllowed" xml:space="preserve">
     <value>Cannot submit an answer for a question that is not visible based on current answers.</value>
@@ -2215,7 +2215,7 @@
     <value>Voice answer is invalid.</value>
   </data>
   <data name="SubmitAnonymousTemplateResponse_AllVisibleQuestions_Required" xml:space="preserve">
-    <value>All visible questions must be answered.</value>
+    <value>All visible required questions must be answered.</value>
   </data>
   <data name="SubmitAnonymousTemplateResponse_HiddenQuestion_NotAllowed" xml:space="preserve">
     <value>Hidden question answer is not allowed.</value>

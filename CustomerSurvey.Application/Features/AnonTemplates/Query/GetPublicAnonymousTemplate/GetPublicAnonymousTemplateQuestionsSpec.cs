@@ -35,6 +35,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
                 Type = x.Question.Type,
                 TypeName = x.Question.Type.ToString(),
 
+                IsRequired = x.IsRequired,
                 Order = x.Order,
                 IsRoot = false,
 

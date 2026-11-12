@@ -19,7 +19,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 .WithMessage(ErrorMessage.SubmitOperatorTemplateResponse_TemplateId_Required);
 
             RuleFor(x => x.Answers)
-                .NotEmpty()
+                .NotNull()
                 .WithMessage(ErrorMessage.SubmitOperatorTemplateResponse_Answers_Required);
 
             RuleForEach(x => x.Flags).ChildRules(flag =>

@@ -23,6 +23,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
 
         public int MaxScore { get; init; }
 
+        public bool IsScored => MaxScore > 0;
+
         public decimal ScorePercentage { get; init; }
 
         public DateTime SubmittedOnUtc { get; init; }

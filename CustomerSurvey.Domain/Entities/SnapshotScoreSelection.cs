@@ -6,11 +6,15 @@ public static class SnapshotScoreSelection
     public static IReadOnlyList<SnapshotQuestion> Questions(ResponseSnapshotDocument snapshot, int mode)
     {
         if (!snapshot.IsHistoricallyVerified) return Array.Empty<SnapshotQuestion>();
-        var questions = snapshot.Questions.ToDictionary(x => x.TemplateQuestionId);
+        // V1 captured answered questions only. V2 adds visible skips, which must not change path selection.
+        var answeredQuestions = snapshot.SchemaVersion >= 2
+            ? snapshot.Questions.Where(x => x.IsVisible && x.HasAnswer).ToArray()
+            : snapshot.Questions;
+        var questions = answeredQuestions.ToDictionary(x => x.TemplateQuestionId);
         var included = new List<SnapshotQuestion>();
         if (mode == 3)
-            included.AddRange(snapshot.Questions.Where(x => x.HasAnswer && Value(x).HasValue));
-        else foreach (var root in snapshot.Questions.Where(x => x.IsRoot))
+            included.AddRange(answeredQuestions.Where(x => x.HasAnswer && Value(x).HasValue));
+        else foreach (var root in answeredQuestions.Where(x => x.IsRoot))
         {
             var current = root;
             SnapshotQuestion? last = null;
@@ -21,7 +25,8 @@ public static class SnapshotScoreSelection
                 if (mode == 1) break;
                 var condition = snapshot.Conditions.Where(x => x.ParentTemplateQuestionId == current.TemplateQuestionId)
                     .OrderBy(x => questions.GetValueOrDefault(x.ChildTemplateQuestionId)?.Order ?? int.MaxValue)
-                    .FirstOrDefault(x => Matches(x, current));
+                    .FirstOrDefault(x => (snapshot.SchemaVersion < 2 || questions.ContainsKey(x.ChildTemplateQuestionId))
+                        && Matches(x, current));
                 if (condition is null || !questions.TryGetValue(condition.ChildTemplateQuestionId, out var child)) break;
                 current = child;
             }

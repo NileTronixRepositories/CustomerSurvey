@@ -1,4 +1,5 @@
 ﻿using BuildingBlock.Domain.EntitiesHelper;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CustomerSurvey.Domain.Entities
 {
@@ -11,6 +12,9 @@ namespace CustomerSurvey.Domain.Entities
         public AnonymousTemplate AnonymousTemplate { get; private set; } = null!;
 
         public ResponseSnapshot? Snapshot { get; private set; }
+
+        [NotMapped]
+        public SnapshotSubmissionStructure? SubmissionStructure { get; private set; }
 
         public void CaptureSnapshot(ResponseSnapshotDocument document)
         {
@@ -42,7 +46,8 @@ namespace CustomerSurvey.Domain.Entities
             Guid anonymousTemplateId,
             int actualScore,
             int maxScore,
-            decimal scorePercentage)
+            decimal scorePercentage,
+            SnapshotSubmissionStructure? submissionStructure = null)
         {
             return new AnonymousSurveyResponse
             {
@@ -51,6 +56,7 @@ namespace CustomerSurvey.Domain.Entities
                 SubmittedOnUtc = DateTime.UtcNow,
                 ActualScore = actualScore,
                 MaxScore = maxScore,
+                SubmissionStructure = submissionStructure,
                 ScorePercentage = scorePercentage
             };
         }

@@ -212,6 +212,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                         // Global questions are readonly for Branch actors.
                         IsEditable = x.Scope == QuestionScope.Branch,
 
+                        IsRequired = x.IsRequired,
                         Order = x.Order,
                         TextEn = x.TextEn,
                         TextAr = x.TextAr,

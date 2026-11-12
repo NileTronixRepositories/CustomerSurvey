@@ -195,7 +195,6 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignQ
                 _anonymousTemplateQuestionWriteRepository.DeleteRange(assignmentsToRemove);
             }
 
-            var assignmentsToUpdate = new List<AnonymousTemplateQuestion>();
             var assignmentsToAdd = new List<AnonymousTemplateQuestion>();
 
             foreach (var requestedQuestion in requestedQuestions)
@@ -205,7 +204,12 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignQ
                         out var existingAssignment))
                 {
                     existingAssignment.ChangeOrder(requestedQuestion.Order);
-                    assignmentsToUpdate.Add(existingAssignment);
+                    if (requestedQuestion.IsRequired.HasValue)
+                    {
+                        existingAssignment.SetRequired(requestedQuestion.IsRequired.Value);
+                    }
+
+                    // The write-context query tracks changes to the existing assignment.
                     continue;
                 }
 
@@ -213,14 +217,10 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignQ
                     anonymousTemplateId: anonymousTemplate.Id,
                     questionId: requestedQuestion.QuestionId,
                     order: requestedQuestion.Order,
-                    createdByApplicationUserId: currentApplicationUserId);
+                    createdByApplicationUserId: currentApplicationUserId,
+                    isRequired: requestedQuestion.IsRequired ?? true);
 
                 assignmentsToAdd.Add(newAssignment);
-            }
-
-            if (assignmentsToUpdate.Count > 0)
-            {
-                _anonymousTemplateQuestionWriteRepository.UpdateRange(assignmentsToUpdate);
             }
 
             if (assignmentsToAdd.Count > 0)
@@ -258,6 +258,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignQ
                         TextAr = question.TextAr,
                         Type = question.Type,
                         TypeName = question.Type.ToString(),
+                        IsRequired = x.IsRequired,
                         Order = x.Order
                     };
                 })

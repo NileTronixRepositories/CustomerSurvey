@@ -244,10 +244,12 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     Type: ErrorType.Validation));
             }
 
-            var allVisibleQuestionsAnswered = visibleQuestionIds
-                .All(questionId => submittedQuestionIds.Contains(questionId));
+            var hasMissingRequiredAnswer = templateQuestions.Any(question =>
+                question.IsRequired &&
+                visibleQuestionIds.Contains(question.QuestionId) &&
+                !submittedQuestionIds.Contains(question.QuestionId));
 
-            if (!allVisibleQuestionsAnswered)
+            if (hasMissingRequiredAnswer)
             {
                 return Result<SubmitOperatorTemplateResponseResponse>.Fail(new Error(
                     Code: "SurveyResponses.Submit.VisibleQuestionsRequired",
@@ -303,13 +305,21 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 rootQuestionIds,
                 optionValueByOptionId);
 
+            var submissionStructure = new SnapshotSubmissionStructure(
+                templateQuestions.Where(x => visibleQuestionIds.Contains(x.QuestionId))
+                    .Select(x => new SnapshotVisibleQuestion(x.TemplateQuestionId, x.IsRequired, rootQuestionIds.Contains(x.QuestionId)))
+                    .ToArray(),
+                validConditions.Select(x => new SnapshotCondition(x.ParentTemplateQuestionId, x.ChildTemplateQuestionId,
+                    x.TriggerType, x.SelectedQuestionOptionId, x.TriggerValue, x.Order)).ToArray());
+
             var surveyResponse = SurveyResponse.Create(
                 operatorId: currentOperator.OperatorId,
                 templateId: request.TemplateId,
                 createdByApplicationUserId: currentApplicationUserId,
                 actualScore: score.ActualScore,
                 maxScore: score.MaxScore,
-                scorePercentage: score.Percentage);
+                scorePercentage: score.Percentage,
+                submissionStructure: submissionStructure);
 
             var customInputValues = BuildCustomInputValues(
                 surveyResponse.Id,

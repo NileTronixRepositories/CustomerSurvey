@@ -25,7 +25,7 @@ public sealed class CopyTemplateToBranchEnhancementTests
             source.Id, "Phone", null, TemplateCustomInputType.String,
             true, 3, 20, null, null, "01", 1, context.UserId);
         source.AddCustomInput(input);
-        AddTemplateQuestion(source, question, 1, context.UserId);
+        AddTemplateQuestion(source, question, 1, context.UserId).SetRequired(false);
         context.Templates.Add(source);
 
         var result = await context.CopyAsync(source.Id);
@@ -36,6 +36,7 @@ public sealed class CopyTemplateToBranchEnhancementTests
         Assert.Empty(context.OptionWrites.AddedEntities);
         var targetLink = Assert.Single(context.TemplateQuestionWrites.AddedEntities);
         Assert.Equal(question.Id, targetLink.QuestionId);
+        Assert.False(targetLink.IsRequired);
 
         var target = Assert.Single(context.TemplateWrites.AddedEntities);
         Assert.NotEqual(source.Id, target.Id);
@@ -64,12 +65,19 @@ public sealed class CopyTemplateToBranchEnhancementTests
         var date = AnonymousTemplateCustomInput.Create(source.Id, "Booking Date", null, TemplateCustomInputType.Date,
             true, null, null, null, null, null, 1, context.UserId);
         source.AddCustomInput(date);
+        var group = QuestionGroup.CreateGlobal("Global", null, context.UserId);
+        var question = Question.CreateGlobal(group.Id, "Rating", null, QuestionType.StarRating, context.UserId);
+        SetProperty(question, nameof(Question.Group), group);
+        var assignment = AnonymousTemplateQuestion.Create(source.Id, question.Id, 1, context.UserId, isRequired: false);
+        SetProperty(assignment, nameof(AnonymousTemplateQuestion.Question), question);
+        GetList<AnonymousTemplate, AnonymousTemplateQuestion>(source, "_questions").Add(assignment);
         context.AnonymousTemplates.Add(source);
 
         var result = await context.CopyAsync(source.Id);
 
         Assert.True(result.IsSuccess);
         var target = Assert.Single(context.AnonymousTemplateWrites.AddedEntities);
+        Assert.False(Assert.Single(context.AnonymousTemplateQuestionWrites.AddedEntities).IsRequired);
         var visitTime = Assert.Single(target.CustomInputs, x => x.SystemFieldKey == TemplateCustomInputSystemField.VisitTime);
         var ordinaryDate = Assert.Single(target.CustomInputs, x => !x.SystemFieldKey.HasValue);
         Assert.NotEqual(Assert.Single(source.CustomInputs, x => x.SystemFieldKey.HasValue).Id, visitTime.Id);
@@ -247,6 +255,7 @@ public sealed class CopyTemplateToBranchEnhancementTests
         var templateWrites = new InMemoryWriteRepository<Template>();
         var anonymousTemplateWrites = new InMemoryWriteRepository<AnonymousTemplate>();
         var templateQuestionWrites = new InMemoryWriteRepository<TemplateQuestion>();
+        var anonymousTemplateQuestionWrites = new InMemoryWriteRepository<AnonymousTemplateQuestion>();
         var templateConditionWrites = new InMemoryWriteRepository<TemplateQuestionCondition>();
         var groupWrites = new InMemoryWriteRepository<QuestionGroup>();
         var questionWrites = new InMemoryWriteRepository<Question>();
@@ -266,7 +275,7 @@ public sealed class CopyTemplateToBranchEnhancementTests
             templateQuestionWrites,
             templateConditionWrites,
             anonymousTemplateWrites,
-            new InMemoryWriteRepository<AnonymousTemplateQuestion>(),
+            anonymousTemplateQuestionWrites,
             new InMemoryWriteRepository<AnonymousTemplateQuestionCondition>(),
             groupWrites,
             questionWrites,
@@ -279,7 +288,7 @@ public sealed class CopyTemplateToBranchEnhancementTests
         return new CopyContext(
             handler, userId, sourceBranch, targetBranch,
             templates, anonymousTemplates, templateConditions, groups, questions, options,
-            templateWrites, anonymousTemplateWrites, templateQuestionWrites, templateConditionWrites,
+            templateWrites, anonymousTemplateWrites, templateQuestionWrites, anonymousTemplateQuestionWrites, templateConditionWrites,
             groupWrites, questionWrites, optionWrites);
     }
 
@@ -369,6 +378,7 @@ public sealed class CopyTemplateToBranchEnhancementTests
         InMemoryWriteRepository<Template> TemplateWrites,
         InMemoryWriteRepository<AnonymousTemplate> AnonymousTemplateWrites,
         InMemoryWriteRepository<TemplateQuestion> TemplateQuestionWrites,
+        InMemoryWriteRepository<AnonymousTemplateQuestion> AnonymousTemplateQuestionWrites,
         InMemoryWriteRepository<TemplateQuestionCondition> TemplateConditionWrites,
         InMemoryWriteRepository<QuestionGroup> GroupWrites,
         InMemoryWriteRepository<Question> QuestionWrites,

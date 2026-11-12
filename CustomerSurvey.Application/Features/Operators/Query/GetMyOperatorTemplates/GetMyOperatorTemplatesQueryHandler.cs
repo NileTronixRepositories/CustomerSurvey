@@ -376,6 +376,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                                 ScopeName = question.Scope.ToString(),
                                 IsGlobal = question.Scope == QuestionScope.Global,
 
+                                IsRequired = question.IsRequired,
                                 Order = question.Order,
 
                                 TextEn = question.TextEn,

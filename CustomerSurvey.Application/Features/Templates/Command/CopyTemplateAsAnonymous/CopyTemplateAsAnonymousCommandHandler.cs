@@ -129,7 +129,8 @@ internal sealed class CopyTemplateAsAnonymousCommandHandler
 
         var targetQuestions = source.TemplateQuestions
             .OrderBy(x => x.Order)
-            .Select(x => AnonymousTemplateQuestion.Create(target.Id, x.QuestionId, x.Order, scope.Value.ApplicationUserId))
+            .Select(x => AnonymousTemplateQuestion.Create(
+                target.Id, x.QuestionId, x.Order, scope.Value.ApplicationUserId, isRequired: x.IsRequired))
             .ToArray();
 
         var idMap = source.TemplateQuestions

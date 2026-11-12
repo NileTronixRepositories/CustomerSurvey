@@ -32,6 +32,17 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
                     questionIds is not null &&
                     questionIds.Distinct().Count() == questionIds.Count)
                 .WithMessage(ErrorMessage.AssignQuestionsToTemplate_QuestionIds_Duplicated);
+
+            RuleForEach(x => x.QuestionRequirements)
+                .ChildRules(requirement => requirement.RuleFor(x => x.QuestionId)
+                    .NotEmpty()
+                    .WithMessage(ErrorMessage.AssignQuestionsToTemplate_QuestionId_Required));
+
+            RuleFor(x => x.QuestionRequirements)
+                .Must(requirements => requirements.Select(x => x.QuestionId).Distinct().Count() == requirements.Count)
+                .WithMessage(ErrorMessage.AssignQuestionsToTemplate_QuestionIds_Duplicated)
+                .Must((command, requirements) => requirements.All(x => command.QuestionIds?.Contains(x.QuestionId) == true))
+                .WithMessage("Question requirements can only reference questions in QuestionIds.");
         }
     }
 }

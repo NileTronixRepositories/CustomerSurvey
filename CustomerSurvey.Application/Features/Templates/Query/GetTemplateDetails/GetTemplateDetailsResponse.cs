@@ -107,6 +107,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
 
         public bool IsEditable { get; init; }
 
+        public bool IsRequired { get; init; } = true;
+
         public int Order { get; init; }
 
         public string TextEn { get; init; } = string.Empty;

@@ -30,6 +30,8 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
 
         public bool IsGlobal { get; init; }
 
+        public bool IsRequired { get; init; }
+
         public int Order { get; init; }
     }
 }

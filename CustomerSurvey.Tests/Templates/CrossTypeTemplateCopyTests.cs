@@ -32,7 +32,7 @@ public sealed class CrossTypeTemplateCopyTests
             source.Id, "Phone", null, TemplateCustomInputType.String,
             true, 3, 20, null, null, "01", 1, userId));
 
-        var firstLink = TemplateQuestion.Create(source.Id, Guid.NewGuid(), 1, userId);
+        var firstLink = TemplateQuestion.Create(source.Id, Guid.NewGuid(), 1, userId, isRequired: false);
         var secondLink = TemplateQuestion.Create(source.Id, Guid.NewGuid(), 2, userId);
         AddTemplateQuestion(source, firstLink);
         AddTemplateQuestion(source, secondLink);
@@ -94,6 +94,7 @@ public sealed class CrossTypeTemplateCopyTests
         Assert.Equal(
             new[] { firstLink.QuestionId, secondLink.QuestionId },
             questionWrite.AddedEntities.OrderBy(x => x.Order).Select(x => x.QuestionId));
+        Assert.Equal(new[] { false, true }, questionWrite.AddedEntities.OrderBy(x => x.Order).Select(x => x.IsRequired));
 
         var targetCondition = Assert.Single(conditionWrite.AddedEntities);
         Assert.NotEqual(sourceCondition.ParentTemplateQuestionId, targetCondition.ParentAnonymousTemplateQuestionId);
@@ -120,7 +121,7 @@ public sealed class CrossTypeTemplateCopyTests
             source.Id, "Phone", null, TemplateCustomInputType.String,
             true, 3, 20, null, null, "01", 1, userId));
 
-        var firstLink = AnonymousTemplateQuestion.Create(source.Id, Guid.NewGuid(), 1, userId);
+        var firstLink = AnonymousTemplateQuestion.Create(source.Id, Guid.NewGuid(), 1, userId, isRequired: false);
         var secondLink = AnonymousTemplateQuestion.Create(source.Id, Guid.NewGuid(), 2, userId);
         AddAnonymousTemplateQuestion(source, firstLink);
         AddAnonymousTemplateQuestion(source, secondLink);
@@ -178,6 +179,7 @@ public sealed class CrossTypeTemplateCopyTests
         Assert.Equal(
             new[] { firstLink.QuestionId, secondLink.QuestionId },
             questionWrite.AddedEntities.OrderBy(x => x.Order).Select(x => x.QuestionId));
+        Assert.Equal(new[] { false, true }, questionWrite.AddedEntities.OrderBy(x => x.Order).Select(x => x.IsRequired));
 
         var targetCondition = Assert.Single(conditionWrite.AddedEntities);
         Assert.NotEqual(sourceCondition.ParentAnonymousTemplateQuestionId, targetCondition.ParentTemplateQuestionId);

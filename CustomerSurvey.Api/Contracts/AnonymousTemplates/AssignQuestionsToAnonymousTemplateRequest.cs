@@ -11,5 +11,7 @@
         public Guid QuestionId { get; init; }
 
         public int Order { get; init; }
+
+        public bool? IsRequired { get; init; }
     }
 }

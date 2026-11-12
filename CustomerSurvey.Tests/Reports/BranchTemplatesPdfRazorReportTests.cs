@@ -122,11 +122,15 @@ public sealed class BranchTemplatesPdfRazorReportTests
                     ResponseId = currentResponseId,
                     SubmittedOnUtc = response.SubmittedOnUtc.AddMinutes(index),
                     OperatorNameEn = index == 3 ? null : $"Operator {index + 1}",
+                    IsScored = index != 3,
+                    AverageScoreValue = index == 3 ? null : response.AverageScoreValue,
+                    ScorePercentage = index == 3 ? null : response.ScorePercentage,
                     CustomInputs = customInputs,
-                    Answers = answers
+                    Answers = index == 3 ? [] : answers
                 };
             })
             .ToArray();
+        var scoredResponses = stressResponses.Count(x => x.IsScored);
         template = template with
         {
             TotalResponses = stressResponses.Length,
@@ -147,6 +151,7 @@ public sealed class BranchTemplatesPdfRazorReportTests
                 TotalNormalTemplates = 1,
                 TotalResponses = stressResponses.Length,
                 TotalNormalResponses = stressResponses.Length,
+                ScoredResponsesCount = scoredResponses,
                 TotalAnswers = stressResponses.Sum(x => x.Answers.Count),
                 TotalScoredAnswers = stressResponses.Sum(x => x.Answers.Count(answer => answer.IncludedInScore)),
                 AverageScoreValue = 4m,
@@ -157,8 +162,9 @@ public sealed class BranchTemplatesPdfRazorReportTests
                 OverallSatisfactionPercentage = 80m,
                 AverageScoreValue = 4m,
                 TotalResponses = stressResponses.Length,
-                ScoredResponses = stressResponses.Length,
-                ExcellentResponses = stressResponses.Length,
+                ScoredResponses = scoredResponses,
+                NotScoredResponses = stressResponses.Length - scoredResponses,
+                ExcellentResponses = scoredResponses,
                 RootQuestions = 1,
                 IncludedAnswers = stressResponses.Sum(x => x.Answers.Count(answer => answer.IncludedInScore)),
                 NonScoredAnswers = stressResponses.Sum(x => x.Answers.Count(answer => !answer.IncludedInScore))
@@ -176,8 +182,8 @@ public sealed class BranchTemplatesPdfRazorReportTests
                     QuestionsCount = 1,
                     ScorableQuestionsCount = 1,
                     TotalResponses = stressResponses.Length,
-                    ScoredResponsesCount = stressResponses.Length,
-                    ScoredItemsCount = stressResponses.Length,
+                    ScoredResponsesCount = scoredResponses,
+                    ScoredItemsCount = scoredResponses,
                     AverageScoreValue = 4m,
                     AverageScorePercentage = 80m
                 }
@@ -233,6 +239,8 @@ public sealed class BranchTemplatesPdfRazorReportTests
         Assert.Contains("Question 1: Please describe your experience", html);
         Assert.Contains("Excellent free text feedback.", html);
         Assert.Contains("Included In Score", html);
+        Assert.Matches("class=\"badge score-good\">\\s*Scored", html);
+        Assert.Matches("class=\"badge score-na\">\\s*Not Scored", html);
         Assert.Contains(responseId.ToString(), html, StringComparison.OrdinalIgnoreCase);
     }
 

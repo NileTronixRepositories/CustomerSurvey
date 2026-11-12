@@ -374,6 +374,10 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
@@ -1360,6 +1364,10 @@ namespace CustomerSurvey.infrastructure.Migrations
 
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<int>("Order")
                         .HasColumnType("int");

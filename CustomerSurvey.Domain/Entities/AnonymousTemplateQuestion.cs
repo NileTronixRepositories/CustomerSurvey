@@ -11,6 +11,7 @@ namespace CustomerSurvey.Domain.Entities
         public Question Question { get; private set; } = null!;
 
         public int Order { get; private set; }
+        public bool IsRequired { get; private set; } = true;
 
         public Guid CreatedByApplicationUserId { get; private set; }
 
@@ -22,7 +23,8 @@ namespace CustomerSurvey.Domain.Entities
             Guid anonymousTemplateId,
             Guid questionId,
             int order,
-            Guid createdByApplicationUserId)
+            Guid createdByApplicationUserId,
+            bool isRequired = true)
         {
             return new AnonymousTemplateQuestion
             {
@@ -30,8 +32,14 @@ namespace CustomerSurvey.Domain.Entities
                 AnonymousTemplateId = anonymousTemplateId,
                 QuestionId = questionId,
                 Order = order,
+                IsRequired = isRequired,
                 CreatedByApplicationUserId = createdByApplicationUserId
             };
+        }
+
+        public void SetRequired(bool isRequired)
+        {
+            IsRequired = isRequired;
         }
 
         public void ChangeOrder(int order)

@@ -21,6 +21,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 GroupId = x.Question.GroupId,
                 GroupBranchId = x.Question.Group.BranchId,
                 Scope = x.Question.Scope,
+                IsRequired = x.IsRequired,
                 Order = x.Order,
                 TextEn = x.Question.TextEn,
                 TextAr = x.Question.TextAr,

@@ -144,7 +144,8 @@ internal sealed class AssignGlobalAnonymousTemplateToBranchCommandHandler
 
         var targetQuestions = source.Questions
             .OrderBy(x => x.Order)
-            .Select(x => AnonymousTemplateQuestion.Create(target.Id, x.QuestionId, x.Order, userId))
+            .Select(x => AnonymousTemplateQuestion.Create(
+                target.Id, x.QuestionId, x.Order, userId, isRequired: x.IsRequired))
             .ToArray();
 
         var questionIdMap = source.Questions
