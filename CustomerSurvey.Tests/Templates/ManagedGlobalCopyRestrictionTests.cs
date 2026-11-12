@@ -63,7 +63,8 @@ public sealed class ManagedGlobalCopyRestrictionTests
         var assignResult = await assignHandler.Handle(
             new AssignQuestionsToAnonymousTemplateCommand
             {
-                AnonymousTemplateId = context.Template.Id
+                AnonymousTemplateId = context.Template.Id,
+                Questions = [new() { QuestionId = Guid.NewGuid(), Order = 1, IsRequired = false }]
             },
             CancellationToken.None);
 
@@ -276,7 +277,8 @@ public sealed class ManagedGlobalCopyRestrictionTests
         var assignResult = await CreateAssignQuestionsHandler(context).Handle(
             new AssignQuestionsToAnonymousTemplateCommand
             {
-                AnonymousTemplateId = context.Template.Id
+                AnonymousTemplateId = context.Template.Id,
+                Questions = [new() { QuestionId = Guid.NewGuid(), Order = 1, IsRequired = false }]
             },
             CancellationToken.None);
         var conditionsResult = await CreateConditionsHandler(context).Handle(

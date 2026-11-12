@@ -26,6 +26,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 GroupBranchId = x.Question.Group.BranchId,
                 Scope = x.Question.Scope,
 
+                IsRequired = x.IsRequired,
                 Order = x.Order,
                 Type = x.Question.Type
             });

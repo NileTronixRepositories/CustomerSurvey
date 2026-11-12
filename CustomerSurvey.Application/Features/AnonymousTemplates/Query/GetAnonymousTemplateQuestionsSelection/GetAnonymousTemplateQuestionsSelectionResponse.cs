@@ -54,6 +54,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
         public bool IsSelected { get; init; }
 
+        public bool? IsRequired { get; init; }
+
         public int? SelectedOrder { get; init; }
 
         public string TextEn { get; init; } = string.Empty;

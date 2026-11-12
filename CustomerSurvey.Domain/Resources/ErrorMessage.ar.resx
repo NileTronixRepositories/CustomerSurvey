@@ -1369,7 +1369,7 @@
     <value>لا يمكن إنشاء دورة بين الأسئلة التابعة.</value>
   </data>
   <data name="SubmitOperatorTemplateResponse_VisibleQuestions_Required" xml:space="preserve">
-    <value>يجب إرسال إجابات لكل الأسئلة الظاهرة فقط.</value>
+    <value>يجب الإجابة عن جميع الأسئلة الظاهرة الإلزامية.</value>
   </data>
   <data name="SubmitOperatorTemplateResponse_HiddenQuestionAnswer_NotAllowed" xml:space="preserve">
     <value>لا يمكن إرسال إجابة لسؤال غير ظاهر بناءً على الإجابات الحالية.</value>
@@ -2215,7 +2215,7 @@
     <value>إجابة الصوت غير صحيحة.</value>
   </data>
   <data name="SubmitAnonymousTemplateResponse_AllVisibleQuestions_Required" xml:space="preserve">
-    <value>يجب الإجابة على كل الأسئلة الظاهرة.</value>
+    <value>يجب الإجابة عن جميع الأسئلة الظاهرة الإلزامية.</value>
   </data>
   <data name="SubmitAnonymousTemplateResponse_HiddenQuestion_NotAllowed" xml:space="preserve">
     <value>لا يمكن إرسال إجابة لسؤال مخفي.</value>

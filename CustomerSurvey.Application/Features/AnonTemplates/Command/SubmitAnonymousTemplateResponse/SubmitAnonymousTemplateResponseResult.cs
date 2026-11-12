@@ -12,6 +12,8 @@
 
         public int MaxScore { get; init; }
 
+        public bool IsScored => MaxScore > 0;
+
         public decimal ScorePercentage { get; init; }
 
         public int VisibleQuestionsCount { get; init; }

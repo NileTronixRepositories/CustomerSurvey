@@ -15,6 +15,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 AnonymousTemplateQuestionId = x.Id,
                 QuestionId = x.QuestionId,
                 QuestionType = x.Question.Type,
+                IsRequired = x.IsRequired,
                 Order = x.Order,
                 QuestionIsActive = x.Question.IsActive,
                 GroupIsActive = x.Question.Group.IsActive

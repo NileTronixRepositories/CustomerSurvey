@@ -14,6 +14,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
             {
                 AnonymousTemplateQuestionId = x.Id,
                 QuestionId = x.QuestionId,
+                IsRequired = x.IsRequired,
                 Order = x.Order
             });
         }

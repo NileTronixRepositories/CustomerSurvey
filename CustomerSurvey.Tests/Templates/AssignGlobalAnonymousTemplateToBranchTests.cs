@@ -31,7 +31,7 @@ public sealed class AssignGlobalAnonymousTemplateToBranchTests
             1,
             userId));
 
-        var firstSourceQuestion = AnonymousTemplateQuestion.Create(source.Id, Guid.NewGuid(), 1, userId);
+        var firstSourceQuestion = AnonymousTemplateQuestion.Create(source.Id, Guid.NewGuid(), 1, userId, isRequired: false);
         var secondSourceQuestion = AnonymousTemplateQuestion.Create(source.Id, Guid.NewGuid(), 2, userId);
         AddQuestion(source, firstSourceQuestion);
         AddQuestion(source, secondSourceQuestion);
@@ -80,6 +80,7 @@ public sealed class AssignGlobalAnonymousTemplateToBranchTests
         Assert.Equal(
             new[] { firstSourceQuestion.QuestionId, secondSourceQuestion.QuestionId },
             context.QuestionWriteRepository.AddedEntities.OrderBy(x => x.Order).Select(x => x.QuestionId));
+        Assert.Equal(new[] { false, true }, context.QuestionWriteRepository.AddedEntities.OrderBy(x => x.Order).Select(x => x.IsRequired));
 
         var targetCondition = Assert.Single(context.ConditionWriteRepository.AddedEntities);
         Assert.NotEqual(sourceCondition.ParentAnonymousTemplateQuestionId, targetCondition.ParentAnonymousTemplateQuestionId);

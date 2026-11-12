@@ -168,16 +168,24 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
                     x => x.QuestionId,
                     x => x);
 
+            var requirednessByQuestionId = request.QuestionRequirements
+                .ToDictionary(x => x.QuestionId, x => x.IsRequired);
+
             foreach (var item in requestedOrderByQuestionId)
             {
                 var questionId = item.Key;
                 var order = item.Value;
+                var isRequired = requirednessByQuestionId.GetValueOrDefault(questionId);
 
                 if (existingByQuestionId.TryGetValue(questionId, out var existingTemplateQuestion))
                 {
                     existingTemplateQuestion.ChangeOrder(order);
+                    if (isRequired.HasValue)
+                    {
+                        existingTemplateQuestion.SetRequired(isRequired.Value);
+                    }
 
-                    _templateQuestionWriteRepository.Update(existingTemplateQuestion);
+                    // The write-context query tracks changes to the existing assignment.
 
                     assignedTemplateQuestionsByQuestionId[questionId] = existingTemplateQuestion;
 
@@ -188,7 +196,8 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
                     templateId: template.TemplateId,
                     questionId: questionId,
                     order: order,
-                    createdByApplicationUserId: currentApplicationUserId);
+                    createdByApplicationUserId: currentApplicationUserId,
+                    isRequired: isRequired ?? true);
 
                 await _templateQuestionWriteRepository.AddAsync(
                     templateQuestion,
@@ -220,6 +229,7 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
                             Scope = question.Scope,
                             ScopeName = question.Scope.ToString(),
                             IsGlobal = question.Scope == QuestionScope.Global,
+                            IsRequired = templateQuestion.IsRequired,
                             Order = templateQuestion.Order
                         };
                     })

@@ -20,6 +20,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public QuestionScope Scope { get; init; }
 
+        public bool IsRequired { get; init; } = true;
+
         public int Order { get; init; }
 
         public string TextEn { get; init; } = string.Empty;
@@ -55,6 +57,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 GroupId = x.Question.GroupId,
                 GroupBranchId = x.Question.Group.BranchId,
                 Scope = x.Question.Scope,
+                IsRequired = x.IsRequired,
                 Order = x.Order,
                 TextEn = x.Question.TextEn,
                 TextAr = x.Question.TextAr,

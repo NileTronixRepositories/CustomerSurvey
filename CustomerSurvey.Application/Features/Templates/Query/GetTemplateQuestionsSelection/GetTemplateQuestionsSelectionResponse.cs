@@ -78,6 +78,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
 
         public bool IsSelected { get; init; }
 
+        public bool? IsRequired { get; init; }
+
         public int? Order { get; init; }
 
         public IReadOnlyCollection<TemplateQuestionSelectionOptionResponse> Options { get; init; }

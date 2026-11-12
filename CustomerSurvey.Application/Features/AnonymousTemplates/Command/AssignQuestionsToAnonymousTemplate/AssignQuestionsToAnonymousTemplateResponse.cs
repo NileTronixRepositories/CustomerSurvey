@@ -48,6 +48,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Command.AssignQ
 
         public string TypeName { get; init; } = string.Empty;
 
+        public bool IsRequired { get; init; }
+
         public int Order { get; init; }
     }
 }

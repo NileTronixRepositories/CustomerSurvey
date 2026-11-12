@@ -311,7 +311,8 @@ internal sealed class CopyTemplateToBranchCommandHandler
                 templateId: copiedTemplate.Id,
                 questionId: targetQuestion.Id,
                 order: sourceQuestion.Order,
-                createdByApplicationUserId: currentApplicationUserId);
+                createdByApplicationUserId: currentApplicationUserId,
+                isRequired: sourceQuestion.IsRequired);
 
             copiedQuestions.Add(copiedQuestion);
             templateQuestionIdMap[sourceQuestion.Id] = copiedQuestion.Id;
@@ -540,7 +541,8 @@ internal sealed class CopyTemplateToBranchCommandHandler
                 anonymousTemplateId: copiedTemplate.Id,
                 questionId: targetQuestion.Id,
                 order: sourceQuestion.Order,
-                createdByApplicationUserId: currentApplicationUserId);
+                createdByApplicationUserId: currentApplicationUserId,
+                isRequired: sourceQuestion.IsRequired);
 
             copiedQuestions.Add(copiedQuestion);
             templateQuestionIdMap[sourceQuestion.Id] = copiedQuestion.Id;

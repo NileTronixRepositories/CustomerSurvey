@@ -9,6 +9,8 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
 
         public Guid QuestionId { get; init; }
 
+        public bool IsRequired { get; init; } = true;
+
         public int Order { get; init; }
     }
 
@@ -25,6 +27,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
             {
                 TemplateQuestionId = x.Id,
                 QuestionId = x.QuestionId,
+                IsRequired = x.IsRequired,
                 Order = x.Order
             });
         }

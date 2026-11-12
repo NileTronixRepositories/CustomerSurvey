@@ -70,6 +70,9 @@ public sealed class BranchTemplateExcelReportServiceTests
             Assert.True(matrix.Column(matrix.LastColumnUsed()!.ColumnNumber()).IsHidden);
 
             var responses = workbook.Worksheet("04 - Responses");
+            Assert.Equal("Not Scored", responses.Cell(5, 4).GetString());
+            Assert.True(responses.Cell(5, 5).IsEmpty());
+            Assert.True(responses.Cell(5, 6).IsEmpty());
             var answers = workbook.Worksheet("05 - Answers");
             var customInputs = workbook.Worksheet("06 - Custom Inputs");
             Assert.Equal("Rate the service", answers.Cell(4, 4).GetString());

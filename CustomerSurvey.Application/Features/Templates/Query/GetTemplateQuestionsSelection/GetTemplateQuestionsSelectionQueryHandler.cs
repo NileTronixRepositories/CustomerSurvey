@@ -182,6 +182,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                                 TextAr = question.TextAr,
                                 Type = question.Type.ToString(),
                                 IsSelected = isSelected,
+                                IsRequired = selectedTemplateQuestion?.IsRequired,
 
                                 Order = isSelected
                                     ? selectedTemplateQuestion!.Order

@@ -111,6 +111,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
 
         public bool IsGlobal { get; init; }
 
+        public bool IsRequired { get; init; } = true;
+
         public int Order { get; init; }
 
         public string TextEn { get; init; } = string.Empty;
@@ -182,6 +184,8 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
         public int ActualScore { get; init; }
 
         public int MaxScore { get; init; }
+
+        public bool IsScored => MaxScore > 0;
 
         public decimal Percentage { get; init; }
     }

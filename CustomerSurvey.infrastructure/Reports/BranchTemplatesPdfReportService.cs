@@ -894,6 +894,20 @@ namespace CustomerSurvey.infrastructure.Reports
                 .GroupBy(x => x.TemplateId)
                 .ToDictionary(x => x.Key, x => x.ToArray());
 
+            var verifiedVisibility = responses
+                .Select(x => SnapshotScoring.Read(x.SnapshotPayload))
+                .OfType<ResponseSnapshotDocument>()
+                .Where(x => x.SchemaVersion >= 2 && x.IsHistoricallyVerified)
+                .ToDictionary(x => x.ResponseId);
+            var verifiedVisibilityCounts = verifiedVisibility.Values
+                .GroupBy(x => x.TemplateId)
+                .ToDictionary(x => x.Key, x => x.Count());
+            var visibleSkipsByQuestion = verifiedVisibility.Values
+                .SelectMany(x => x.Questions)
+                .Where(x => x.IsVisible && !x.HasAnswer)
+                .GroupBy(x => x.TemplateQuestionId)
+                .ToDictionary(x => x.Key, x => x.Count());
+
             var answersByQuestion = answers
                 .GroupBy(x => new
                 {
@@ -933,7 +947,11 @@ namespace CustomerSurvey.infrastructure.Reports
 
                 var totalResponses = templateResponses.Length;
                 var totalAnswers = questionAnswers.Length;
-                var skipped = Math.Max(0, totalResponses - totalAnswers);
+                // Earlier snapshots cannot distinguish a hidden question from a skipped one.
+                var legacyResponseCount = totalResponses - verifiedVisibilityCounts.GetValueOrDefault(templateQuestion.TemplateId);
+                var legacyAnswerCount = questionAnswers.Count(x => !verifiedVisibility.ContainsKey(x.ResponseId));
+                var skipped = Math.Max(0, legacyResponseCount - legacyAnswerCount)
+                    + visibleSkipsByQuestion.GetValueOrDefault(templateQuestion.TemplateQuestionId);
 
                 var isRoot = templateQuestion.IsRootAtSubmission ?? !childTemplateQuestionIds.Contains(templateQuestion.TemplateQuestionId);
 

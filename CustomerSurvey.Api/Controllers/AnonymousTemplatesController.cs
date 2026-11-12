@@ -217,7 +217,8 @@ namespace CustomerSurvey.Api.Controllers
                     .Select(x => new AssignQuestionToAnonymousTemplateCommandItem
                     {
                         QuestionId = x.QuestionId,
-                        Order = x.Order
+                        Order = x.Order,
+                        IsRequired = x.IsRequired
                     })
                     .ToArray()
             };

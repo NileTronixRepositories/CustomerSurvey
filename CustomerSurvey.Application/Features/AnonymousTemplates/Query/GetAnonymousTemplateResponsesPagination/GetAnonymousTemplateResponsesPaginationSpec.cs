@@ -19,12 +19,12 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
             if (request.MinScorePercentage.HasValue)
             {
-                AddCriteria(x => x.ScorePercentage >= request.MinScorePercentage.Value);
+                AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage >= request.MinScorePercentage.Value);
             }
 
             if (request.MaxScorePercentage.HasValue)
             {
-                AddCriteria(x => x.ScorePercentage <= request.MaxScorePercentage.Value);
+                AddCriteria(x => x.MaxScore > 0 && x.ScorePercentage <= request.MaxScorePercentage.Value);
             }
 
             ApplyDrillDownFilters(request);

@@ -39,7 +39,7 @@ public sealed class ResponseSnapshot : Entity<Guid>
         return new() { Id = Guid.NewGuid(), ResponseId = document.ResponseId, TemplateId = document.TemplateId,
             TemplateKind = document.TemplateKind, SurveyResponseId = document.TemplateKind == 1 ? document.ResponseId : null,
             AnonymousSurveyResponseId = document.TemplateKind == 2 ? document.ResponseId : null,
-            Provenance = document.Provenance, CapturedOnUtc = DateTime.UtcNow,
+            SchemaVersion = document.SchemaVersion, Provenance = document.Provenance, CapturedOnUtc = DateTime.UtcNow,
             RootQuestionIds = "|" + string.Join("|", root.Select(x => x.QuestionId)) + "|",
             LowestQuestionIds = "|" + string.Join("|", lowest.Select(x => x.QuestionId)) + "|",
             AllQuestionIds = "|" + string.Join("|", all.Select(x => x.QuestionId)) + "|",
@@ -100,6 +100,11 @@ public sealed record SnapshotQuestion
     public string? ImageFileName { get; init; }
     public IReadOnlyList<SnapshotOption> Options { get; init; } = Array.Empty<SnapshotOption>();
 }
+
+// The submit handlers supply the structure they validated so capture does not re-evaluate visibility.
+public sealed record SnapshotSubmissionStructure(
+    IReadOnlyList<SnapshotVisibleQuestion> Questions, IReadOnlyList<SnapshotCondition> Conditions);
+public sealed record SnapshotVisibleQuestion(Guid TemplateQuestionId, bool IsRequired, bool IsRoot);
 
 public sealed record SnapshotOption(Guid OptionId, string TextEn, string? TextAr, int Value, int Order, bool IsActive);
 public sealed record SnapshotCondition(Guid ParentTemplateQuestionId, Guid ChildTemplateQuestionId,

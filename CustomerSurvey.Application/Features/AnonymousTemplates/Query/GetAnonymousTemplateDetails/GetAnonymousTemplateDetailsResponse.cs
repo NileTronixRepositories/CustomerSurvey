@@ -128,6 +128,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
         public string TypeName { get; init; } = string.Empty;
 
+        public bool IsRequired { get; init; } = true;
+
         public int Order { get; init; }
 
         public bool IsActive { get; init; }

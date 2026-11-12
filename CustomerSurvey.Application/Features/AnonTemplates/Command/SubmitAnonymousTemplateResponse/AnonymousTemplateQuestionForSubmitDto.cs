@@ -10,6 +10,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
 
         public QuestionType QuestionType { get; init; }
 
+        public bool IsRequired { get; init; } = true;
+
         public int Order { get; init; }
 
         public bool QuestionIsActive { get; init; }

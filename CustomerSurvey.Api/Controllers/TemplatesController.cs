@@ -116,7 +116,10 @@ namespace CustomerSurvey.Api.Controllers
             var command = new AssignQuestionsToTemplateCommand
             {
                 TemplateId = templateId,
-                QuestionIds = request.QuestionIds
+                QuestionIds = request.QuestionIds,
+                QuestionRequirements = request.QuestionRequirements?
+                    .Select(x => new TemplateQuestionRequirement(x?.QuestionId ?? Guid.Empty, x?.IsRequired))
+                    .ToArray() ?? Array.Empty<TemplateQuestionRequirement>()
             };
 
             var result = await sender.Send(command, cancellationToken);

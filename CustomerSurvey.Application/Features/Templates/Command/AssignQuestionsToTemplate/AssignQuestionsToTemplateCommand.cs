@@ -14,5 +14,10 @@ namespace CustomerSurvey.Application.Features.Templates.Command.AssignQuestionsT
 
         public IReadOnlyCollection<Guid> QuestionIds { get; init; }
             = Array.Empty<Guid>();
+
+        public IReadOnlyCollection<TemplateQuestionRequirement> QuestionRequirements { get; init; }
+            = Array.Empty<TemplateQuestionRequirement>();
     }
+
+    public sealed record TemplateQuestionRequirement(Guid QuestionId, bool? IsRequired);
 }

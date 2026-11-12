@@ -6,6 +6,8 @@
 
         public Guid QuestionId { get; init; }
 
+        public bool IsRequired { get; init; } = true;
+
         public int Order { get; init; }
     }
 }
