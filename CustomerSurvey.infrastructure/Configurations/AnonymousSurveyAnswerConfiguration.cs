@@ -34,6 +34,9 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.SmileValue)
                 .IsRequired(false);
 
+            builder.Property(x => x.Rating1To10Value)
+                .IsRequired(false);
+
             builder.Property(x => x.TextAnswer)
                 .IsRequired(false)
                 .HasMaxLength(4000);

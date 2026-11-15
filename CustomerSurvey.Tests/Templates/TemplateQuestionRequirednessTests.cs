@@ -31,6 +31,24 @@ public sealed class TemplateQuestionRequirednessTests
         Assert.False(validator.Validate(request with { QuestionRequirements = [new(Guid.NewGuid(), false)] }).IsValid);
     }
 
+    [Theory]
+    [InlineData(null, true)]
+    [InlineData(0, true)]
+    [InlineData(225, true)]
+    [InlineData(int.MaxValue, true)]
+    [InlineData(-1, false)]
+    public void Operator_submission_duration_is_optional_and_nonnegative(int? duration, bool expectedValid)
+    {
+        var validation = new SubmitOperatorTemplateResponseCommandValidator().Validate(
+            new SubmitOperatorTemplateResponseCommand { TemplateId = Guid.NewGuid(), AnswerDurationSeconds = duration });
+
+        Assert.Equal(expectedValid, validation.IsValid);
+        if (!expectedValid)
+        {
+            Assert.Equal("AnswerDurationSeconds", Assert.Single(validation.Errors).PropertyName);
+        }
+    }
+
     [Fact]
     public void Submission_validators_accept_an_empty_answer_collection()
     {

@@ -94,6 +94,7 @@ public sealed record SnapshotQuestion
     public string? SelectedOptionTextEn { get; init; }
     public string? SelectedOptionTextAr { get; init; }
     public int? StarRatingValue { get; init; }
+    public int? Rating1To10Value { get; init; }
     public int? SmileValue { get; init; }
     public string? TextAnswer { get; init; }
     public string? VoiceFileName { get; init; }

@@ -18,6 +18,10 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 .NotEmpty()
                 .WithMessage(ErrorMessage.SubmitOperatorTemplateResponse_TemplateId_Required);
 
+            RuleFor(x => x.AnswerDurationSeconds)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage(ErrorMessage.SubmitOperatorTemplateResponse_AnswerDurationSeconds_Invalid);
+
             RuleFor(x => x.Answers)
                 .NotNull()
                 .WithMessage(ErrorMessage.SubmitOperatorTemplateResponse_Answers_Required);

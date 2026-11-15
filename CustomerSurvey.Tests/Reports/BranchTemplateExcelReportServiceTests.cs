@@ -141,6 +141,37 @@ public sealed class BranchTemplateExcelReportServiceTests
     }
 
     [Fact]
+    public async Task GenerateAsync_ExportsRawRatingAndNormalizedScoreInSeparateCells()
+    {
+        var model = CreatePopulatedModel();
+        var response = model.Responses.First();
+        var rating = Assert.Single(response.Answers) with
+        {
+            QuestionType = QuestionType.Rating1To10,
+            Rating1To10Value = 9,
+            StarRatingValue = null,
+            ScoreValue = 5m
+        };
+        model = model with
+        {
+            Responses = model.Responses.Select(x => x.ResponseId == response.ResponseId
+                ? x with { Answers = [rating] }
+                : x).ToArray()
+        };
+
+        var sut = new BranchTemplateExcelReportService(new StubBranchTemplatesReportService(model));
+        var result = await sut.GenerateAsync(CreateRequest(model.SelectedTemplateId), default);
+
+        Assert.True(result.IsSuccess);
+        using var stream = new MemoryStream(result.Value.Content);
+        using var workbook = new XLWorkbook(stream);
+        var answers = workbook.Worksheet("05 - Answers");
+        Assert.Equal("Rating (1–10)", answers.Cell(4, 5).GetString());
+        Assert.Equal(9d, answers.Cell(4, 8).GetDouble());
+        Assert.Equal(5d, answers.Cell(4, 10).GetDouble());
+    }
+
+    [Fact]
     public async Task GenerateAsync_EmptyPeriodCreatesAllSheetsWithHeadersAndNoFakeRows()
     {
         var templateId = Guid.NewGuid();

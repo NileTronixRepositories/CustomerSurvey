@@ -23,6 +23,8 @@ namespace CustomerSurvey.Domain.Entities
 
         public int? StarRatingValue { get; private set; }
 
+        public int? Rating1To10Value { get; private set; }
+
         public int? SmileValue { get; private set; }
 
         public string? TextAnswer { get; private set; }
@@ -92,6 +94,21 @@ namespace CustomerSurvey.Domain.Entities
                 QuestionId = questionId,
                 QuestionType = QuestionType.StarRating,
                 StarRatingValue = value
+            };
+        }
+
+        public static SurveyAnswer CreateRating1To10(
+            Guid surveyResponseId,
+            Guid questionId,
+            int value)
+        {
+            return new SurveyAnswer
+            {
+                Id = Guid.NewGuid(),
+                SurveyResponseId = surveyResponseId,
+                QuestionId = questionId,
+                QuestionType = QuestionType.Rating1To10,
+                Rating1To10Value = value
             };
         }
 

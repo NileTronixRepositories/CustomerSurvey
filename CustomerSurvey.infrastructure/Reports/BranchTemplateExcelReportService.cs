@@ -1205,6 +1205,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
         {
             QuestionType.SingleChoice => answer.DisplaySelectedOption(isArabic),
             QuestionType.StarRating => answer.StarRatingValue,
+            QuestionType.Rating1To10 => answer.Rating1To10Value,
             QuestionType.Smiles => answer.SmileValue,
             QuestionType.Complain or QuestionType.FreeText => answer.TextAnswer,
             QuestionType.Voice => answer.VoiceFilePath ?? answer.VoiceFileName,
@@ -1275,6 +1276,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
         {
             QuestionType.SingleChoice => T(isArabic, "Single Choice", "اختيار واحد"),
             QuestionType.StarRating => T(isArabic, "Star Rating", "تقييم النجوم"),
+            QuestionType.Rating1To10 => T(isArabic, "Rating (1–10)", "تقييم (1–10)"),
             QuestionType.Smiles => T(isArabic, "Smiles", "الوجوه التعبيرية"),
             QuestionType.Complain => T(isArabic, "Complaint", "شكوى"),
             QuestionType.FreeText => T(isArabic, "Free Text", "نص حر"),

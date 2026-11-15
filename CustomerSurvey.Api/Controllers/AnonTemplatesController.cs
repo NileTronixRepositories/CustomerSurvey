@@ -59,6 +59,7 @@ namespace CustomerSurvey.Api.Controllers
                         AnonymousTemplateQuestionId = x.AnonymousTemplateQuestionId,
                         SelectedQuestionOptionId = x.SelectedQuestionOptionId,
                         StarRatingValue = x.StarRatingValue,
+                        Rating1To10Value = x.Rating1To10Value,
                         SmileValue = x.SmileValue,
                         TextAnswer = x.TextAnswer,
                         VoiceFileName = x.VoiceFileName,

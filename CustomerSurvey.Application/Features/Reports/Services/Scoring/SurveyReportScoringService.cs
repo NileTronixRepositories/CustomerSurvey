@@ -1,4 +1,5 @@
 ﻿using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
+using CustomerSurvey.Domain.Common;
 using CustomerSurvey.Domain.Enums;
 
 namespace CustomerSurvey.Application.Features.Reports.Services.Scoring;
@@ -335,6 +336,13 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
         if (questionType == QuestionType.StarRating && answer.StarRatingValue.HasValue)
         {
             scoreValue = answer.StarRatingValue.Value;
+            return true;
+        }
+
+        if (questionType == QuestionType.Rating1To10 &&
+            Rating1To10Scoring.Normalize(answer.Rating1To10Value) is int ratingScore)
+        {
+            scoreValue = ratingScore;
             return true;
         }
 

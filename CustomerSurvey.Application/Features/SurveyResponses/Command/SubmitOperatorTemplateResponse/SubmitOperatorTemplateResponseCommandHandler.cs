@@ -319,7 +319,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 actualScore: score.ActualScore,
                 maxScore: score.MaxScore,
                 scorePercentage: score.Percentage,
-                submissionStructure: submissionStructure);
+                submissionStructure: submissionStructure,
+                answerDurationSeconds: request.AnswerDurationSeconds);
 
             var customInputValues = BuildCustomInputValues(
                 surveyResponse.Id,
@@ -801,6 +802,11 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     answer.QuestionId,
                     answer.StarRatingValue!.Value),
 
+                QuestionType.Rating1To10 => SurveyAnswer.CreateRating1To10(
+                    surveyResponseId,
+                    answer.QuestionId,
+                    answer.Rating1To10Value!.Value),
+
                 QuestionType.Smiles => SurveyAnswer.CreateSmiles(
                     surveyResponseId,
                     answer.QuestionId,
@@ -879,6 +885,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 QuestionType.Voice => ValidateVoice(answer),
 
                 QuestionType.StarRating => ValidateStarRating(answer),
+
+                QuestionType.Rating1To10 => ValidateRating1To10(answer),
 
                 QuestionType.Complain => ValidateComplain(answer),
 
@@ -993,6 +1001,26 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             return null;
         }
 
+        private static Error? ValidateRating1To10(
+            SubmitOperatorTemplateAnswerCommandItem answer)
+        {
+            if (answer.Rating1To10Value is not (>= 1 and <= 10) ||
+                answer.SelectedQuestionOptionId.HasValue ||
+                answer.StarRatingValue.HasValue ||
+                answer.SmileValue.HasValue ||
+                !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
+                answer.VoiceFile is not null ||
+                answer.ImageFile is not null)
+            {
+                return new Error(
+                    Code: "SurveyResponses.Submit.Rating1To10ValueInvalid",
+                    Message: ErrorMessage.SubmitResponse_Rating1To10Value_Invalid,
+                    Type: ErrorType.Validation);
+            }
+
+            return null;
+        }
+
         private static Error? ValidateComplain(
             SubmitOperatorTemplateAnswerCommandItem answer)
         {
@@ -1042,6 +1070,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         {
             return answer.SelectedQuestionOptionId.HasValue &&
                    !answer.StarRatingValue.HasValue &&
+                   !answer.Rating1To10Value.HasValue &&
                    !answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is null &&
@@ -1053,6 +1082,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         {
             return !answer.SelectedQuestionOptionId.HasValue &&
                    !answer.StarRatingValue.HasValue &&
+                   !answer.Rating1To10Value.HasValue &&
                    !answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is not null &&
@@ -1064,6 +1094,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         {
             return !answer.SelectedQuestionOptionId.HasValue &&
                    answer.StarRatingValue.HasValue &&
+                   !answer.Rating1To10Value.HasValue &&
                    !answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is null &&
@@ -1075,6 +1106,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         {
             return !answer.SelectedQuestionOptionId.HasValue &&
                    !answer.StarRatingValue.HasValue &&
+                   !answer.Rating1To10Value.HasValue &&
                    !answer.SmileValue.HasValue &&
                    !string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is null &&
@@ -1086,6 +1118,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         {
             return !answer.SelectedQuestionOptionId.HasValue &&
                    !answer.StarRatingValue.HasValue &&
+                   !answer.Rating1To10Value.HasValue &&
                    answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is null &&
@@ -1097,6 +1130,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         {
             return !answer.SelectedQuestionOptionId.HasValue &&
                    !answer.StarRatingValue.HasValue &&
+                   !answer.Rating1To10Value.HasValue &&
                    !answer.SmileValue.HasValue &&
                    string.IsNullOrWhiteSpace(answer.TextAnswer) &&
                    answer.VoiceFile is null;
@@ -1195,6 +1229,11 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                             maxScore += 5;
                         }
 
+                        break;
+
+                    case QuestionType.Rating1To10:
+                        actualScore += Rating1To10Scoring.Normalize(answer.Rating1To10Value) ?? 0;
+                        maxScore += 5;
                         break;
 
                     case QuestionType.Smiles:

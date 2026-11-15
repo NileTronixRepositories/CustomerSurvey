@@ -26,6 +26,9 @@ namespace CustomerSurvey.infrastructure.Configurations
             builder.Property(x => x.SubmittedOnUtc)
                 .IsRequired();
 
+            builder.Property(x => x.AnswerDurationSeconds)
+                .IsRequired(false);
+
             builder.Property(x => x.CreatedByApplicationUserId)
                 .IsRequired();
             builder.Property(x => x.ActualScore)

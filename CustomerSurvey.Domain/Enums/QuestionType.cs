@@ -14,6 +14,7 @@ namespace CustomerSurvey.Domain.Enums
         Complain = 4,
         Smiles = 5,
         Image = 6,
-        FreeText = 7
+        FreeText = 7,
+        Rating1To10 = 8
     }
 }

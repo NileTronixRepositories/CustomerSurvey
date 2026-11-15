@@ -632,6 +632,7 @@ internal sealed class GetSurveyDashboardQueryHandler
             QuestionType = answer.QuestionType,
             SelectedQuestionOptionId = answer.SelectedQuestionOptionId,
             StarRatingValue = answer.StarRatingValue,
+            Rating1To10Value = answer.Rating1To10Value,
             SmileValue = answer.SmileValue,
             HasTextAnswer = !string.IsNullOrWhiteSpace(answer.TextAnswer),
             HasVoiceAnswer = !string.IsNullOrWhiteSpace(answer.VoiceFileName)

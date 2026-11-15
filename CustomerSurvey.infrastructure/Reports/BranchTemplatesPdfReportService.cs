@@ -5,6 +5,7 @@ using CustomerSurvey.Application.Abstraction.Reports;
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Common;
 using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Resources;
 using Microsoft.EntityFrameworkCore;
@@ -630,6 +631,7 @@ namespace CustomerSurvey.infrastructure.Reports
                             QuestionType = x.QuestionType,
                             SelectedQuestionOptionId = x.SelectedQuestionOptionId,
                             StarRatingValue = x.StarRatingValue,
+                            Rating1To10Value = x.Rating1To10Value,
                             SmileValue = x.SmileValue,
                             HasTextAnswer = !string.IsNullOrWhiteSpace(x.TextAnswer),
                             HasVoiceAnswer = !string.IsNullOrWhiteSpace(x.VoiceFileName),
@@ -648,6 +650,7 @@ namespace CustomerSurvey.infrastructure.Reports
                             QuestionType = x.QuestionType,
                             SelectedQuestionOptionId = x.SelectedQuestionOptionId,
                             StarRatingValue = x.StarRatingValue,
+                            Rating1To10Value = x.Rating1To10Value,
                             SmileValue = x.SmileValue,
                             HasTextAnswer = !string.IsNullOrWhiteSpace(x.TextAnswer),
                             HasVoiceAnswer = !string.IsNullOrWhiteSpace(x.VoiceFileName),
@@ -743,6 +746,7 @@ namespace CustomerSurvey.infrastructure.Reports
                             QuestionType = x.QuestionType,
                             SelectedQuestionOptionId = x.SelectedQuestionOptionId,
                             StarRatingValue = x.StarRatingValue,
+                            Rating1To10Value = x.Rating1To10Value,
                             SmileValue = x.SmileValue,
                             HasTextAnswer = !string.IsNullOrWhiteSpace(x.TextAnswer),
                             HasVoiceAnswer = !string.IsNullOrWhiteSpace(x.VoiceFileName),
@@ -761,6 +765,7 @@ namespace CustomerSurvey.infrastructure.Reports
                             QuestionType = x.QuestionType,
                             SelectedQuestionOptionId = x.SelectedQuestionOptionId,
                             StarRatingValue = x.StarRatingValue,
+                            Rating1To10Value = x.Rating1To10Value,
                             SmileValue = x.SmileValue,
                             HasTextAnswer = !string.IsNullOrWhiteSpace(x.TextAnswer),
                             HasVoiceAnswer = !string.IsNullOrWhiteSpace(x.VoiceFileName),
@@ -1463,6 +1468,7 @@ namespace CustomerSurvey.infrastructure.Reports
                     SelectedOptionTextAr = selectedOption?.TextAr,
                     SelectedOptionValue = selectedOption?.Value,
                     StarRatingValue = answer.StarRatingValue,
+                    Rating1To10Value = answer.Rating1To10Value,
                     SmileValue = answer.SmileValue,
                     TextAnswer = answer.TextAnswer,
                     VoiceFileName = answer.VoiceFileName,
@@ -1705,6 +1711,7 @@ namespace CustomerSurvey.infrastructure.Reports
             {
                 QuestionType.SingleChoice => selectedOption?.TextEn ?? string.Empty,
                 QuestionType.StarRating => answer.StarRatingValue?.ToString() ?? string.Empty,
+                QuestionType.Rating1To10 => answer.Rating1To10Value?.ToString() ?? string.Empty,
                 QuestionType.Smiles => answer.SmileValue?.ToString() ?? string.Empty,
                 QuestionType.Complain or QuestionType.FreeText => answer.TextAnswer ?? string.Empty,
                 QuestionType.Voice => BuildMediaPath(SurveyVoiceAnswersBasePath, answer.VoiceFileName) ?? string.Empty,
@@ -1717,6 +1724,11 @@ namespace CustomerSurvey.infrastructure.Reports
             QuestionType questionType,
             IReadOnlyDictionary<Guid, QuestionOptionFlatDto> activeOptionsById)
         {
+            if (questionType == QuestionType.Rating1To10)
+            {
+                return Rating1To10Scoring.Normalize(answer.Rating1To10Value);
+            }
+
             if (questionType == QuestionType.StarRating && answer.StarRatingValue.HasValue)
             {
                 return answer.StarRatingValue.Value;
@@ -2266,7 +2278,8 @@ namespace CustomerSurvey.infrastructure.Reports
         private static bool IsScoredQuestionType(QuestionType questionType)
             => questionType is QuestionType.SingleChoice
                 or QuestionType.StarRating
-                or QuestionType.Smiles;
+                or QuestionType.Smiles
+                or QuestionType.Rating1To10;
 
         private sealed record QuestionAnalyticsBuildResult(
             IReadOnlyCollection<BranchTemplatesPdfQuestionAnalytics> Questions,

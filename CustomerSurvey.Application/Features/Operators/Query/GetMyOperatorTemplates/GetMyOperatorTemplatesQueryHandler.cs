@@ -490,6 +490,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                                 SelectedOptionTextAr = answer.SelectedOptionTextAr,
 
                                 StarRatingValue = answer.StarRatingValue,
+                                Rating1To10Value = answer.Rating1To10Value,
                                 SmileValue = answer.SmileValue,
                                 TextAnswer = answer.TextAnswer,
 

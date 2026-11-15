@@ -34,6 +34,8 @@ namespace CustomerSurvey.Domain.Entities
             Snapshot = ResponseSnapshot.Create(document);
         }
 
+        public int? AnswerDurationSeconds { get; private set; }
+
         public DateTime SubmittedOnUtc { get; private set; }
 
         public int ActualScore { get; private set; }
@@ -60,7 +62,8 @@ namespace CustomerSurvey.Domain.Entities
             int actualScore,
             int maxScore,
             decimal scorePercentage,
-            SnapshotSubmissionStructure? submissionStructure = null)
+            SnapshotSubmissionStructure? submissionStructure = null,
+            int? answerDurationSeconds = null)
         {
             return new SurveyResponse
             {
@@ -68,6 +71,7 @@ namespace CustomerSurvey.Domain.Entities
                 OperatorId = operatorId,
                 TemplateId = templateId,
                 SubmittedOnUtc = DateTime.UtcNow,
+                AnswerDurationSeconds = answerDurationSeconds,
                 ActualScore = actualScore,
                 MaxScore = maxScore,
                 SubmissionStructure = submissionStructure,

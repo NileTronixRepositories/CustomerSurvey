@@ -2894,4 +2894,10 @@
   <data name="SubmitTemplateResponse_CustomInput_Date_Invalid" xml:space="preserve">
     <value>Enter a valid date in yyyy-MM-dd format using only the date value.</value>
   </data>
+  <data name="SubmitOperatorTemplateResponse_AnswerDurationSeconds_Invalid" xml:space="preserve">
+    <value>Answer duration must be zero or greater.</value>
+  </data>
+  <data name="SubmitResponse_Rating1To10Value_Invalid" xml:space="preserve">
+    <value>The answer must contain only an integer rating from 1 to 10.</value>
+  </data>
 </root>

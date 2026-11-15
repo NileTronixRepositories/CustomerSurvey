@@ -8225,5 +8225,23 @@ namespace CustomerSurvey.Domain.Resources {
                 return ResourceManager.GetString("SubmitTemplateResponse_CustomInput_Date_Invalid", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Answer duration must be zero or greater.
+        /// </summary>
+        public static string SubmitOperatorTemplateResponse_AnswerDurationSeconds_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitOperatorTemplateResponse_AnswerDurationSeconds_Invalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The answer must contain only an integer rating from 1 to 10.
+        /// </summary>
+        public static string SubmitResponse_Rating1To10Value_Invalid {
+            get {
+                return ResourceManager.GetString("SubmitResponse_Rating1To10Value_Invalid", resourceCulture);
+            }
+        }
     }
 }

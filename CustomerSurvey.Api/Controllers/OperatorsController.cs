@@ -200,6 +200,7 @@ namespace CustomerSurvey.Api.Controllers
             var command = new SubmitOperatorTemplateResponseCommand
             {
                 TemplateId = templateId,
+                AnswerDurationSeconds = request.AnswerDurationSeconds,
                 Flags = request.Flags.Select(x => new SubmitSurveyFlagCommandItem(x.Type, x.Brief)).ToArray(),
 
                 CustomInputs = (request.CustomInputs ?? new List<SubmitOperatorTemplateCustomInputRequest>())
@@ -216,6 +217,7 @@ namespace CustomerSurvey.Api.Controllers
                         QuestionId = x.QuestionId,
                         SelectedQuestionOptionId = x.SelectedQuestionOptionId,
                         StarRatingValue = x.StarRatingValue,
+                        Rating1To10Value = x.Rating1To10Value,
                         SmileValue = x.SmileValue,
                         TextAnswer = x.TextAnswer,
                         VoiceFile = x.VoiceFile,

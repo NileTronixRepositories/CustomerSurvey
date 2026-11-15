@@ -50,6 +50,9 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<int>("QuestionType")
                         .HasColumnType("int");
 
+                    b.Property<int?>("Rating1To10Value")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("SelectedQuestionOptionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -931,6 +934,9 @@ namespace CustomerSurvey.infrastructure.Migrations
                     b.Property<int>("QuestionType")
                         .HasColumnType("int");
 
+                    b.Property<int?>("Rating1To10Value")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("SelectedQuestionOptionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -970,6 +976,9 @@ namespace CustomerSurvey.infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("ActualScore")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AnswerDurationSeconds")
                         .HasColumnType("int");
 
                     b.Property<Guid>("CreatedByApplicationUserId")

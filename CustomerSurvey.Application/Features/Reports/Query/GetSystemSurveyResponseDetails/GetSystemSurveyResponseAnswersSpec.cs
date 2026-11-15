@@ -27,6 +27,10 @@ internal sealed class GetSystemSurveyResponseAnswersSpec
                 ? x.StarRatingValue
                 : null,
 
+            Rating1To10Value = x.QuestionType == QuestionType.Rating1To10
+                ? x.Rating1To10Value
+                : null,
+
             SmileValue = x.QuestionType == QuestionType.Smiles
                 ? x.SmileValue
                 : null,

@@ -1,3 +1,4 @@
+using CustomerSurvey.Domain.Common;
 using CustomerSurvey.Domain.Enums;
 namespace CustomerSurvey.Domain.Entities;
 
@@ -41,6 +42,7 @@ public static class SnapshotScoreSelection
         {
             QuestionType.SingleChoice => q.SelectedOptionValue,
             QuestionType.StarRating => q.StarRatingValue,
+            QuestionType.Rating1To10 => Rating1To10Scoring.Normalize(q.Rating1To10Value),
             QuestionType.Smiles => q.SmileValue,
             _ => null
         };
