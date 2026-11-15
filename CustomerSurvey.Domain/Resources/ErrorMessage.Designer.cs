@@ -7218,6 +7218,15 @@ namespace CustomerSurvey.Domain.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Cannot change the question type because active template conditions depend on its current answer type.
+        /// </summary>
+        public static string Question_TypeChange_IncompatibleWithConditions {
+            get {
+                return ResourceManager.GetString("Question_TypeChange_IncompatibleWithConditions", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Question type is invalid..
         /// </summary>
         public static string UpdateQuestion_Type_Invalid {

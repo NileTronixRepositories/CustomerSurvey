@@ -63,13 +63,23 @@ namespace CustomerSurvey.Domain.Entities
         {
             TextEn = textEn.Trim();
             TextAr = string.IsNullOrWhiteSpace(textAr) ? null : textAr.Trim();
-            Order = order;
+            ChangeOrder(order);
             Value = value;
+        }
+
+        public void ChangeOrder(int order)
+        {
+            Order = order;
         }
 
         public void Deactivate()
         {
             IsActive = false;
+        }
+
+        public void Restore()
+        {
+            IsActive = true;
         }
     }
 }

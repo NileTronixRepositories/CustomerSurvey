@@ -1077,6 +1077,9 @@
   <data name="UpdateQuestion_Options_Order_Duplicated" xml:space="preserve">
     <value>UpdateQuestion_Options_Order_Duplicated</value>
   </data>
+  <data name="Question_TypeChange_IncompatibleWithConditions" xml:space="preserve">
+    <value>Cannot change the question type because active template conditions depend on its current answer type.</value>
+  </data>
   <data name="UpdateQuestion_Type_CannotChangeAfterTemplateAssignment" xml:space="preserve">
     <value>Question type cannot be changed after being assigned to a template.</value>
   </data>

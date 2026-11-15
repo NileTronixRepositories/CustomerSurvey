@@ -18,7 +18,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
                 QuestionTextEn = string.Empty,
                 QuestionTextAr = null,
-                QuestionType = default,
+                QuestionType = x.QuestionType,
                 QuestionTypeName = string.Empty,
                 QuestionOrder = 0,
 
