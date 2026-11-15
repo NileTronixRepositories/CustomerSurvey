@@ -17,7 +17,6 @@ internal sealed class CopyAnonymousTemplateAsAuthorizedCommandHandler
     private readonly IWriteReadRepository<Template> _templateReadRepository;
     private readonly IWriteReadRepository<Branch> _branchReadRepository;
     private readonly IWriteReadRepository<AnonymousTemplateQuestionCondition> _conditionReadRepository;
-    private readonly IWriteRepository<AnonymousTemplate> _anonymousWriteRepository;
     private readonly IWriteRepository<Template> _templateWriteRepository;
     private readonly IWriteRepository<TemplateQuestion> _questionWriteRepository;
     private readonly IWriteRepository<TemplateQuestionCondition> _conditionWriteRepository;
@@ -30,7 +29,6 @@ internal sealed class CopyAnonymousTemplateAsAuthorizedCommandHandler
         IWriteReadRepository<Template> templateReadRepository,
         IWriteReadRepository<Branch> branchReadRepository,
         IWriteReadRepository<AnonymousTemplateQuestionCondition> conditionReadRepository,
-        IWriteRepository<AnonymousTemplate> anonymousWriteRepository,
         IWriteRepository<Template> templateWriteRepository,
         IWriteRepository<TemplateQuestion> questionWriteRepository,
         IWriteRepository<TemplateQuestionCondition> conditionWriteRepository,
@@ -42,7 +40,6 @@ internal sealed class CopyAnonymousTemplateAsAuthorizedCommandHandler
         _templateReadRepository = templateReadRepository;
         _branchReadRepository = branchReadRepository;
         _conditionReadRepository = conditionReadRepository;
-        _anonymousWriteRepository = anonymousWriteRepository;
         _templateWriteRepository = templateWriteRepository;
         _questionWriteRepository = questionWriteRepository;
         _conditionWriteRepository = conditionWriteRepository;
@@ -79,11 +76,6 @@ internal sealed class CopyAnonymousTemplateAsAuthorizedCommandHandler
             return Fail("AnonymousTemplates.CopyAsAuthorized.SourceInactive", "The source anonymous template is inactive.", ErrorType.Validation);
         }
 
-        if (source.SourceGlobalAnonymousTemplateId.HasValue)
-        {
-            return Fail("AnonymousTemplates.CopyAsAuthorized.ManagedCopyForbidden", "A managed global branch copy cannot be converted to an authorized template.", ErrorType.Validation);
-        }
-
         var nameConflict = await _templateReadRepository.AnyAsync(
             x => x.BranchId == source.BranchId && x.NameEn == source.NameEn,
             cancellationToken);
@@ -94,7 +86,6 @@ internal sealed class CopyAnonymousTemplateAsAuthorizedCommandHandler
         }
 
         var familyId = source.TemplateFamilyId ?? Guid.NewGuid();
-        source.SetTemplateFamily(familyId);
 
         var target = Template.Create(
             source.BranchId!.Value, source.NameEn, source.NameAr, source.Description,
@@ -149,7 +140,8 @@ internal sealed class CopyAnonymousTemplateAsAuthorizedCommandHandler
 
         try
         {
-            _anonymousWriteRepository.Update(source);
+            // The source is tracked, so only a changed family ID is persisted.
+            source.SetTemplateFamily(familyId);
             await _templateWriteRepository.AddAsync(target, cancellationToken);
             if (targetQuestions.Length > 0)
             {
