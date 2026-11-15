@@ -21,6 +21,8 @@ namespace CustomerSurvey.Domain.Entities
 
         public int? StarRatingValue { get; private set; }
 
+        public int? Rating1To10Value { get; private set; }
+
         public int? SmileValue { get; private set; }
 
         public string? TextAnswer { get; private set; }
@@ -98,6 +100,23 @@ namespace CustomerSurvey.Domain.Entities
                 QuestionId = questionId,
                 QuestionType = QuestionType.StarRating,
                 StarRatingValue = value
+            };
+        }
+
+        public static AnonymousSurveyAnswer CreateRating1To10(
+            Guid anonymousSurveyResponseId,
+            Guid anonymousTemplateQuestionId,
+            Guid questionId,
+            int value)
+        {
+            return new AnonymousSurveyAnswer
+            {
+                Id = Guid.NewGuid(),
+                AnonymousSurveyResponseId = anonymousSurveyResponseId,
+                AnonymousTemplateQuestionId = anonymousTemplateQuestionId,
+                QuestionId = questionId,
+                QuestionType = QuestionType.Rating1To10,
+                Rating1To10Value = value
             };
         }
 

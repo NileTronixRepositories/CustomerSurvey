@@ -133,6 +133,8 @@ public sealed record DepartmentDashboardOperatorPerformanceResponse
 
     public int VoiceAnswersCount { get; init; }
 
+    public decimal? AverageAnswerDurationSeconds { get; init; }
+
     public DateTime? LastResponseOnUtc { get; init; }
 
     public string RiskLevel { get; init; } = string.Empty;

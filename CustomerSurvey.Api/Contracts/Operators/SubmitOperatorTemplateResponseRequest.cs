@@ -5,6 +5,8 @@ namespace CustomerSurvey.Api.Contracts.Operators
 {
     public sealed class SubmitOperatorTemplateResponseRequest
     {
+        public int? AnswerDurationSeconds { get; init; }
+
         public List<SubmitOperatorTemplateCustomInputRequest> CustomInputs { get; init; } = new();
 
         public List<SubmitSurveyFlagRequest> Flags { get; init; } = new();
@@ -32,6 +34,8 @@ namespace CustomerSurvey.Api.Contracts.Operators
         public Guid? SelectedQuestionOptionId { get; init; }
 
         public int? StarRatingValue { get; init; }
+
+        public int? Rating1To10Value { get; init; }
 
         public int? SmileValue { get; init; }
 

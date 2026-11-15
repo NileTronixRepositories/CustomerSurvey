@@ -101,8 +101,9 @@ public sealed class BranchTemplatesPdfRazorReportTests
                         QuestionOrder = answerIndex,
                         QuestionTextEn = $"Question {answerIndex}: Please describe your experience with this service in detail",
                         QuestionTextAr = $"السؤال {answerIndex}: يرجى وصف تجربتك مع هذه الخدمة بالتفصيل",
-                        QuestionType = answerIndex == 2 ? QuestionType.FreeText : answerIndex % 6 == 0 ? QuestionType.Image : answerIndex % 5 == 0 ? QuestionType.Voice : answerIndex % 3 == 0 ? QuestionType.Complain : QuestionType.StarRating,
-                        StarRatingValue = answerIndex != 2 && answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0 ? 4 : null,
+                        QuestionType = answerIndex == 1 ? QuestionType.Rating1To10 : answerIndex == 2 ? QuestionType.FreeText : answerIndex % 6 == 0 ? QuestionType.Image : answerIndex % 5 == 0 ? QuestionType.Voice : answerIndex % 3 == 0 ? QuestionType.Complain : QuestionType.StarRating,
+                        Rating1To10Value = answerIndex == 1 ? 9 : null,
+                        StarRatingValue = answerIndex > 2 && answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0 ? 4 : null,
                         TextAnswer = answerIndex == 2
                             ? "Excellent free text feedback."
                             : answerIndex % 6 != 0 && answerIndex % 3 == 0
@@ -111,7 +112,7 @@ public sealed class BranchTemplatesPdfRazorReportTests
                         VoiceFilePath = answerIndex % 5 == 0 ? $"Media/SurveyVoiceAnswers/voice-{answerIndex}.mp3" : null,
                         ImageFilePath = answerIndex % 6 == 0 ? $"https://cdn.example.com/image-{answerIndex}.png" : null,
                         DisplayValue = answerIndex == 2 ? "Excellent free text feedback." : answerIndex % 6 != 0 && answerIndex % 3 == 0 ? "Long complaint" : "4",
-                        ScoreValue = answerIndex != 2 && answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0 ? 4m : null,
+                        ScoreValue = answerIndex == 1 ? 5m : answerIndex != 2 && answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0 ? 4m : null,
                         IncludedInScore = answerIndex != 2 && answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0,
                         ScoreInclusionReason = answerIndex != 2 && answerIndex % 6 != 0 && answerIndex % 5 != 0 && answerIndex % 3 != 0 ? "Root Question" : "Non-Scorable Question"
                     })
@@ -239,6 +240,7 @@ public sealed class BranchTemplatesPdfRazorReportTests
         Assert.Contains("Question 1: Please describe your experience", html);
         Assert.Contains("Excellent free text feedback.", html);
         Assert.Contains("Included In Score", html);
+        Assert.Matches(@"Rating \(1(?:–|&#x2013;)10\)</td>\s*<td>9</td>\s*<td>[^<]+</td>\s*<td>5</td>", html);
         Assert.Matches("class=\"badge score-good\">\\s*Scored", html);
         Assert.Matches("class=\"badge score-na\">\\s*Not Scored", html);
         Assert.Contains(responseId.ToString(), html, StringComparison.OrdinalIgnoreCase);

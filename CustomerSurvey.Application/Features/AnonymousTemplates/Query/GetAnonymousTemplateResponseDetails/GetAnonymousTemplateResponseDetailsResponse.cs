@@ -82,6 +82,8 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
         public int? StarRatingValue { get; init; }
 
+        public int? Rating1To10Value { get; init; }
+
         public int? SmileValue { get; init; }
 
         public string? TextAnswer { get; init; }

@@ -361,6 +361,7 @@ internal sealed class GetSurveyResponsesPaginationQueryHandler
                 QuestionType = x.QuestionType,
                 SelectedQuestionOptionId = x.SelectedQuestionOptionId,
                 StarRatingValue = x.StarRatingValue,
+                Rating1To10Value = x.Rating1To10Value,
                 SmileValue = x.SmileValue,
                 HasTextAnswer = !string.IsNullOrWhiteSpace(x.TextAnswer),
                 HasVoiceAnswer = !string.IsNullOrWhiteSpace(x.VoiceFileName)

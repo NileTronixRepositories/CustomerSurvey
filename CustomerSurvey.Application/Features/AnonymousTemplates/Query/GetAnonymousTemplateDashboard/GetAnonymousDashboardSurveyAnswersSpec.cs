@@ -36,6 +36,7 @@ internal sealed class GetAnonymousDashboardSurveyAnswersSpec
             QuestionTextAr = x.Question.TextAr,
             QuestionType = x.QuestionType,
             StarRatingValue = x.StarRatingValue,
+            Rating1To10Value = x.Rating1To10Value,
             SmileValue = x.SmileValue,
             TextAnswer = x.TextAnswer,
             VoiceFileName = x.VoiceFileName

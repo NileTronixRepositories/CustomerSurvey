@@ -13,9 +13,9 @@ internal static class ResponseSnapshotCapture
         var templateId = response?.TemplateId ?? anonymous!.AnonymousTemplateId;
         var answers = response is not null
             ? response.Answers.Select(a => new Answer(a.QuestionId, a.QuestionType, a.SelectedQuestionOptionId,
-                a.StarRatingValue, a.SmileValue, a.TextAnswer, a.VoiceFileName, a.ImageFileName)).ToArray()
+                a.StarRatingValue, a.Rating1To10Value, a.SmileValue, a.TextAnswer, a.VoiceFileName, a.ImageFileName)).ToArray()
             : anonymous!.Answers.Select(a => new Answer(a.QuestionId, a.QuestionType, a.SelectedQuestionOptionId,
-                a.StarRatingValue, a.SmileValue, a.TextAnswer, a.VoiceFileName, a.ImageFileName)).ToArray();
+                a.StarRatingValue, a.Rating1To10Value, a.SmileValue, a.TextAnswer, a.VoiceFileName, a.ImageFileName)).ToArray();
 
         var questions = kind == 1
             ? await db.Set<TemplateQuestion>().AsNoTracking().Where(x => x.TemplateId == templateId)
@@ -67,7 +67,7 @@ internal static class ResponseSnapshotCapture
                 IsRequired = state?.IsRequired ?? true, HasAnswer = answer is not null,
                 SelectedQuestionOptionId = answer?.OptionId, SelectedOptionValue = selected?.Value,
                 SelectedOptionTextEn = selected?.TextEn, SelectedOptionTextAr = selected?.TextAr,
-                StarRatingValue = answer?.Star, SmileValue = answer?.Smile, TextAnswer = answer?.Text,
+                StarRatingValue = answer?.Star, Rating1To10Value = answer?.Rating1To10, SmileValue = answer?.Smile, TextAnswer = answer?.Text,
                 VoiceFileName = answer?.Voice, ImageFileName = answer?.Image,
                 Options = options.Where(x => x.QuestionId == questionId && (x.IsActive || x.Id == answer?.OptionId))
                     .OrderBy(x => x.Order).Select(x => new SnapshotOption(x.Id, x.TextEn, x.TextAr, x.Value, x.Order, x.IsActive)).ToArray()
@@ -105,5 +105,5 @@ internal static class ResponseSnapshotCapture
 
     private sealed record Definition(Guid Id, Guid QuestionId, int Order, Question Question);
     private sealed record Answer(Guid QuestionId, CustomerSurvey.Domain.Enums.QuestionType Type,
-        Guid? OptionId, int? Star, int? Smile, string? Text, string? Voice, string? Image);
+        Guid? OptionId, int? Star, int? Rating1To10, int? Smile, string? Text, string? Voice, string? Image);
 }

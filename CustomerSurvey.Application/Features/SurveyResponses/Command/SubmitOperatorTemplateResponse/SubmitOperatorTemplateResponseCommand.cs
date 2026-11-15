@@ -14,6 +14,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
     {
         public Guid TemplateId { get; init; }
 
+        public int? AnswerDurationSeconds { get; init; }
+
         public IReadOnlyCollection<SubmitSurveyFlagCommandItem> Flags { get; init; } = [];
 
         public IReadOnlyCollection<SubmitOperatorTemplateCustomInputCommandItem> CustomInputs { get; init; }
@@ -39,6 +41,8 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         public Guid? SelectedQuestionOptionId { get; init; }
 
         public int? StarRatingValue { get; init; }
+
+        public int? Rating1To10Value { get; init; }
 
         public int? SmileValue { get; init; }
 

@@ -264,6 +264,7 @@ internal sealed class GetDepartmentOperatorSurveyResponseDetailsQueryHandler
             SelectedOptionValue = selectedOption?.Value,
 
             StarRatingValue = answer.StarRatingValue,
+            Rating1To10Value = answer.Rating1To10Value,
             SmileValue = answer.SmileValue,
             TextAnswer = answer.TextAnswer,
             VoiceFileName = answer.VoiceFileName,
@@ -289,6 +290,7 @@ internal sealed class GetDepartmentOperatorSurveyResponseDetailsQueryHandler
         {
             QuestionType.SingleChoice => selectedOption?.TextEn ?? string.Empty,
             QuestionType.StarRating => answer.StarRatingValue?.ToString() ?? string.Empty,
+            QuestionType.Rating1To10 => answer.Rating1To10Value?.ToString() ?? string.Empty,
             QuestionType.Smiles => answer.SmileValue?.ToString() ?? string.Empty,
             QuestionType.Complain or QuestionType.FreeText => answer.TextAnswer ?? string.Empty,
             QuestionType.Voice => voiceFileUrl ?? answer.VoiceFileName ?? string.Empty,

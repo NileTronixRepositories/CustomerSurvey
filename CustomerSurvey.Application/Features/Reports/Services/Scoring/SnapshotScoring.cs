@@ -76,7 +76,7 @@ public static class SnapshotScoring
                 HistoricalQuestion = q, TemplateQuestionId = q.TemplateQuestionId,
                 QuestionType = q.Type, QuestionTextEn = q.TextEn, QuestionTextAr = q.TextAr,
                 SelectedQuestionOptionId = q.SelectedQuestionOptionId, StarRatingValue = q.StarRatingValue,
-                SmileValue = q.SmileValue, TextAnswer = q.TextAnswer, VoiceFileName = q.VoiceFileName,
+                Rating1To10Value = q.Rating1To10Value, SmileValue = q.SmileValue, TextAnswer = q.TextAnswer, VoiceFileName = q.VoiceFileName,
                 ImageFileName = q.ImageFileName
             };
         }).ToArray();

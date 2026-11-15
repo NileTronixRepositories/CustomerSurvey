@@ -495,6 +495,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
                     ? 0m
                     : Round(scored.Average(x => x.ScorePercentage));
 
+                var averageDuration = operatorResponses.Average(x => (decimal?)x.AnswerDurationSeconds);
                 var firstResponse = operatorResponses.FirstOrDefault();
 
                 complaintsCountByOperatorId.TryGetValue(operatorId, out var complaintsCount);
@@ -509,6 +510,7 @@ internal sealed class GetDepartmentDashboardQueryHandler
                     ResponsesCount = operatorResponses.Length,
                     ScoredResponsesCount = scored.Length,
                     AverageScorePercentage = average,
+                    AverageAnswerDurationSeconds = averageDuration.HasValue ? Round(averageDuration.Value) : null,
                     ComplaintsCount = complaintsCount + operatorResponses.Sum(response => response.ComplaintFlagsCount),
                     SuggestionsCount = operatorResponses.Sum(response => response.SuggestionsCount),
                     CommentsCount = operatorResponses.Sum(response => response.CommentsCount),

@@ -48,6 +48,7 @@ internal sealed class GetDepartmentDashboardSurveyResponsesSpec
             OperatorNameEn = x.Operator.ApplicationUser.NameEn,
             OperatorNameAr = x.Operator.ApplicationUser.NameAr,
             SubmittedOnUtc = x.SubmittedOnUtc,
+            AnswerDurationSeconds = x.AnswerDurationSeconds,
             VisitDate = dateBasis == ResponseDateBasis.VisitTime
                 ? x.CustomInputValues
                     .Where(value => value.TemplateCustomInput.SystemFieldKey == TemplateCustomInputSystemField.VisitTime)

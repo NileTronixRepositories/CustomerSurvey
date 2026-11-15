@@ -145,6 +145,7 @@ internal sealed class GetSurveyDashboardQuestionGroupsQueryHandler
             QuestionType = x.QuestionType,
             SelectedQuestionOptionId = x.SelectedQuestionOptionId,
             StarRatingValue = x.StarRatingValue,
+            Rating1To10Value = x.Rating1To10Value,
             SmileValue = x.SmileValue,
             HasTextAnswer = !string.IsNullOrWhiteSpace(x.TextAnswer),
             HasVoiceAnswer = !string.IsNullOrWhiteSpace(x.VoiceFileName)
@@ -239,5 +240,5 @@ internal sealed class GetSurveyDashboardQuestionGroupsQueryHandler
         => source == SurveyDashboardSource.Anonymous ? ReportTemplateKind.Anonymous : ReportTemplateKind.Normal;
 
     private static bool IsScorable(QuestionType type)
-        => type is QuestionType.SingleChoice or QuestionType.StarRating or QuestionType.Smiles;
+        => type is QuestionType.SingleChoice or QuestionType.StarRating or QuestionType.Smiles or QuestionType.Rating1To10;
 }

@@ -68,6 +68,7 @@
         {
             "SingleChoice" => T("Single Choice", "اختيار واحد"),
             "StarRating" => T("Star Rating", "تقييم نجوم"),
+            "Rating1To10" => T("Rating (1–10)", "تقييم (1–10)"),
             "Smiles" => T("Smiles", "وجوه تعبيرية"),
             "Complain" => T("Complaint", "شكوى"),
             "FreeText" => T("Free Text", "نص حر"),
@@ -103,6 +104,7 @@
     {
         QuestionType.SingleChoice => answer.DisplaySelectedOption(ar),
         QuestionType.StarRating => answer.StarRatingValue?.ToString() ?? answer.DisplayValue,
+        QuestionType.Rating1To10 => answer.Rating1To10Value?.ToString() ?? answer.DisplayValue,
         QuestionType.Smiles => answer.SmileValue?.ToString() ?? answer.DisplayValue,
         QuestionType.Complain => answer.TextAnswer ?? answer.DisplayValue,
         QuestionType.FreeText => answer.TextAnswer ?? answer.DisplayValue,
@@ -1130,7 +1132,7 @@
                         <div>يتم حساب التقييم من أعمق سؤال قابل للتقييم داخل مسار الإجابة الشرطي.</div>
                         <div>لو أعمق سؤال غير قابل للتقييم، يتم الرجوع لآخر سؤال قابل للتقييم في نفس المسار.</div>
                     }
-                    <div>أسئلة الاختيار الواحد والنجوم والوجوه التعبيرية يتم تقييمها من 1 إلى 5.</div>
+                    <div>أسئلة الاختيار الواحد والنجوم والوجوه التعبيرية يتم تقييمها من 1 إلى 5. تُحوَّل التقييمات من 1 إلى 10 إلى درجات من 1 إلى 5.</div>
                     <div>أسئلة الشكوى والنص الحر والصوت والصورة تظهر للتحليل فقط ولا تدخل مباشرة في حساب التقييم.</div>
                 }
                 else
@@ -1149,7 +1151,7 @@
                         <div>Score is calculated from the deepest scorable question in the answered conditional path.</div>
                         <div>If the deepest question is not scorable, the report uses the last scorable question in the same path.</div>
                     }
-                    <div>SingleChoice, StarRating, and Smiles are scored from 1 to 5.</div>
+                    <div>SingleChoice, StarRating, and Smiles are scored from 1 to 5. Ratings from 1 to 10 are converted to scores from 1 to 5.</div>
                     <div>Complaint, FreeText, Voice, and Image questions are displayed for analysis but are not scored directly.</div>
                 }
             </div>
@@ -1427,7 +1429,7 @@
                                 <th>@T("Parent Trigger", "شرط الظهور")</th>
                                 <th>@T("Type", "النوع")</th>
                                 @* <th>@T("Answers", "الإجابات")</th> *@
-                                <th>@T("Avg Value", "متوسط القيمة")</th>
+                                <th>@T("Avg Score / 5", "متوسط التقييم / 5")</th>
                                 <th>@T("Included In Score", "يدخل في التقييم")</th>
                             </tr>
                         </thead>

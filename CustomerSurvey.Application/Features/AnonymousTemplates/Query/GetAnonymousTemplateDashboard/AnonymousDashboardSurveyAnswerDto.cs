@@ -28,6 +28,8 @@ internal sealed record AnonymousDashboardSurveyAnswerDto
 
     public int? StarRatingValue { get; init; }
 
+    public int? Rating1To10Value { get; init; }
+
     public int? SmileValue { get; init; }
 
     public string? TextAnswer { get; init; }

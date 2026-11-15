@@ -1,5 +1,6 @@
 using CustomerSurvey.Application.Features.Reports.Query.GetBranchTemplatesPdfReport;
 using CustomerSurvey.Application.Features.Reports.Services.Scoring;
+using CustomerSurvey.Domain.Entities;
 using CustomerSurvey.Domain.Enums;
 using Xunit;
 
@@ -259,6 +260,38 @@ public sealed class SurveyReportScoringServiceTests
         Assert.Equal(2, tokens.Count);
         Assert.Equal(5m, Assert.Single(tokens, x => x.TemplateKind == ReportTemplateKind.Normal).ScoreValue);
         Assert.Equal(1m, Assert.Single(tokens, x => x.TemplateKind == ReportTemplateKind.Anonymous).ScoreValue);
+    }
+
+    [Theory]
+    [InlineData(1, 1)]
+    [InlineData(2, 1)]
+    [InlineData(3, 2)]
+    [InlineData(4, 2)]
+    [InlineData(5, 3)]
+    [InlineData(6, 3)]
+    [InlineData(7, 4)]
+    [InlineData(8, 4)]
+    [InlineData(9, 5)]
+    [InlineData(10, 5)]
+    public void Rating_normalizes_each_value_in_snapshots_and_flat_report_scores(int rating, int expectedScore)
+    {
+        var response = Response(Guid.NewGuid(), Guid.NewGuid());
+        var question = Question(response.TemplateId, Guid.NewGuid(), Guid.NewGuid(), 1, QuestionType.Rating1To10);
+        var answer = Answer(response.ResponseId, response.TemplateId, question.QuestionId, QuestionType.Rating1To10)
+            with { Rating1To10Value = rating };
+
+        Assert.Equal(expectedScore, SnapshotScoring.Value(new SnapshotQuestion
+        {
+            Type = QuestionType.Rating1To10,
+            Rating1To10Value = rating
+        }));
+
+        foreach (var mode in Enum.GetValues<ScoreCalculationMode>())
+        {
+            var score = Assert.Single(_sut.CalculateResponseScores([response], [answer], [question], [], [], mode));
+            Assert.Equal(expectedScore, score.AverageScoreValue);
+            Assert.Equal(expectedScore * 20, score.ScorePercentage);
+        }
     }
 
     private static ResponseFlatDto Response(Guid responseId, Guid templateId)

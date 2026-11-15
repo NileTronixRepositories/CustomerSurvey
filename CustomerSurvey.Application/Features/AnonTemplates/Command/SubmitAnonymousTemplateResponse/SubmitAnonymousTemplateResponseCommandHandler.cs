@@ -595,6 +595,9 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                     QuestionType.StarRating =>
                         ValidateStarRatingAnswer(answer),
 
+                    QuestionType.Rating1To10 =>
+                        ValidateRating1To10Answer(answer),
+
                     QuestionType.Smiles =>
                         ValidateSmilesAnswer(answer),
 
@@ -634,6 +637,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 answer.SelectedQuestionOptionId.Value == Guid.Empty ||
                 answer.StarRatingValue.HasValue ||
                 answer.SmileValue.HasValue ||
+                answer.Rating1To10Value.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
                 !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
                 answer.ImageFile is not null)
@@ -679,6 +683,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
             if (answer.StarRatingValue is not (>= 1 and <= 5) ||
                 answer.SelectedQuestionOptionId.HasValue ||
                 answer.SmileValue.HasValue ||
+                answer.Rating1To10Value.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
                 !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
                 answer.ImageFile is not null)
@@ -692,11 +697,32 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
             return ValidationResult.Ok();
         }
 
+        private static ValidationResult ValidateRating1To10Answer(
+            SubmitAnonymousTemplateAnswerCommandItem answer)
+        {
+            if (answer.Rating1To10Value is not (>= 1 and <= 10) ||
+                answer.SelectedQuestionOptionId.HasValue ||
+                answer.StarRatingValue.HasValue ||
+                answer.SmileValue.HasValue ||
+                !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
+                !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
+                answer.ImageFile is not null)
+            {
+                return ValidationResult.Fail(new Error(
+                    Code: "AnonTemplates.Submit.Rating1To10AnswerInvalid",
+                    Message: ErrorMessage.SubmitResponse_Rating1To10Value_Invalid,
+                    Type: ErrorType.Validation));
+            }
+
+            return ValidationResult.Ok();
+        }
+
         private static ValidationResult ValidateSmilesAnswer(
             SubmitAnonymousTemplateAnswerCommandItem answer)
         {
             if (answer.SmileValue is not (>= 1 and <= 5) ||
                 answer.SelectedQuestionOptionId.HasValue ||
+                answer.Rating1To10Value.HasValue ||
                 answer.StarRatingValue.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
                 !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
@@ -718,6 +744,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 answer.SelectedQuestionOptionId.HasValue ||
                 answer.StarRatingValue.HasValue ||
                 answer.SmileValue.HasValue ||
+                answer.Rating1To10Value.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
                 answer.ImageFile is not null)
             {
@@ -737,6 +764,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 answer.SelectedQuestionOptionId.HasValue ||
                 answer.StarRatingValue.HasValue ||
                 answer.SmileValue.HasValue ||
+                answer.Rating1To10Value.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
                 answer.ImageFile is not null)
             {
@@ -756,6 +784,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 answer.SelectedQuestionOptionId.HasValue ||
                 answer.StarRatingValue.HasValue ||
                 answer.SmileValue.HasValue ||
+                answer.Rating1To10Value.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
                 answer.ImageFile is not null)
             {
@@ -774,6 +803,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
             if (answer.SelectedQuestionOptionId.HasValue ||
                 answer.StarRatingValue.HasValue ||
                 answer.SmileValue.HasValue ||
+                answer.Rating1To10Value.HasValue ||
                 !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
                 !string.IsNullOrWhiteSpace(answer.VoiceFileName))
             {
@@ -944,6 +974,13 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                             break;
                         }
 
+                    case QuestionType.Rating1To10:
+                        {
+                            actualScore += Rating1To10Scoring.Normalize(answer.Rating1To10Value) ?? 0;
+                            maxScore += 5;
+                            break;
+                        }
+
                     case QuestionType.Smiles:
                         {
                             actualScore += answer.SmileValue ?? 0;
@@ -1047,6 +1084,13 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                             anonymousTemplateQuestionId: question.AnonymousTemplateQuestionId,
                             questionId: question.QuestionId,
                             value: submittedAnswer.StarRatingValue!.Value),
+
+                    QuestionType.Rating1To10 =>
+                        AnonymousSurveyAnswer.CreateRating1To10(
+                            anonymousSurveyResponseId: response.Id,
+                            anonymousTemplateQuestionId: question.AnonymousTemplateQuestionId,
+                            questionId: question.QuestionId,
+                            value: submittedAnswer.Rating1To10Value!.Value),
 
                     QuestionType.Smiles =>
                         AnonymousSurveyAnswer.CreateSmiles(

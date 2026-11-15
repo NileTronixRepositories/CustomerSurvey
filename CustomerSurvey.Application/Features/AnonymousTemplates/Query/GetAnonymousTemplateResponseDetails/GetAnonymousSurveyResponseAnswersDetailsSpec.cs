@@ -29,6 +29,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                 SelectedOptionValue = null,
 
                 StarRatingValue = x.StarRatingValue,
+                Rating1To10Value = x.Rating1To10Value,
                 SmileValue = x.SmileValue,
                 TextAnswer = x.TextAnswer,
                 VoiceFileName = x.VoiceFileName,

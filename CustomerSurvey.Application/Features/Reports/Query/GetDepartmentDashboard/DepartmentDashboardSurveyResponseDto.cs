@@ -27,6 +27,8 @@ internal sealed record DepartmentDashboardSurveyResponseDto : CustomerSurvey.App
 
     public string? OperatorNameAr { get; init; }
 
+    public int? AnswerDurationSeconds { get; init; }
+
     public DateTime SubmittedOnUtc { get; init; }
 
     public DateOnly? VisitDate { get; init; }

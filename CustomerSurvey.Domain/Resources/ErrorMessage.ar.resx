@@ -2894,4 +2894,10 @@
   <data name="SubmitTemplateResponse_CustomInput_Date_Invalid" xml:space="preserve">
     <value>أدخل تاريخًا صالحًا بالصيغة yyyy-MM-dd في حقل التاريخ فقط.</value>
   </data>
+  <data name="SubmitOperatorTemplateResponse_AnswerDurationSeconds_Invalid" xml:space="preserve">
+    <value>يجب أن تكون مدة الإجابة صفرًا أو أكثر.</value>
+  </data>
+  <data name="SubmitResponse_Rating1To10Value_Invalid" xml:space="preserve">
+    <value>يجب أن تحتوي الإجابة فقط على تقييم من 1 إلى 10 كعدد صحيح.</value>
+  </data>
 </root>
