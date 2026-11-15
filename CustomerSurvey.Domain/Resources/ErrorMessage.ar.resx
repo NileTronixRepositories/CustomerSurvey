@@ -1077,6 +1077,9 @@
   <data name="UpdateQuestion_Options_Order_Duplicated" xml:space="preserve">
     <value>لا يمكن تكرار ترتيب الاختيار داخل نفس السؤال.</value>
   </data>
+  <data name="Question_TypeChange_IncompatibleWithConditions" xml:space="preserve">
+    <value>لا يمكن تغيير نوع السؤال لأن شروطًا نشطة في القوالب تعتمد على نوع إجابته الحالي.</value>
+  </data>
   <data name="UpdateQuestion_Type_CannotChangeAfterTemplateAssignment" xml:space="preserve">
     <value>لا يمكن تغيير نوع السؤال بعد ربطه بقالب.</value>
   </data>

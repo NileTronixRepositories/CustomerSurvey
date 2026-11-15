@@ -199,12 +199,13 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                     }
 
                     var saved = historicalSurvey?.Questions.FirstOrDefault(x => x.QuestionId == answer.QuestionId);
+                    var questionType = saved?.Type ?? answer.QuestionType;
                     return answer with
                     {
                         QuestionTextEn = saved?.TextEn ?? question?.QuestionTextEn ?? string.Empty,
                         QuestionTextAr = saved is not null ? saved.TextAr : question?.QuestionTextAr,
-                        QuestionType = saved?.Type ?? question?.QuestionType ?? answer.QuestionType,
-                        QuestionTypeName = (saved?.Type ?? question?.QuestionType ?? answer.QuestionType).ToString(),
+                        QuestionType = questionType,
+                        QuestionTypeName = questionType.ToString(),
                         QuestionOrder = saved?.Order ?? question?.QuestionOrder ?? 0,
 
                         SelectedOptionTextEn = saved?.SelectedOptionTextEn ?? selectedOption?.TextEn,

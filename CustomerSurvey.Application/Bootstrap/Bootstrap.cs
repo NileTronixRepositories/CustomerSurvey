@@ -1,6 +1,7 @@
 using BuildingBlock.Application.Abstraction.Caching;
 using BuildingBlock.Application.Behaviors;
 using CustomerSurvey.Application.Abstraction.Security;
+using CustomerSurvey.Application.Features.Questions.Shared;
 using CustomerSurvey.Application.Features.Reports.Services.Scoring;
 using CustomerSurvey.Application.Features.Reports.Query.GetSurveyDashboard;
 using CustomerSurvey.Application.Shared.BranchScope;
@@ -55,6 +56,7 @@ namespace CustomerSurvey.Application.Bootstrap
             services.AddScoped<CustomerSurvey.Application.Shared.FlagPermissions>();
             services.AddScoped<CustomerSurvey.Application.Features.FlagOfficers.FlagOfficerAdministrationScopeResolver>();
             services.AddScoped<ICurrentBranchScopeResolver, CurrentBranchScopeResolver>();
+            services.AddScoped<QuestionDefinitionUpdater>();
             services.AddScoped<ISurveyReportScoringService, SurveyReportScoringService>();
             services.AddScoped<ISurveyDashboardRequestResolver, SurveyDashboardRequestResolver>();
             services.AddMediatorInjection();
