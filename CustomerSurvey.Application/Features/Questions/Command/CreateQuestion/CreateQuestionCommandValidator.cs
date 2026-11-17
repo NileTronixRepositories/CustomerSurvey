@@ -1,4 +1,5 @@
-﻿using CustomerSurvey.Domain.Enums;
+﻿using CustomerSurvey.Application.Features.Questions.Shared;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Resources;
 using FluentValidation;
 
@@ -27,6 +28,10 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
             RuleFor(x => x.Type)
                 .IsInEnum()
                 .WithMessage(ErrorMessage.CreateQuestion_Type_Invalid);
+
+            RuleFor(x => x.Options)
+                .ValidateDropdownOptions(option => (option.TextEn, option.TextAr, option.Order, option.Value))
+                .When(x => x.Type == QuestionType.Dropdown);
 
             RuleFor(x => x.Options)
                 .Must((command, options) => IsValidOptionsShape(command.Type, options))
@@ -80,9 +85,12 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
         {
             var count = options?.Count ?? 0;
 
-            return type == QuestionType.SingleChoice
-                ? count >= 2
-                : count == 0;
+            return type switch
+            {
+                QuestionType.SingleChoice => count >= 2,
+                QuestionType.Dropdown => true,
+                _ => count == 0
+            };
         }
 
         private static bool HaveUniqueTextEn(

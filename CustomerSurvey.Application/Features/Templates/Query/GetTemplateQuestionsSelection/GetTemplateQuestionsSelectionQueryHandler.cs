@@ -188,7 +188,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateQuestio
                                     ? selectedTemplateQuestion!.Order
                                     : null,
 
-                                Options = question.Type == QuestionType.SingleChoice &&
+                                Options = question.Type.HasOptions() &&
                                           optionsByQuestionId.TryGetValue(
                                               question.QuestionId,
                                               out var optionResponses)

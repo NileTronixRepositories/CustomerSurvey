@@ -1466,7 +1466,7 @@ namespace CustomerSurvey.infrastructure.Reports
                     SelectedQuestionOptionId = answer.SelectedQuestionOptionId,
                     SelectedOptionTextEn = selectedOption?.TextEn,
                     SelectedOptionTextAr = selectedOption?.TextAr,
-                    SelectedOptionValue = selectedOption?.Value,
+                    SelectedOptionValue = questionType == QuestionType.Dropdown ? null : selectedOption?.Value,
                     StarRatingValue = answer.StarRatingValue,
                     Rating1To10Value = answer.Rating1To10Value,
                     SmileValue = answer.SmileValue,
@@ -1709,7 +1709,7 @@ namespace CustomerSurvey.infrastructure.Reports
             QuestionOptionFlatDto? selectedOption)
             => answer.QuestionType switch
             {
-                QuestionType.SingleChoice => selectedOption?.TextEn ?? string.Empty,
+                QuestionType.SingleChoice or QuestionType.Dropdown => selectedOption?.TextEn ?? string.Empty,
                 QuestionType.StarRating => answer.StarRatingValue?.ToString() ?? string.Empty,
                 QuestionType.Rating1To10 => answer.Rating1To10Value?.ToString() ?? string.Empty,
                 QuestionType.Smiles => answer.SmileValue?.ToString() ?? string.Empty,

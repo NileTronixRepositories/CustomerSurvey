@@ -92,7 +92,7 @@ namespace CustomerSurvey.Application.Features.GlobalQuestions.Command.UpdateGlob
                     Type: ErrorType.NotFound));
             }
 
-            var options = request.Type == QuestionType.SingleChoice
+            var options = request.Type.HasOptions()
                 ? request.Options.Select(x => new QuestionOptionCommandItem
                 {
                     OptionId = x.OptionId,

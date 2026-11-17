@@ -19,8 +19,7 @@ namespace CustomerSurvey.Domain.Entities
 
         public int Order { get; private set; }
 
-        // New: used for SingleChoice scoring only.
-        // Allowed business range: 1 to 5.
+        // SingleChoice scores range from 1 to 5. Dropdown options use a neutral value of 0.
         public int Value { get; private set; }
 
         public bool IsActive { get; private set; } = true;

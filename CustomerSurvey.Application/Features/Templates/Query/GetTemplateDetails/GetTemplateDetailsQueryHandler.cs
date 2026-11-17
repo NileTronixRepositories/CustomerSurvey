@@ -113,22 +113,22 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                 templateQuestions,
                 questionConditions);
 
-            var singleChoiceQuestionIds = templateQuestions
-                .Where(x => x.Type == QuestionType.SingleChoice)
+            var optionQuestionIds = templateQuestions
+                .Where(x => x.Type.HasOptions())
                 .Select(x => x.QuestionId)
                 .Distinct()
                 .ToArray();
 
             IReadOnlyCollection<QuestionOptionResponse> questionOptions;
 
-            if (singleChoiceQuestionIds.Length == 0)
+            if (optionQuestionIds.Length == 0)
             {
                 questionOptions = Array.Empty<QuestionOptionResponse>();
             }
             else
             {
                 questionOptions = await _questionOptionReadRepository.ListAsync(
-                    new GetQuestionOptionsByQuestionIdsSpec(singleChoiceQuestionIds),
+                    new GetQuestionOptionsByQuestionIdsSpec(optionQuestionIds),
                     cancellationToken);
             }
 
@@ -221,7 +221,7 @@ namespace CustomerSurvey.Application.Features.Templates.Query.GetTemplateDetails
                         GroupNameEn = x.GroupNameEn,
                         GroupNameAr = x.GroupNameAr,
 
-                        Options = x.Type == QuestionType.SingleChoice
+                        Options = x.Type.HasOptions()
                                   && optionsByQuestionId.TryGetValue(x.QuestionId, out var options)
                             ? options
                             : Array.Empty<TemplateDetailsQuestionOptionResponse>()

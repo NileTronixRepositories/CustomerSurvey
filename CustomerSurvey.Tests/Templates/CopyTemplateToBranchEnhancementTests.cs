@@ -86,17 +86,19 @@ public sealed class CopyTemplateToBranchEnhancementTests
         Assert.Equal((date.LabelEn, date.Type, date.IsRequired), (ordinaryDate.LabelEn, ordinaryDate.Type, ordinaryDate.IsRequired));
     }
 
-    [Fact]
-    public async Task Handle_LazilyClonesOnlyUsedBranchQuestionAndItsOptions()
+    [Theory]
+    [InlineData(QuestionType.SingleChoice, 5, 1)]
+    [InlineData(QuestionType.Dropdown, 0, 0)]
+    public async Task Handle_LazilyClonesOnlyUsedBranchQuestionAndItsOptions(QuestionType type, int firstValue, int secondValue)
     {
         var context = CreateContext();
         var group = QuestionGroup.Create(
             context.SourceBranch.Id, "Service", "الخدمة", context.UserId);
-        var q1 = CreateBranchQuestion(context, group, "Q1", QuestionType.SingleChoice);
+        var q1 = CreateBranchQuestion(context, group, "Q1", type);
         var q2 = CreateBranchQuestion(context, group, "Q2", QuestionType.Complain);
         var q3 = CreateBranchQuestion(context, group, "Q3", QuestionType.Voice);
-        var o1 = AddOption(q1, "Good", "جيد", 1, 5, context.UserId);
-        var o2 = AddOption(q1, "Bad", "سيئ", 2, 1, context.UserId);
+        var o1 = AddOption(q1, "First", "الأول", 1, firstValue, context.UserId);
+        var o2 = AddOption(q1, "Second", "الثاني", 2, secondValue, context.UserId);
         var source = CreateTemplate(context, "Lazy source");
         AddTemplateQuestion(source, q1, 1, context.UserId);
         context.Templates.Add(source);
@@ -108,6 +110,7 @@ public sealed class CopyTemplateToBranchEnhancementTests
         Assert.Equal(group.Id, copiedGroup.OriginQuestionGroupId);
         var copiedQuestion = Assert.Single(context.QuestionWrites.AddedEntities);
         Assert.Equal(q1.Id, copiedQuestion.OriginQuestionId);
+        Assert.Equal(type, copiedQuestion.Type);
         Assert.DoesNotContain(context.QuestionWrites.AddedEntities, x =>
             x.OriginQuestionId == q2.Id || x.OriginQuestionId == q3.Id);
 

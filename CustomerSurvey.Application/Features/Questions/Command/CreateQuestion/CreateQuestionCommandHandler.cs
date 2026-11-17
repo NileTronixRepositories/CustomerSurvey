@@ -87,6 +87,14 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
                     Type: ErrorType.NotFound));
             }
 
+            if (request.Type == QuestionType.Dropdown && request.Options.Any(x => x.Value != 0))
+            {
+                return Result<CreateQuestionResponse>.Fail(new Error(
+                    Code: "Questions.Create.DropdownOptionValueInvalid",
+                    Message: ErrorMessage.Question_Dropdown_Option_Value_Invalid,
+                    Type: ErrorType.Validation));
+            }
+
             var question = Question.Create(
                 branchId: branchId,
                 groupId: group.Id,
@@ -100,7 +108,7 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
             IReadOnlyCollection<QuestionOptionResponse> optionResponses =
                 Array.Empty<QuestionOptionResponse>();
 
-            if (request.Type == QuestionType.SingleChoice)
+            if (request.Type.HasOptions())
             {
                 var options = request.Options
                     .Select(option => QuestionOption.Create(
@@ -115,6 +123,11 @@ namespace CustomerSurvey.Application.Features.Questions.Command.CreateQuestion
                 foreach (var option in options)
                 {
                     await _questionOptionWriteRepository.AddAsync(option, cancellationToken);
+                }
+
+                if (request.Type == QuestionType.Dropdown)
+                {
+                    options = options.OrderBy(x => x.Order).ToArray();
                 }
 
                 optionResponses = options

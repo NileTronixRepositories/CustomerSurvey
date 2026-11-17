@@ -52,6 +52,23 @@ namespace CustomerSurvey.Domain.Entities
             };
         }
 
+        public static AnonymousSurveyAnswer CreateDropdown(
+            Guid anonymousSurveyResponseId,
+            Guid anonymousTemplateQuestionId,
+            Guid questionId,
+            Guid selectedQuestionOptionId)
+        {
+            return new AnonymousSurveyAnswer
+            {
+                Id = Guid.NewGuid(),
+                AnonymousSurveyResponseId = anonymousSurveyResponseId,
+                AnonymousTemplateQuestionId = anonymousTemplateQuestionId,
+                QuestionId = questionId,
+                QuestionType = QuestionType.Dropdown,
+                SelectedQuestionOptionId = selectedQuestionOptionId
+            };
+        }
+
         public static AnonymousSurveyAnswer CreateVoice(
             Guid anonymousSurveyResponseId,
             Guid anonymousTemplateQuestionId,

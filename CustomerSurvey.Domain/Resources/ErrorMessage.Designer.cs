@@ -27,6 +27,11 @@ namespace CustomerSurvey.Domain.Resources {
         public static string BranchEvaluationSettings_InvalidThresholds => ResourceManager.GetString("BranchEvaluationSettings_InvalidThresholds", resourceCulture);
 
 
+        public static string Question_Dropdown_Options_Required => ResourceManager.GetString("Question_Dropdown_Options_Required", resourceCulture);
+        public static string Question_Dropdown_Option_Labels_Duplicated => ResourceManager.GetString("Question_Dropdown_Option_Labels_Duplicated", resourceCulture);
+        public static string Question_Dropdown_Option_Value_Invalid => ResourceManager.GetString("Question_Dropdown_Option_Value_Invalid", resourceCulture);
+        public static string Question_Dropdown_Answer_Invalid => ResourceManager.GetString("Question_Dropdown_Answer_Invalid", resourceCulture);
+
         private static global::System.Resources.ResourceManager resourceMan;
 
         private static global::System.Globalization.CultureInfo resourceCulture;

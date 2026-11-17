@@ -223,8 +223,9 @@ public sealed class CrossTypeTemplateCopyTests
 
         var group = QuestionGroup.CreateGlobal("Service", null, userId);
         var firstQuestion = Question.CreateGlobal(group.Id, "Was your request resolved?", null, QuestionType.SingleChoice, userId);
-        var secondQuestion = Question.CreateGlobal(group.Id, "Tell us more", null, QuestionType.FreeText, userId);
+        var secondQuestion = Question.CreateGlobal(group.Id, "Choose a service", null, QuestionType.Dropdown, userId);
         var option = QuestionOption.Create(firstQuestion.Id, "No", null, 1, 1, userId);
+        var dropdownOption = QuestionOption.Create(secondQuestion.Id, "Billing", "الفواتير", 1, 0, userId);
         var firstLink = AnonymousTemplateQuestion.Create(source.Id, firstQuestion.Id, 2, userId, isRequired: false);
         var secondLink = AnonymousTemplateQuestion.Create(source.Id, secondQuestion.Id, 5, userId);
         AddAnonymousTemplateQuestion(source, secondLink);
@@ -245,7 +246,7 @@ public sealed class CrossTypeTemplateCopyTests
         // Use the real write repositories and EF model to inspect pending writes without a database connection.
         var options = new DbContextOptionsBuilder<PlatformWriteDbContext>().UseSqlServer().Options;
         await using var db = new PlatformWriteDbContext(options, new CurrentTenantContext());
-        db.AttachRange(branch, catalog, source, group, firstQuestion, secondQuestion, option, condition, inactiveCondition);
+        db.AttachRange(branch, catalog, source, group, firstQuestion, secondQuestion, option, dropdownOption, condition, inactiveCondition);
         var resolver = new PlatformWriteDbContextResolver(db);
 
         var handler = new CopyAnonymousTemplateAsAuthorizedCommandHandler(
@@ -291,6 +292,8 @@ public sealed class CrossTypeTemplateCopyTests
         Assert.Equal(2, result.Value.QuestionsCount);
         Assert.Equal(new[] { (firstQuestion.Id, 2, false), (secondQuestion.Id, 5, true) },
             targetLinks.Select(x => (x.QuestionId, x.Order, x.IsRequired)));
+        Assert.Equal(QuestionType.Dropdown, targetLinks[1].Question.Type);
+        Assert.Same(dropdownOption, Assert.Single(targetLinks[1].Question.Options));
         Assert.All(targetLinks, link =>
         {
             Assert.Equal(target.Id, link.TemplateId);

@@ -4,6 +4,7 @@ using BuildingBlock.Domain.Results;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Abstraction.Security;
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Identity;
 using CustomerSurvey.Domain.Resources;
 
@@ -210,7 +211,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
                         SelectedOptionTextEn = saved?.SelectedOptionTextEn ?? selectedOption?.TextEn,
                         SelectedOptionTextAr = saved is not null ? saved.SelectedOptionTextAr : selectedOption?.TextAr,
-                        SelectedOptionValue = saved?.SelectedOptionValue ?? selectedOption?.Value,
+                        SelectedOptionValue = questionType == QuestionType.Dropdown ? null : saved?.SelectedOptionValue ?? selectedOption?.Value,
                         ImageFileUrl = !string.IsNullOrWhiteSpace(answer.ImageFileName)
                             ? $"{SurveyAnswerImagesBasePath}/{answer.ImageFileName}"
                             : null

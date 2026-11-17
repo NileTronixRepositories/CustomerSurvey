@@ -15,6 +15,13 @@ namespace CustomerSurvey.Domain.Enums
         Smiles = 5,
         Image = 6,
         FreeText = 7,
-        Rating1To10 = 8
+        Rating1To10 = 8,
+        Dropdown = 9
+    }
+
+    public static class QuestionTypeExtensions
+    {
+        public static bool HasOptions(this QuestionType type) =>
+            type is QuestionType.SingleChoice or QuestionType.Dropdown;
     }
 }

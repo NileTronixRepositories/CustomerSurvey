@@ -2903,4 +2903,16 @@
   <data name="SubmitResponse_Rating1To10Value_Invalid" xml:space="preserve">
     <value>يجب أن تحتوي الإجابة فقط على تقييم من 1 إلى 10 كعدد صحيح.</value>
   </data>
+  <data name="Question_Dropdown_Options_Required" xml:space="preserve">
+    <value>يتطلب سؤال القائمة المنسدلة خيارًا واحدًا على الأقل.</value>
+  </data>
+  <data name="Question_Dropdown_Option_Labels_Duplicated" xml:space="preserve">
+    <value>يجب ألا تتكرر تسميات الخيارات داخل سؤال القائمة المنسدلة.</value>
+  </data>
+  <data name="Question_Dropdown_Option_Value_Invalid" xml:space="preserve">
+    <value>يجب أن تكون قيمة خيار القائمة المنسدلة 0.</value>
+  </data>
+  <data name="Question_Dropdown_Answer_Invalid" xml:space="preserve">
+    <value>يجب أن تحتوي إجابة القائمة المنسدلة فقط على معرّف الخيار المحدد.</value>
+  </data>
 </root>

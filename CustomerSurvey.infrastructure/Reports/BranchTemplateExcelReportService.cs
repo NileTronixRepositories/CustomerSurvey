@@ -1203,7 +1203,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
     {
         return answer.QuestionType switch
         {
-            QuestionType.SingleChoice => answer.DisplaySelectedOption(isArabic),
+            QuestionType.SingleChoice or QuestionType.Dropdown => answer.DisplaySelectedOption(isArabic),
             QuestionType.StarRating => answer.StarRatingValue,
             QuestionType.Rating1To10 => answer.Rating1To10Value,
             QuestionType.Smiles => answer.SmileValue,
@@ -1275,6 +1275,7 @@ internal sealed partial class BranchTemplateExcelReportService : IBranchTemplate
         => questionType switch
         {
             QuestionType.SingleChoice => T(isArabic, "Single Choice", "اختيار واحد"),
+            QuestionType.Dropdown => T(isArabic, "Dropdown", "قائمة منسدلة"),
             QuestionType.StarRating => T(isArabic, "Star Rating", "تقييم النجوم"),
             QuestionType.Rating1To10 => T(isArabic, "Rating (1–10)", "تقييم (1–10)"),
             QuestionType.Smiles => T(isArabic, "Smiles", "الوجوه التعبيرية"),

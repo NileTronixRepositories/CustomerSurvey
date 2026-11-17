@@ -198,6 +198,28 @@ public sealed class SurveyReportScoringServiceTests
         Assert.Equal(80m, score.ScorePercentage);
     }
 
+    [Theory]
+    [InlineData(ScoreCalculationMode.RootQuestions)]
+    [InlineData(ScoreCalculationMode.LowestConditionLevel)]
+    [InlineData(ScoreCalculationMode.AllAnsweredQuestions)]
+    public void CalculateResponseScores_DropdownAnswerStaysUnscoredAfterQuestionBecomesSingleChoice(ScoreCalculationMode mode)
+    {
+        var templateId = Guid.NewGuid();
+        var responseId = Guid.NewGuid();
+        var changed = Question(templateId, Guid.NewGuid(), Guid.NewGuid(), 1, QuestionType.SingleChoice);
+        var optionId = Guid.NewGuid();
+
+        var scores = _sut.CalculateResponseScores(
+            [Response(responseId, templateId)],
+            [Answer(responseId, templateId, changed.QuestionId, QuestionType.Dropdown, optionId: optionId)],
+            [changed],
+            [],
+            [Option(optionId, changed.QuestionId, 5)],
+            mode);
+
+        Assert.Empty(scores);
+    }
+
     [Fact]
     public void CalculateResponseScores_AllowsOverallAverageToBeWeightedByResponse()
     {

@@ -797,6 +797,11 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                     answer.QuestionId,
                     answer.SelectedQuestionOptionId!.Value),
 
+                QuestionType.Dropdown => SurveyAnswer.CreateDropdown(
+                    surveyResponseId,
+                    answer.QuestionId,
+                    answer.SelectedQuestionOptionId!.Value),
+
                 QuestionType.StarRating => SurveyAnswer.CreateStarRating(
                     surveyResponseId,
                     answer.QuestionId,
@@ -878,9 +883,10 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
         {
             return questionType switch
             {
-                QuestionType.SingleChoice => ValidateSingleChoice(
+                QuestionType.SingleChoice or QuestionType.Dropdown => ValidateOptionAnswer(
                     answer,
-                    optionsByQuestionId),
+                    optionsByQuestionId,
+                    questionType),
 
                 QuestionType.Voice => ValidateVoice(answer),
 
@@ -903,15 +909,19 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             };
         }
 
-        private static Error? ValidateSingleChoice(
+        private static Error? ValidateOptionAnswer(
             SubmitOperatorTemplateAnswerCommandItem answer,
-            IReadOnlyDictionary<Guid, HashSet<Guid>> optionsByQuestionId)
+            IReadOnlyDictionary<Guid, HashSet<Guid>> optionsByQuestionId,
+            QuestionType questionType)
         {
-            if (!OnlySingleChoiceFieldsProvided(answer))
+            var isDropdown = questionType == QuestionType.Dropdown;
+            if (!OnlyOptionFieldsProvided(answer) ||
+                (isDropdown && (answer.SelectedQuestionOptionId == Guid.Empty || answer.TextAnswer is not null)))
             {
                 return new Error(
-                    Code: "SurveyResponses.Submit.SingleChoiceInvalidShape",
-                    Message: ErrorMessage.SubmitOperatorTemplateResponse_SingleChoice_InvalidShape,
+                    Code: isDropdown ? "SurveyResponses.Submit.DropdownInvalidShape" : "SurveyResponses.Submit.SingleChoiceInvalidShape",
+                    Message: isDropdown ? ErrorMessage.Question_Dropdown_Answer_Invalid
+                        : ErrorMessage.SubmitOperatorTemplateResponse_SingleChoice_InvalidShape,
                     Type: ErrorType.Validation);
             }
 
@@ -919,7 +929,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
                 !validOptionIds.Contains(answer.SelectedQuestionOptionId!.Value))
             {
                 return new Error(
-                    Code: "SurveyResponses.Submit.SingleChoiceOptionInvalid",
+                    Code: isDropdown ? "SurveyResponses.Submit.DropdownOptionInvalid" : "SurveyResponses.Submit.SingleChoiceOptionInvalid",
                     Message: ErrorMessage.SubmitOperatorTemplateResponse_SingleChoice_OptionInvalid,
                     Type: ErrorType.Validation);
             }
@@ -1065,7 +1075,7 @@ namespace CustomerSurvey.Application.Features.SurveyResponses.Command.SubmitOper
             return null;
         }
 
-        private static bool OnlySingleChoiceFieldsProvided(
+        private static bool OnlyOptionFieldsProvided(
             SubmitOperatorTemplateAnswerCommandItem answer)
         {
             return answer.SelectedQuestionOptionId.HasValue &&
