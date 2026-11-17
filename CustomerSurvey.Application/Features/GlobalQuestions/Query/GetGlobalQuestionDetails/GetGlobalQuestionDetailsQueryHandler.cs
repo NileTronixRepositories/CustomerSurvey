@@ -79,7 +79,7 @@ namespace CustomerSurvey.Application.Features.GlobalQuestions.Query.GetGlobalQue
 
             IReadOnlyCollection<QuestionOptionResponse> options;
 
-            if (question.Type != QuestionType.SingleChoice)
+            if (!question.Type.HasOptions())
             {
                 options = Array.Empty<QuestionOptionResponse>();
             }

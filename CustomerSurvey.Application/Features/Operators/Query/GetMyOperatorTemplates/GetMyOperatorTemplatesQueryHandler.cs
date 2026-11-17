@@ -306,22 +306,22 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                 IReadOnlyCollection<TemplateQuestionForMyOperatorDto> templateQuestions,
                 CancellationToken cancellationToken)
         {
-            var singleChoiceQuestionIds = templateQuestions
-                .Where(x => x.Type == QuestionType.SingleChoice.ToString())
+            var optionQuestionIds = templateQuestions
+                .Where(x => x.Type is nameof(QuestionType.SingleChoice) or nameof(QuestionType.Dropdown))
                 .Select(x => x.QuestionId)
                 .Distinct()
                 .ToArray();
 
             IReadOnlyCollection<QuestionOptionResponse> questionOptions;
 
-            if (singleChoiceQuestionIds.Length == 0)
+            if (optionQuestionIds.Length == 0)
             {
                 questionOptions = Array.Empty<QuestionOptionResponse>();
             }
             else
             {
                 questionOptions = await _questionOptionReadRepository.ListAsync(
-                    new GetQuestionOptionsByQuestionIdsSpec(singleChoiceQuestionIds),
+                    new GetQuestionOptionsByQuestionIdsSpec(optionQuestionIds),
                     cancellationToken);
             }
 
@@ -356,7 +356,7 @@ namespace CustomerSurvey.Application.Features.Operators.Query.GetMyOperatorTempl
                         .Select(question =>
                         {
                             IReadOnlyCollection<MyOperatorQuestionOptionResponse> options =
-                                question.Type == QuestionType.SingleChoice.ToString()
+                                question.Type is nameof(QuestionType.SingleChoice) or nameof(QuestionType.Dropdown)
                                 && optionsByQuestionId.TryGetValue(
                                     question.QuestionId,
                                     out var questionOptionsList)

@@ -52,6 +52,21 @@ namespace CustomerSurvey.Domain.Entities
             };
         }
 
+        public static SurveyAnswer CreateDropdown(
+            Guid surveyResponseId,
+            Guid questionId,
+            Guid selectedQuestionOptionId)
+        {
+            return new SurveyAnswer
+            {
+                Id = Guid.NewGuid(),
+                SurveyResponseId = surveyResponseId,
+                QuestionId = questionId,
+                QuestionType = QuestionType.Dropdown,
+                SelectedQuestionOptionId = selectedQuestionOptionId
+            };
+        }
+
         public static SurveyAnswer CreateVoice(
             Guid surveyResponseId,
             Guid questionId,

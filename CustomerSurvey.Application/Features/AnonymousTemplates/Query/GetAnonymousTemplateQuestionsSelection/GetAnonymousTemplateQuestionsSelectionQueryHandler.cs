@@ -135,15 +135,15 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                     request.SearchText),
                 cancellationToken);
 
-            var singleChoiceQuestionIds = availableQuestions
-                .Where(x => x.Type == QuestionType.SingleChoice)
+            var optionQuestionIds = availableQuestions
+                .Where(x => x.Type.HasOptions())
                 .Select(x => x.QuestionId)
                 .Distinct()
                 .ToArray();
 
             IReadOnlyCollection<AnonymousTemplateQuestionSelectionOptionResponse> options;
 
-            if (singleChoiceQuestionIds.Length == 0)
+            if (optionQuestionIds.Length == 0)
             {
                 options = Array.Empty<AnonymousTemplateQuestionSelectionOptionResponse>();
             }
@@ -151,7 +151,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
             {
                 options = await _questionOptionReadRepository.ListAsync(
                     new GetQuestionOptionsForAnonymousTemplateSelectionSpec(
-                        singleChoiceQuestionIds),
+                        optionQuestionIds),
                     cancellationToken);
             }
 
@@ -180,7 +180,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                         IsSelected = selectedQuestion is not null,
                         IsRequired = selectedQuestion?.IsRequired,
                         SelectedOrder = selectedQuestion?.Order,
-                        Options = question.Type == QuestionType.SingleChoice
+                        Options = question.Type.HasOptions()
                             ? questionOptions ?? Array.Empty<AnonymousTemplateQuestionSelectionOptionResponse>()
                             : Array.Empty<AnonymousTemplateQuestionSelectionOptionResponse>()
                     };

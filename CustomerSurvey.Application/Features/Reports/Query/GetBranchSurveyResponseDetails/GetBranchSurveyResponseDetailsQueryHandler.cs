@@ -117,7 +117,7 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
 
         var selectedOptionIds = answers
             .Where(x =>
-                x.QuestionType == QuestionType.SingleChoice &&
+                x.QuestionType.HasOptions() &&
                 x.SelectedQuestionOptionId.HasValue &&
                 x.SelectedQuestionOptionId.Value != Guid.Empty)
             .Select(x => x.SelectedQuestionOptionId!.Value)
@@ -242,7 +242,7 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
             SelectedQuestionOptionId = answer.SelectedQuestionOptionId,
             SelectedOptionTextEn = selectedOption?.TextEn,
             SelectedOptionTextAr = selectedOption?.TextAr,
-            SelectedOptionValue = selectedOption?.Value,
+            SelectedOptionValue = answer.QuestionType == QuestionType.Dropdown ? null : selectedOption?.Value,
 
             StarRatingValue = answer.StarRatingValue,
             Rating1To10Value = answer.Rating1To10Value,
@@ -269,7 +269,7 @@ internal sealed class GetBranchSurveyResponseDetailsQueryHandler
     {
         return answer.QuestionType switch
         {
-            QuestionType.SingleChoice => selectedOption?.TextEn ?? string.Empty,
+            QuestionType.SingleChoice or QuestionType.Dropdown => selectedOption?.TextEn ?? string.Empty,
             QuestionType.StarRating => answer.StarRatingValue?.ToString() ?? string.Empty,
             QuestionType.Rating1To10 => answer.Rating1To10Value?.ToString() ?? string.Empty,
             QuestionType.Smiles => answer.SmileValue?.ToString() ?? string.Empty,

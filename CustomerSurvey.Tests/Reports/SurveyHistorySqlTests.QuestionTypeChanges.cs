@@ -143,6 +143,11 @@ public sealed partial class SurveyHistorySqlTests
             Assert.Equal("GlobalQuestions.Update.TypeChangeIncompatibleWithConditions", Assert.Single(typeResult.Errors).Code);
             var textResult = await handler.Handle(changeType with { Type = QuestionType.FreeText }, default);
             Assert.Equal("GlobalQuestions.Update.TypeChangeIncompatibleWithConditions", Assert.Single(textResult.Errors).Code);
+            var dropdownResult = await handler.Handle(changeType with
+            {
+                Type = QuestionType.Dropdown, Options = [new() { OptionId = option.Id, TextEn = option.TextEn, Order = 1 }]
+            }, default);
+            Assert.Equal("GlobalQuestions.Update.TypeChangeIncompatibleWithConditions", Assert.Single(dropdownResult.Errors).Code);
             var optionResult = await handler.Handle(omitProtectedOption, default);
             Assert.Equal("GlobalQuestions.Update.OptionUsedInCondition", Assert.Single(optionResult.Errors).Code);
             var saved = await db.Set<Question>().AsNoTracking().SingleAsync(x => x.Id == question.Id);

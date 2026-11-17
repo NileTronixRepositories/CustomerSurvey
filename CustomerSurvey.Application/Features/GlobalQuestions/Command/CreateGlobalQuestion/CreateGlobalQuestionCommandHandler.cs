@@ -91,6 +91,14 @@ namespace CustomerSurvey.Application.Features.GlobalQuestions.Command.CreateGlob
                     Type: ErrorType.NotFound));
             }
 
+            if (request.Type == QuestionType.Dropdown && request.Options.Any(x => x.Value != 0))
+            {
+                return Result<CreateGlobalQuestionResponse>.Fail(new Error(
+                    Code: "GlobalQuestions.Create.DropdownOptionValueInvalid",
+                    Message: ErrorMessage.Question_Dropdown_Option_Value_Invalid,
+                    Type: ErrorType.Validation));
+            }
+
             var question = Question.CreateGlobal(
                 groupId: group.Id,
                 textEn: request.TextEn,
@@ -103,7 +111,7 @@ namespace CustomerSurvey.Application.Features.GlobalQuestions.Command.CreateGlob
             IReadOnlyCollection<QuestionOptionResponse> optionResponses =
                 Array.Empty<QuestionOptionResponse>();
 
-            if (request.Type == QuestionType.SingleChoice)
+            if (request.Type.HasOptions())
             {
                 var options = request.Options
                     .OrderBy(x => x.Order)

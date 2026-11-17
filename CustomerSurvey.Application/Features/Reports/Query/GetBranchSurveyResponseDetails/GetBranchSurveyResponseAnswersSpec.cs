@@ -19,7 +19,7 @@ internal sealed class GetBranchSurveyResponseAnswersSpec
             QuestionTextAr = x.Question.TextAr,
             QuestionType = x.QuestionType,
 
-            SelectedQuestionOptionId = x.QuestionType == QuestionType.SingleChoice
+            SelectedQuestionOptionId = x.QuestionType == QuestionType.SingleChoice || x.QuestionType == QuestionType.Dropdown
                 ? x.SelectedQuestionOptionId
                 : null,
 

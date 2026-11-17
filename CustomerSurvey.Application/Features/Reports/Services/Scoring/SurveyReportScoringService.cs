@@ -333,6 +333,11 @@ internal sealed class SurveyReportScoringService : ISurveyReportScoringService
     {
         scoreValue = 0;
 
+        if (answer.QuestionType == QuestionType.Dropdown)
+        {
+            return false;
+        }
+
         if (questionType == QuestionType.StarRating && answer.StarRatingValue.HasValue)
         {
             scoreValue = answer.StarRatingValue.Value;

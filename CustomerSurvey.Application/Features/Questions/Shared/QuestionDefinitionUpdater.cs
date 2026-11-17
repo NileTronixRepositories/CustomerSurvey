@@ -35,7 +35,7 @@ internal sealed class QuestionDefinitionUpdater(
 
         var currentOptions = await optionReader.ListAsync(new GetQuestionOptionsForUpdateQuestionSpec(question.Id), ct);
         var currentById = currentOptions.ToDictionary(x => x.Id);
-        if (type != QuestionType.SingleChoice)
+        if (!type.HasOptions())
         {
             requestedOptions = Array.Empty<QuestionOptionCommandItem>();
         }
@@ -71,6 +71,11 @@ internal sealed class QuestionDefinitionUpdater(
         if (requestedOptions.Select(x => x.Order).Distinct().Count() != requestedOptions.Count)
         {
             return Invalid("OptionOrderDuplicated", ErrorMessage.UpdateQuestion_Options_Order_Duplicated);
+        }
+
+        if (type == QuestionType.Dropdown && requestedOptions.Any(x => x.Value != 0))
+        {
+            return Invalid("DropdownOptionValueInvalid", ErrorMessage.Question_Dropdown_Option_Value_Invalid);
         }
 
         var requestedByOrder = requestedOptions.ToDictionary(x => x.Order);

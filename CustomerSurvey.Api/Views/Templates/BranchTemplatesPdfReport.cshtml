@@ -67,6 +67,7 @@
         type switch
         {
             "SingleChoice" => T("Single Choice", "اختيار واحد"),
+            "Dropdown" => T("Dropdown", "قائمة منسدلة"),
             "StarRating" => T("Star Rating", "تقييم نجوم"),
             "Rating1To10" => T("Rating (1–10)", "تقييم (1–10)"),
             "Smiles" => T("Smiles", "وجوه تعبيرية"),
@@ -102,7 +103,7 @@
 
     string BusinessAnswer(BranchTemplatesReportAnswer answer) => answer.QuestionType switch
     {
-        QuestionType.SingleChoice => answer.DisplaySelectedOption(ar),
+        QuestionType.SingleChoice or QuestionType.Dropdown => answer.DisplaySelectedOption(ar),
         QuestionType.StarRating => answer.StarRatingValue?.ToString() ?? answer.DisplayValue,
         QuestionType.Rating1To10 => answer.Rating1To10Value?.ToString() ?? answer.DisplayValue,
         QuestionType.Smiles => answer.SmileValue?.ToString() ?? answer.DisplayValue,
@@ -779,6 +780,10 @@
         .answers-table th {
             font-size: 9px;
             padding: 5px;
+        }
+
+        .answers-table .dropdown-type {
+            white-space: nowrap;
         }
 
         .media-link {
@@ -1605,7 +1610,7 @@
                                                 var media = MediaValue(answer);
                                                 <tr>
                                                     <td>@answer.DisplayQuestionText(ar)</td>
-                                                    <td>@QuestionTypeLabel(answer.QuestionType.ToString())</td>
+                                                    <td class="@(answer.QuestionType == QuestionType.Dropdown ? "dropdown-type" : null)">@QuestionTypeLabel(answer.QuestionType.ToString())</td>
                                                     <td>@BusinessAnswer(answer)</td>
                                                     <td>@(answer.QuestionType == QuestionType.SingleChoice ? ValueOrDash(answer.SelectedOptionValue) : "—")</td>
                                                     <td>@DecimalOrDash(answer.ScoreValue)</td>

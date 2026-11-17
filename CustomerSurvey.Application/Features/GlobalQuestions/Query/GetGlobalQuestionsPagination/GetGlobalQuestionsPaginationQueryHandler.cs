@@ -1,6 +1,7 @@
 ﻿using BuildingBlock.Application.Abstraction;
 using BuildingBlock.Application.Abstraction.Security;
 using BuildingBlock.Domain.Results;
+using CustomerSurvey.Domain.Enums;
 using BuildingBlock.Domain.SharedDto;
 using CustomerSurvey.Application.Abstraction.Presistence;
 using CustomerSurvey.Application.Features.Questions.Shared;
@@ -79,7 +80,7 @@ namespace CustomerSurvey.Application.Features.GlobalQuestions.Query.GetGlobalQue
                 cancellationToken);
 
             var questionIds = items
-                .Where(x => x.Type == Domain.Enums.QuestionType.SingleChoice)
+                .Where(x => x.Type.HasOptions())
                 .Select(x => x.QuestionId)
                 .Distinct()
                 .ToArray();
@@ -108,7 +109,7 @@ namespace CustomerSurvey.Application.Features.GlobalQuestions.Query.GetGlobalQue
             var itemsWithOptions = items
                 .Select(item => item with
                 {
-                    Options = item.Type == Domain.Enums.QuestionType.SingleChoice &&
+                    Options = item.Type.HasOptions() &&
                               optionsByQuestionId.TryGetValue(
                                   item.QuestionId,
                                   out var itemOptions)

@@ -315,6 +315,45 @@ public sealed class BranchTemplateExcelReportServiceTests
         Assert.DoesNotContain("حالة النموذج", summaryMetricLabels);
     }
 
+    [Theory]
+    [InlineData("en", "Billing", "Dropdown", "No")]
+    [InlineData("ar", "الفواتير", "قائمة منسدلة", "لا")]
+    [InlineData("ar", "Billing", "قائمة منسدلة", "لا")]
+    public async Task GenerateAsync_DisplaysLocalizedDropdownLabelWithoutScore(string language, string label, string type, string included)
+    {
+        var model = CreatePopulatedModel();
+        var response = model.Responses.First();
+        var answer = new BranchTemplatesReportAnswer
+        {
+            ResponseId = response.ResponseId, TemplateId = response.TemplateId, TemplateKind = response.TemplateKind,
+            QuestionId = Guid.NewGuid(), QuestionTextEn = "Choose a service", QuestionType = QuestionType.Dropdown,
+            SelectedQuestionOptionId = Guid.NewGuid(), SelectedOptionTextEn = "Billing",
+            SelectedOptionTextAr = label == "Billing" && language == "ar" ? null : "الفواتير",
+            ScoreInclusionReason = "Non-Scorable Question"
+        };
+        model = model with
+        {
+            Language = language,
+            Responses = model.Responses.Select(x => x.ResponseId == response.ResponseId
+                ? x with { Answers = [.. x.Answers, answer] }
+                : x).ToArray()
+        };
+        var service = new BranchTemplateExcelReportService(new StubBranchTemplatesReportService(model));
+
+        var result = await service.GenerateAsync(CreateRequest(model.SelectedTemplateId) with { Language = language }, default);
+
+        Assert.True(result.IsSuccess);
+        using var stream = new MemoryStream(result.Value.Content);
+        using var workbook = new XLWorkbook(stream);
+        var answers = workbook.Worksheet("05 - Answers");
+        var row = Assert.Single(answers.RowsUsed(), x => x.Cell(4).GetString() == answer.QuestionTextEn);
+        Assert.Equal(type, row.Cell(5).GetString());
+        Assert.Equal(label, row.Cell(8).GetString());
+        Assert.True(row.Cell(9).IsEmpty());
+        Assert.True(row.Cell(10).IsEmpty());
+        Assert.Equal(included, row.Cell(11).GetString());
+    }
+
     private static BranchTemplatesPdfReportModel CreatePopulatedModel()
     {
         var templateId = Guid.NewGuid();

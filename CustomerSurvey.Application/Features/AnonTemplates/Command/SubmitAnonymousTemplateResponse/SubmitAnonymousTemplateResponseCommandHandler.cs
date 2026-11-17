@@ -120,22 +120,22 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 allConditions,
                 activeTemplateQuestions);
 
-            var singleChoiceQuestionIds = activeTemplateQuestions
-                .Where(x => x.QuestionType == QuestionType.SingleChoice)
+            var optionQuestionIds = activeTemplateQuestions
+                .Where(x => x.QuestionType.HasOptions())
                 .Select(x => x.QuestionId)
                 .Distinct()
                 .ToArray();
 
             IReadOnlyCollection<QuestionOptionForSubmitDto> questionOptions;
 
-            if (singleChoiceQuestionIds.Length == 0)
+            if (optionQuestionIds.Length == 0)
             {
                 questionOptions = Array.Empty<QuestionOptionForSubmitDto>();
             }
             else
             {
                 questionOptions = await _questionOptionReadRepository.ListAsync(
-                    new GetQuestionOptionsForSubmitResponseSpec(singleChoiceQuestionIds),
+                    new GetQuestionOptionsForSubmitResponseSpec(optionQuestionIds),
                     cancellationToken);
             }
 
@@ -589,8 +589,8 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
 
                 var validationResult = question.QuestionType switch
                 {
-                    QuestionType.SingleChoice =>
-                        ValidateSingleChoiceAnswer(answer, question, optionsById),
+                    QuestionType.SingleChoice or QuestionType.Dropdown =>
+                        ValidateOptionAnswer(answer, question, optionsById),
 
                     QuestionType.StarRating =>
                         ValidateStarRatingAnswer(answer),
@@ -628,23 +628,28 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
             return ValidationResult.Ok();
         }
 
-        private static ValidationResult ValidateSingleChoiceAnswer(
+        private static ValidationResult ValidateOptionAnswer(
             SubmitAnonymousTemplateAnswerCommandItem answer,
             AnonymousTemplateQuestionForSubmitDto question,
             IReadOnlyDictionary<Guid, QuestionOptionForSubmitDto> optionsById)
         {
+            var isDropdown = question.QuestionType == QuestionType.Dropdown;
+            var hasTextOrVoice = isDropdown
+                ? answer.TextAnswer is not null || answer.VoiceFileName is not null
+                : !string.IsNullOrWhiteSpace(answer.TextAnswer) || !string.IsNullOrWhiteSpace(answer.VoiceFileName);
+
             if (!answer.SelectedQuestionOptionId.HasValue ||
                 answer.SelectedQuestionOptionId.Value == Guid.Empty ||
                 answer.StarRatingValue.HasValue ||
                 answer.SmileValue.HasValue ||
                 answer.Rating1To10Value.HasValue ||
-                !string.IsNullOrWhiteSpace(answer.TextAnswer) ||
-                !string.IsNullOrWhiteSpace(answer.VoiceFileName) ||
+                hasTextOrVoice ||
                 answer.ImageFile is not null)
             {
                 return ValidationResult.Fail(new Error(
-                    Code: "AnonTemplates.Submit.SingleChoiceAnswerInvalid",
-                    Message: ErrorMessage.SubmitAnonymousTemplateResponse_SingleChoiceAnswer_Invalid,
+                    Code: isDropdown ? "AnonTemplates.Submit.DropdownAnswerInvalid" : "AnonTemplates.Submit.SingleChoiceAnswerInvalid",
+                    Message: isDropdown ? ErrorMessage.Question_Dropdown_Answer_Invalid
+                        : ErrorMessage.SubmitAnonymousTemplateResponse_SingleChoiceAnswer_Invalid,
                     Type: ErrorType.Validation));
             }
 
@@ -1073,6 +1078,13 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Command.SubmitAnonym
                 {
                     QuestionType.SingleChoice =>
                         AnonymousSurveyAnswer.CreateSingleChoice(
+                            anonymousSurveyResponseId: response.Id,
+                            anonymousTemplateQuestionId: question.AnonymousTemplateQuestionId,
+                            questionId: question.QuestionId,
+                            selectedQuestionOptionId: submittedAnswer.SelectedQuestionOptionId!.Value),
+
+                    QuestionType.Dropdown =>
+                        AnonymousSurveyAnswer.CreateDropdown(
                             anonymousSurveyResponseId: response.Id,
                             anonymousTemplateQuestionId: question.AnonymousTemplateQuestionId,
                             questionId: question.QuestionId,

@@ -1,4 +1,5 @@
-﻿using CustomerSurvey.Domain.Enums;
+﻿using CustomerSurvey.Application.Features.Questions.Shared;
+using CustomerSurvey.Domain.Enums;
 using CustomerSurvey.Domain.Resources;
 using FluentValidation;
 using System;
@@ -33,6 +34,10 @@ namespace CustomerSurvey.Application.Features.GlobalQuestions.Command.CreateGlob
                 .IsInEnum()
                 .WithMessage(ErrorMessage.CreateGlobalQuestion_Type_Invalid);
 
+            RuleFor(x => x.Options)
+                .ValidateDropdownOptions(option => (option.TextEn, option.TextAr, option.Order, option.Value))
+                .When(x => x.Type == QuestionType.Dropdown);
+
             When(x => x.Type == QuestionType.SingleChoice, () =>
             {
                 RuleFor(x => x.Options)
@@ -63,7 +68,7 @@ namespace CustomerSurvey.Application.Features.GlobalQuestions.Command.CreateGlob
                     });
             });
 
-            When(x => x.Type != QuestionType.SingleChoice, () =>
+            When(x => !x.Type.HasOptions(), () =>
             {
                 RuleFor(x => x.Options)
                     .Must(x => x.Count == 0)

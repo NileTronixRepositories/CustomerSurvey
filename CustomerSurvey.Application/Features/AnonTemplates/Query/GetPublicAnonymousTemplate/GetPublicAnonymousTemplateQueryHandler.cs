@@ -107,22 +107,22 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
                     Type: ErrorType.Validation));
             }
 
-            var singleChoiceQuestionIds = questions
-                .Where(x => x.Type == QuestionType.SingleChoice)
+            var optionQuestionIds = questions
+                .Where(x => x.Type.HasOptions())
                 .Select(x => x.QuestionId)
                 .Distinct()
                 .ToArray();
 
             IReadOnlyCollection<PublicAnonymousTemplateQuestionOptionResponse> options;
 
-            if (singleChoiceQuestionIds.Length == 0)
+            if (optionQuestionIds.Length == 0)
             {
                 options = Array.Empty<PublicAnonymousTemplateQuestionOptionResponse>();
             }
             else
             {
                 options = await _questionOptionReadRepository.ListAsync(
-                    new GetPublicAnonymousTemplateQuestionOptionsSpec(singleChoiceQuestionIds),
+                    new GetPublicAnonymousTemplateQuestionOptionsSpec(optionQuestionIds),
                     cancellationToken);
             }
 
@@ -167,7 +167,7 @@ namespace CustomerSurvey.Application.Features.AnonTemplates.Query.GetPublicAnony
                     return question with
                     {
                         IsRoot = rootQuestionIdSet.Contains(question.AnonymousTemplateQuestionId),
-                        Options = question.Type == QuestionType.SingleChoice
+                        Options = question.Type.HasOptions()
                             ? questionOptions ?? Array.Empty<PublicAnonymousTemplateQuestionOptionResponse>()
                             : Array.Empty<PublicAnonymousTemplateQuestionOptionResponse>()
                     };

@@ -1,4 +1,5 @@
 using CustomerSurvey.Domain.Entities;
+using CustomerSurvey.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace CustomerSurvey.infrastructure.Persistence;
@@ -56,16 +57,17 @@ internal static class ResponseSnapshotCapture
                 throw new InvalidOperationException("A submitted question is missing from its template snapshot.");
             var selected = options.FirstOrDefault(x => x.Id == answer?.OptionId);
             var group = groups.GetValueOrDefault(questionId);
+            var type = answer?.Type ?? definition!.Question.Type;
             included.Add(new SnapshotQuestion
             {
                 TemplateQuestionId = definition?.Id ?? Guid.Empty, QuestionId = questionId,
-                Type = answer?.Type ?? definition!.Question.Type, TextEn = definition?.Question.TextEn ?? string.Empty,
+                Type = type, TextEn = definition?.Question.TextEn ?? string.Empty,
                 TextAr = definition?.Question.TextAr, Order = definition?.Order ?? 0,
                 GroupId = group?.GroupId ?? Guid.Empty, GroupNameEn = group?.NameEn ?? string.Empty,
                 GroupNameAr = group?.NameAr,
                 IsRoot = state?.IsRoot ?? (definition is not null && !children.Contains(definition.Id)),
                 IsRequired = state?.IsRequired ?? true, HasAnswer = answer is not null,
-                SelectedQuestionOptionId = answer?.OptionId, SelectedOptionValue = selected?.Value,
+                SelectedQuestionOptionId = answer?.OptionId, SelectedOptionValue = type == QuestionType.Dropdown ? null : selected?.Value,
                 SelectedOptionTextEn = selected?.TextEn, SelectedOptionTextAr = selected?.TextAr,
                 StarRatingValue = answer?.Star, Rating1To10Value = answer?.Rating1To10, SmileValue = answer?.Smile, TextAnswer = answer?.Text,
                 VoiceFileName = answer?.Voice, ImageFileName = answer?.Image,
@@ -104,6 +106,6 @@ internal static class ResponseSnapshotCapture
     }
 
     private sealed record Definition(Guid Id, Guid QuestionId, int Order, Question Question);
-    private sealed record Answer(Guid QuestionId, CustomerSurvey.Domain.Enums.QuestionType Type,
+    private sealed record Answer(Guid QuestionId, QuestionType Type,
         Guid? OptionId, int? Star, int? Rating1To10, int? Smile, string? Text, string? Voice, string? Image);
 }

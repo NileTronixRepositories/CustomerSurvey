@@ -4,6 +4,7 @@ using CustomerSurvey.infrastructure.Reports;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Net;
 using Xunit;
 
 namespace CustomerSurvey.Tests.Reports;
@@ -118,6 +119,13 @@ public sealed class BranchTemplatesPdfRazorReportTests
                     })
                     .ToArray();
 
+                var dropdown = new BranchTemplatesReportAnswer
+                {
+                    ResponseId = currentResponseId, TemplateId = templateId, TemplateKind = ReportTemplateKind.Normal,
+                    QuestionId = Guid.NewGuid(), QuestionTextEn = "Choose a service", QuestionType = QuestionType.Dropdown,
+                    SelectedQuestionOptionId = Guid.NewGuid(), SelectedOptionTextEn = "Billing", SelectedOptionTextAr = "الفواتير",
+                    ScoreInclusionReason = "Non-Scorable Question"
+                };
                 return response with
                 {
                     ResponseId = currentResponseId,
@@ -127,7 +135,7 @@ public sealed class BranchTemplatesPdfRazorReportTests
                     AverageScoreValue = index == 3 ? null : response.AverageScoreValue,
                     ScorePercentage = index == 3 ? null : response.ScorePercentage,
                     CustomInputs = customInputs,
-                    Answers = index == 3 ? [] : answers
+                    Answers = index == 3 ? [] : [.. answers, dropdown]
                 };
             })
             .ToArray();
@@ -241,9 +249,16 @@ public sealed class BranchTemplatesPdfRazorReportTests
         Assert.Contains("Excellent free text feedback.", html);
         Assert.Contains("Included In Score", html);
         Assert.Matches(@"Rating \(1(?:–|&#x2013;)10\)</td>\s*<td>9</td>\s*<td>[^<]+</td>\s*<td>5</td>", html);
+        Assert.Matches(@"Dropdown</td>\s*<td>Billing</td>\s*<td>—</td>\s*<td>[^<]+</td>\s*<td>No</td>\s*<td>Non-Scorable Question</td>", WebUtility.HtmlDecode(html));
         Assert.Matches("class=\"badge score-good\">\\s*Scored", html);
         Assert.Matches("class=\"badge score-na\">\\s*Not Scored", html);
         Assert.Contains(responseId.ToString(), html, StringComparison.OrdinalIgnoreCase);
+
+        if (mode == ScoreCalculationMode.RootQuestions)
+        {
+            var arabic = await renderer.RenderViewToStringAsync("BranchTemplatesPdfReport", model with { Language = "ar" }, isDraft: false);
+            Assert.Matches(@"قائمة منسدلة</td>\s*<td>الفواتير</td>\s*<td>—</td>\s*<td>[^<]+</td>\s*<td>لا</td>", WebUtility.HtmlDecode(arabic));
+        }
     }
 
     private static string FindApiContentRoot()

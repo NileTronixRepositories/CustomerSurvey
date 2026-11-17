@@ -114,7 +114,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
                 cancellationToken);
 
             var questionIds = questions
-                .Where(x => x.Type == QuestionType.SingleChoice)
+                .Where(x => x.Type.HasOptions())
                 .Select(x => x.QuestionId)
                 .Distinct()
                 .ToArray();
@@ -150,7 +150,7 @@ namespace CustomerSurvey.Application.Features.AnonymousTemplates.Query.GetAnonym
 
                     return question with
                     {
-                        Options = question.Type == QuestionType.SingleChoice
+                        Options = question.Type.HasOptions()
                             ? questionOptions ?? Array.Empty<AnonymousTemplateDetailsQuestionOptionResponse>()
                             : Array.Empty<AnonymousTemplateDetailsQuestionOptionResponse>()
                     };
